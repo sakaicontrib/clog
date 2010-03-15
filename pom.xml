@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+  	<modelVersion>4.0.0</modelVersion>
+  
+  	<name>BLOG</name>
+  	<groupId>org.sakaiproject.blog</groupId>
+  	<artifactId>blog-base</artifactId>
+  	<version>2.0-SNAPSHOT</version>
+  	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.sakaiproject.purepoms</groupId>
+		<artifactId>sakai-standard-tool</artifactId>
+		<version>2.7.0-build05-SNAPSHOT</version>
+	</parent>
+  	
+  	<organization>
+    	<name>Lancaster Centre for e-Science</name>
+    	<url>http://e-science.lancs.ac.uk</url>
+  	</organization>
+  	<inceptionYear>2005</inceptionYear>
+  	<developers>
+    	<developer>
+      		<name>Adrian Fish</name>
+      		<email>a.fish@lancaster.ac.uk</email>
+    	</developer>
+    	<developer>
+      		<name>Miguel Gonzalez Losa</name>
+    	</developer>
+  	</developers>
+
+	<repositories>
+        <repository>
+            <id>sakai-maven</id>
+            <name>Sakai Maven Repo</name>
+            <layout>default</layout>
+            <url>http://source.sakaiproject.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sakai-maven2-snapshots</id>
+            <name>Sakai Maven Repo</name>
+            <layout>default</layout>
+            <url>http://source.sakaiproject.org/maven2-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>default</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+  	
+  	<modules>
+    	<module>components</module>
+    	<module>assembly</module>
+    	<module>api</module>
+    	<module>impl</module>
+    	<module>tool</module>
+  	</modules>
+
+ 	<pluginRepositories>
+        <pluginRepository>
+            <id>maven2-central-repo</id>
+            <name>Maven2 Central Repo</name>
+            <url>http://repo1.maven.org/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>Sakai Plugin Repo</id>
+            <url>http://source.sakaiproject.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

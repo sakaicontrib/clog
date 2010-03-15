@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="org.sakaiproject.blog.api.SakaiProxy"
+		class="org.sakaiproject.blog.impl.SakaiProxyImpl">
+
+		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
+		<property name="emailService"><ref bean="org.sakaiproject.email.api.EmailService"/></property>
+		<property name="digestService"><ref bean="org.sakaiproject.email.api.DigestService"/></property>
+		<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
+		<property name="sessionManager"><ref bean="org.sakaiproject.tool.api.SessionManager"/></property>
+		<property name="toolManager"><ref bean="org.sakaiproject.tool.api.ToolManager"/></property>
+		<property name="authenticationManager"><ref bean="org.sakaiproject.user.api.AuthenticationManager"/></property>
+		<property name="authzGroupService"><ref bean="org.sakaiproject.authz.api.AuthzGroupService"/></property>
+		<property name="functionManager"><ref bean="org.sakaiproject.authz.api.FunctionManager"/></property>
+		<property name="securityService"><ref bean="org.sakaiproject.authz.api.SecurityService"/></property>
+		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
+		<property name="contentHostingService"><ref bean="org.sakaiproject.content.api.ContentHostingService"/></property>
+		<property name="entityManager"><ref bean="org.sakaiproject.entity.api.EntityManager"/></property>
+		<property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
+		<property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
+
+	</bean>
+
+    <bean id="org.sakaiproject.blog.api.PersistenceManager"
+          class="org.sakaiproject.blog.impl.PersistenceManagerImpl"
+          init-method="init">
+
+        <property name="sakaiProxy">
+            <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+        </property>
+
+    </bean>
+
+    <bean id="org.sakaiproject.blog.api.BlogSecurityManager"
+          class="org.sakaiproject.blog.impl.BlogSecurityManagerImpl"
+          init-method="init">
+
+        <property name="sakaiProxy">
+            <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+        </property>
+
+        <property name="persistenceManager">
+            <ref bean="org.sakaiproject.blog.api.PersistenceManager"/>
+        </property>
+
+    </bean>
+
+      <bean id="org.sakaiproject.blog.api.BlogManager"
+    	class="org.sakaiproject.blog.impl.BlogManagerImpl"
+    	init-method="init">
+
+          <property name="securityManager">
+              <ref bean="org.sakaiproject.blog.api.BlogSecurityManager"/>
+          </property>
+
+          <property name="persistenceManager">
+              <ref bean="org.sakaiproject.blog.api.PersistenceManager"/>
+          </property>
+
+          <property name="sakaiProxy">
+              <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+          </property>
+
+    </bean>
+    
+	<bean id="org.sakaiproject.blog.impl.entity.BlogPostEntityProvider"
+		class="org.sakaiproject.blog.impl.entity.BlogPostEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
+        <property name="sakaiProxy">
+            <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+        </property>
+	</bean>
+	
+	<bean id="org.sakaiproject.blog.impl.entity.BlogAuthorEntityProvider"
+		class="org.sakaiproject.blog.impl.entity.BlogAuthorEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
+	</bean>
+	
+	<bean id="org.sakaiproject.blog.impl.entity.BlogCommentEntityProvider"
+		class="org.sakaiproject.blog.impl.entity.BlogCommentEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
+        <property name="sakaiProxy">
+            <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+        </property>
+	</bean>
+	
+	<bean id="org.sakaiproject.blog.impl.entity.BlogPreferencesCommentEntityProvider"
+		class="org.sakaiproject.blog.impl.entity.BlogPreferencesEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
+	</bean>
+    
+</beans>
