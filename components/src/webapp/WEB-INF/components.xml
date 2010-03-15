@@ -23,23 +23,9 @@
 
 	</bean>
 
-    <bean id="org.sakaiproject.blog.api.BlogSecurityManager"
-          class="org.sakaiproject.blog.impl.BlogSecurityManagerImpl"
-          init-method="init">
-
-        <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
-        </property>
-
-    </bean>
-
       <bean id="org.sakaiproject.blog.api.BlogManager"
     	class="org.sakaiproject.blog.impl.BlogManagerImpl"
     	init-method="init">
-
-          <property name="securityManager">
-              <ref bean="org.sakaiproject.blog.api.BlogSecurityManager"/>
-          </property>
 
           <property name="sakaiProxy">
               <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
