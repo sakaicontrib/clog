@@ -14,7 +14,7 @@ var blogOnMyWorkspace = false;
 	BlogUtils.render('blog_toolbar_template',{},'blog_toolbar');
 
 	$('#blog_home_link').bind('click',function(e) {
-		return switchState('viewAllPosts');
+		return switchState('home');
 	});
 
 	$('#blog_view_authors_link').bind('click',function(e) {
