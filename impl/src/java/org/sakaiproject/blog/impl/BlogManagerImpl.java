@@ -36,6 +36,8 @@ public class BlogManagerImpl implements BlogManager
 	private BlogSecurityManager securityManager;
 
 	private SakaiProxy sakaiProxy;
+	
+	private boolean importBlog1Data = false;
 
 	public void init()
 	{
@@ -563,5 +565,15 @@ public class BlogManagerImpl implements BlogManager
 	public SakaiProxy getSakaiProxy()
 	{
 		return sakaiProxy;
+	}
+
+	public void setImportBlog1Data(boolean importBlog1Data)
+	{
+		this.importBlog1Data = importBlog1Data;
+	}
+
+	public boolean isImportBlog1Data()
+	{
+		return importBlog1Data;
 	}
 }
