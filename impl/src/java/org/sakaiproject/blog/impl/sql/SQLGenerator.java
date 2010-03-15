@@ -193,7 +193,7 @@ public class SQLGenerator implements ISQLGenerator
 		statement.append(TOTAL_POSTS + " INT NOT NULL,");
 		statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
 		statement.append(TOTAL_COMMENTS + " INT NOT NULL,");
-		statement.append("CONSTRAINT blog_author_pk PRIMARY KEY (" + USER_ID + ")");
+		statement.append("CONSTRAINT blog_author_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
 		statement.append(")");
 		return statement.toString();
 	}

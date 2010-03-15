@@ -165,34 +165,27 @@ var BlogUtils;
 	}
 
 	BlogUtils.savePostAsDraft = function() {
-
-		var post = {
-				'id':$('#blog_post_id_field').val(),
-				'visibility':'PRIVATE',
-				'commentable':$('#blog_commentable_checkbox').attr('checked'),
-				'title':$('#blog_title_field').val(),
-				'content':FCKeditorAPI.GetInstance('blog_content_editor').GetXHTML(true),
-				'siteId':blogSiteId
-				};
-
-		BlogUtils.storePost(post);
+		BlogUtils.storePost('PRIVATE');
 	}
 
 	BlogUtils.publishPost = function() {
+		BlogUtils.storePost('READY');
+	}
+
+	BlogUtils.publicisePost = function() {
+		BlogUtils.storePost('PUBLIC');
+	}
+		
+	BlogUtils.storePost = function(visibility) {
 
 		var post = {
 				'id':$('#blog_post_id_field').val(),
-				'visibility':'READY',
+				'visibility':visibility,
 				'commentable':$('#blog_commentable_checkbox').attr('checked'),
 				'title':$('#blog_title_field').val(),
 				'content':FCKeditorAPI.GetInstance('blog_content_editor').GetXHTML(true),
 				'siteId':blogSiteId
 				};
-
-		BlogUtils.storePost(post);
-	}
-		
-	BlogUtils.storePost = function(post) {
 
 		var jsonData = JSON.stringify(post);
 
@@ -204,7 +197,7 @@ var BlogUtils;
 			async : false,
 			dataType: 'text',
 		   	success : function(id) {
-				switchState('viewAllPosts');
+				switchState(blogHomeState);
 			},
 			error : function(xmlHttpRequest,status,error) {
 				alert("Failed to store post. Status: " + status + '. Error: ' + error);

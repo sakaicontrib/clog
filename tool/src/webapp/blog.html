@@ -46,7 +46,7 @@ else
 <div style="overflow: hidden;" class="navIntraTool">
 	<div id="blog_toolbar_items">
 		<a id="blog_home_link" title="${blog_home_tooltip}" href="javascript:;">${blog_home_label}</a>
-		<a id="blog_view_members_link" title="${blog_view_members_tooltip}" href="javascript:;">${blog_view_members_label}</a>
+		<a id="blog_view_authors_link" title="${blog_view_members_tooltip}" href="javascript:;">${blog_view_members_label}</a>
 		<a id="blog_my_blog_link" title="${blog_my_blog_tooltip}" href="javascript:;">${blog_my_blog_label}</a>
 		<a style="display: none;" id="blog_create_post_link" title="${blog_create_post_tooltip}" href="javascript:;">${blog_create_post_label}</a>
 		<a id="blog_permissions_link" title="${blog_permissions_tooltip}" href="javascript:;">${blog_permissions_label}</a>
@@ -109,7 +109,7 @@ else
 </tbody>
 </table>
 <input id="blog_permissions_save_button" type="button" value="${save}"/>
-<input type="button" value="${cancel}" onclick="return switchState('viewAllPosts');"/>
+<input type="button" value="${cancel}" onclick="return switchState('home');"/>
 -->
 </div>
 
@@ -396,7 +396,7 @@ else
 <br />
 
 <input id="blog_preferences_save_button" type="button" value="${save}"/>
-<input type="button" value="${cancel}" onclick="return switchState('viewAllPosts');"/>
+<input type="button" value="${cancel}" onclick="return switchState('home');"/>
 </form>
 -->
 </div>

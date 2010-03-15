@@ -5,6 +5,8 @@ var blogCurrentUserPreferences = null;
 var blogCurrentPost = null;
 var blogCurrentPosts = null;
 var blogCurrentUser = null;
+var blogHomeState = null;
+var blogOnMyWorkspace = false;
 
 (function()
 {
@@ -15,7 +17,7 @@ var blogCurrentUser = null;
 		return switchState('viewAllPosts');
 	});
 
-	$('#blog_view_members_link').bind('click',function(e) {
+	$('#blog_view_authors_link').bind('click',function(e) {
 		return switchState('viewMembers');
 	});
 
@@ -45,8 +47,22 @@ var blogCurrentUser = null;
 		alert('The site id  MUST be supplied as a page parameter');
 		return;
 	}
+
+	blogHomeState = 'viewAllPosts';
 	
 	blogSiteId = arg.siteId;
+
+	if(blogSiteId.match(/^~/)) blogOnMyWorkspace = true;
+
+	// If we are on a My Workspace type site (characterised by a tilde as the
+	// first character in the site id), show the user's posts by default.
+	if(blogOnMyWorkspace) {
+		arg.state = 'userPosts';
+		blogHomeState = 'userPosts';
+		$("#blog_view_authors_link").hide();
+		$("#blog_my_blog_link").hide();
+	}
+
 	blogCurrentUser = BlogUtils.getCurrentUser();
 	
 	if(!blogCurrentUser) {
@@ -85,6 +101,9 @@ function switchState(state,arg) {
 	else
 		$("#blog_create_post_link").hide();
 	
+	if('home' === state) {
+		switchState(blogHomeState,arg);
+	}
 	if('viewAllPosts' === state) {
 
 		BlogUtils.setPostsForCurrentSite();
@@ -153,8 +172,12 @@ function switchState(state,arg) {
 		if(arg && arg.userId)
 			userId = arg.userId;
 
+		var url = "/direct/blog-post.json?siteId=" + blogSiteId + "&creatorId=" + userId;
+
+		if(blogOnMyWorkspace) url += "&visibilities=PRIVATE,PUBLIC";
+
 		jQuery.ajax( {
-	       	url : "/direct/blog-post.json?siteId=" + blogSiteId + "&creatorId=" + userId,
+	       	'url' : url,
 	       	dataType : "json",
 	       	async : false,
 			cache: false,
@@ -215,10 +238,16 @@ function switchState(state,arg) {
 
 	 	$(document).ready(function() {
 			$('#blog_save_post_button').bind('click',BlogUtils.savePostAsDraft);
-			$('#blog_publish_post_button').bind('click',BlogUtils.publishPost);
+
+			// If this is a My Workspace site, make the post PUBLIC when published.
+			if(blogOnMyWorkspace) {
+				$('#blog_publish_post_button').bind('click',BlogUtils.publicisePost);
+			}
+			else
+				$('#blog_publish_post_button').bind('click',BlogUtils.publishPost);
 
 			$('#blog_cancel_button').bind('click',function(e) {
-				switchState('viewAllPosts');
+				switchState('home');
 			});
 
 	 		setMainFrameHeight(window.frameElement.id);

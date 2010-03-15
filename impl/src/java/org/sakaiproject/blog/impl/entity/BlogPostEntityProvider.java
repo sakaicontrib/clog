@@ -187,13 +187,12 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 
 	public List<Post> getEntities(EntityReference ref, Search search)
 	{
-
 		List<Post> posts = new ArrayList<Post>();
 
 		Restriction creatorRes = search.getRestrictionByProperty("creatorId");
 
 		Restriction locRes = search.getRestrictionByProperty(CollectionResolvable.SEARCH_LOCATION_REFERENCE);
-		Restriction state = search.getRestrictionByProperty("state");
+		Restriction visibilities = search.getRestrictionByProperty("visibilities");
 
 		QueryBean query = new QueryBean();
 		query.setVisibilities(new String[] {Visibilities.READY,Visibilities.PRIVATE});
@@ -209,8 +208,12 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		if (creatorRes != null)
 			query.setCreator(creatorRes.getStringValue());
 
-		if (state != null)
-			query.setVisibilities(new String[] { state.getStringValue() });
+		if (visibilities != null)
+		{
+			String visibilitiesValue = visibilities.getStringValue();
+			String[] values = visibilitiesValue.split(",");
+			query.setVisibilities(values);
+		}
 
 		try
 		{
