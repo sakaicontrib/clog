@@ -159,11 +159,6 @@ function switchState(state,arg) {
 	       	async : false,
 			cache: false,
 		   	success : function(data) {
-	 			if(window.frameElement) {
-	 				$(document).ready(function() {
-	 					setMainFrameHeight(window.frameElement.id);
-	 				});
-				}
 
 				var profileMarkup = BlogUtils.getProfileMarkup(userId);
 
@@ -173,25 +168,17 @@ function switchState(state,arg) {
 				$('#blog_author_profile').html(profileMarkup);
 	 			for(var i=0,j=posts.length;i<j;i++)
 					BlogUtils.render('blog_post_template',posts[i],'post_' + posts[i].id);
+
+	 			if(window.frameElement) {
+	 				$(document).ready(function() {
+	 					setMainFrameHeight(window.frameElement.id);
+	 				});
+				}
 			},
 			error : function(xmlHttpRequest,status,errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);
 			}
 	   	});
-	}
-	else if('print' === state) {
-		BlogUtils.render('blog_posts_print_template',blogCurrentPosts,'blog_content');
-	 	for(var i=0,j=blogCurrentPosts.length;i<j;i++)
-			BlogUtils.render('blog_post_template',blogCurrentPosts[i],'post_' + blogCurrentPosts[i].id);
-
-		$('.content').show();
-		$('.comments').show();
-
-	 	if(window.frameElement) {
-	 		$(document).ready(function() {
-	 			setMainFrameHeight(window.frameElement.id);
-	 		});
-		}
 	}
 	else if('post' === state) {
 		if(arg && arg.postId)
@@ -265,6 +252,7 @@ function switchState(state,arg) {
 			BlogUtils.setupEditor('blog_content_editor',600,400,'Default',blogSiteId);
 			BlogUtils.render('blog_post_template',blogCurrentPost,'blog_post_' + arg.postId);
 			$('#blog_save_comment_button').bind('click',BlogUtils.saveComment);
+
 			if(window.frameElement)
 				setMainFrameHeight(window.frameElement.id);
 		});
@@ -304,11 +292,6 @@ function switchState(state,arg) {
 	       	async : false,
 			cache: false,
 		   	success : function(data) {
-	 			if(window.frameElement) {
-	 				$(document).ready(function() {
-	 					setMainFrameHeight(window.frameElement.id);
-	 				});
-				}
 
 				var posts = data['blog-post_collection'];
 	 			
@@ -318,6 +301,12 @@ function switchState(state,arg) {
 
 				$('#blog_really_delete_button').bind('click',BlogUtils.deleteSelectedPosts);
 				$('#blog_restore_button').bind('click',BlogUtils.restoreSelectedPosts);
+
+	 			if(window.frameElement) {
+	 				$(document).ready(function() {
+	 					setMainFrameHeight(window.frameElement.id);
+	 				});
+				}
 			},
 			error : function(xmlHttpRequest,status,errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);
