@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.sakaiproject.blog.api.BlogFunctions;
 import org.sakaiproject.blog.api.BlogManager;
 import org.sakaiproject.blog.api.BlogMember;
-import org.sakaiproject.blog.api.BlogSecurityManager;
 import org.sakaiproject.blog.api.QueryBean;
 import org.sakaiproject.blog.api.SakaiProxy;
 import org.sakaiproject.blog.api.XmlDefs;
@@ -65,6 +64,9 @@ public class BlogManagerImpl implements BlogManager
 		
 		persistenceManager = new PersistenceManager();
 		persistenceManager.setSakaiProxy(sakaiProxy);
+		
+		securityManager = new BlogSecurityManager();
+		securityManager.setSakaiProxy(sakaiProxy);
 	}
 
 	public Post getPost(String postId) throws Exception
