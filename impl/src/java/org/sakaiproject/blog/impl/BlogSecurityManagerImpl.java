@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.sakaiproject.blog.api.BlogFunctions;
 import org.sakaiproject.blog.api.SakaiProxy;
 import org.sakaiproject.blog.api.BlogSecurityManager;
-import org.sakaiproject.blog.api.PersistenceManager;
 import org.sakaiproject.blog.api.datamodel.Comment;
 import org.sakaiproject.blog.api.datamodel.Post;
 
@@ -33,8 +32,6 @@ public class BlogSecurityManagerImpl implements BlogSecurityManager
     private Logger logger = Logger.getLogger(BlogSecurityManagerImpl.class);
     
 	private SakaiProxy sakaiProxy;
-
-    private PersistenceManager persistenceManager;
 
     public void init()
     {
@@ -206,16 +203,6 @@ public class BlogSecurityManagerImpl implements BlogSecurityManager
 		
 		return false;
 	}
-
-	public void setPersistenceManager(PersistenceManager persistenceManager)
-	{
-		this.persistenceManager = persistenceManager;
-	}
-
-    public PersistenceManager getPersistenceManager()
-    {
-        return persistenceManager;
-    }
 
     public boolean canCurrentUserSearch()
 	{

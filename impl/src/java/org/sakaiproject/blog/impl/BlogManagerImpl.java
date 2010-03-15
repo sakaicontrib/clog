@@ -15,7 +15,6 @@ import org.sakaiproject.blog.api.BlogFunctions;
 import org.sakaiproject.blog.api.BlogManager;
 import org.sakaiproject.blog.api.BlogMember;
 import org.sakaiproject.blog.api.BlogSecurityManager;
-import org.sakaiproject.blog.api.PersistenceManager;
 import org.sakaiproject.blog.api.QueryBean;
 import org.sakaiproject.blog.api.SakaiProxy;
 import org.sakaiproject.blog.api.XmlDefs;
@@ -63,6 +62,9 @@ public class BlogManagerImpl implements BlogManager
 		logger.info("Registered Blog functions ...");
 
 		sakaiProxy.registerEntityProducer(this);
+		
+		persistenceManager = new PersistenceManager();
+		persistenceManager.setSakaiProxy(sakaiProxy);
 	}
 
 	public Post getPost(String postId) throws Exception
@@ -227,11 +229,6 @@ public class BlogManagerImpl implements BlogManager
 	public void setPersistenceManager(PersistenceManager pm)
 	{
 		this.persistenceManager = pm;
-	}
-
-	public PersistenceManager getPersistenceManager()
-	{
-		return persistenceManager;
 	}
 
 	private String serviceName()
