@@ -39,8 +39,6 @@ public interface BlogManager extends EntityProducer
 
     public BlogSecurityManager getSecurityManager();
 
-    public PersistenceManager getPersistenceManager();
-
 	public List<BlogMember> getAuthors(String siteId);
 
 	public boolean savePreferences(Preferences preferences);

@@ -44,9 +44,5 @@ public interface BlogSecurityManager
 
 	public boolean canCurrentUserEditComment(Post post, Comment comment);
 
-	public void setPersistenceManager(PersistenceManager persistenceManager);
-
-    public PersistenceManager getPersistenceManager();
-
     public boolean canCurrentUserSearch();
 }
