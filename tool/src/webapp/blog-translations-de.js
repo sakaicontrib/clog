@@ -55,7 +55,6 @@ yourComment="Ihr Kommentar";
 invalid_post_title="Sie müssen einen Titel eingeben. Der Titel kann keine XML-Tags beinhalten.";
 nonAvailableInPreview="Link in der Vorschau nicht verfügbar";
 showComments="Zeige Kommentare";
-blog_view_members_label="Zeige Blog des Mitglieds";
 bloggerOf="Blog von";
 blog_my_blog_label="Zeige mein Blog";
 emptyBlogger="Dieses Blog hat keine Einträge";

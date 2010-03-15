@@ -124,8 +124,6 @@ text =" Tekst";
 
 title =" Blogger";
 
-blog_view_members_label =" Bekijk blog van gebruiker";
-
 blog_my_blog_label =" Bekijk mijn blog";
 
 yourComment =" Reactie";

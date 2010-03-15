@@ -60,6 +60,5 @@ showComments="Ver coment\u00E1rios";
 blog_delete_post_message="Tem a certeza que pretende eliminar esta entrada?";
 text="Texto";
 title="Blog";
-blog_view_members_label="Ver blogue do participante";
 blog_my_blog_label="Ver o meu blogue";
 yourComment="Coment\u00E1rio";
