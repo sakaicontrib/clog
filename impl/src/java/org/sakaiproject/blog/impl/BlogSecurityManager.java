@@ -32,9 +32,9 @@ public class BlogSecurityManager
     
 	private SakaiProxy sakaiProxy;
 
-    public void init()
+    public BlogSecurityManager(SakaiProxy sakaiProxy)
     {
-    	if(logger.isDebugEnabled()) logger.debug("init()");
+    	this.sakaiProxy = sakaiProxy;
     }
 
     public boolean canCurrentUserCommentOnPost(Post post)
@@ -169,23 +169,6 @@ public class BlogSecurityManager
 		}
 		
 		return false;
-	}
-
-	/*
-	public void setPersistenceManager(PersistenceManagerImpl persistenceManager)
-	{
-		this.persistenceManager = persistenceManager;
-	}
-	*/
-
-	public void setSakaiProxy(SakaiProxy sakaiProxy)
-	{
-		this.sakaiProxy = sakaiProxy;
-	}
-
-	public SakaiProxy getSakaiProxy()
-	{
-		return sakaiProxy;
 	}
 
 	public boolean canCurrentUserEditComment(Post post, Comment comment)

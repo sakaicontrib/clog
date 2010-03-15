@@ -62,11 +62,9 @@ public class BlogManagerImpl implements BlogManager
 
 		sakaiProxy.registerEntityProducer(this);
 		
-		persistenceManager = new PersistenceManager();
-		persistenceManager.setSakaiProxy(sakaiProxy);
+		persistenceManager = new PersistenceManager(sakaiProxy);
 		
-		securityManager = new BlogSecurityManager();
-		securityManager.setSakaiProxy(sakaiProxy);
+		securityManager = new BlogSecurityManager(sakaiProxy);
 	}
 
 	public Post getPost(String postId) throws Exception
@@ -206,16 +204,6 @@ public class BlogManagerImpl implements BlogManager
 		}
 
 		return false;
-	}
-
-	public void setSakaiProxy(SakaiProxy sakaiProxy)
-	{
-		this.sakaiProxy = sakaiProxy;
-	}
-
-	public SakaiProxy getSakaiProxy()
-	{
-		return sakaiProxy;
 	}
 
 	public BlogSecurityManager getSecurityManager()
@@ -565,5 +553,15 @@ public class BlogManagerImpl implements BlogManager
 		{
 			logger.error("Failed to send new comment alert.", e);
 		}
+	}
+
+	public void setSakaiProxy(SakaiProxy sakaiProxy)
+	{
+		this.sakaiProxy = sakaiProxy;
+	}
+
+	public SakaiProxy getSakaiProxy()
+	{
+		return sakaiProxy;
 	}
 }

@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.blog.api.BlogMember;
-import org.sakaiproject.blog.api.BlogSecurityManager;
 import org.sakaiproject.blog.api.QueryBean;
 import org.sakaiproject.blog.api.SakaiProxy;
 import org.sakaiproject.blog.api.datamodel.Comment;
@@ -30,12 +29,10 @@ public class PersistenceManager
 
 	private SakaiProxy sakaiProxy;
 
-	private BlogSecurityManager securityManager;
-
-	public void init()
+	public PersistenceManager(SakaiProxy sakaiProxy)
 	{
-		if (logger.isDebugEnabled()) logger.debug("init()");
-
+		this.sakaiProxy = sakaiProxy;
+		
 		String vendor = sakaiProxy.getVendor();
 
 		// TODO load the proper class using reflection. We can use a named based system to locate the correct SQLGenerator
@@ -728,16 +725,6 @@ public class PersistenceManager
 	public SakaiProxy getSakaiProxy()
 	{
 		return sakaiProxy;
-	}
-
-	public void setSecurityManager(BlogSecurityManager securityManager)
-	{
-		this.securityManager = securityManager;
-	}
-
-	public BlogSecurityManager getSecurityManager()
-	{
-		return securityManager;
 	}
 
 	public List<BlogMember> getPublicBloggers()

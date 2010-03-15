@@ -35,10 +35,6 @@ public interface BlogManager extends EntityProducer
     
 	public boolean restorePost(String postId);
 
-    public SakaiProxy getSakaiProxy();
-
-    public BlogSecurityManager getSecurityManager();
-
 	public List<BlogMember> getAuthors(String siteId);
 
 	public boolean savePreferences(Preferences preferences);
