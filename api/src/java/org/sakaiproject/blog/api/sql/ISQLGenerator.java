@@ -54,7 +54,7 @@ public interface ISQLGenerator
 	// From BLOGGER_COMMENT
 	public static final String CONTENT = "CONTENT";
 
-	public abstract List<String> getCreateStatementsForPost();
+	public abstract List<String> getCreateTablesStatements();
 
 	public abstract List<String> getSelectStatementsForQuery(QueryBean query);
 

@@ -75,7 +75,7 @@ public class PersistenceManager
 
 			try
 			{
-				List<String> statements = sqlGenerator.getCreateStatementsForPost();
+				List<String> statements = sqlGenerator.getCreateTablesStatements();
 
 				for (String sql : statements)
 					statement.executeUpdate(sql);

@@ -56,7 +56,7 @@ public class SQLGenerator implements ISQLGenerator
 	 * 
 	 * @see uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.util.ISQLGenerator#getCreateStatementsForPost(java.lang.String)
 	 */
-	public List<String> getCreateStatementsForPost()
+	public List<String> getCreateTablesStatements()
 	{
 		ArrayList result = new ArrayList();
 
