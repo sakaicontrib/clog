@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.sakaiproject.blog.api.BlogFunctions;
 import org.sakaiproject.blog.api.SakaiProxy;
-import org.sakaiproject.blog.api.datamodel.Comment;
 import org.sakaiproject.blog.api.datamodel.Post;
 
 public class BlogSecurityManager
@@ -46,11 +45,15 @@ public class BlogSecurityManager
 		
 		// If the post is comment-able and the current user has blog.comment.create
 		if(post.isCommentable() && sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_COMMENT_CREATE,post.getSiteId()))
+		{
 			return true;
+		}
 		
 		// An author can always comment on their own posts
 		if(post.getCreatorId().equals(sakaiProxy.getCurrentUserId()))
+		{
 			return true;
+		}
 		
 		return false;
 	}
@@ -58,14 +61,17 @@ public class BlogSecurityManager
 	public boolean canCurrentUserDeletePost(Post post) throws SecurityException
 	{
 		if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_DELETE_ANY,post.getSiteId()))
+		{
 			return true;
+		}
 		
 		String currentUser = sakaiProxy.getCurrentUserId();
 		
 		// If the current user is the author and has blog.post.delete.own
-		if(currentUser != null && currentUser.equals(post.getCreatorId()))
+		if(currentUser != null
+			&& currentUser.equals(post.getCreatorId())
+			&& sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_DELETE_OWN,post.getSiteId()))
 		{
-			if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_DELETE_OWN,post.getSiteId()))
 				return true;
 		}
 		
@@ -76,25 +82,32 @@ public class BlogSecurityManager
 	{
 		// This acts as an override
 		if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_UPDATE_ANY,post.getSiteId()))
+		{
 			return true;
+		}
 		
 		// If it's public and not marked read only, yes.
 		if(post.isPublic())
+		{
 			return true;
+		}
 		
 		String currentUser = sakaiProxy.getCurrentUserId();
 		
 		// If the current user is authenticated and the post author, yes.
-		if(currentUser != null && currentUser.equals(post.getCreatorId()))
+		if(currentUser != null
+			&& currentUser.equals(post.getCreatorId())
+			&& sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_UPDATE_OWN,post.getSiteId()))
 		{
-			if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_UPDATE_OWN,post.getSiteId()))
 				return true;
 		}
 		
 		// If the user is authenticated and the post is not marked read only,
 		// yes
 		if(currentUser != null)
+		{
 			return true;
+		}
 		
 		return false;
 	}
@@ -109,7 +122,9 @@ public class BlogSecurityManager
 		for(Post post : posts)
 		{
 			if(canCurrentUserReadPost(post))
+			{
 				filtered.add(post);
+			}
 		}
 		
 		return filtered;
@@ -119,75 +134,30 @@ public class BlogSecurityManager
 	{
 		// If the post is public, yes.
 		if(post.isPublic())
+		{
 			return true;
+		}
 		
 		// Only maintainers can view recycled posts
 		if(post.isRecycled() && sakaiProxy.isCurrentUserMaintainer(post.getSiteId()))
+		{
 			return true;
+		}
 		
 		// This acts as an override
 		if(!post.isPrivate() && (sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_READ_ANY,post.getSiteId()) || sakaiProxy.isCurrentUserAdmin()))
+		{
 			return true;
+		}
 		
 		String currentUser = sakaiProxy.getCurrentUserId();
 		
 		// If the current user is authenticated and the post author, yes.
 		if(currentUser != null && currentUser.equals(post.getCreatorId()))
-			return true;
-		
-		/*
-		String siteId = sakaiProxy.getCurrentSiteId();
-		
-		// If the current user is authenticated and the post belongs to the
-		// current site and the post is SITE visible, yes.
-		if(currentUser != null
-				&& siteId != null
-				&& siteId.equals(post.getSiteId()))
 		{
-			if(!post.isPrivate() && sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_READ_ANY,post.getSiteId()))
-				return true;
-		}
-		*/
-		
-		return false;
-	}
-	
-	public boolean canCurrentUserDeleteComment(Post post,Comment comment)
-	{
-		if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_COMMENT_DELETE_ANY,post.getSiteId()))
 			return true;
-		
-		// If I am the owner of the post commented upon, allow me.
-		//if(post.getCreatorId().equals(sakaiProxy.getCurrentUserId()))
-			//	return true;
-		
-		// If I am the owner of the comment, allow me.
-		if(comment.getCreatorId().equals(sakaiProxy.getCurrentUserId()))
-		{
-			if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_COMMENT_DELETE_OWN,post.getSiteId()))
-				return true;
 		}
 		
 		return false;
-	}
-
-	public boolean canCurrentUserEditComment(Post post, Comment comment)
-	{
-		if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_COMMENT_UPDATE_ANY,post.getSiteId()))
-			return true;
-		
-		// If I am the owner of the comment, allow me.
-		if(comment.getCreatorId().equals(sakaiProxy.getCurrentUserId()))
-		{
-			if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_COMMENT_UPDATE_OWN,post.getSiteId()))
-				return true;
-		}
-		
-		return false;
-	}
-
-    public boolean canCurrentUserSearch()
-	{
-		return true;
 	}
 }

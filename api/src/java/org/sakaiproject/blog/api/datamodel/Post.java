@@ -32,7 +32,7 @@ public class Post implements Entity
 
 	private String visibility= Visibilities.PRIVATE;
 	
-	private boolean isCommentable = true;
+	private boolean commentable = true;
 
 	private String creatorId = null;
 	
@@ -121,7 +121,7 @@ public class Post implements Entity
 
 	public boolean isCommentable()
 	{
-		return isCommentable;
+		return commentable;
 	}
 
 	public void setVisibility(String visibility)
@@ -136,7 +136,7 @@ public class Post implements Entity
 
 	public void setCommentable(boolean commentable)
 	{
-		this.isCommentable = commentable;
+		this.commentable = commentable;
 	}
 
 	public boolean isPrivate()
