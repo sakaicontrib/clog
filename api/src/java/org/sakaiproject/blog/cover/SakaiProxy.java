@@ -22,6 +22,8 @@ public class SakaiProxy
 {
     private static org.sakaiproject.blog.api.SakaiProxy m_instance = null;
     
+    private SakaiProxy() {}
+    
 	 /**
      * Access the component instance: special cover only method.
      * 
@@ -45,20 +47,7 @@ public class SakaiProxy
                     .get(org.sakaiproject.blog.api.SakaiProxy.class);
         }
     }
-
     
-	public static String getAccessUrl()
-	{
-		org.sakaiproject.blog.api.SakaiProxy sp = getInstance();
-		return sp.getAccessUrl();
-	}
-
-	public static String getPortalUrl()
-	{
-		org.sakaiproject.blog.api.SakaiProxy sp = getInstance();
-		return sp.getPortalUrl();
-	}
-	
 	public static String getServerUrl()
 	{
 		org.sakaiproject.blog.api.SakaiProxy sp = getInstance();

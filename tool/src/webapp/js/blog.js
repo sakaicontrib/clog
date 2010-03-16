@@ -316,7 +316,7 @@ function switchState(state,arg) {
 	}
 	else if('viewRecycled' === state) {
 		jQuery.ajax( {
-	       	url : "/direct/blog-post.json?siteId=" + blogSiteId + "&state=RECYCLED",
+	       	url : "/direct/blog-post.json?siteId=" + blogSiteId + "&visibilities=RECYCLED",
 	       	dataType : "json",
 	       	async : false,
 			cache: false,

@@ -91,13 +91,9 @@ public class SakaiProxyImpl implements SakaiProxy
 	/** Inject this in your components.xml */
 	private String fromAddress = "sakai-blog@sakai.lancs.ac.uk";
 
-	public void init()
-	{
-	}
+	public void init() {}
 
-	public void destroy()
-	{
-	}
+	public void destroy() {}
 
 	public String getCurrentSiteId()
 	{
@@ -164,21 +160,27 @@ public class SakaiProxyImpl implements SakaiProxy
 		try
 		{
 			if (userId == null || siteId == null)
+			{
 				return false;
+			}
 
 			Site site = siteService.getSite(siteId);
 			AuthzGroup realm = authzGroupService.getAuthzGroup(site.getReference());
 			User sakaiUser = userDirectoryService.getUser(userId);
 			Role r = realm.getUserRole(sakaiUser.getId());
 			if (r.getId().equals(realm.getMaintainRole())) // This bit could be wrong
+			{
 				return true;
+			}
 			else
+			{
 				return false;
+			}
 
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Exception thrown whilst checking for maintainer status",e);
 			return false;
 		}
 	}
@@ -279,7 +281,7 @@ public class SakaiProxyImpl implements SakaiProxy
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Exception thrown whilst getting site members",e);
 		}
 
 		return result;
@@ -365,21 +367,6 @@ public class SakaiProxyImpl implements SakaiProxy
 		return entityManager;
 	}
 
-	public void deleteResources(String[] resourceIds)
-	{
-		for (String resourceId : resourceIds)
-		{
-			try
-			{
-				contentHostingService.removeResource(resourceId);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public void setSqlService(SqlService sqlService)
 	{
 		this.sqlService = sqlService;
@@ -390,17 +377,14 @@ public class SakaiProxyImpl implements SakaiProxy
 		return sqlService;
 	}
 
-	public boolean isOnGateway()
-	{
-		return "!gateway".equals(getCurrentSiteId());
-	}
-
 	public void registerFunction(String function)
 	{
 		List functions = functionManager.getRegisteredFunctions("blog.");
 
 		if (!functions.contains(function))
+		{
 			functionManager.registerFunction(function);
+		}
 	}
 
 	public void setFunctionManager(FunctionManager functionManager)
@@ -421,7 +405,9 @@ public class SakaiProxyImpl implements SakaiProxy
 			Role r = site.getUserRole(getCurrentUserId());
 
 			if (r == null)
+			{
 				return false;
+			}
 
 			return r.isAllowed(function);
 		}
@@ -433,11 +419,6 @@ public class SakaiProxyImpl implements SakaiProxy
 		return false;
 	}
 
-	public void addEventObserver(Observer observer)
-	{
-		eventTrackingService.addObserver(observer);
-	}
-
 	public void setEventTrackingService(EventTrackingService eventTrackingService)
 	{
 		this.eventTrackingService = eventTrackingService;
@@ -446,45 +427,6 @@ public class SakaiProxyImpl implements SakaiProxy
 	public EventTrackingService getEventTrackingService()
 	{
 		return eventTrackingService;
-	}
-
-	public void deleteEventObserver(Observer observer)
-	{
-		eventTrackingService.deleteObserver(observer);
-	}
-
-	public String getIdForEid(String eid)
-	{
-		try
-		{
-			return userDirectoryService.getUserByEid(eid).getId();
-		}
-		catch (UserNotDefinedException e)
-		{
-			logger.warn("Caught exception whilst getting id for eid '" + eid + "'. Returning '" + eid + "' ...");
-			return eid;
-		}
-	}
-
-	public boolean siteExists(String siteId)
-	{
-		return siteService.siteExists(siteId);
-	}
-
-	public void allowFunction(String string, String blogPostCreate)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public boolean currentSiteHasRole(String string)
-	{
-		return false;
-	}
-
-	public Reference newReference(String reference)
-	{
-		return entityManager.newReference(reference);
 	}
 
 	public void sendEmailWithMessage(String user, String subject, String message)
@@ -573,7 +515,9 @@ public class SakaiProxyImpl implements SakaiProxy
 
 				String emailSender = getEmailForTheUser(sender);
 				if (emailSender == null || emailSender.trim().equals(""))
+				{
 					emailSender = getDisplayNameForTheUser(sender);
+				}
 
 				for (String userId : participants)
 				{

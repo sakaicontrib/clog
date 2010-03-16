@@ -19,13 +19,10 @@ package org.sakaiproject.blog.api;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Observer;
 import java.util.Set;
 
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.entity.api.EntityProducer;
-import org.sakaiproject.entity.api.Reference;
-import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.blog.api.SakaiProxy;
 import org.sakaiproject.blog.api.BlogMember;
 
@@ -67,29 +64,9 @@ public interface SakaiProxy
 
 	public void registerEntityProducer(EntityProducer entityProducer);
 
-	public void deleteResources(String[] resourceIds);
-
-	public String getResourceUrl(String resourceId);
-
-	public boolean isOnGateway();
-
 	public void registerFunction(String function);
 
 	public boolean isAllowedFunction(String function,String siteId);
-
-	public void addEventObserver(Observer observer);
-
-	public void deleteEventObserver(Observer observer);
-
-	public String getIdForEid(String eid);
-
-	public boolean siteExists(String siteId);
-
-	public void allowFunction(String string, String blogPostCreate);
-
-	public boolean currentSiteHasRole(String string);
-
-    public Reference newReference(String reference);
 
 	public void sendEmailWithMessage(String creatorId, String subject, String string);
 	

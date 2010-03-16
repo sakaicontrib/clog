@@ -822,14 +822,13 @@ public class PersistenceManager
 	public boolean savePreferences(Preferences preferences)
 	{
 		Connection connection = null;
-		Statement st = null;
+		PreparedStatement st = null;
 		
 		try
 		{
 			connection = sakaiProxy.borrowConnection();
-			st = connection.createStatement();
-			String sql = sqlGenerator.getSavePreferencesStatement(preferences, connection);
-			st.executeUpdate(sql);
+			st = sqlGenerator.getSavePreferencesStatement(preferences, connection);
+			st.executeUpdate();
 			return true;
 		}
 		catch(Exception e)

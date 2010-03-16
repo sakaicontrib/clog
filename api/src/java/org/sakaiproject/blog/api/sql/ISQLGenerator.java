@@ -82,7 +82,7 @@ public interface ISQLGenerator
 
 	public abstract String getSelectPreferencesStatement(String userId,String placementId);
 
-	public abstract String getSavePreferencesStatement(Preferences preferences, Connection connection) throws Exception;
+	public abstract PreparedStatement getSavePreferencesStatement(Preferences preferences, Connection connection) throws Exception;
 
 	public abstract String getSelectAuthorStatement(String userId,String siteId);
 }

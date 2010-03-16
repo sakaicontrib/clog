@@ -578,40 +578,52 @@ public class SQLGenerator implements ISQLGenerator
 		return "SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + placementId + "'";
 	}
 
-	public String getSavePreferencesStatement(Preferences preferences, Connection connection) throws Exception
+	public PreparedStatement getSavePreferencesStatement(Preferences preferences, Connection connection) throws Exception
 	{
 		String userId = preferences.getUserId();
 		String siteId = preferences.getSiteId();
-		
-		String sql = "UPDATE " + TABLE_PREFERENCES + " SET " + EMAIL_FREQUENCY + " = '" + preferences.getEmailFrequency() + "' WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'";
 
-		Statement st = null;
+		Statement testST = null;
 		
 		try
 		{
-			st = connection.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'");
+			testST = connection.createStatement();
+			ResultSet rs = testST.executeQuery("SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'");
+			
+			PreparedStatement st = null;
 
-			if (!rs.next())
+			if (rs.next())
 			{
-				sql = "INSERT INTO " + TABLE_PREFERENCES + " VALUES('" + userId + "','" + siteId + "','" + preferences.getEmailFrequency() + "')";
+				String sql = "UPDATE " + TABLE_PREFERENCES + " SET " + EMAIL_FREQUENCY + " = ? WHERE " + USER_ID + " = ? AND " + SITE_ID + " = ?";
+				st = connection.prepareStatement(sql);
+				st.setString(1,preferences.getEmailFrequency());
+				st.setString(2,userId);
+				st.setString(3,siteId);
+			}
+			else
+			{
+				String sql = "INSERT INTO " + TABLE_PREFERENCES + " (" + USER_ID + "," + SITE_ID + "," + EMAIL_FREQUENCY + ") VALUES(?,?,?)";
+				st = connection.prepareStatement(sql);
+				st.setString(1,userId);
+				st.setString(2,siteId);
+				st.setString(3,preferences.getEmailFrequency());
 			}
 
 			rs.close();
+			
+			return st;
 		}
 		finally
 		{
-			if(st != null)
+			if(testST != null)
 			{
 				try
 				{
-					st.close();
+					testST.close();
 				}
 				catch(Exception e) {}
 			}
 		}
-
-		return sql;
 	}
 
 	public String getSelectAuthorStatement(String userId, String siteId)
