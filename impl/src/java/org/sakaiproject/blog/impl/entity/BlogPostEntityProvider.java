@@ -234,12 +234,10 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		
 		String siteId = (String) params.get("siteId");
 		
-		try
+		if(blogManager.deletePost(ref.getId()))
 		{
-			if(blogManager.deletePost(ref.getId()))
-				sakaiProxy.postEvent(BlogManager.BLOG_POST_DELETED,ref.getId(),siteId);
+			sakaiProxy.postEvent(BlogManager.BLOG_POST_DELETED,ref.getId(),siteId);
 		}
-		catch(Exception e) {}
 	}
 
 	@EntityCustomAction(action = "recycle", viewKey = EntityView.VIEW_SHOW)
@@ -251,9 +249,13 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
 		
 		if(blogManager.recyclePost(postId))
+		{
 			return "SUCCESS";
+		}
 		else
+		{
 			return "FAIL";
+		}
 	}
 	
 	@EntityCustomAction(action = "restore", viewKey = EntityView.VIEW_SHOW)
@@ -262,12 +264,18 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		String postId = ref.getId();
 		
 		if (postId == null)
+		{
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
+		}
 		
 		if(blogManager.restorePost(postId))
+		{
 			return "SUCCESS";
+		}
 		else
+		{
 			return "FAIL";
+		}
 	}
 
 	/**
@@ -283,7 +291,9 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 	 */
 	public String[] getEventKeys()
 	{
-		return EVENT_KEYS;
+		String[] temp = new String[EVENT_KEYS.length];
+		System.arraycopy(EVENT_KEYS, 0, temp, 0, EVENT_KEYS.length);
+		return temp;
 	}
 
 	/**

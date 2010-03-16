@@ -119,12 +119,13 @@ public class SQLGenerator implements ISQLGenerator
 		{
 			statement.append("(");
 
-			String[] visibilities = query.getVisibilities();
-			for (int i = 0; i < visibilities.length; i++)
+			List<String> visibilities = query.getVisibilities();
+			int length = visibilities.size();
+			for (int i = 0; i < length; i++)
 			{
-				statement.append(VISIBILITY).append("='").append(visibilities[i]).append("'");
+				statement.append(VISIBILITY).append("='").append(visibilities.get(i)).append("'");
 
-				if (i < (visibilities.length - 1))
+				if (i < (length - 1) )
 				{
 					statement.append(" OR ");
 				}
@@ -301,9 +302,7 @@ public class SQLGenerator implements ISQLGenerator
 				{
 					testST.close();
 				}
-				catch (Exception e)
-				{
-				}
+				catch (Exception e) {}
 			}
 		}
 
@@ -347,7 +346,6 @@ public class SQLGenerator implements ISQLGenerator
 		PreparedStatement st = connection.prepareStatement("UPDATE " + TABLE_POST + " SET " + VISIBILITY + " = '" + Visibilities.PRIVATE + "' WHERE " + POST_ID + " = ?");
 		st.setString(1, post.getId());
 		statements.add(st);
-		//statements.addAll(getAuthorTableStatements(post, true, connection));
 		return statements;
 
 	}
@@ -391,7 +389,9 @@ public class SQLGenerator implements ISQLGenerator
 				statements.add(postST);
 
 				if (post.isReady() || post.isPublic())
+				{
 					statements.addAll(getAuthorTableStatements(post, true, connection));
+				}
 			}
 			else
 			{
@@ -417,7 +417,8 @@ public class SQLGenerator implements ISQLGenerator
 				}
 
 				String currentVisibility = rs.getString(VISIBILITY);
-				testST.close();
+				
+				rs.close();
 
 				if (post.isReady() || post.isPublic())
 				{
@@ -445,9 +446,7 @@ public class SQLGenerator implements ISQLGenerator
 				{
 					testST.close();
 				}
-				catch (Exception e)
-				{
-				}
+				catch (Exception e) {}
 			}
 		}
 
@@ -515,9 +514,7 @@ public class SQLGenerator implements ISQLGenerator
 				{
 					testST.close();
 				}
-				catch (Exception e)
-				{
-				}
+				catch (Exception e) {}
 			}
 		}
 
@@ -554,6 +551,9 @@ public class SQLGenerator implements ISQLGenerator
 
 				statements.add(authorST);
 			}
+			
+			rs.close();
+			
 			PreparedStatement commentST = connection.prepareStatement("DELETE FROM " + TABLE_COMMENT + " WHERE " + COMMENT_ID + " = ?");
 			commentST.setString(1, commentId);
 			statements.add(commentST);
@@ -582,16 +582,34 @@ public class SQLGenerator implements ISQLGenerator
 	{
 		String userId = preferences.getUserId();
 		String siteId = preferences.getSiteId();
+		
 		String sql = "UPDATE " + TABLE_PREFERENCES + " SET " + EMAIL_FREQUENCY + " = '" + preferences.getEmailFrequency() + "' WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'";
 
-		Statement st = connection.createStatement();
-		ResultSet rs = st.executeQuery("SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'");
+		Statement st = null;
+		
+		try
+		{
+			st = connection.createStatement();
+			ResultSet rs = st.executeQuery("SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'");
 
-		if (!rs.next())
-			sql = "INSERT INTO " + TABLE_PREFERENCES + " VALUES('" + userId + "','" + siteId + "','" + preferences.getEmailFrequency() + "')";
+			if (!rs.next())
+			{
+				sql = "INSERT INTO " + TABLE_PREFERENCES + " VALUES('" + userId + "','" + siteId + "','" + preferences.getEmailFrequency() + "')";
+			}
 
-		rs.close();
-		st.close();
+			rs.close();
+		}
+		finally
+		{
+			if(st != null)
+			{
+				try
+				{
+					st.close();
+				}
+				catch(Exception e) {}
+			}
+		}
 
 		return sql;
 	}

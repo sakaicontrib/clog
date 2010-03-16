@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.sakaiproject.blog.api.BlogManager;
 import org.sakaiproject.blog.api.BlogMember;
-import org.sakaiproject.blog.api.QueryBean;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.entityprovider.CoreEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
@@ -52,33 +51,17 @@ public class BlogAuthorEntityProvider implements CoreEntityProvider, AutoRegiste
 		}
 	}
 
+	/**
+	 * No intention of implementing this. Forced to due to the fact that
+	 * CollectionsResolvable extends Resolvable
+	 */
 	public Object getEntity(EntityReference ref)
 	{
 		if(LOG.isDebugEnabled()) LOG.debug("getEntity(" + ref.getId() + ")");
-
-		String id = ref.getId();
 		
-		if (id == null || "".equals(id))
-	         return new BlogMember();
-		  
-		BlogMember author = null;
+		LOG.warn("getEntity is unimplemented. Returning null ...");
 		
-		try
-		{
-			//author = blogManager.getAuthor(id);
-		}
-		catch (Exception e)
-		{
-			LOG.error("Caught exception whilst getting author.",e);
-		}
-
-		if (author == null) {
-			throw new IllegalArgumentException("Author not found");
-		}
-		
-		// TODO: Security !!!!
-		
-		return author;
+		return null;
 	}
 
 	public Object getSampleEntity()
@@ -110,8 +93,6 @@ public class BlogAuthorEntityProvider implements CoreEntityProvider, AutoRegiste
 		List<BlogMember> authors = new ArrayList<BlogMember>();
 		
 		Restriction locRes = search.getRestrictionByProperty(CollectionResolvable.SEARCH_LOCATION_REFERENCE);
-		
-		QueryBean query = new QueryBean();
 		
         if (locRes != null)
         {

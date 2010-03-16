@@ -32,8 +32,11 @@ public class SakaiProxy
         if (ComponentManager.CACHE_COMPONENTS)
         {
             if (m_instance == null)
+            {
                 m_instance = (org.sakaiproject.blog.api.SakaiProxy) ComponentManager
                         .get(org.sakaiproject.blog.api.SakaiProxy.class);
+            }
+            
             return m_instance;
         }
         else

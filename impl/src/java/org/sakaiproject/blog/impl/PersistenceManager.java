@@ -51,7 +51,9 @@ public class PersistenceManager
 		if (sakaiProxy.isAutoDDL())
 		{
 			if(!setupTables())
+			{
 				logger.error("Failed to setup the tables");
+			}
 		}
 	}
 
@@ -65,7 +67,7 @@ public class PersistenceManager
 
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			boolean oldAutoCommitFlag = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 			
@@ -104,10 +106,10 @@ public class PersistenceManager
 				{
 					statement.close();
 				}
-				catch (SQLException e) {}
+				catch (Exception e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		
 		return false;
@@ -123,7 +125,7 @@ public class PersistenceManager
 
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			statement = connection.createStatement();
 			String sql = sqlGenerator.getSelectPost(OID);
 			ResultSet rs = statement.executeQuery(sql);
@@ -142,7 +144,7 @@ public class PersistenceManager
 				catch (SQLException e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 	}
 
@@ -163,7 +165,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery(sqlGenerator.getSelectAllPost(placementId));
 			result = transformResultSetInPostCollection(rs, connection);
@@ -177,10 +179,10 @@ public class PersistenceManager
 				{
 					statement.close();
 				}
-				catch (SQLException e) {}
+				catch (Exception e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 
 		return result;
@@ -193,7 +195,7 @@ public class PersistenceManager
 
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			boolean oldAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 
@@ -236,7 +238,7 @@ public class PersistenceManager
 				}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		
 		return false;
@@ -249,7 +251,7 @@ public class PersistenceManager
 
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			boolean oldAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 
@@ -292,7 +294,7 @@ public class PersistenceManager
 				}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		
 		return false;
@@ -307,7 +309,7 @@ public class PersistenceManager
 
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			boolean oldAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 
@@ -352,7 +354,7 @@ public class PersistenceManager
 				}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		
 		return false;
@@ -368,7 +370,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			boolean oldAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 			
@@ -411,7 +413,7 @@ public class PersistenceManager
 				}
 			}
 
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		
 		return false;
@@ -427,7 +429,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			boolean oldAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 
@@ -468,7 +470,7 @@ public class PersistenceManager
 				}
 			}
 
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		
 		return false;
@@ -484,7 +486,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			boolean oldAutoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
 
@@ -525,7 +527,7 @@ public class PersistenceManager
 				}
 			}
 
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		
 		return false;
@@ -540,7 +542,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			st = connection.createStatement();
 			List<String> sqlStatements = sqlGenerator.getSelectStatementsForQuery(query);
 			for (String sql : sqlStatements)
@@ -561,7 +563,7 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 
 		return posts;
@@ -576,7 +578,7 @@ public class PersistenceManager
 		Statement st = null;
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			st = connection.createStatement();
 			String sql = sqlGenerator.getSelectPost(postId);
 			ResultSet rs = st.executeQuery(sql);
@@ -601,7 +603,7 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 	}
 
@@ -697,26 +699,6 @@ public class PersistenceManager
 		return result;
 	}
 
-	private void releaseConnection(Connection connection)
-	{
-		if (logger.isDebugEnabled())
-			logger.debug("releaseConnection()");
-
-		try
-		{
-			sakaiProxy.returnConnection(connection);
-		}
-		catch (Exception e) {}
-	}
-
-	private Connection getConnection() throws Exception
-	{
-		if (logger.isDebugEnabled())
-			logger.debug("getConnection()");
-
-		return sakaiProxy.borrowConnection();
-	}
-
 	public void setSakaiProxy(SakaiProxy sakaiProxy)
 	{
 		this.sakaiProxy = sakaiProxy;
@@ -737,7 +719,7 @@ public class PersistenceManager
 
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			publicST = connection.createStatement();
 			countST = connection.createStatement();
 			String sql = sqlGenerator.getSelectPublicBloggers();
@@ -786,7 +768,7 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 		return members;
 	}
@@ -803,7 +785,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			st = connection.createStatement();
 			String sql = sqlGenerator.getSelectPreferencesStatement(userId, siteId);
 			ResultSet rs = st.executeQuery(sql);
@@ -831,7 +813,7 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 
 		return preferences;
@@ -844,7 +826,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			st = connection.createStatement();
 			String sql = sqlGenerator.getSavePreferencesStatement(preferences, connection);
 			st.executeUpdate(sql);
@@ -866,7 +848,7 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 	}
 
@@ -877,7 +859,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			st = connection.createStatement();
 			String sql = sqlGenerator.getSelectPost(postId);
 			ResultSet rs = st.executeQuery(sql);
@@ -896,7 +878,7 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
 		}
 	}
 
@@ -907,7 +889,7 @@ public class PersistenceManager
 		
 		try
 		{
-			connection = getConnection();
+			connection = sakaiProxy.borrowConnection();
 			st = connection.createStatement();
 			String sql = sqlGenerator.getSelectAuthorStatement(author.getUserId(),siteId);
 			ResultSet rs = st.executeQuery(sql);
@@ -940,7 +922,168 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 			
-			releaseConnection(connection);
+			sakaiProxy.returnConnection(connection);
+		}
+	}
+
+	public boolean importPreviousBlogData()
+	{
+		Connection connection = null;
+		Statement postST = null;
+		Statement postElementST = null;
+		Statement elementST = null;
+		Statement commentST = null;
+		
+		try
+		{
+			connection = sakaiProxy.borrowConnection();
+			postST = connection.createStatement();
+			postElementST = connection.createStatement();
+			elementST = connection.createStatement();
+			ResultSet rs = postST.executeQuery("SELECT * FROM BLOG_POST");
+			if(rs.next())
+			{
+				Post post = new Post();
+
+				String postId = rs.getString(ISQLGenerator.POST_ID);
+				post.setId(postId);
+				
+				String siteId = rs.getString(ISQLGenerator.SITE_ID);
+				post.setSiteId(siteId);
+
+				String title = rs.getString(ISQLGenerator.TITLE);
+				post.setTitle(title);
+
+				Date postCreatedDate = rs.getTimestamp(ISQLGenerator.CREATED_DATE);
+				post.setCreatedDate(postCreatedDate.getTime());
+
+				Date postModifiedDate = rs.getTimestamp(ISQLGenerator.MODIFIED_DATE);
+				post.setModifiedDate(postModifiedDate.getTime());
+
+				String postCreatorId = rs.getString(ISQLGenerator.CREATOR_ID);
+				post.setCreatorId(postCreatorId);
+				
+				String keywords = rs.getString(ISQLGenerator.KEYWORDS);
+				post.setKeywords(keywords);
+
+				int allowComments = rs.getInt(ISQLGenerator.ALLOW_COMMENTS);
+				post.setCommentable(allowComments == 1);
+				
+				String visibility = rs.getString(ISQLGenerator.VISIBILITY);
+				post.setVisibility(visibility);
+				
+				String shortText = rs.getString("SHORT_TEXT");
+				
+				String collectedMarkup = shortText;
+				
+				ResultSet postElementRS = postElementST.executeQuery("SELECT * FROM BLOG_POST_ELEMENT WHERE POST_ID = '" + post.getId() + "' ORDER BY POSITION");
+				while(postElementRS.next())
+				{
+					String elementId = postElementRS.getString("ELEMENT_ID");
+					String elementType = postElementRS.getString("ELEMENT_TYPE");
+					String displayName = postElementRS.getString("DISPLAY_NAME");
+					
+					if("PARAGRAPH".equals(elementType))
+					{
+						ResultSet elementRS = elementST.executeQuery("SELECT CONTENT FROM BLOG_PARAGRAPH WHERE PARAGRAPH_ID = '" + elementId + "'");
+						if(!elementRS.next())
+						{
+							logger.error("Inconsistent Database: No paragraph element found for post element with id '" + elementId + "'. Skipping this element ...");
+							continue;
+						}
+						
+						String content = elementRS.getString("CONTENT");
+						collectedMarkup += content;
+						elementRS.close();
+					}
+					else if("LINK".equals(elementType))
+					{
+						ResultSet elementRS = elementST.executeQuery("SELECT URL FROM BLOG_LINK WHERE LINK_ID = '" + elementId + "'");
+						if(!elementRS.next())
+						{
+							logger.error("Inconsistent Database: No link element found for post element with id '" + elementId + "'. Skipping this element ...");
+							continue;
+						}
+						
+						String href = elementRS.getString("URL");
+						String link = "<a href=\"" + href + "\">" + displayName + "</a>";
+						collectedMarkup += link;
+						elementRS.close();
+					}
+				} // while(postElementRS.next())
+				
+				postElementRS.close();
+				
+				ResultSet commentRS = commentST.executeQuery("SELECT * FROM BLOG_COMMENT WHERE POST_ID = '" + post.getId() + "'");
+				
+				while(commentRS.next())
+				{
+					Comment comment = new Comment();
+					
+					String creatorId = commentRS.getString(ISQLGenerator.CREATOR_ID);
+					comment.setCreatorId(creatorId);
+					Date commentCreatedDate = commentRS.getTimestamp(ISQLGenerator.CREATED_DATE);
+					comment.setCreatedDate(commentCreatedDate.getTime());
+
+					Date commentModifiedDate = commentRS.getTimestamp(ISQLGenerator.MODIFIED_DATE);
+					comment.setModifiedDate(commentModifiedDate.getTime());
+					
+					String content = commentRS.getString("CONTENT");
+					comment.setContent(content);
+					
+					post.addComment(comment);
+				} // while(commentRS.next())
+				
+				commentRS.close();
+			}
+			
+			rs.close();
+			
+			return true;
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
+		finally
+		{
+			if(postST != null)
+			{
+				try
+				{
+					postST.close();
+				}
+				catch (Exception e) {}
+			}
+			
+			if(postElementST != null)
+			{
+				try
+				{
+					postElementST.close();
+				}
+				catch (Exception e) {}
+			}
+			
+			if(elementST != null)
+			{
+				try
+				{
+					elementST.close();
+				}
+				catch (Exception e) {}
+			}
+			
+			if(commentST != null)
+			{
+				try
+				{
+					commentST.close();
+				}
+				catch (Exception e) {}
+			}
+			
+			sakaiProxy.returnConnection(connection);
 		}
 	}
 }

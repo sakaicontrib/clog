@@ -17,13 +17,14 @@
 
 package org.sakaiproject.blog.api;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class QueryBean implements Serializable
+public class QueryBean
 {
 	private String _queryString;
 
-	private String[] visibilities;
+	private List<String> visibilities;
 
 	private long _initDate;
 
@@ -37,7 +38,7 @@ public class QueryBean implements Serializable
 
 	public QueryBean()
 	{
-		visibilities = new String[] {}; // this mean no filter by visibility
+		visibilities = new ArrayList<String>(); // this mean no filter by visibility
 		_initDate = -1; // this mean no filter by initDate;
 		_endDate = -1; // this mean no filter by endDate
 		_user = "";
@@ -47,7 +48,7 @@ public class QueryBean implements Serializable
 
 	public boolean hasConditions()
 	{
-		return siteId.length() > 0 || visibilities.length > 0 || _initDate != -1 || _endDate != -1;
+		return siteId.length() > 0 || visibilities.size() > 0 || _initDate != -1 || _endDate != -1;
 	}
 
 	public void setQueryString(String queryString)
@@ -67,15 +68,20 @@ public class QueryBean implements Serializable
 
 	public boolean queryByVisibility()
 	{
-		return visibilities.length > 0;
+		return visibilities.size() > 0;
 	}
 
 	public void setVisibilities(String[] visibilities)
 	{
-		this.visibilities = visibilities;
+		this.visibilities.clear();
+		
+		for(String v : visibilities)
+		{
+			this.visibilities.add(v);
+		}
 	}
 
-	public String[] getVisibilities()
+	public List<String> getVisibilities()
 	{
 		return visibilities;
 	}

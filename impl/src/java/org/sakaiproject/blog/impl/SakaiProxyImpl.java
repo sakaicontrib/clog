@@ -57,7 +57,7 @@ import org.sakaiproject.blog.api.BlogMember;
 public class SakaiProxyImpl implements SakaiProxy
 {
 	private Logger logger = Logger.getLogger(SakaiProxyImpl.class);
-	
+
 	private ToolManager toolManager;
 
 	private SessionManager sessionManager;
@@ -69,32 +69,36 @@ public class SakaiProxyImpl implements SakaiProxy
 	private SiteService siteService;
 
 	private AuthenticationManager authenticationManager;
-	
+
 	private SecurityService securityService;
-	
+
 	private UserDirectoryService userDirectoryService;
-	
+
 	private ContentHostingService contentHostingService;
-	
+
 	private EntityManager entityManager;
-	
+
 	private SqlService sqlService;
-	
+
 	private FunctionManager functionManager;
-	
+
 	private EventTrackingService eventTrackingService;
-	
+
 	private EmailService emailService;
-	
+
 	private DigestService digestService;
-	
+
 	/** Inject this in your components.xml */
 	private String fromAddress = "sakai-blog@sakai.lancs.ac.uk";
-	
-	public void init() {}
-	
-	public void destroy() {}
-	
+
+	public void init()
+	{
+	}
+
+	public void destroy()
+	{
+	}
+
 	public String getCurrentSiteId()
 	{
 		return toolManager.getCurrentPlacement().getContext(); // equivalent to PortalService.getCurrentSiteId();
@@ -107,22 +111,22 @@ public class SakaiProxyImpl implements SakaiProxy
 		String userId = session.getUserId();
 		return userId;
 	}
-	
+
 	public Connection borrowConnection() throws SQLException
 	{
 		return sqlService.borrowConnection();
 	}
-	
+
 	public void returnConnection(Connection connection)
 	{
 		sqlService.returnConnection(connection);
 	}
-	
+
 	public String getCurrentUserDisplayName()
 	{
 		return getDisplayNameForTheUser(getCurrentUserId());
 	}
-	
+
 	public String getVendor()
 	{
 		return sqlService.getVendor();
@@ -133,7 +137,6 @@ public class SakaiProxyImpl implements SakaiProxy
 		try
 		{
 			User sakaiUser = userDirectoryService.getUser(userId);
-			//return sakaiUser.getFirstName() + " " + sakaiUser.getLastName();
 			return sakaiUser.getDisplayName();
 		}
 		catch (Exception e)
@@ -155,36 +158,36 @@ public class SakaiProxyImpl implements SakaiProxy
 		}
 
 	}
-	
-    public boolean isMaintainer(String userId,String siteId)
-    {
-    	try
-    	{
-    		if(userId == null || siteId == null)
-    			return false;
-    		
-    		Site site = siteService.getSite(siteId);
-    		AuthzGroup realm = authzGroupService.getAuthzGroup(site.getReference());
-    		User sakaiUser = userDirectoryService.getUser(userId);
-    		Role r = realm.getUserRole(sakaiUser.getId());
-    		if(r.getId().equals(realm.getMaintainRole())) // This bit could be wrong
-    			return true;
-    		else
-    			return false;
-    		
-    	}
-    	catch (Exception e)
-    	{
-    		e.printStackTrace();
-    		return false;
-    	} 
-    }
+
+	public boolean isMaintainer(String userId, String siteId)
+	{
+		try
+		{
+			if (userId == null || siteId == null)
+				return false;
+
+			Site site = siteService.getSite(siteId);
+			AuthzGroup realm = authzGroupService.getAuthzGroup(site.getReference());
+			User sakaiUser = userDirectoryService.getUser(userId);
+			Role r = realm.getUserRole(sakaiUser.getId());
+			if (r.getId().equals(realm.getMaintainRole())) // This bit could be wrong
+				return true;
+			else
+				return false;
+
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	public boolean isCurrentUserMaintainer(String siteId)
 	{
-		return isMaintainer(getCurrentUserId(),siteId);
+		return isMaintainer(getCurrentUserId(), siteId);
 	}
-	
+
 	public boolean isCurrentUserAdmin()
 	{
 		String userId = getCurrentUserId();
@@ -203,7 +206,7 @@ public class SakaiProxyImpl implements SakaiProxy
 		{
 			user = userDirectoryService.getUser(memberId);
 			BlogMember member = new BlogMember(user);
-		
+
 			return member;
 		}
 		catch (UserNotDefinedException e)
@@ -242,7 +245,7 @@ public class SakaiProxyImpl implements SakaiProxy
 	{
 		return authzGroupService;
 	}
-	
+
 	public boolean isAutoDDL()
 	{
 		String autoDDL = serverConfigurationService.getString("auto.ddl");
@@ -250,12 +253,8 @@ public class SakaiProxyImpl implements SakaiProxy
 	}
 
 	/*
-	public List<String> getEidMaintainerSiteMembers()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-	*/
+	 * public List<String> getEidMaintainerSiteMembers() { // TODO Auto-generated method stub return null; }
+	 */
 
 	public List<BlogMember> getSiteMembers(String siteId)
 	{
@@ -272,9 +271,9 @@ public class SakaiProxyImpl implements SakaiProxy
 					BlogMember member = new BlogMember(sakaiUser);
 					result.add(member);
 				}
-				catch(UserNotDefinedException unde)
+				catch (UserNotDefinedException unde)
 				{
-					logger.error("Failed to get site member details",unde);
+					logger.error("Failed to get site member details", unde);
 				}
 			}
 		}
@@ -282,31 +281,20 @@ public class SakaiProxyImpl implements SakaiProxy
 		{
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
-	
-	private void enableSecurityAdvisor()
-    {
-        registerSecurityAdvisor(new SecurityAdvisor()
-        {
-            public SecurityAdvice isAllowed(String userId, String function, String reference)
-            {
-                return SecurityAdvice.ALLOWED;
-            }
-        });
-    }
-	
+
 	public String getPortalUrl()
 	{
 		return serverConfigurationService.getPortalUrl();
 	}
-	
+
 	public String getServerUrl()
 	{
 		return serverConfigurationService.getServerUrl();
 	}
-	
+
 	public String getAccessUrl()
 	{
 		return serverConfigurationService.getAccessUrl();
@@ -379,7 +367,7 @@ public class SakaiProxyImpl implements SakaiProxy
 
 	public void deleteResources(String[] resourceIds)
 	{
-		for(String resourceId : resourceIds)
+		for (String resourceId : resourceIds)
 		{
 			try
 			{
@@ -409,14 +397,14 @@ public class SakaiProxyImpl implements SakaiProxy
 
 	public boolean isOnGateway()
 	{
-        return "!gateway".equals(getCurrentSiteId());
+		return "!gateway".equals(getCurrentSiteId());
 	}
 
 	public void registerFunction(String function)
 	{
 		List functions = functionManager.getRegisteredFunctions("blog.");
-		
-		if(!functions.contains(function))
+
+		if (!functions.contains(function))
 			functionManager.registerFunction(function);
 	}
 
@@ -429,30 +417,24 @@ public class SakaiProxyImpl implements SakaiProxy
 	{
 		return functionManager;
 	}
-	
-	private AuthzGroup getAuthzGroupOfCurrentSite() throws Exception
-	{
-		Site site = siteService.getSite(getCurrentSiteId());
-		return authzGroupService.getAuthzGroup(site.getReference());
-	}
 
-	public boolean isAllowedFunction(String function,String siteId)
+	public boolean isAllowedFunction(String function, String siteId)
 	{
 		try
 		{
 			Site site = siteService.getSite(siteId);
 			Role r = site.getUserRole(getCurrentUserId());
-			
-			if(r == null)
+
+			if (r == null)
 				return false;
-			
+
 			return r.isAllowed(function);
 		}
 		catch (Exception e)
 		{
-			logger.error("Caught exception while performing function test",e);
+			logger.error("Caught exception while performing function test", e);
 		}
-		
+
 		return false;
 	}
 
@@ -497,7 +479,7 @@ public class SakaiProxyImpl implements SakaiProxy
 	public void allowFunction(String string, String blogPostCreate)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public boolean currentSiteHasRole(String string)
@@ -505,24 +487,25 @@ public class SakaiProxyImpl implements SakaiProxy
 		return false;
 	}
 
-    public Reference newReference(String reference)
-    {
-        return entityManager.newReference(reference);
-    }
+	public Reference newReference(String reference)
+	{
+		return entityManager.newReference(reference);
+	}
 
 	public void sendEmailWithMessage(String user, String subject, String message)
 	{
 		Set<String> users = new HashSet<String>(1);
 		users.add(user);
 		sendEmailWithMessage(users, subject, message);
-		
+
 	}
-	public void sendEmailWithMessage(Set<String> users, String subject,String message)
+
+	public void sendEmailWithMessage(Set<String> users, String subject, String message)
 	{
 		sendEmailToParticipants(fromAddress, users, subject, message);
 	}
-	
-	public void addDigestMessage(String userId,String subject, String message)
+
+	public void addDigestMessage(String userId, String subject, String message)
 	{
 		try
 		{
@@ -530,13 +513,13 @@ public class SakaiProxyImpl implements SakaiProxy
 		}
 		catch (Exception e)
 		{
-			logger.error("Failed to add message to digest.",e);
+			logger.error("Failed to add message to digest.", e);
 		}
 	}
-	
-	public void addDigestMessage(Set<String> users,String subject, String message)
+
+	public void addDigestMessage(Set<String> users, String subject, String message)
 	{
-		for(String userId : users)
+		for (String userId : users)
 		{
 			try
 			{
@@ -544,9 +527,9 @@ public class SakaiProxyImpl implements SakaiProxy
 			}
 			catch (Exception e)
 			{
-				logger.error("Failed to add message to digest.",e);
+				logger.error("Failed to add message to digest.", e);
 			}
-			}
+		}
 	}
 
 	public void setEmailService(EmailService emailService)
@@ -558,7 +541,7 @@ public class SakaiProxyImpl implements SakaiProxy
 	{
 		return emailService;
 	}
-	
+
 	private void sendEmailToParticipants(String from, Set<String> to, String subject, String text)
 	{
 		class EmailSender implements Runnable
@@ -579,47 +562,41 @@ public class SakaiProxyImpl implements SakaiProxy
 				this.participants = to;
 				this.text = text;
 				this.subject = subject;
-				runner = new Thread(this,"Blog Emailer Thread");
+				runner = new Thread(this, "Blog Emailer Thread");
 				runner.start();
 			}
 
 			public synchronized void run()
 			{
-				try
+				String emailText = "<html><body>";
+				emailText += text;
+				emailText += "</body></html>";
+
+				List<String> additionalHeader = new ArrayList<String>();
+				additionalHeader.add("Content-Type: text/html; charset=ISO-8859-1");
+				// aditionalHeader.add("Content-Type: text/html; charset=UTF-8");
+
+				String emailSender = getEmailForTheUser(sender);
+				if (emailSender == null || emailSender.trim().equals(""))
+					emailSender = getDisplayNameForTheUser(sender);
+
+				for (String userId : participants)
 				{
-					String emailText = "<html><body>";
-					emailText += text;
-					emailText += "</body></html>";
-
-					List<String> additionalHeader = new ArrayList<String>();
-					additionalHeader.add("Content-Type: text/html; charset=ISO-8859-1");
-					//aditionalHeader.add("Content-Type: text/html; charset=UTF-8");
-
-					String emailSender = getEmailForTheUser(sender);
-					if (emailSender == null || emailSender.trim().equals("")) emailSender = getDisplayNameForTheUser(sender);
-
-					for (String userId : participants)
+					String emailParticipant = getEmailForTheUser(userId);
+					try
 					{
-						String emailParticipant = getEmailForTheUser(userId);
-						try
-						{
-							// TODO: This should all be parameterised and internationalised.
-							// logger.info("Sending email to " + participantId + " ...");
-							emailService.send(emailSender, emailParticipant, subject, emailText, emailParticipant/*participantEid*/, sender, additionalHeader);
-						}
-						catch (Exception e)
-						{
-							System.out.println("Failed to send email to '" + userId + "'. Message: " + e.getMessage());
-						}
+						// TODO: This should all be parameterised and internationalised.
+						// logger.info("Sending email to " + participantId + " ...");
+						emailService.send(emailSender, emailParticipant, subject, emailText, emailParticipant/* participantEid */, sender, additionalHeader);
 					}
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
+					catch (Exception e)
+					{
+						System.out.println("Failed to send email to '" + userId + "'. Message: " + e.getMessage());
+					}
 				}
 			}
 		}
-		
+
 		new EmailSender(from, to, subject, text);
 	}
 
@@ -647,22 +624,14 @@ public class SakaiProxyImpl implements SakaiProxy
 	{
 		return securityService;
 	}
-	
-	public void postEvent(String event,String entityId,String siteId)
+
+	public void postEvent(String event, String entityId, String siteId)
 	{
-		eventTrackingService.post(
-				eventTrackingService.newEvent(
-					event,
-					entityId,
-					siteId,
-					true,
-					NotificationService.NOTI_OPTIONAL)
-		);
+		eventTrackingService.post(eventTrackingService.newEvent(event, entityId, siteId, true, NotificationService.NOTI_OPTIONAL));
 	}
 
 	public Set<String> getSiteUsers(String siteId)
 	{
-		ArrayList<BlogMember> result = new ArrayList<BlogMember>();
 		try
 		{
 			Site site = siteService.getSite(siteId);
@@ -672,7 +641,7 @@ public class SakaiProxyImpl implements SakaiProxy
 		{
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -690,13 +659,13 @@ public class SakaiProxyImpl implements SakaiProxy
 	{
 		try
 		{
-    		return siteService.getSite(siteId).getTitle();
+			return siteService.getSite(siteId).getTitle();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-			logger.error("Caught exception whilst getting site title",e);
+			logger.error("Caught exception whilst getting site title", e);
 		}
-		
+
 		return "";
 	}
 
@@ -708,7 +677,7 @@ public class SakaiProxyImpl implements SakaiProxy
 			ToolConfiguration tc = site.getToolForCommonId("blog2");
 			return tc.getPageId();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return "";
 		}
@@ -722,7 +691,7 @@ public class SakaiProxyImpl implements SakaiProxy
 			ToolConfiguration tc = site.getToolForCommonId("blog2");
 			return tc.getId();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			return "";
 		}

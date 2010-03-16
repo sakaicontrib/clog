@@ -36,7 +36,7 @@ public class BlogManagerImpl implements BlogManager
 	private BlogSecurityManager securityManager;
 
 	private SakaiProxy sakaiProxy;
-	
+
 	private boolean importBlog1Data = false;
 
 	public void init()
@@ -63,9 +63,12 @@ public class BlogManagerImpl implements BlogManager
 		logger.info("Registered Blog functions ...");
 
 		sakaiProxy.registerEntityProducer(this);
-		
+
 		persistenceManager = new PersistenceManager(sakaiProxy);
-		
+
+		if (importBlog1Data)
+			persistenceManager.importPreviousBlogData();
+
 		securityManager = new BlogSecurityManager(sakaiProxy);
 	}
 
@@ -135,24 +138,7 @@ public class BlogManagerImpl implements BlogManager
 	{
 		try
 		{
-			boolean newComment = "".equals(comment.getId());
-
-			Post post = getPost(comment.getPostId());
-
-			if (persistenceManager.saveComment(comment) && newComment)
-			{
-				/*
-				 * String portalUrl = sakaiProxy.getPortalUrl(); String siteId = post.getSiteId(); String pageId = sakaiProxy.getCurrentPageId(); String toolId = sakaiProxy.getCurrentToolId();
-				 * 
-				 * String url = portalUrl + "/site/" + siteId + "/page/" + pageId + "?toolstate-" + toolId +
-				 * "=%2Fhome%3Fwicket%3AbookmarkablePage%3D%3Aorg.sakaiproject.blog.tool.pages.PostPage%26postId%3D" + comment.getPostId();
-				 * 
-				 * sakaiProxy.sendEmailWithMessage(post.getCreatorId(), "New/Updated Blog Comment", sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()) + " commented on your post, titled '<a
-				 * href=\"" + url + "\">" + post.getTitle() + "</a>'<br /><br />'<i>" + comment.getContent() + "</i>'");
-				 */
-
-				return true;
-			}
+			return persistenceManager.saveComment(comment);
 		}
 		catch (Exception e)
 		{
@@ -188,15 +174,10 @@ public class BlogManagerImpl implements BlogManager
 
 			if (securityManager.canCurrentUserDeletePost(post))
 			{
-				try
+				if (persistenceManager.recyclePost(post))
 				{
-					persistenceManager.recyclePost(post);
 					post.setVisibility(Visibilities.RECYCLED);
 					return true;
-				}
-				catch (Exception e)
-				{
-					logger.error("The persistence manager threw an Exception whilst recycling post '" + postId + "'");
 				}
 			}
 		}
@@ -286,40 +267,31 @@ public class BlogManagerImpl implements BlogManager
 
 		StringBuilder results = new StringBuilder();
 
-		try
+		int postCount = 0;
+
+		NodeList postNodes = root.getElementsByTagName(XmlDefs.POST);
+		final int numberPosts = postNodes.getLength();
+
+		for (int i = 0; i < numberPosts; i++)
 		{
-
-			int postCount = 0;
-
-			NodeList postNodes = root.getElementsByTagName(XmlDefs.POST);
-			final int numberPosts = postNodes.getLength();
-
-			for (int i = 0; i < numberPosts; i++)
+			Node child = postNodes.item(i);
+			if (child.getNodeType() != Node.ELEMENT_NODE)
 			{
-				Node child = postNodes.item(i);
-				if (child.getNodeType() != Node.ELEMENT_NODE)
-				{
-					// Problem
-					continue;
-				}
-
-				Element postElement = (Element) child;
-
-				Post post = new Post();
-				post.fromXml(postElement);
-				post.setSiteId(siteId);
-
-				savePost(post);
-				postCount++;
+				// Problem
+				continue;
 			}
 
-			results.append("Stored " + postCount + " posts.");
+			Element postElement = (Element) child;
 
+			Post post = new Post();
+			post.fromXml(postElement);
+			post.setSiteId(siteId);
+
+			savePost(post);
+			postCount++;
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+
+		results.append("Stored " + postCount + " posts.");
 
 		return results.toString();
 	}

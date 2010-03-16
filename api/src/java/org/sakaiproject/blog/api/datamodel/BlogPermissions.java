@@ -1,8 +1,6 @@
 package org.sakaiproject.blog.api.datamodel;
 
-import java.io.Serializable;
-
-public class BlogPermissions implements Serializable
+public class BlogPermissions
 {
 	private String role;
 	private boolean postCreate;
