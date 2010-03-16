@@ -395,6 +395,19 @@ public class SQLGenerator implements ISQLGenerator
 			}
 			else
 			{
+				testST = connection.createStatement();
+				ResultSet rs = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + post.getId() + "'");
+				
+				if (!rs.next())
+				{
+					rs.close();
+					throw new Exception("Failed to get data for post '" + post.getId() + "'");
+				}
+				
+				String currentVisibility = rs.getString(VISIBILITY);
+				
+				rs.close();
+				
 				String sql = "UPDATE " + TABLE_POST + " " + "SET " + TITLE + " = ?," + CONTENT + " = ?," + VISIBILITY + " = ?," + MODIFIED_DATE + " = ?," + ALLOW_COMMENTS + " = ? WHERE " + POST_ID + " = ?";
 
 				PreparedStatement postST = connection.prepareStatement(sql);
@@ -407,18 +420,6 @@ public class SQLGenerator implements ISQLGenerator
 				postST.setString(6, post.getId());
 
 				statements.add(postST);
-
-				testST = connection.createStatement();
-				ResultSet rs = testST.executeQuery("SELECT " + VISIBILITY + " FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + post.getId() + "'");
-
-				if (!rs.next())
-				{
-
-				}
-
-				String currentVisibility = rs.getString(VISIBILITY);
-				
-				rs.close();
 
 				if (post.isReady() || post.isPublic())
 				{
