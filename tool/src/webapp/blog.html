@@ -240,35 +240,21 @@ else
 			<div class="commentTotal" id="commentTotal">{if comments.length > 0}<a href="#" onclick="toggleComments('${id}');">{/if}${comments.length} Comment{if comments.length != 1}s{/if} {if comments.length > 0}(Click to show/hide)</a>{/if}</div>
 
 			<span id="${id}_comments" class="comments">
-				<table cellpadding="0" cellspacing="0" width="100%">
-					<thead>
-						<tr>
-							<td class="tdCommentHeader">Created</td>
-							<td class="tdCommentHeader">Modified</td>
-							<td class="tdCommentHeader">Creator</td>
-							<td class="tdCommentHeader">Comment</td>
-							<td class="tdCommentHeader">Options</td>
-						</tr>
-					</thead>
-					<tbody>
 					{for comment in comments}
-						<tr>
-							<td width="100px" class="tdComment">${new Date(comment.createdDate).toLocaleString()}</td>
-							<td width="100px" class="tdComment">${new Date(comment.modifiedDate).toLocaleString()}</td>
-							<td width="100px" class="tdComment">${comment.creatorDisplayName}</td>
-							<td class="tdComment">${comment.content}</td>
-							<td class="tdComment">
-								{if blogCurrentUserPermissions.commentDeleteAny || (blogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == blogUserId)}
-								<a href="#" onclick="return BlogUtils.deleteComment('${comment.id}');" title="${blog_delete_comment_tooltip}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
-								{/if}
-								{if blogCurrentUserPermissions.commentUpdateAny || (blogCurrentUserPermissions.commentUpdateOwn && comment.creatorId == blogUserId)}
-								<a href="#" onClick="switchState('createComment',{postId:'${id}',commentId:'${comment.id}'});" title="${blog_edit_comment_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
-								{/if}
-							</td>
-						</tr>
+					<div class="blog_comment">
+						<div style="overflow:auto; margin-bottom: 10px;">
+							<div style="float:left; margin-right: 10px;"><img src="/direct/profile/${comment.creatorId}/image" width="50"/></div>
+							<div style="float:left;"><span>${comment.creatorDisplayName}</span><br/><span class="blog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span><br/><span class="blog_comment_date">Modified: ${new Date(comment.modifiedDate).toLocaleString()}</span></div>
+						</div>
+						<div class="blog_comment_content">${comment.content}</div>
+						{if blogCurrentUserPermissions.commentDeleteAny || (blogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == blogCurrentUser.id)}
+							<a href="#" onclick="return BlogUtils.deleteComment('${comment.id}');" title="${blog_delete_comment_tooltip}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
+						{/if}
+						{if blogCurrentUserPermissions.commentUpdateAny || (blogCurrentUserPermissions.commentUpdateOwn && comment.creatorId == blogCurrentUser.id)}
+							<a href="#" onClick="switchState('createComment',{postId:'${id}',commentId:'${comment.id}'});" title="${blog_edit_comment_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
+						{/if}
+					</div>
 					{/for}
-					</tbody>
-				</table>
 			</span>
 		</div>
 	</div>
