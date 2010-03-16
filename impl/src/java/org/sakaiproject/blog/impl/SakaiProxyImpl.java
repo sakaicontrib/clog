@@ -390,11 +390,6 @@ public class SakaiProxyImpl implements SakaiProxy
 		return sqlService;
 	}
 
-	public String getResourceUrl(String resourceId)
-	{
-		return contentHostingService.getUrl(resourceId);
-	}
-
 	public boolean isOnGateway()
 	{
 		return "!gateway".equals(getCurrentSiteId());

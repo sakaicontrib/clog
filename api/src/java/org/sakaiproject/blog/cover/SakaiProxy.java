@@ -53,7 +53,6 @@ public class SakaiProxy
 		return sp.getAccessUrl();
 	}
 
-
 	public static String getPortalUrl()
 	{
 		org.sakaiproject.blog.api.SakaiProxy sp = getInstance();
