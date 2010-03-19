@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -322,7 +323,7 @@ public class PersistenceManager
 				
 				connection.commit();
 				
-				post.setModifiedDate(new Date().getTime());
+				//post.setModifiedDate(new Date().getTime());
 				
 				return true;
 			}
@@ -927,25 +928,38 @@ public class PersistenceManager
 
 	public boolean importPreviousBlogData()
 	{
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("Starting import of previous blog data ...");
+		}
+		
 		Connection connection = null;
 		Statement postST = null;
 		Statement postElementST = null;
 		Statement elementST = null;
 		Statement commentST = null;
 		
+		int numberImported = 0;
+		
 		try
 		{
 			connection = sakaiProxy.borrowConnection();
+			
 			postST = connection.createStatement();
 			postElementST = connection.createStatement();
 			elementST = connection.createStatement();
-			ResultSet rs = postST.executeQuery("SELECT * FROM BLOG_POST");
-			if(rs.next())
+			commentST = connection.createStatement();
+			
+			//ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p,BLOG_OPTIONS as o WHERE p.SITE_ID = o.SITE_ID AND o.BLOGMODE <> 'LEARNING_LOG'");
+			ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p");
+			while(rs.next())
 			{
+				boolean brokenPost = false;
+				
 				Post post = new Post();
 
 				String postId = rs.getString(ISQLGenerator.POST_ID);
-				post.setId(postId);
+				//post.setId(postId);
 				
 				String siteId = rs.getString(ISQLGenerator.SITE_ID);
 				post.setSiteId(siteId);
@@ -969,17 +983,21 @@ public class PersistenceManager
 				post.setCommentable(allowComments == 1);
 				
 				String visibility = rs.getString(ISQLGenerator.VISIBILITY);
+				
+				if("PUBLIC".equals(visibility))
+					visibility = "READY";
+				
 				post.setVisibility(visibility);
 				
 				String shortText = rs.getString("SHORT_TEXT");
 				
-				String collectedMarkup = shortText;
+				String collectedMarkup = "<i>" + shortText + "</i><br /><br />";
 				
-				ResultSet postElementRS = postElementST.executeQuery("SELECT * FROM BLOG_POST_ELEMENT WHERE POST_ID = '" + post.getId() + "' ORDER BY POSITION");
+				ResultSet postElementRS = postElementST.executeQuery("SELECT * FROM BLOG_POST_ELEMENT WHERE POST_ID = '" + postId + "' ORDER BY POSITION");
 				while(postElementRS.next())
 				{
 					String elementId = postElementRS.getString("ELEMENT_ID");
-					String elementType = postElementRS.getString("ELEMENT_TYPE");
+					String elementType = postElementRS.getString("ELEMENT_TYPE").trim();
 					String displayName = postElementRS.getString("DISPLAY_NAME");
 					
 					if("PARAGRAPH".equals(elementType))
@@ -987,7 +1005,8 @@ public class PersistenceManager
 						ResultSet elementRS = elementST.executeQuery("SELECT CONTENT FROM BLOG_PARAGRAPH WHERE PARAGRAPH_ID = '" + elementId + "'");
 						if(!elementRS.next())
 						{
-							logger.error("Inconsistent Database: No paragraph element found for post element with id '" + elementId + "'. Skipping this element ...");
+							logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No paragraph element found for post element with id '" + elementId + "'. Skipping this post ...");
+							brokenPost = true;
 							continue;
 						}
 						
@@ -1000,48 +1019,100 @@ public class PersistenceManager
 						ResultSet elementRS = elementST.executeQuery("SELECT URL FROM BLOG_LINK WHERE LINK_ID = '" + elementId + "'");
 						if(!elementRS.next())
 						{
-							logger.error("Inconsistent Database: No link element found for post element with id '" + elementId + "'. Skipping this element ...");
+							logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No link element found for post element with id '" + elementId + "'. Skipping this post ...");
+							brokenPost = true;
 							continue;
 						}
 						
 						String href = elementRS.getString("URL");
-						String link = "<a href=\"" + href + "\">" + displayName + "</a>";
+						String link = "<a href=\"" + href + "\">" + displayName + "</a><br /><br />";
 						collectedMarkup += link;
 						elementRS.close();
+					}
+					else if("IMAGE".equals(elementType))
+					{
+						ResultSet elementRS = elementST.executeQuery("SELECT * FROM BLOG_IMAGE WHERE IMAGE_ID = '" + elementId + "'");
+						if(!elementRS.next())
+						{
+							logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No image element found for post element with id '" + elementId + "'. Skipping this post ...");
+							brokenPost = true;
+							continue;
+						}
+						
+						String fullResourceId = elementRS.getString("FULL_RESOURCE_ID");
+						String webResourceId = elementRS.getString("WEB_RESOURCE_ID");
+						String fullUrl = sakaiProxy.getServerUrl() + "/access/content" + fullResourceId;
+						String webUrl = sakaiProxy.getServerUrl() + "/access/content" + webResourceId;
+						
+						String img = "<img src=\"" + webUrl + "\" onclick=\"window.open('"+ fullUrl + "','Full Image','width=400,height=300,status=no,resizable=yes,location=no,scrollbars=yes');\"/><br />";
+						
+						collectedMarkup += img;
+					}
+					else if("FILE".equals(elementType))
+					{
+						ResultSet elementRS = elementST.executeQuery("SELECT * FROM BLOG_FILE WHERE FILE_ID = '" + elementId + "'");
+						if(!elementRS.next())
+						{
+							logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No file element found for post element with id '" + elementId + "'. Skipping this post ...");
+							brokenPost = true;
+							continue;
+						}
+						
+						//String fileName = elementRS.getString("FILE_NAME");
+						String resourceId = elementRS.getString("RESOURCE_ID");
+						
+						String file = "<a href=\"" + sakaiProxy.getServerUrl() + "/access/content" + resourceId + "\">" + displayName + "</a><br /><br />";
+						
+						collectedMarkup += file;
 					}
 				} // while(postElementRS.next())
 				
 				postElementRS.close();
 				
-				ResultSet commentRS = commentST.executeQuery("SELECT * FROM BLOG_COMMENT WHERE POST_ID = '" + post.getId() + "'");
+				post.setContent(collectedMarkup);
 				
-				while(commentRS.next())
+				if(!brokenPost && savePost(post))
 				{
-					Comment comment = new Comment();
+					numberImported++;
 					
-					String creatorId = commentRS.getString(ISQLGenerator.CREATOR_ID);
-					comment.setCreatorId(creatorId);
-					Date commentCreatedDate = commentRS.getTimestamp(ISQLGenerator.CREATED_DATE);
-					comment.setCreatedDate(commentCreatedDate.getTime());
-
-					Date commentModifiedDate = commentRS.getTimestamp(ISQLGenerator.MODIFIED_DATE);
-					comment.setModifiedDate(commentModifiedDate.getTime());
-					
-					String content = commentRS.getString("CONTENT");
-					comment.setContent(content);
-					
-					post.addComment(comment);
-				} // while(commentRS.next())
+					ResultSet commentRS = commentST.executeQuery("SELECT * FROM BLOG_COMMENT WHERE POST_ID = '" + postId + "'");
 				
-				commentRS.close();
+					while(commentRS.next())
+					{
+						Comment comment = new Comment();
+					
+						String creatorId = commentRS.getString(ISQLGenerator.CREATOR_ID);
+						comment.setCreatorId(creatorId);
+						Date commentCreatedDate = commentRS.getTimestamp(ISQLGenerator.CREATED_DATE);
+						comment.setCreatedDate(commentCreatedDate.getTime());
+
+						Date commentModifiedDate = commentRS.getTimestamp(ISQLGenerator.MODIFIED_DATE);
+						comment.setModifiedDate(commentModifiedDate.getTime());
+					
+						String content = commentRS.getString("CONTENT");
+						comment.setContent(content);
+					
+						comment.setPostId(post.getId());
+					
+						saveComment(comment);
+					} // while(commentRS.next())
+				
+					commentRS.close();
+				}
 			}
 			
 			rs.close();
+			
+			if(logger.isDebugEnabled())
+			{
+				logger.debug("Finished import of previous blog data. " + numberImported + " posts imported.");
+			}
 			
 			return true;
 		}
 		catch(Exception e)
 		{
+			logger.error("Exception thrown whilst importing old blog data",e);
 			return false;
 		}
 		finally

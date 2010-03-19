@@ -548,4 +548,9 @@ public class BlogManagerImpl implements BlogManager
 	{
 		return importBlog1Data;
 	}
+
+	public void importPreviousBlogData()
+	{
+		persistenceManager.importPreviousBlogData();
+	}
 }

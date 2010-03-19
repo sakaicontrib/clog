@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class Comment
 {
-	private String id;
+	private String id = "";
     private String content = "";
     private long createdDate = -1L;
     private long modifiedDate = -1L;

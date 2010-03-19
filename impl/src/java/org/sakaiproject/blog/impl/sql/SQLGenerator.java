@@ -158,7 +158,7 @@ public class SQLGenerator implements ISQLGenerator
 		statement.append(TITLE + " " + VARCHAR + "(255) NOT NULL, ");
 		statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
 		statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL" + ", ");
-		statement.append(MODIFIED_DATE + " " + AUTO_TIMESTAMP + ", ");
+		statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
 		statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
 		statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
 		statement.append(ALLOW_COMMENTS + " INT, ");

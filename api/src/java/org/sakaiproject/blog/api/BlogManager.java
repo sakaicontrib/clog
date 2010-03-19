@@ -44,4 +44,6 @@ public interface BlogManager extends EntityProducer
 	public void sendNewPostAlert(Post post);
 	
 	public void sendNewCommentAlert(Comment comment);
+
+	public void importPreviousBlogData();
 }
