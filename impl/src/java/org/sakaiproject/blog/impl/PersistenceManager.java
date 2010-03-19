@@ -950,8 +950,8 @@ public class PersistenceManager
 			elementST = connection.createStatement();
 			commentST = connection.createStatement();
 			
-			//ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p,BLOG_OPTIONS as o WHERE p.SITE_ID = o.SITE_ID AND o.BLOGMODE <> 'LEARNING_LOG'");
-			ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p");
+			ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p,BLOG_OPTIONS as o WHERE p.SITE_ID = o.SITE_ID AND o.BLOGMODE <> 'LEARNING_LOG'");
+			//ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p");
 			while(rs.next())
 			{
 				boolean brokenPost = false;
