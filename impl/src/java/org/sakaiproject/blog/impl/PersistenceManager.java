@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -928,9 +927,15 @@ public class PersistenceManager
 
 	public boolean importPreviousBlogData()
 	{
+		//return importBlog1Data();
+		return importBlogPost25Data() && importBlog1Data();
+	}
+	
+	private boolean importBlogPost25Data()
+	{
 		if(logger.isDebugEnabled())
 		{
-			logger.debug("Starting import of previous blog data ...");
+			logger.debug("Starting import of previous blog post_2_5 data ...");
 		}
 		
 		Connection connection = null;
@@ -1105,14 +1110,14 @@ public class PersistenceManager
 			
 			if(logger.isDebugEnabled())
 			{
-				logger.debug("Finished import of previous blog data. " + numberImported + " posts imported.");
+				logger.debug("Finished import of previous blog post_2_5 data. " + numberImported + " posts imported.");
 			}
 			
 			return true;
 		}
 		catch(Exception e)
 		{
-			logger.error("Exception thrown whilst importing old blog data",e);
+			logger.error("Exception thrown whilst importing old blog post_2_5 data",e);
 			return false;
 		}
 		finally
@@ -1154,6 +1159,117 @@ public class PersistenceManager
 			}
 			
 			sakaiProxy.returnConnection(connection);
+		}
+	}
+	
+	private boolean importBlog1Data()
+	{
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("Starting import of previous blog 1 data ...");
+		}
+		
+		Connection connection = null;
+		Statement postST = null;
+		Statement imageST = null;
+		Statement fileST = null;
+		
+		int numberImported = 0;
+		
+		try
+		{
+			connection = sakaiProxy.borrowConnection();
+			
+			ImporterSaxParser saxParser = new ImporterSaxParser(connection,sakaiProxy);
+			
+			postST = connection.createStatement();
+			imageST = connection.createStatement();
+			fileST = connection.createStatement();
+			
+			ResultSet rs = postST.executeQuery("SELECT * FROM BLOGGER_POST");
+			
+			while(rs.next())
+			{
+				String siteId = rs.getString(ISQLGenerator.SITE_ID);
+				
+				String title = rs.getString(ISQLGenerator.TITLE);
+				
+				String postCreatorId = rs.getString("IDCREATOR");
+				
+				long createdDate = rs.getLong("DATEPOST");
+				
+				int visibility = rs.getInt("VISIBILITY");
+				
+				String xml = rs.getString("XML");
+				
+				Post post = new Post();
+				post.setSiteId(siteId);
+				
+				saxParser.populatePost(xml,post);
+				
+				if("".equals(post.getCreatorId()) || post.getCreatorId() == null)
+					post.setCreatorId(postCreatorId);
+				
+				if("".equals(post.getTitle()) || post.getTitle() == null)
+					post.setTitle(title);
+				
+				if(-1 == post.getCreatedDate())
+					post.setCreatedDate(createdDate);
+				
+				post.setSiteId(siteId);
+				
+				if(savePost(post))
+				{
+					List<Comment> comments = post.getComments();
+					
+					for(Comment comment : comments)
+					{
+						comment.setPostId(post.getId());
+						saveComment(comment);
+					}
+					
+					numberImported++;
+				}
+			}
+			
+			if(logger.isDebugEnabled())
+			{
+				logger.debug("Finished import of previous blog 1 data. " + numberImported + " posts imported.");
+			}
+			
+			return true;
+		}
+		catch(Exception e)
+		{
+			logger.error("Exception thrown whilst importing old blog 1 data",e);
+			return false;
+		}
+		finally
+		{
+			if(postST != null)
+			{
+				try
+				{
+					postST.close();
+				}
+				catch (Exception e) {}
+			}
+			if(imageST != null)
+			{
+				try
+				{
+					imageST.close();
+				}
+				catch (Exception e) {}
+			}
+			if(fileST != null)
+			{
+				try
+				{
+					fileST.close();
+				}
+				catch (Exception e) {}
+			}
 		}
 	}
 }

@@ -51,6 +51,8 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 	public final static String ENTITY_PREFIX = "blog-post";
 
 	protected final Logger LOG = Logger.getLogger(getClass());
+	
+	private boolean allowImportAction = false;
 
 	public boolean entityExists(String id)
 	{
@@ -277,6 +279,14 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 			return "FAIL";
 		}
 	}
+	
+	@EntityCustomAction(action = "import", viewKey = EntityView.VIEW_LIST)
+	public String handleImport(EntityReference ref)
+	{
+		if(allowImportAction)
+			blogManager.importPreviousBlogData();
+		return "SUCCESS";
+	}
 
 	/**
 	 * From Statisticable
@@ -329,5 +339,10 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 	public SakaiProxy getSakaiProxy()
 	{
 		return sakaiProxy;
+	}
+
+	public void setAllowImportAction(boolean allowImportAction)
+	{
+		this.allowImportAction = allowImportAction;
 	}
 }

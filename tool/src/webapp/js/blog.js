@@ -357,18 +357,3 @@ function toggleFullContent(v)
 	else
 		$('.content').show();
 }
-
-function toggleComments(postId)
-{
-	var comments = $('#' + postId + '_comments');
-	if(comments.css('display') == 'none')
-		comments.show();
-	else
-		comments.hide();
-
- 	if(window.frameElement) {
-		$(document).ready(function() {
- 			setMainFrameHeight(window.frameElement.id);
-		});
-	}
-}

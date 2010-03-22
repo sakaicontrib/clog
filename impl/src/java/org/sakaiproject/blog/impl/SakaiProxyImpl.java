@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.authz.api.AuthzGroup;
@@ -32,11 +33,13 @@ import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentHostingService;
+import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.email.api.DigestService;
 import org.sakaiproject.email.api.EmailService;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.EntityProducer;
+import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.event.cover.NotificationService;
 import org.sakaiproject.site.api.Site;
@@ -50,6 +53,7 @@ import org.sakaiproject.user.api.AuthenticationManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
+import org.sakaiproject.util.BaseResourceProperties;
 import org.sakaiproject.blog.api.BlogMember;
 
 public class SakaiProxyImpl implements SakaiProxy
@@ -631,6 +635,45 @@ public class SakaiProxyImpl implements SakaiProxy
 		catch (Exception e)
 		{
 			return "";
+		}
+	}
+
+	public String storeResource(byte[] blob,String siteId,String creatorId)
+	{
+		ContentResourceEdit resource = null;
+		ResourceProperties props = null;
+		
+		String id = UUID.randomUUID().toString();
+		
+		String resourceId = "/group/" + siteId + "/blog-files/" + id;
+		
+		try
+		{
+			resource = contentHostingService.addResource(resourceId);
+			props = new BaseResourceProperties();
+		}
+		catch(Exception iue)
+		{
+		}
+
+		try
+		{
+			if(blob.length > 0)
+			{
+				resource.setContent(blob);
+				props.addProperty(ResourceProperties.PROP_CREATOR, creatorId);
+			}
+				
+			resource.getPropertiesEdit().addAll(props);
+				
+			contentHostingService.commitResource(resource, NotificationService.NOTI_NONE);
+				
+			return resourceId;
+		}
+		catch (Exception e)
+		{
+			logger.error("Caught an exception whilst storing resource. Returning null ...",e);
+			return null;
 		}
 	}
 }

@@ -237,8 +237,6 @@ else
 
 			<br />
 
-			<div class="commentTotal" id="commentTotal">{if comments.length > 0}<a href="#" onclick="toggleComments('${id}');">{/if}${comments.length} Comment{if comments.length != 1}s{/if} {if comments.length > 0}(Click to show/hide)</a>{/if}</div>
-
 			<span id="${id}_comments" class="comments">
 					{for comment in comments}
 					<div class="blog_comment">
