@@ -62,5 +62,15 @@
 		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
 	</bean>
+	
+      <bean id="org.sakaiproject.blog.impl.BlogContentProducer"
+    	class="org.sakaiproject.blog.impl.BlogContentProducer"
+    	init-method="init">
+    	
+    	<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+    	<property name="searchService"><ref bean="org.sakaiproject.search.api.SearchService"/></property>
+     	<property name="searchIndexBuilder"><ref bean="org.sakaiproject.search.api.SearchIndexBuilder" /></property>
+     	
+    </bean>
     
 </beans>

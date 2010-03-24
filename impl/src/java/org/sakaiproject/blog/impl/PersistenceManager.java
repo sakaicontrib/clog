@@ -924,18 +924,12 @@ public class PersistenceManager
 			sakaiProxy.returnConnection(connection);
 		}
 	}
-
-	public boolean importPreviousBlogData()
-	{
-		//return importBlog1Data();
-		return importBlogPost25Data() && importBlog1Data();
-	}
 	
-	private boolean importBlogPost25Data()
+	public boolean importBlog2Data()
 	{
 		if(logger.isDebugEnabled())
 		{
-			logger.debug("Starting import of previous blog post_2_5 data ...");
+			logger.debug("Starting import of blog 2 data ...");
 		}
 		
 		Connection connection = null;
@@ -1063,7 +1057,6 @@ public class PersistenceManager
 							continue;
 						}
 						
-						//String fileName = elementRS.getString("FILE_NAME");
 						String resourceId = elementRS.getString("RESOURCE_ID");
 						
 						String file = "<a href=\"" + sakaiProxy.getServerUrl() + "/access/content" + resourceId + "\">" + displayName + "</a><br /><br />";
@@ -1110,14 +1103,14 @@ public class PersistenceManager
 			
 			if(logger.isDebugEnabled())
 			{
-				logger.debug("Finished import of previous blog post_2_5 data. " + numberImported + " posts imported.");
+				logger.debug("Finished import of blog 2 data. " + numberImported + " posts imported.");
 			}
 			
 			return true;
 		}
 		catch(Exception e)
 		{
-			logger.error("Exception thrown whilst importing old blog post_2_5 data",e);
+			logger.error("Exception thrown whilst importing blog 2 data",e);
 			return false;
 		}
 		finally
@@ -1162,7 +1155,7 @@ public class PersistenceManager
 		}
 	}
 	
-	private boolean importBlog1Data()
+	public boolean importBlog1Data()
 	{
 		if(logger.isDebugEnabled())
 		{

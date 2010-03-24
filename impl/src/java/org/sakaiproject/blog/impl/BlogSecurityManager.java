@@ -144,8 +144,10 @@ public class BlogSecurityManager
 			return true;
 		}
 		
+		String threadName = Thread.currentThread().getName();
+		
 		// This acts as an override
-		if(!post.isPrivate() && (sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_READ_ANY,post.getSiteId()) || sakaiProxy.isCurrentUserAdmin()))
+		if(!post.isPrivate() && (sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_READ_ANY,post.getSiteId()) || "IndexManager".equals(threadName)))
 		{
 			return true;
 		}

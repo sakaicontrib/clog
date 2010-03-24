@@ -244,3 +244,12 @@ th.blogSortableTableHeaderSortDown {
 	font-style: italic;
 	font-size: smaller;
 }
+
+#blog_toolbar_items{
+	float: left;
+}
+
+#blog_search_bar{
+	float: right;
+}
+

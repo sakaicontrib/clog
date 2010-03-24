@@ -38,6 +38,7 @@ public class BlogManagerImpl implements BlogManager
 	private SakaiProxy sakaiProxy;
 
 	private boolean importBlog1Data = false;
+	private boolean importBlog2Data = false;
 
 	public void init()
 	{
@@ -67,7 +68,10 @@ public class BlogManagerImpl implements BlogManager
 		persistenceManager = new PersistenceManager(sakaiProxy);
 
 		if (importBlog1Data)
-			persistenceManager.importPreviousBlogData();
+			persistenceManager.importBlog1Data();
+		
+		if (importBlog2Data)
+			persistenceManager.importBlog2Data();
 
 		securityManager = new BlogSecurityManager(sakaiProxy);
 	}
@@ -396,7 +400,6 @@ public class BlogManagerImpl implements BlogManager
 	 */
 	public String getLabel()
 	{
-		// TODO Auto-generated method stub
 		return "blog";
 	}
 
@@ -549,8 +552,23 @@ public class BlogManagerImpl implements BlogManager
 		return importBlog1Data;
 	}
 
-	public void importPreviousBlogData()
+	public void importBlog1Data()
 	{
-		persistenceManager.importPreviousBlogData();
+		persistenceManager.importBlog1Data();
+	}
+	
+	public void importBlog2Data()
+	{
+		persistenceManager.importBlog2Data();
+	}
+
+	public void setImportBlog2Data(boolean importBlog2Data)
+	{
+		this.importBlog2Data = importBlog2Data;
+	}
+
+	public boolean isImportBlog2Data()
+	{
+		return importBlog2Data;
 	}
 }

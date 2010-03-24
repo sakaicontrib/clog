@@ -145,7 +145,8 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		{
 			if(isNew)
 			{
-				sakaiProxy.postEvent(BlogManager.BLOG_POST_CREATED,post.getId(),post.getSiteId());
+				String reference = BlogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + post.getId();
+				sakaiProxy.postEvent(BlogManager.BLOG_POST_CREATED,reference,post.getSiteId());
 				
 				// Send an email to all site participants apart from the author
 				blogManager.sendNewPostAlert(post);
@@ -238,7 +239,8 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		
 		if(blogManager.deletePost(ref.getId()))
 		{
-			sakaiProxy.postEvent(BlogManager.BLOG_POST_DELETED,ref.getId(),siteId);
+			String reference = BlogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + ref.getId();
+			sakaiProxy.postEvent(BlogManager.BLOG_POST_DELETED,reference,siteId);
 		}
 	}
 
@@ -280,11 +282,19 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		}
 	}
 	
-	@EntityCustomAction(action = "import", viewKey = EntityView.VIEW_LIST)
-	public String handleImport(EntityReference ref)
+	@EntityCustomAction(action = "import1", viewKey = EntityView.VIEW_LIST)
+	public String handleImport1(EntityReference ref)
 	{
 		if(allowImportAction)
-			blogManager.importPreviousBlogData();
+			blogManager.importBlog1Data();
+		return "SUCCESS";
+	}
+	
+	@EntityCustomAction(action = "import2", viewKey = EntityView.VIEW_LIST)
+	public String handleImport2(EntityReference ref)
+	{
+		if(allowImportAction)
+			blogManager.importBlog2Data();
 		return "SUCCESS";
 	}
 

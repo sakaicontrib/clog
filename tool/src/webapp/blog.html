@@ -53,6 +53,9 @@ else
 		<a id="blog_preferences_link" title="${blog_preferences_tooltip}" href="javascript:;">${blog_preferences_label}</a>
 		<a id="blog_recycle_bin_link" title="${blog_recycle_bin_tooltip}" href="javascript:;">${blog_recycle_bin_label}</a>
 	</div>
+	<div id="blog_search_bar">
+		<input id="blog_search_field" type="text"/><input type="button" value="${search}"/>
+	</div>
 </div>
 -->
 </div>
@@ -241,7 +244,7 @@ else
 					{for comment in comments}
 					<div class="blog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
-							<div style="float:left; margin-right: 10px;"><img src="/direct/profile/${comment.creatorId}/image" width="50"/></div>
+							<div style="float:left; margin-right: 10px;"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
 							<div style="float:left;"><span>${comment.creatorDisplayName}</span><br/><span class="blog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span><br/><span class="blog_comment_date">Modified: ${new Date(comment.modifiedDate).toLocaleString()}</span></div>
 						</div>
 						<div class="blog_comment_content">${comment.content}</div>

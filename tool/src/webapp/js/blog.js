@@ -40,6 +40,10 @@ var blogOnMyWorkspace = false;
 	$('#blog_recycle_bin_link').bind('click',function(e) {
 		return switchState('viewRecycled');
 	});
+
+	$('#blog_search_field').change(function(e) {
+		BlogUtils.showSearchResults(e.target.value);
+	});
 	
 	var arg = BlogUtils.getParameters();
 	

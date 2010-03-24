@@ -227,9 +227,9 @@ public class SQLGenerator implements ISQLGenerator
 	 * 
 	 * @see uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.util.ISQLGenerator#getSelectAllPost(java.lang.String)
 	 */
-	public String getSelectAllPost(String placementId)
+	public String getSelectAllPost(String siteId)
 	{
-		return "SELECT * FROM " + TABLE_POST + " WHERE " + SITE_ID + "='" + placementId + "' ORDER BY " + CREATED_DATE + " DESC";
+		return "SELECT * FROM " + TABLE_POST + " WHERE " + SITE_ID + "='" + siteId + "' ORDER BY " + CREATED_DATE + " DESC";
 	}
 
 	/*

@@ -35,28 +35,34 @@
       		<version>2.4</version>
       		<scope>provided</scope>
     	</dependency>
-            	<dependency>
-            		<groupId>org.sakaiproject.kernel</groupId>
-            		<artifactId>sakai-kernel-api</artifactId>
-      				<scope>provided</scope>
-        		</dependency>
+		<dependency>
+       		<groupId>org.sakaiproject.kernel</groupId>
+       		<artifactId>sakai-kernel-api</artifactId>
+			<scope>provided</scope>
+        </dependency>
 
-        		<dependency>
-            		<groupId>org.sakaiproject.kernel</groupId>
-            		<artifactId>sakai-component-manager</artifactId>
-      				<scope>provided</scope>
-      	 		</dependency>
+		<!-- EntityBroker -->
+		<dependency>
+		    <groupId>org.sakaiproject.entitybroker</groupId>
+		    <artifactId>entitybroker-api</artifactId>
+		</dependency>
+
+		<!-- Search -->
+		<dependency>
+		    <groupId>org.sakaiproject.search</groupId>
+		    <artifactId>search-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.sakaiproject.kernel</groupId>
+			<artifactId>sakai-component-manager</artifactId>
+      		<scope>provided</scope>
+		</dependency>
 
         		<dependency>
             		<groupId>org.sakaiproject.kernel</groupId>
             		<artifactId>sakai-kernel-util</artifactId>
         		</dependency>
-
-				<dependency>
-					<groupId>org.sakaiproject.entitybroker</groupId>
-					<artifactId>entitybroker-api</artifactId>
-					<version>1.3.7</version>
-				</dependency>
         		
     			<dependency>
       				<groupId>log4j</groupId>

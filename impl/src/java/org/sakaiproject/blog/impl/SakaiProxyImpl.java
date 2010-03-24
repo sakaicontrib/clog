@@ -195,6 +195,8 @@ public class SakaiProxyImpl implements SakaiProxy
 	public boolean isCurrentUserAdmin()
 	{
 		String userId = getCurrentUserId();
+		if(userId == null)
+			return false;
 		return userId.equals(userDirectoryService.ADMIN_ID);
 	}
 
@@ -403,6 +405,9 @@ public class SakaiProxyImpl implements SakaiProxy
 	{
 		try
 		{
+			if(isCurrentUserAdmin())
+				return true;
+			
 			Site site = siteService.getSite(siteId);
 			Role r = site.getUserRole(getCurrentUserId());
 
