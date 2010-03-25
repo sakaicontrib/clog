@@ -15,7 +15,6 @@ var BlogUtils;
 	   		cache : false,
 		   	success : function(u) {
 				user = u;
-				BlogUtils.getUserMembership(user);
 			},
 			error : function(xmlHttpRequest,stat,error) {
 				alert("Failed to get the current user. Status: " + stat + ". Error: " + error);
@@ -323,21 +322,6 @@ var BlogUtils;
 	  	});
 
 		return false;
-	}
-	
-	BlogUtils.getUserMembership = function(user) {
-		jQuery.ajax( {
-			url: "/direct/membership/" + user.id + "::site:" + blogSiteId + ".json",
-	   		dataType : "json",
-	   		async : false,
-	   		cache : false,
-		   	success : function(m) {
-				user.membership = m;
-			},
-			error : function(xmlHttpRequest,stat,error) {
-				alert("Failed to get the user membership. Status: " + stat + ". Error: " + error);
-			}
-	  	});
 	}
 		
 	BlogUtils.getParameters = function() {

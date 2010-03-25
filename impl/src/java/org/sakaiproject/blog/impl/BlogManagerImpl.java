@@ -60,6 +60,7 @@ public class BlogManagerImpl implements BlogManager
 		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_UPDATE_OWN);
 		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_DELETE_ANY);
 		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_DELETE_OWN);
+		sakaiProxy.registerFunction(BlogFunctions.BLOG_MODIFY_PERMISSIONS);
 
 		logger.info("Registered Blog functions ...");
 

@@ -16,4 +16,5 @@ public class BlogFunctions
 	public static final String BLOG_COMMENT_UPDATE_OWN = "blog.comment.update.own";
 	public static final String BLOG_COMMENT_DELETE_ANY = "blog.comment.delete.any";
 	public static final String BLOG_COMMENT_DELETE_OWN = "blog.comment.delete.own";
+	public static final String BLOG_MODIFY_PERMISSIONS = "blog.modify.permissions";
 }

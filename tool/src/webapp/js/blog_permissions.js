@@ -21,5 +21,7 @@ function BlogPermissions(data) {
 			this.commentUpdateAny = true;
 		else if('blog.comment.update.own' === data[i])
 			this.commentUpdateOwn = true;
+		else if('blog.modify.permissions' === data[i])
+			this.modifyPermissions = true;
 	}
 }

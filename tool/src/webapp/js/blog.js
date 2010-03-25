@@ -80,8 +80,7 @@ var blogOnMyWorkspace = false;
 	
 	if(blogCurrentUserPermissions == null) return;
 	
-	// Site maintainers are the only ones who can change permissions
-	if(blogCurrentUser.membership.memberRole === 'maintain') {
+	if(blogCurrentUserPermissions.modifyPermissions) {
 		$("#blog_permissions_link").show();
 		$("#blog_recycle_bin_link").show();
 	}
