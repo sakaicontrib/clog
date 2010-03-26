@@ -7,8 +7,7 @@ var BlogUtils;
 		
 	BlogUtils.getCurrentUser = function() {
 		var user = null;
-		jQuery.ajax(
-		{
+		jQuery.ajax( {
 	 		url : "/direct/user/current.json",
 	   		dataType : "json",
 	   		async : false,
@@ -24,32 +23,27 @@ var BlogUtils;
 		return user;
 	}
 
-	BlogUtils.showSearchResults = function(searchTerms)
-	{
-    	jQuery.ajax(
-		{
+	BlogUtils.showSearchResults = function(searchTerms) {
+    	jQuery.ajax( {
 			url : "/portal/tool/" + yaftPlacementId + "/data/search/" + searchTerms,
         	dataType : "json",
         	async : false,
 			cache: false,
-        	success : function(results)
-       	 	{
+        	success : function(results) {
         		var params = new Object();
         		params["results"] = results;
 				params["searchTerms"] = searchTerms;
 				YaftUtils.render('yaft_search_results_content_template',params,'yaft_content');
 	 			$(document).ready(function() {setMainFrameHeight(window.frameElement.id);});
         	},
-        	error : function(xmlHttpRequest,status,error)
-			{
+        	error : function(xmlHttpRequest,status,error) {
 			}
 		});
 	}
 
 	BlogUtils.getPreferences = function() {
 		var prefs = null;
-		jQuery.ajax(
-		{
+		jQuery.ajax( {
 	 		url : "/direct/blog-preferences/" + blogSiteId + ".json",
 	   		dataType : "json",
 	   		async : false,
@@ -92,8 +86,7 @@ var BlogUtils;
 
 	BlogUtils.setPostsForCurrentSite = function() {
 
-		jQuery.ajax(
-		{
+		jQuery.ajax( {
 	       	url : "/direct/blog-post.json?siteId=" + blogSiteId,
 	       	dataType : "json",
 	       	async : false,
@@ -208,12 +201,10 @@ var BlogUtils;
 				'siteId':blogSiteId
 				};
 
-		var jsonData = JSON.stringify(post);
-
 		jQuery.ajax( {
 	 		url : "/direct/blog-post/new",
 			type : 'POST',
-			data : {'json':jsonData},
+			data : post,
 			timeout: 30000,
 			async : false,
 			dataType: 'text',
@@ -231,15 +222,14 @@ var BlogUtils;
 		var comment = {
 				'id':$('#blog_comment_id_field').val(),
 				'postId':blogCurrentPost.id,
-				'content':FCKeditorAPI.GetInstance('blog_content_editor').GetXHTML(true)
+				'content':FCKeditorAPI.GetInstance('blog_content_editor').GetXHTML(true),
+				'siteId':blogSiteId
 				};
-				
-		var jsonData = JSON.stringify(comment);
 
 		jQuery.ajax( {
 	 		url : "/direct/blog-comment/new",
 			type : 'POST',
-			data : {'json':jsonData,'siteId':blogSiteId},
+			data : comment,
 			timeout: 30000,
 			async : false,
 			dataType: 'text',

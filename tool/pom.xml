@@ -16,45 +16,40 @@
   	</parent>
   	
   	<packaging>war</packaging>
+  	
   	<dependencies>
-        		<dependency>
-            		<groupId>org.sakaiproject.blog</groupId>
-            		<artifactId>blog-api</artifactId>
-      				<version>${project.version}</version>
-	  				<scope>provided</scope>
-      	 		</dependency>
+       	<dependency>
+       		<groupId>org.sakaiproject.blog</groupId>
+       		<artifactId>blog-api</artifactId>
+     		<version>${project.version}</version>
+	  		<scope>provided</scope>
+     	</dependency>
 
-        		<dependency>
-            		<groupId>org.sakaiproject.kernel</groupId>
-            		<artifactId>sakai-component-manager</artifactId>
-	  				<scope>provided</scope>
-      	 		</dependency>
+     	<dependency>
+       		<groupId>org.sakaiproject.kernel</groupId>
+       		<artifactId>sakai-component-manager</artifactId>
+	  		<scope>provided</scope>
+     	</dependency>
 
-        		<dependency>
-            		<groupId>org.sakaiproject.kernel</groupId>
-            		<artifactId>sakai-kernel-util</artifactId>
-        		</dependency>
+     	<dependency>
+       		<groupId>org.sakaiproject.kernel</groupId>
+       		<artifactId>sakai-kernel-util</artifactId>
+     	</dependency>
 
-    			<dependency>
-      				<groupId>javax.servlet</groupId>
-      				<artifactId>servlet-api</artifactId>
-      				<version>2.4</version>
-	  				<scope>provided</scope>
-    			</dependency>
+    	<dependency>
+     		<groupId>javax.servlet</groupId>
+     		<artifactId>servlet-api</artifactId>
+    	</dependency>
         		
-    			<dependency>
-      				<groupId>log4j</groupId>
-      				<artifactId>log4j</artifactId>
-      				<version>1.2.12</version>
-	  				<scope>provided</scope>
-    			</dependency>
+    	<dependency>
+     		<groupId>log4j</groupId>
+     		<artifactId>log4j</artifactId>
+    	</dependency>
 
-    			<dependency>
-      				<groupId>commons-lang</groupId>
-      				<artifactId>commons-lang</artifactId>
-      				<version>2.4</version>
-	  				<scope>provided</scope>
-    			</dependency>
+    	<dependency>
+     		<groupId>commons-lang</groupId>
+     		<artifactId>commons-lang</artifactId>
+    	</dependency>
 
-            </dependencies>
+	</dependencies>
 </project>

@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.apache.log4j.Logger;
 import org.sakaiproject.blog.api.BlogManager;
 import org.sakaiproject.blog.api.QueryBean;
@@ -119,16 +117,12 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 
 		String userId = developerService.getCurrentUserId();
 
-		String json = (String) params.get("json");
-
-		JSONObject jsonObject = JSONObject.fromObject(json);
-
-		String id = jsonObject.getString("id");
-		String visibility = jsonObject.getString("visibility");
-		String title = jsonObject.getString("title");
-		String content = jsonObject.getString("content");
-		String siteId = jsonObject.getString("siteId");
-		boolean commentable = jsonObject.getBoolean("commentable");
+		String id = (String) params.get("id");
+		String visibility = (String) params.get("visibility");
+		String title = (String) params.get("title");
+		String content = (String) params.get("content");
+		String siteId = (String) params.get("siteId");
+		boolean commentable = Boolean.parseBoolean((String)params.get("commentable"));
 
 		Post post = new Post();
 		post.setId(id);
@@ -166,11 +160,6 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 	public String getEntityPrefix()
 	{
 		return ENTITY_PREFIX;
-	}
-
-	public BlogManager getBlogManager()
-	{
-		return blogManager;
 	}
 
 	public void setBlogManager(BlogManager blogManager)
@@ -336,19 +325,9 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		this.developerService = developerService;
 	}
 
-	public DeveloperHelperService getDeveloperService()
-	{
-		return developerService;
-	}
-
 	public void setSakaiProxy(SakaiProxy sakaiProxy)
 	{
 		this.sakaiProxy = sakaiProxy;
-	}
-
-	public SakaiProxy getSakaiProxy()
-	{
-		return sakaiProxy;
 	}
 
 	public void setAllowImportAction(boolean allowImportAction)

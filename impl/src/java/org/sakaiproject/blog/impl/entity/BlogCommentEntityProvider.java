@@ -1,10 +1,6 @@
 package org.sakaiproject.blog.impl.entity;
 
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.blog.api.BlogManager;
@@ -18,9 +14,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Createable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Deleteable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Describeable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Inputable;
-import org.sakaiproject.entitybroker.entityprovider.capabilities.Statisticable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
-import org.sakaiproject.util.ResourceLoader;
 
 public class BlogCommentEntityProvider implements EntityProvider, AutoRegisterEntityProvider, 
 	Inputable, Createable, Describeable, Deleteable
@@ -42,14 +36,9 @@ public class BlogCommentEntityProvider implements EntityProvider, AutoRegisterEn
 		
 		String userId = developerService.getCurrentUserId();
 		
-		String json = (String) params.get("json");
-		
-		JSONObject jsonObject = JSONObject.fromObject(json);
-		
-		String id = jsonObject.getString("id");
-		String postId = jsonObject.getString("postId");
-		String content = jsonObject.getString("content");
-		
+		String id = (String) params.get("id");
+		String postId = (String) params.get("postId");
+		String content = (String) params.get("content");
 		String siteId = (String) params.get("siteId");
 		
 		Comment comment = new Comment();
@@ -85,11 +74,6 @@ public class BlogCommentEntityProvider implements EntityProvider, AutoRegisterEn
 	{
 		return ENTITY_PREFIX;
 	}
-
-	public BlogManager getBlogManager()
-	{
-		return blogManager;
-	}
 	
 	public void setBlogManager(BlogManager blogManager)
 	{
@@ -119,18 +103,8 @@ public class BlogCommentEntityProvider implements EntityProvider, AutoRegisterEn
 		this.developerService = developerService;
 	}
 
-	public DeveloperHelperService getDeveloperService()
-	{
-		return developerService;
-	}
-
 	public void setSakaiProxy(SakaiProxy sakaiProxy)
 	{
 		this.sakaiProxy = sakaiProxy;
-	}
-
-	public SakaiProxy getSakaiProxy()
-	{
-		return sakaiProxy;
 	}
 }
