@@ -25,18 +25,15 @@ var BlogUtils;
 
 	BlogUtils.showSearchResults = function(searchTerms) {
     	jQuery.ajax( {
-			url : "/portal/tool/" + yaftPlacementId + "/data/search/" + searchTerms,
+			url : "/direct/search.json?tool=blog&contexts=" + blogSiteId + "&searchTerms=" + searchTerms,
         	dataType : "json",
         	async : false,
 			cache: false,
         	success : function(results) {
-        		var params = new Object();
-        		params["results"] = results;
-				params["searchTerms"] = searchTerms;
-				YaftUtils.render('yaft_search_results_content_template',params,'yaft_content');
-	 			$(document).ready(function() {setMainFrameHeight(window.frameElement.id);});
+        		switchState('searchResults',{'results':results["search_collection"]});
         	},
         	error : function(xmlHttpRequest,status,error) {
+				alert("Failed to search. Status: " + status + ". Error: " + error);
 			}
 		});
 	}

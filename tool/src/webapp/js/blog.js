@@ -345,6 +345,9 @@ function switchState(state,arg) {
 			}
 	   	});
 	}
+	else if('searchResults' === state) {
+		BlogUtils.render('blog_search_results_template',arg,'blog_content');
+	}
 }
 
 function toggleFullContent(v)

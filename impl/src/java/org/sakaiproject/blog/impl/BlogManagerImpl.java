@@ -498,7 +498,7 @@ public class BlogManagerImpl implements BlogManager
 
 		String siteTitle = sakaiProxy.getSiteTitle(post.getSiteId());
 
-		String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()) + "</b>" + " create a new post titled '" + post.getTitle() + "' in " + siteTitle + "<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it.";
+		String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()) + "</b>" + " created a new post titled '" + post.getTitle() + "' in '" + siteTitle + "'<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it";
 
 		sakaiProxy.sendEmailWithMessage(eachList, "[ " + siteTitle + " - Blog ] New Blog Post", message);
 		sakaiProxy.addDigestMessage(digestList, "[ " + siteTitle + " - Blog ] New Blog Post", message);
@@ -520,7 +520,7 @@ public class BlogManagerImpl implements BlogManager
 
 			String siteTitle = sakaiProxy.getSiteTitle(post.getSiteId());
 
-			String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()) + "</b>" + " commented on your post titled '" + post.getTitle() + "' in " + siteTitle + "<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it.";
+			String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()) + "</b>" + " commented on your post titled '" + post.getTitle() + "' in '" + siteTitle + "'<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it";
 
 			if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
 				sakaiProxy.sendEmailWithMessage(userId, "[ " + siteTitle + " - Blog ] New Comment", message);
