@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="api/src/java"/>
 	<classpathentry kind="src" path="impl/src/java"/>
 	<classpathentry kind="src" path="components/src/webapp/WEB-INF"/>
+	<classpathentry kind="src" path="entity-providers/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/sakaiproject/kernel/sakai-kernel-api/1.2.0-SNAPSHOT/sakai-kernel-api-1.2.0-SNAPSHOT.jar"/>
