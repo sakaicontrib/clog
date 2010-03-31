@@ -270,7 +270,7 @@ public class BlogContentProducer implements EntityContentProducer
 
 	public String getTool()
 	{
-		return "Blog Post";
+		return "Blog";
 	}
 
 	public String getType(String ref)
