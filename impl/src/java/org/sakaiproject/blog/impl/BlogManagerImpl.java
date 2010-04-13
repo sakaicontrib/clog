@@ -509,6 +509,10 @@ public class BlogManagerImpl implements BlogManager
 		try
 		{
 			Post post = getPost(comment.getPostId());
+			
+			// We don't really want an email when we comment on our own posts
+			if(comment.getCreatorId().equals(post.getCreatorId()))
+				return;
 
 			BlogMember author = sakaiProxy.getMember(post.getCreatorId());
 

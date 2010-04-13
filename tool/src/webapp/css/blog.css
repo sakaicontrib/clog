@@ -253,3 +253,8 @@ th.blogSortableTableHeaderSortDown {
 	float: right;
 }
 
+.blog_search_result{
+	margin-left: 5px;
+	margin-top: 3px;
+}
+

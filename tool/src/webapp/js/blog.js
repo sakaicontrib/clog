@@ -11,7 +11,7 @@ var blogOnMyWorkspace = false;
 (function()
 {
 	// We need the toolbar in a template so we can swap in the translations
-	BlogUtils.render('blog_toolbar_template',{},'blog_toolbar');
+	SakaiUtils.renderTrimpathTemplate('blog_toolbar_template',{},'blog_toolbar');
 
 	$('#blog_home_link').bind('click',function(e) {
 		return switchState('home');
@@ -45,7 +45,7 @@ var blogOnMyWorkspace = false;
 		BlogUtils.showSearchResults(e.target.value);
 	});
 	
-	var arg = BlogUtils.getParameters();
+	var arg = SakaiUtils.getParameters();
 	
 	if(!arg || !arg.siteId) {
 		alert('The site id  MUST be supplied as a page parameter');
@@ -67,7 +67,7 @@ var blogOnMyWorkspace = false;
 		$("#blog_my_blog_link").hide();
 	}
 
-	blogCurrentUser = BlogUtils.getCurrentUser();
+	blogCurrentUser = SakaiUtils.getCurrentUser();
 	
 	if(!blogCurrentUser) {
 		alert("No current user. Have you logged in?");
@@ -76,7 +76,7 @@ var blogOnMyWorkspace = false;
 
 	blogCurrentUserPreferences = BlogUtils.getPreferences();
 	
-	blogCurrentUserPermissions = new BlogPermissions(BlogUtils.getCurrentUserPermissions().data);
+	blogCurrentUserPermissions = new BlogPermissions(SakaiUtils.getCurrentUserPermissions(blogSiteId,'blog'));
 	
 	if(blogCurrentUserPermissions == null) return;
 	
@@ -117,9 +117,9 @@ function switchState(state,arg) {
 	 		});
 		}
 	 			
-		BlogUtils.render('blog_all_posts_template',{'posts':blogCurrentPosts},'blog_content');
+		SakaiUtils.renderTrimpathTemplate('blog_all_posts_template',{'posts':blogCurrentPosts},'blog_content');
 		for(var i=0,j=blogCurrentPosts.length;i<j;i++)
-			BlogUtils.render('blog_post_template',blogCurrentPosts[i],'post_' + blogCurrentPosts[i].id);
+			SakaiUtils.renderTrimpathTemplate('blog_post_template',blogCurrentPosts[i],'post_' + blogCurrentPosts[i].id);
 	}
 	else if('viewMembers' === state) {
 		if(blogCurrentUserPermissions.postCreate)
@@ -133,7 +133,7 @@ function switchState(state,arg) {
 	       	async : false,
 			cache: false,
 		   	success : function(data) {
-				BlogUtils.render('blog_authors_content_template',{'authors':data['blog-author_collection']},'blog_content');
+				SakaiUtils.renderTrimpathTemplate('blog_authors_content_template',{'authors':data['blog-author_collection']},'blog_content');
 
  				$(document).ready(function() {
 					$('a.showPostsLink').cluetip({
@@ -186,14 +186,14 @@ function switchState(state,arg) {
 			cache: false,
 		   	success : function(data) {
 
-				var profileMarkup = BlogUtils.getProfileMarkup(userId);
+				var profileMarkup = SakaiUtils.getProfileMarkup(userId);
 
 				var posts = data['blog-post_collection'];
 	 			
-				BlogUtils.render('blog_user_posts_template',{'creatorId':userId,'posts':posts},'blog_content');
+				SakaiUtils.renderTrimpathTemplate('blog_user_posts_template',{'creatorId':userId,'posts':posts},'blog_content');
 				$('#blog_author_profile').html(profileMarkup);
 	 			for(var i=0,j=posts.length;i<j;i++)
-					BlogUtils.render('blog_post_template',posts[i],'post_' + posts[i].id);
+					SakaiUtils.renderTrimpathTemplate('blog_post_template',posts[i],'post_' + posts[i].id);
 
 	 			if(window.frameElement) {
 	 				$(document).ready(function() {
@@ -213,8 +213,8 @@ function switchState(state,arg) {
 		if(!blogCurrentPost)
 			return false;
 	 			
-		BlogUtils.render('blog_post_page_content_template',blogCurrentPost,'blog_content');
-		BlogUtils.render('blog_post_template',blogCurrentPost,'post_' + blogCurrentPost.id);
+		SakaiUtils.renderTrimpathTemplate('blog_post_page_content_template',blogCurrentPost,'blog_content');
+		SakaiUtils.renderTrimpathTemplate('blog_post_template',blogCurrentPost,'post_' + blogCurrentPost.id);
 
 	 	$(document).ready(function() {
 			$('#blog_user_posts_link').bind('click',function(e) {
@@ -235,9 +235,9 @@ function switchState(state,arg) {
 		if(arg && arg.postId)
 			post = BlogUtils.findPost(arg.postId);
 
-		BlogUtils.render('blog_create_post_template',post,'blog_content');
+		SakaiUtils.renderTrimpathTemplate('blog_create_post_template',post,'blog_content');
 		
-		BlogUtils.setupEditor('blog_content_editor',600,400,'Default',blogSiteId);
+		SakaiUtils.setupFCKEditor('blog_content_editor',600,400,'Default',blogSiteId);
 
 	 	$(document).ready(function() {
 			$('#blog_save_post_button').bind('click',BlogUtils.savePostAsDraft);
@@ -278,11 +278,11 @@ function switchState(state,arg) {
 			}
 		}
 
-		BlogUtils.render('blog_create_comment_template',comment,'blog_content');
+		SakaiUtils.renderTrimpathTemplate('blog_create_comment_template',comment,'blog_content');
 
 		$(document).ready(function() {
-			BlogUtils.setupEditor('blog_content_editor',600,400,'Default',blogSiteId);
-			BlogUtils.render('blog_post_template',blogCurrentPost,'blog_post_' + arg.postId);
+			SakaiUtils.setupFCKEditor('blog_content_editor',600,400,'Default',blogSiteId);
+			SakaiUtils.renderTrimpathTemplate('blog_post_template',blogCurrentPost,'blog_post_' + arg.postId);
 			$('#blog_save_comment_button').bind('click',BlogUtils.saveComment);
 
 			if(window.frameElement)
@@ -290,18 +290,20 @@ function switchState(state,arg) {
 		});
 	}
 	else if('permissions' === state) {
-		var perms = BlogUtils.parsePermissions();
-		BlogUtils.render('blog_permissions_content_template',{'perms':perms},'blog_content');
+		var perms = SakaiUtils.getSitePermissionMatrix(blogSiteId,'blog');
+		SakaiUtils.renderTrimpathTemplate('blog_permissions_content_template',{'perms':perms},'blog_content');
 
 	 	$(document).ready(function() {
-			$('#blog_permissions_save_button').bind('click',BlogUtils.savePermissions);
+			$('#blog_permissions_save_button').bind('click',function(e) {
+				return SakaiUtils.savePermissions(blogSiteId,'blog_permission_checkbox',function() { switchState('viewAllPosts'); });
+			});
 
 			if(window.frameElement)
 				setMainFrameHeight(window.frameElement.id);
 		});
 	}
 	else if('preferences' === state) {
-		BlogUtils.render('blog_preferences_template',{},'blog_content');
+		SakaiUtils.renderTrimpathTemplate('blog_preferences_template',{},'blog_content');
 	 	$(document).ready(function() {
 			if('never' === blogCurrentUserPreferences.emailFrequency) {
 				$('#blog_email_option_never_checkbox').attr('checked',true);
@@ -327,9 +329,9 @@ function switchState(state,arg) {
 
 				var posts = data['blog-post_collection'];
 	 			
-				BlogUtils.render('blog_recycled_posts_template',{'posts':posts},'blog_content');
+				SakaiUtils.renderTrimpathTemplate('blog_recycled_posts_template',{'posts':posts},'blog_content');
 	 			for(var i=0,j=posts.length;i<j;i++)
-					BlogUtils.render('blog_post_template',posts[i],'post_' + posts[i].id);
+					SakaiUtils.renderTrimpathTemplate('blog_post_template',posts[i],'post_' + posts[i].id);
 
 				$('#blog_really_delete_button').bind('click',BlogUtils.deleteSelectedPosts);
 				$('#blog_restore_button').bind('click',BlogUtils.restoreSelectedPosts);
@@ -346,7 +348,7 @@ function switchState(state,arg) {
 	   	});
 	}
 	else if('searchResults' === state) {
-		BlogUtils.render('blog_search_results_template',arg,'blog_content');
+		SakaiUtils.renderTrimpathTemplate('blog_search_results_template',arg,'blog_content');
 	}
 }
 
