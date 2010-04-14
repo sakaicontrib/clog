@@ -37,6 +37,8 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		= new String[] {
 			BlogManager.BLOG_POST_CREATED,
 			BlogManager.BLOG_POST_DELETED,
+			BlogManager.BLOG_POST_RECYCLED,
+			BlogManager.BLOG_POST_RESTORED,
 			BlogManager.BLOG_COMMENT_CREATED,
 			BlogManager.BLOG_COMMENT_DELETED};
 	
@@ -123,6 +125,7 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		String content = (String) params.get("content");
 		String siteId = (String) params.get("siteId");
 		boolean commentable = Boolean.parseBoolean((String)params.get("commentable"));
+		String mode = (String) params.get("mode");
 
 		Post post = new Post();
 		post.setId(id);
@@ -137,7 +140,7 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 
 		if (blogManager.savePost(post))
 		{
-			if(isNew)
+			if((isNew || (mode != null && "publish".equals(mode))) && post.isReady())
 			{
 				String reference = BlogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + post.getId();
 				sakaiProxy.postEvent(BlogManager.BLOG_POST_CREATED,reference,post.getSiteId());
@@ -241,8 +244,24 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 		if (postId == null)
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
 		
+		Post post = null;
+		
+		try
+		{
+			post = blogManager.getPost(postId);
+		}
+		catch(Exception e)
+		{
+		}
+		
+		if(post == null)
+			throw new IllegalArgumentException("Invalid post id");
+		
 		if(blogManager.recyclePost(postId))
 		{
+			String reference = BlogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
+			sakaiProxy.postEvent(BlogManager.BLOG_POST_RECYCLED,reference,post.getSiteId());
+			
 			return "SUCCESS";
 		}
 		else
@@ -261,8 +280,24 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
 		}
 		
+		Post post = null;
+		
+		try
+		{
+			post = blogManager.getPost(postId);
+		}
+		catch(Exception e)
+		{
+		}
+		
+		if(post == null)
+			throw new IllegalArgumentException("Invalid post id");
+		
 		if(blogManager.restorePost(postId))
 		{
+			String reference = BlogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
+			sakaiProxy.postEvent(BlogManager.BLOG_POST_RESTORED,reference,post.getSiteId());
+			
 			return "SUCCESS";
 		}
 		else

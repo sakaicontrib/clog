@@ -16,6 +16,8 @@ public interface BlogManager extends EntityProducer
 	public static final String BLOG_POST_DELETED = "blog.post.deleted";
 	public static final String BLOG_COMMENT_CREATED = "blog.comment.created";
 	public static final String BLOG_COMMENT_DELETED = "blog.comment.deleted";
+	public static final String BLOG_POST_RECYCLED = "blog.post.recycled";
+	public static final String BLOG_POST_RESTORED = "blog.post.restored";
 	
     public Post getPost(String postId) throws Exception;
 

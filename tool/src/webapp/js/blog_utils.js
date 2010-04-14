@@ -84,14 +84,14 @@ var BlogUtils;
 	}
 
 	BlogUtils.publishPost = function() {
-		BlogUtils.storePost('READY');
+		BlogUtils.storePost('READY',true);
 	}
 
 	BlogUtils.publicisePost = function() {
 		BlogUtils.storePost('PUBLIC');
 	}
 		
-	BlogUtils.storePost = function(visibility) {
+	BlogUtils.storePost = function(visibility,isPublish) {
 
 		var post = {
 				'id':$('#blog_post_id_field').val(),
@@ -101,6 +101,8 @@ var BlogUtils;
 				'content':FCKeditorAPI.GetInstance('blog_content_editor').GetXHTML(true),
 				'siteId':blogSiteId
 				};
+				
+		if(isPublish) post['mode'] = 'publish';
 
 		jQuery.ajax( {
 	 		url : "/direct/blog-post/new",
