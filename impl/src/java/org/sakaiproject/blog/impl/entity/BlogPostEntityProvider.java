@@ -327,7 +327,7 @@ public class BlogPostEntityProvider implements CoreEntityProvider, AutoRegisterE
 	 */
 	public String getAssociatedToolId()
 	{
-		return "blog2";
+		return "blogger";
 	}
 
 	/**
