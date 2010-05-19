@@ -53,7 +53,8 @@ public class BlogCommentEntityProvider implements EntityProvider, AutoRegisterEn
 		{
 			if(isNew)
 			{
-				sakaiProxy.postEvent(BlogManager.BLOG_COMMENT_CREATED,comment.getId(),siteId);
+				String reference = BlogManager.REFERENCE_ROOT + "/" + siteId + "/comment/" + postId;
+				sakaiProxy.postEvent(BlogManager.BLOG_COMMENT_CREATED,reference,siteId);
 				
 				// Send an email to the post author
 				blogManager.sendNewCommentAlert(comment);

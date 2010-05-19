@@ -12,7 +12,12 @@ var BlogUtils;
         	async : false,
 			cache: false,
         	success : function(results) {
-        		switchState('searchResults',{'results':results["search_collection"]});
+        		var hits = results["search_collection"];
+				for(var i=0,j=hits.length;i<j;i++) {
+					var postId = hits[i].id;
+					hits[i].url = "javascript: switchState('post',{postId:'" + postId + "'});";
+				}
+        		switchState('searchResults',{'results':hits});
         	},
         	error : function(xmlHttpRequest,status,error) {
 				alert("Failed to search. Status: " + status + ". Error: " + error);

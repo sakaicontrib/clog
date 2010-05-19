@@ -185,8 +185,8 @@ public class Post implements Entity
 	 */
 	public String getUrl()
 	{
-		String pageId = SakaiProxy.getBlog2PageId(siteId);
-		String toolId = SakaiProxy.getBlog2ToolId(siteId);
+		String pageId = SakaiProxy.getBlogPageId(siteId);
+		String toolId = SakaiProxy.getBlogToolId(siteId);
 		
 		String url = SakaiProxy.getServerUrl()
 								+ "/portal/site/" + siteId

@@ -615,12 +615,12 @@ public class SakaiProxyImpl implements SakaiProxy
 		return "";
 	}
 
-	public String getBlog2PageId(String siteId)
+	public String getBlogPageId(String siteId)
 	{
 		try
 		{
 			Site site = siteService.getSite(siteId);
-			ToolConfiguration tc = site.getToolForCommonId("blog2");
+			ToolConfiguration tc = site.getToolForCommonId("blogger");
 			return tc.getPageId();
 		}
 		catch (Exception e)
@@ -629,12 +629,12 @@ public class SakaiProxyImpl implements SakaiProxy
 		}
 	}
 
-	public String getBlog2ToolId(String siteId)
+	public String getBlogToolId(String siteId)
 	{
 		try
 		{
 			Site site = siteService.getSite(siteId);
-			ToolConfiguration tc = site.getToolForCommonId("blog2");
+			ToolConfiguration tc = site.getToolForCommonId("blogger");
 			return tc.getId();
 		}
 		catch (Exception e)

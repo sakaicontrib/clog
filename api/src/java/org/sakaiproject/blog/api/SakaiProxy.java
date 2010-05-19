@@ -84,9 +84,9 @@ public interface SakaiProxy
 
 	public String getSiteTitle(String siteId);
 
-	public String getBlog2PageId(String siteId);
+	public String getBlogPageId(String siteId);
 	
-	public String getBlog2ToolId(String siteId);
+	public String getBlogToolId(String siteId);
 
 	public String storeResource(byte[] blob,String siteId,String creatorId);
 }

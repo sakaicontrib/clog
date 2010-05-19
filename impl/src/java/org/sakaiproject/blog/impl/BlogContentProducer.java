@@ -66,6 +66,7 @@ public class BlogContentProducer implements EntityContentProducer
 			return SearchBuilderItem.ACTION_UNKNOWN;
 	}
 
+	/*
 	public List getAllContent()
 	{
 		if(logger.isDebugEnabled())
@@ -87,6 +88,7 @@ public class BlogContentProducer implements EntityContentProducer
 		
 		return refs;
 	}
+	*/
 
 	public String getContainer(String ref)
 	{
@@ -112,15 +114,15 @@ public class BlogContentProducer implements EntityContentProducer
 			id = parts[4];
 		}
 		
-		if("post".equals(type))
-		{
+		//if("post".equals(type))
+		//{
 			try
 			{
 				Post post = blogManager.getPost(id);
 				String content = post.getTitle() + " " + post.getContent();
 			
 				for(Comment comment : post.getComments())
-					content += comment.getContent();
+					content += " " + comment.getContent();
 			
 				return content;
 			}
@@ -128,7 +130,7 @@ public class BlogContentProducer implements EntityContentProducer
 			{
 				logger.error("Caught exception whilst getting content for post '" + id + "'",e);
 			}
-		}
+		//}
 		
 		return null;
 	}
@@ -252,8 +254,8 @@ public class BlogContentProducer implements EntityContentProducer
 			id = parts[4];
 		}
 		
-		if("post".equals(type))
-		{
+		//if("post".equals(type))
+		//{
 			try
 			{
 				Post post = blogManager.getPost(id);
@@ -263,7 +265,7 @@ public class BlogContentProducer implements EntityContentProducer
 			{
 				logger.error("Caught exception whilst getting title for post '" + id + "'",e);
 			}
-		}
+		//}
 		
 		return "Unrecognised";
 	}
@@ -296,8 +298,8 @@ public class BlogContentProducer implements EntityContentProducer
 			id = parts[4];
 		}
 		
-		if("post".equals(type))
-		{
+		//if("post".equals(type))
+		//{
 			try
 			{
 				Post post = blogManager.getPost(id);
@@ -307,7 +309,7 @@ public class BlogContentProducer implements EntityContentProducer
 			{
 				logger.error("Caught exception whilst getting url for post '" + id + "'",e);
 			}
-		}
+		//}
 		
 		return null;
 	}
