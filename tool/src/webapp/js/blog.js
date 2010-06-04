@@ -120,6 +120,8 @@ function switchState(state,arg) {
 		SakaiUtils.renderTrimpathTemplate('blog_all_posts_template',{'posts':blogCurrentPosts},'blog_content');
 		for(var i=0,j=blogCurrentPosts.length;i<j;i++)
 			SakaiUtils.renderTrimpathTemplate('blog_post_template',blogCurrentPosts[i],'post_' + blogCurrentPosts[i].id);
+			
+		BlogUtils.attachProfilePopup();
 	}
 	else if('viewMembers' === state) {
 		if(blogCurrentUserPermissions.postCreate)
@@ -136,6 +138,8 @@ function switchState(state,arg) {
 				SakaiUtils.renderTrimpathTemplate('blog_authors_content_template',{'authors':data['blog-author_collection']},'blog_content');
 
  				$(document).ready(function() {
+ 					BlogUtils.attachProfilePopup();
+ 					/*
 					$('a.showPostsLink').cluetip({
 						width: '620px',
 						cluetipClass: 'blog',
@@ -143,6 +147,7 @@ function switchState(state,arg) {
 						arrows: true,
 						showTitle: false
 						});
+						*/
   									
   					$("#blog_author_table").tablesorter({
 							widgets: ['zebra'],

@@ -228,6 +228,12 @@ th.blogSortableTableHeaderSortDown {
   width: 22px;
 }
 
+.cluetip-blog div#cluetip-close {
+	text-align: right;
+	margin: 0 5px 5px;
+	color: #900;
+}
+
 .blog_comment {
 	border: black solid 1px;
 	padding: 10px;

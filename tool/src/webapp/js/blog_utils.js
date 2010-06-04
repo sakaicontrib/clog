@@ -24,6 +24,21 @@ var BlogUtils;
 			}
 		});
 	}
+	
+	BlogUtils.attachProfilePopup = function() {
+		$('a.profile').cluetip({
+			width: '620px',
+			cluetipClass: 'blog',
+			sticky: true,
+ 			dropShadow: false,
+			arrows: true,
+			mouseOutClose: true,
+			closeText: '<img src="/library/image/silk/cross.png" alt="close" />',
+			closePosition: 'top',
+			showTitle: false,
+			hoverIntent: true
+		});
+	}
 
 	BlogUtils.getPreferences = function() {
 		var prefs = null;
