@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <display-name>Blog 3</display-name>
+    <display-name>Clog</display-name>
 
 	<!--sakai-->
     <filter>
@@ -16,8 +16,8 @@
     </filter>
     
     <servlet>
-        <servlet-name>blogger</servlet-name>
-	    <servlet-class>org.sakaiproject.blog.tool.BlogTool</servlet-class>
+        <servlet-name>sakai.clog</servlet-name>
+	    <servlet-class>org.sakaiproject.clog.tool.ClogTool</servlet-class>
 		<load-on-startup>1</load-on-startup>        
      </servlet>
 
@@ -30,7 +30,7 @@
   	</listener>
 
 	<welcome-file-list>
-	  <welcome-file>blog.html</welcome-file>
+	  <welcome-file>clog.html</welcome-file>
 	</welcome-file-list>
 
 </web-app>
