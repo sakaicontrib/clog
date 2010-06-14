@@ -23,7 +23,7 @@
 
 	</bean>
 
-      <bean id="org.sakaiproject.clog.api.BlogManager"
+	<bean id="org.sakaiproject.clog.api.BlogManager"
     	class="org.sakaiproject.clog.impl.BlogManagerImpl"
     	init-method="init">
 
@@ -32,38 +32,8 @@
           </property>
 
     </bean>
-    
-	<bean id="org.sakaiproject.clog.impl.entity.BlogPostEntityProvider"
-		class="org.sakaiproject.clog.impl.entity.BlogPostEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
-		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
-        <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
-        </property>
-	</bean>
 	
-	<bean id="org.sakaiproject.clog.impl.entity.BlogAuthorEntityProvider"
-		class="org.sakaiproject.clog.impl.entity.BlogAuthorEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
-		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
-	</bean>
-	
-	<bean id="org.sakaiproject.clog.impl.entity.BlogCommentEntityProvider"
-		class="org.sakaiproject.clog.impl.entity.BlogCommentEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
-		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
-        <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
-        </property>
-	</bean>
-	
-	<bean id="org.sakaiproject.clog.impl.entity.BlogPreferencesCommentEntityProvider"
-		class="org.sakaiproject.clog.impl.entity.BlogPreferencesEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
-		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
-	</bean>
-	
-      <bean id="org.sakaiproject.clog.impl.BlogContentProducer"
+ 	<bean id="org.sakaiproject.clog.impl.BlogContentProducer"
     	class="org.sakaiproject.clog.impl.BlogContentProducer"
     	init-method="init">
     	

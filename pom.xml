@@ -19,6 +19,7 @@
 
 	<properties>
         <entitybroker-api.version>1.4.0-SNAPSHOT</entitybroker-api.version>
+        <entitybroker-utils.version>[1.3.6.1,1.4.0-SNAPSHOT]</entitybroker-utils.version>
         <search-api.version>1.3.0-SNAPSHOT</search-api.version>
 	  	<profile-api.version>2.8-SNAPSHOT</profile-api.version>
       	<log4j.version>1.2.8</log4j.version>
@@ -125,6 +126,13 @@
                 <groupId>org.sakaiproject.entitybroker</groupId>
                 <artifactId>entitybroker-api</artifactId>
                 <version>${entitybroker-api.version}</version>
+	  			<scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.sakaiproject.entitybroker</groupId>
+                <artifactId>entitybroker-utils</artifactId>
+                <version>${entitybroker-utils.version}</version>
             </dependency>
 
             <dependency>

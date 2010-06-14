@@ -2,4 +2,35 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+
+	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
+		class="org.sakaiproject.clog.tool.entityprovider.BlogPostEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
+        <property name="sakaiProxy">
+            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
+        </property>
+	</bean>
+	
+	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
+		class="org.sakaiproject.clog.tool.entityprovider.BlogAuthorEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
+	</bean>
+	
+	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
+		class="org.sakaiproject.clog.tool.entityprovider.BlogCommentEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
+        <property name="sakaiProxy">
+            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
+        </property>
+	</bean>
+	
+	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider"
+		class="org.sakaiproject.clog.tool.entityprovider.BlogPreferencesEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
+	</bean>
+	
 </beans>
