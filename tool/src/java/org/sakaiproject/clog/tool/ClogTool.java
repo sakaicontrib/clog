@@ -61,6 +61,6 @@ public class ClogTool extends HttpServlet
 		Locale locale = (new ResourceLoader(userId)).getLocale();
 		String languageCode = locale.getLanguage();
 
-		response.sendRedirect("/blog-tool/blog.html?state=" + state + "&siteId=" + siteId + "&postId=" + postId + "&language=" + languageCode);
+		response.sendRedirect("/clog-tool/clog.html?state=" + state + "&siteId=" + siteId + "&postId=" + postId + "&language=" + languageCode);
 	}
 }
