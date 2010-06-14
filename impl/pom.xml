@@ -5,21 +5,21 @@
 	
   	<modelVersion>4.0.0</modelVersion>
   	
-  	<name>BLOG IMPL</name>
-  	<artifactId>blog-impl</artifactId>
-  	<groupId>org.sakaiproject.blog</groupId>
+  	<name>CLOG IMPL</name>
+  	<artifactId>clog-impl</artifactId>
+  	<groupId>org.sakaiproject.clog</groupId>
   	<packaging>jar</packaging>
   	
   	<parent>
-    	<artifactId>blog</artifactId>
-    	<groupId>org.sakaiproject.blog</groupId>
-    	<version>2.0-SNAPSHOT</version>
+    	<artifactId>clog</artifactId>
+    	<groupId>org.sakaiproject.clog</groupId>
+    	<version>0.9-SNAPSHOT</version>
   	</parent>
   
   	<dependencies>
     	<dependency>
-      		<groupId>org.sakaiproject.blog</groupId>
-      		<artifactId>blog-api</artifactId>
+      		<groupId>org.sakaiproject.clog</groupId>
+      		<artifactId>clog-api</artifactId>
   			<version>${project.version}</version>
   			<scope>provided</scope>
     	</dependency>

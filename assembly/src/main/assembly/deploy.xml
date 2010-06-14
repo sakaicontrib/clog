@@ -11,15 +11,15 @@
 			<outputDirectory>shared/lib</outputDirectory>
 			<useTransitiveDependencies>false</useTransitiveDependencies>
 			<includes>
-				<include>org.sakaiproject.blog:blog-api:jar:*</include>
+				<include>org.sakaiproject.clog:clog-api:jar:*</include>
 			</includes>
 		</dependencySet>
 		<!-- components -->
 		<dependencySet>
-			<outputDirectory>components/blog-pack</outputDirectory>
+			<outputDirectory>components/clog-pack</outputDirectory>
 			<useTransitiveDependencies>false</useTransitiveDependencies>
 			<includes>
-				<include>org.sakaiproject.blog:blog-pack:war:*</include>
+				<include>org.sakaiproject.clog:clog-pack:war:*</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
@@ -29,7 +29,7 @@
             <outputFileNameMapping>${artifact.artifactId}.war</outputFileNameMapping>
             <useTransitiveDependencies>false</useTransitiveDependencies>
             <includes>
-                 <include>org.sakaiproject.blog:blog-tool:war:*</include>
+                 <include>org.sakaiproject.clog:clog-tool:war:*</include>
             </includes>
             <unpack>false</unpack>
         </dependencySet>

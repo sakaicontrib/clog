@@ -2,8 +2,8 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-    <bean id="org.sakaiproject.blog.api.SakaiProxy"
-		class="org.sakaiproject.blog.impl.SakaiProxyImpl">
+    <bean id="org.sakaiproject.clog.api.SakaiProxy"
+		class="org.sakaiproject.clog.impl.SakaiProxyImpl">
 
 		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
 		<property name="emailService"><ref bean="org.sakaiproject.email.api.EmailService"/></property>
@@ -23,51 +23,51 @@
 
 	</bean>
 
-      <bean id="org.sakaiproject.blog.api.BlogManager"
-    	class="org.sakaiproject.blog.impl.BlogManagerImpl"
+      <bean id="org.sakaiproject.clog.api.BlogManager"
+    	class="org.sakaiproject.clog.impl.BlogManagerImpl"
     	init-method="init">
 
           <property name="sakaiProxy">
-              <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+              <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
           </property>
 
     </bean>
     
-	<bean id="org.sakaiproject.blog.impl.entity.BlogPostEntityProvider"
-		class="org.sakaiproject.blog.impl.entity.BlogPostEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+	<bean id="org.sakaiproject.clog.impl.entity.BlogPostEntityProvider"
+		class="org.sakaiproject.clog.impl.entity.BlogPostEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
         <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
         </property>
 	</bean>
 	
-	<bean id="org.sakaiproject.blog.impl.entity.BlogAuthorEntityProvider"
-		class="org.sakaiproject.blog.impl.entity.BlogAuthorEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+	<bean id="org.sakaiproject.clog.impl.entity.BlogAuthorEntityProvider"
+		class="org.sakaiproject.clog.impl.entity.BlogAuthorEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
 	</bean>
 	
-	<bean id="org.sakaiproject.blog.impl.entity.BlogCommentEntityProvider"
-		class="org.sakaiproject.blog.impl.entity.BlogCommentEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+	<bean id="org.sakaiproject.clog.impl.entity.BlogCommentEntityProvider"
+		class="org.sakaiproject.clog.impl.entity.BlogCommentEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
         <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.blog.api.SakaiProxy"/>
+            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
         </property>
 	</bean>
 	
-	<bean id="org.sakaiproject.blog.impl.entity.BlogPreferencesCommentEntityProvider"
-		class="org.sakaiproject.blog.impl.entity.BlogPreferencesEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+	<bean id="org.sakaiproject.clog.impl.entity.BlogPreferencesCommentEntityProvider"
+		class="org.sakaiproject.clog.impl.entity.BlogPreferencesEntityProvider">
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
 	</bean>
 	
-      <bean id="org.sakaiproject.blog.impl.BlogContentProducer"
-    	class="org.sakaiproject.blog.impl.BlogContentProducer"
+      <bean id="org.sakaiproject.clog.impl.BlogContentProducer"
+    	class="org.sakaiproject.clog.impl.BlogContentProducer"
     	init-method="init">
     	
-    	<property name="blogManager"><ref bean="org.sakaiproject.blog.api.BlogManager"/></property>
+    	<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
     	<property name="searchService"><ref bean="org.sakaiproject.search.api.SearchService"/></property>
      	<property name="searchIndexBuilder"><ref bean="org.sakaiproject.search.api.SearchIndexBuilder" /></property>
      	
