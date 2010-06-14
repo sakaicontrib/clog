@@ -48,13 +48,13 @@ import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.tool.api.ToolManager;
-import org.sakaiproject.blog.api.SakaiProxy;
+import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.user.api.AuthenticationManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.BaseResourceProperties;
-import org.sakaiproject.blog.api.BlogMember;
+import org.sakaiproject.clog.api.BlogMember;
 
 public class SakaiProxyImpl implements SakaiProxy
 {

@@ -27,11 +27,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.sakaiproject.blog.api.Comment;
-import org.sakaiproject.blog.api.ISQLGenerator;
-import org.sakaiproject.blog.api.Post;
-import org.sakaiproject.blog.api.Preferences;
-import org.sakaiproject.blog.api.Visibilities;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.sql.ISQLGenerator;
+import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.clog.api.datamodel.Preferences;
+import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.QueryBean;
 
 public class SQLGenerator implements ISQLGenerator

@@ -3,7 +3,7 @@ package org.sakaiproject.clog.impl.entity;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.Preferences;
+import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.BlogManager;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;

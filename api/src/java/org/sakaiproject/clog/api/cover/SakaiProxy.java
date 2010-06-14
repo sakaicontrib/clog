@@ -20,7 +20,7 @@ import org.sakaiproject.component.cover.ComponentManager;
 
 public class SakaiProxy
 {
-    private static org.sakaiproject.blog.api.SakaiProxy m_instance = null;
+    private static org.sakaiproject.clog.api.SakaiProxy m_instance = null;
     
     private SakaiProxy() {}
     
@@ -29,40 +29,40 @@ public class SakaiProxy
      * 
      * @return the component instance.
      */
-    public static org.sakaiproject.blog.api.SakaiProxy getInstance()
+    public static org.sakaiproject.clog.api.SakaiProxy getInstance()
     {
         if (ComponentManager.CACHE_COMPONENTS)
         {
             if (m_instance == null)
             {
-                m_instance = (org.sakaiproject.blog.api.SakaiProxy) ComponentManager
-                        .get(org.sakaiproject.blog.api.SakaiProxy.class);
+                m_instance = (org.sakaiproject.clog.api.SakaiProxy) ComponentManager
+                        .get(org.sakaiproject.clog.api.SakaiProxy.class);
             }
             
             return m_instance;
         }
         else
         {
-            return (org.sakaiproject.blog.api.SakaiProxy) ComponentManager
-                    .get(org.sakaiproject.blog.api.SakaiProxy.class);
+            return (org.sakaiproject.clog.api.SakaiProxy) ComponentManager
+                    .get(org.sakaiproject.clog.api.SakaiProxy.class);
         }
     }
     
 	public static String getServerUrl()
 	{
-		org.sakaiproject.blog.api.SakaiProxy sp = getInstance();
+		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
 		return sp.getServerUrl();
 	}
 	
 	public static String getBlogPageId(String siteId)
 	{
-		org.sakaiproject.blog.api.SakaiProxy sp = getInstance();
+		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
 		return sp.getBlogPageId(siteId);
 	}
 	
 	public static String getBlogToolId(String siteId)
 	{
-		org.sakaiproject.blog.api.SakaiProxy sp = getInstance();
+		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
 		return sp.getBlogToolId(siteId);
 	}
 }

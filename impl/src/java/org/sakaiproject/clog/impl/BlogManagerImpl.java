@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.Comment;
-import org.sakaiproject.blog.api.Post;
-import org.sakaiproject.blog.api.Preferences;
-import org.sakaiproject.blog.api.Visibilities;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.clog.api.datamodel.Preferences;
+import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.BlogFunctions;
 import org.sakaiproject.clog.api.BlogManager;
 import org.sakaiproject.clog.api.BlogMember;
@@ -47,20 +47,20 @@ public class BlogManagerImpl implements BlogManager
 
 		logger.info("Registering Blog functions ...");
 
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_POST_CREATE);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_POST_READ_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_POST_UPDATE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_POST_UPDATE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_POST_DELETE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_POST_DELETE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_CREATE);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_READ_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_READ_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_UPDATE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_UPDATE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_DELETE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_COMMENT_DELETE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.BLOG_MODIFY_PERMISSIONS);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_CREATE);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_READ_ANY);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_UPDATE_ANY);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_UPDATE_OWN);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_DELETE_ANY);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_DELETE_OWN);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_CREATE);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_READ_ANY);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_READ_OWN);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_UPDATE_ANY);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_UPDATE_OWN);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_DELETE_ANY);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_DELETE_OWN);
+		sakaiProxy.registerFunction(BlogFunctions.CLOG_MODIFY_PERMISSIONS);
 
 		logger.info("Registered Blog functions ...");
 
@@ -159,7 +159,7 @@ public class BlogManagerImpl implements BlogManager
 		{
 			if (persistenceManager.deleteComment(commentId))
 			{
-				// sakaiProxy.postEvent(BLOG_COMMENT_DELETED,commentId(),post.getSiteId());
+				// sakaiProxy.postEvent(CLOG_COMMENT_DELETED,commentId(),post.getSiteId());
 				return true;
 			}
 		}

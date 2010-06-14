@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.io.Reader;
 
-import org.sakaiproject.blog.api.Comment;
-import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.BlogManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.entity.api.Entity;

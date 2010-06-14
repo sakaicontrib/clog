@@ -10,8 +10,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.Comment;
-import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;

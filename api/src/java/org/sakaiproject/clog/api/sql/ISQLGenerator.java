@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-import org.sakaiproject.blog.api.Comment;
-import org.sakaiproject.blog.api.Post;
-import org.sakaiproject.blog.api.Preferences;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.QueryBean;
 
 public interface ISQLGenerator

@@ -7,8 +7,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.Post;
-import org.sakaiproject.blog.api.Visibilities;
+import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.BlogManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;

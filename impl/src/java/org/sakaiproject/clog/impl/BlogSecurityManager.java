@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.BlogFunctions;
 import org.sakaiproject.clog.api.SakaiProxy;
 
@@ -44,7 +44,7 @@ public class BlogSecurityManager
 			//return true;
 		
 		// If the post is comment-able and the current user has blog.comment.create
-		if(post.isCommentable() && sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_COMMENT_CREATE,post.getSiteId()))
+		if(post.isCommentable() && sakaiProxy.isAllowedFunction(BlogFunctions.CLOG_COMMENT_CREATE,post.getSiteId()))
 		{
 			return true;
 		}
@@ -60,7 +60,7 @@ public class BlogSecurityManager
 	
 	public boolean canCurrentUserDeletePost(Post post) throws SecurityException
 	{
-		if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_DELETE_ANY,post.getSiteId()))
+		if(sakaiProxy.isAllowedFunction(BlogFunctions.CLOG_POST_DELETE_ANY,post.getSiteId()))
 		{
 			return true;
 		}
@@ -70,7 +70,7 @@ public class BlogSecurityManager
 		// If the current user is the author and has blog.post.delete.own
 		if(currentUser != null
 			&& currentUser.equals(post.getCreatorId())
-			&& sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_DELETE_OWN,post.getSiteId()))
+			&& sakaiProxy.isAllowedFunction(BlogFunctions.CLOG_POST_DELETE_OWN,post.getSiteId()))
 		{
 				return true;
 		}
@@ -81,7 +81,7 @@ public class BlogSecurityManager
 	public boolean canCurrentUserEditPost(Post post)
 	{
 		// This acts as an override
-		if(sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_UPDATE_ANY,post.getSiteId()))
+		if(sakaiProxy.isAllowedFunction(BlogFunctions.CLOG_POST_UPDATE_ANY,post.getSiteId()))
 		{
 			return true;
 		}
@@ -97,7 +97,7 @@ public class BlogSecurityManager
 		// If the current user is authenticated and the post author, yes.
 		if(currentUser != null
 			&& currentUser.equals(post.getCreatorId())
-			&& sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_UPDATE_OWN,post.getSiteId()))
+			&& sakaiProxy.isAllowedFunction(BlogFunctions.CLOG_POST_UPDATE_OWN,post.getSiteId()))
 		{
 				return true;
 		}
@@ -147,7 +147,7 @@ public class BlogSecurityManager
 		String threadName = Thread.currentThread().getName();
 		
 		// This acts as an override
-		if(!post.isPrivate() && (sakaiProxy.isAllowedFunction(BlogFunctions.BLOG_POST_READ_ANY,post.getSiteId()) || "IndexManager".equals(threadName)))
+		if(!post.isPrivate() && (sakaiProxy.isAllowedFunction(BlogFunctions.CLOG_POST_READ_ANY,post.getSiteId()) || "IndexManager".equals(threadName)))
 		{
 			return true;
 		}

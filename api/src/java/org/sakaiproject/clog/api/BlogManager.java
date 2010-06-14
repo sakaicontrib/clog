@@ -2,9 +2,9 @@ package org.sakaiproject.clog.api;
 
 import java.util.*;
 
-import org.sakaiproject.blog.api.Comment;
-import org.sakaiproject.blog.api.Post;
-import org.sakaiproject.blog.api.Preferences;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.EntityProducer;
 

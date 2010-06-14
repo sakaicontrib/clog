@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import org.sakaiproject.blog.api.Comment;
-import org.sakaiproject.blog.api.Visibilities;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.BlogManager;
 import org.sakaiproject.clog.api.XmlDefs;
-import org.sakaiproject.clog.cover.SakaiProxy;
+import org.sakaiproject.clog.api.cover.SakaiProxy;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.util.BaseResourceProperties;

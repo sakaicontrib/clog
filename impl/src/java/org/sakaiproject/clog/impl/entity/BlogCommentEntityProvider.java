@@ -3,7 +3,7 @@ package org.sakaiproject.clog.impl.entity;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.Comment;
+import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.BlogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
