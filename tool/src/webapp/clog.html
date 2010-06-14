@@ -17,62 +17,62 @@
 <script type="text/javascript" src="lib/jquery.cluetip.min.js"></script>
 <script type="text/javascript" src="lib/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="lib/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="js/blog_utils.js"></script>
-<script type="text/javascript" src="js/blog_permissions.js"></script>
+<script type="text/javascript" src="js/clog_utils.js"></script>
+<script type="text/javascript" src="js/clog_permissions.js"></script>
 <link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" />
 <link rel="stylesheet" type="text/css" href="/library/skin/default/tool.css" />
 <link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" />
 <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
-<link rel="stylesheet" type="text/css" href="css/blog.css" />
+<link rel="stylesheet" type="text/css" href="css/clog.css" />
 
 <script type="text/javascript">
 var arg = SakaiUtils.getParameters();
 if(arg['language'])
 {
-	$.localise('blog-translations',{language:arg['language'],loadBase: true});
+	$.localise('clog-translations',{language:arg['language'],loadBase: true});
 }
 else
-	$.localise('blog-translations');
+	$.localise('clog-translations');
 </script>
 </head>
 <body>
 
-<div id="blog_toolbar"></div>
+<div id="clog_toolbar"></div>
 
-<div id="blogMainContainer">
-	<div id="blog_content"></div>
+<div id="clogMainContainer">
+	<div id="clog_content"></div>
 </div>
 
 <!--  Templates Start -->
 
-<div id="blog_toolbar_template"><!--
+<div id="clog_toolbar_template"><!--
 <div style="overflow: hidden;" class="navIntraTool">
-	<div id="blog_toolbar_items">
-		<a id="blog_home_link" title="${blog_home_tooltip}" href="javascript:;">${blog_home_label}</a>
-		<a id="blog_view_authors_link" title="${blog_view_members_tooltip}" href="javascript:;">${blog_view_members_label}</a>
-		<a id="blog_my_blog_link" title="${blog_my_blog_tooltip}" href="javascript:;">${blog_my_blog_label}</a>
-		<a style="display: none;" id="blog_create_post_link" title="${blog_create_post_tooltip}" href="javascript:;">${blog_create_post_label}</a>
-		<a id="blog_permissions_link" title="${blog_permissions_tooltip}" href="javascript:;">${blog_permissions_label}</a>
-		<a id="blog_preferences_link" title="${blog_preferences_tooltip}" href="javascript:;">${blog_preferences_label}</a>
-		<a id="blog_recycle_bin_link" title="${blog_recycle_bin_tooltip}" href="javascript:;">${blog_recycle_bin_label}</a>
+	<div id="clog_toolbar_items">
+		<a id="clog_home_link" title="${clog_home_tooltip}" href="javascript:;">${clog_home_label}</a>
+		<a id="clog_view_authors_link" title="${clog_view_members_tooltip}" href="javascript:;">${clog_view_members_label}</a>
+		<a id="clog_my_clog_link" title="${clog_my_clog_tooltip}" href="javascript:;">${clog_my_clog_label}</a>
+		<a style="display: none;" id="clog_create_post_link" title="${clog_create_post_tooltip}" href="javascript:;">${clog_create_post_label}</a>
+		<a id="clog_permissions_link" title="${clog_permissions_tooltip}" href="javascript:;">${clog_permissions_label}</a>
+		<a id="clog_preferences_link" title="${clog_preferences_tooltip}" href="javascript:;">${clog_preferences_label}</a>
+		<a id="clog_recycle_bin_link" title="${clog_recycle_bin_tooltip}" href="javascript:;">${clog_recycle_bin_label}</a>
 	</div>
-	<div id="blog_search_bar">
-		<input id="blog_search_field" type="text"/><input type="button" value="${search}"/>
+	<div id="clog_search_bar">
+		<input id="clog_search_field" type="text"/><input type="button" value="${search}"/>
 	</div>
 </div>
 -->
 </div>
 
-<div id="blog_permissions_content_template" style="display:none"><!--
-<h2>${blog_permissions_label}</h2>
-<table id="blog_permissions_table">
+<div id="clog_permissions_content_template" style="display:none"><!--
+<h2>${clog_permissions_label}</h2>
+<table id="clog_permissions_table">
 	<thead>
 		<tr>
 			<th></th>
 			<th width="5px"></th>
-			<th align="center" colspan="6">${blog_post_label}</th>
+			<th align="center" colspan="6">${clog_post_label}</th>
 			<th width="5px"></th>
-			<th colspan="6">${blog_comment_label}</th>
+			<th colspan="6">${clog_comment_label}</th>
 		</tr>
 		<tr class="listHier">
 			<th align="left">Role</th>
@@ -97,76 +97,76 @@ else
 <tr>
 	<td align="left">${p.role}</td>
 	<td></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_post_create}checked="checked"{/if}" id="${p.role}:blog.post.create"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_post_read_any}checked="checked"{/if}" id="${p.role}:blog.post.read.any"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_post_update_any}checked="checked"{/if}" id="${p.role}:blog.post.update.any"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_post_update_own}checked="checked"{/if}" id="${p.role}:blog.post.update.own"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_post_delete_any}checked="checked"{/if}" id="${p.role}:blog.post.delete.any"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_post_delete_own}checked="checked"{/if}" id="${p.role}:blog.post.delete.own"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_create}checked="checked"{/if}" id="${p.role}:clog.post.create"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_read_any}checked="checked"{/if}" id="${p.role}:clog.post.read.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_update_any}checked="checked"{/if}" id="${p.role}:clog.post.update.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_update_own}checked="checked"{/if}" id="${p.role}:clog.post.update.own"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_delete_any}checked="checked"{/if}" id="${p.role}:clog.post.delete.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_delete_own}checked="checked"{/if}" id="${p.role}:clog.post.delete.own"/></td>
 	<td></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_comment_create}checked="checked"{/if}" id="${p.role}:blog.comment.create"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_comment_read_any}checked="checked"{/if}" id="${p.role}:blog.comment.read.any"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_comment_update_any}checked="checked"{/if}" id="${p.role}:blog.comment.update.any"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_comment_update_own}checked="checked"{/if}" id="${p.role}:blog.comment.update.own"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_comment_delete_any}checked="checked"{/if}" id="${p.role}:blog.comment.delete.any"/></td>
-	<td align="center"><input type="checkbox" class="blog_permission_checkbox" {if p.blog_comment_delete_own}checked="checked"{/if}" id="${p.role}:blog.comment.delete.own"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_create}checked="checked"{/if}" id="${p.role}:clog.comment.create"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_read_any}checked="checked"{/if}" id="${p.role}:clog.comment.read.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_update_any}checked="checked"{/if}" id="${p.role}:clog.comment.update.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_update_own}checked="checked"{/if}" id="${p.role}:clog.comment.update.own"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_delete_any}checked="checked"{/if}" id="${p.role}:clog.comment.delete.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_delete_own}checked="checked"{/if}" id="${p.role}:clog.comment.delete.own"/></td>
 </tr>
 {/for}
 </tbody>
 </table>
-<input id="blog_permissions_save_button" type="button" value="${save}"/>
+<input id="clog_permissions_save_button" type="button" value="${save}"/>
 <input type="button" value="${cancel}" onclick="return switchState('home');"/>
 -->
 </div>
 
-<div id="blog_create_post_template" style="display:none"><!--
-	<h2>${blog_post_editor_label}</h2>
+<div id="clog_create_post_template" style="display:none"><!--
+	<h2>${clog_post_editor_label}</h2>
 
 	<div style="height: 20px;"></div>
 
 	<table cols="2">
 	<tbody>
 	<tr>
-	<td><span style="font-weight: bold;">${blog_title_label}</span></td>
-	<td><input type="text" id="blog_title_field" name="title" value="${title}"/></td>
+	<td><span style="font-weight: bold;">${clog_title_label}</span></td>
+	<td><input type="text" id="clog_title_field" name="title" value="${title}"/></td>
 	</tr>
 	</tbody>
 	</table>
    	<br />
-	<span style="font-weight: bold;">${blog_content_label}</span>
+	<span style="font-weight: bold;">${clog_content_label}</span>
 	<br />
-	<textarea name="content" id="blog_content_editor">${content}</textarea>
-	<br />
-	<br />
-	<input type="checkbox" id="blog_commentable_checkbox" {if commentable}checked="checked"{/if}/>${blog_allow_comments_label}
+	<textarea name="content" id="clog_content_editor">${content}</textarea>
 	<br />
 	<br />
-    <input id="blog_post_id_field" type="hidden" value="${id}"/>
-    <input id="blog_publish_post_button" type="button" value="Publish" title="Publishing will make this post visible to others"/>
-    <input id="blog_save_post_button" type="button" value="Save as Draft" title="Saving as Draft will save your changes but will not make those changes visible to others"/>
-    <input id="blog_cancel_button" type="button" value="Cancel"/>
+	<input type="checkbox" id="clog_commentable_checkbox" {if commentable}checked="checked"{/if}/>${clog_allow_comments_label}
+	<br />
+	<br />
+    <input id="clog_post_id_field" type="hidden" value="${id}"/>
+    <input id="clog_publish_post_button" type="button" value="Publish" title="Publishing will make this post visible to others"/>
+    <input id="clog_save_post_button" type="button" value="Save as Draft" title="Saving as Draft will save your changes but will not make those changes visible to others"/>
+    <input id="clog_cancel_button" type="button" value="Cancel"/>
 -->
 </div>
 
-<div id="blog_create_comment_template" style="display:none"><!--
-	<div id="blog_post_${postId}" style="width:100%"></div>
+<div id="clog_create_comment_template" style="display:none"><!--
+	<div id="clog_post_${postId}" style="width:100%"></div>
 
 	<h3>Add your comment:</h3>
 
 	<div style="height: 20px;"></div>
 
-	<textarea name="text" id="blog_content_editor">${content}</textarea>
+	<textarea name="text" id="clog_content_editor">${content}</textarea>
 	<br />
 	<br />
-    <input id="blog_comment_id_field" type="hidden" value="${id}"/>
-    <input id="blog_save_comment_button" type="button" value="${save}"/>
+    <input id="clog_comment_id_field" type="hidden" value="${id}"/>
+    <input id="clog_save_comment_button" type="button" value="${save}"/>
     <input type="button" value="${cancel}" onclick="switchState('viewAllPosts');"/>
 -->
 </div>
 
-<div id="blog_authors_content_template" style="display:none"><!--
-	<h2>${blog_authors_label}</h2>
-	<div id="blogBloggerPager">
+<div id="clog_authors_content_template" style="display:none"><!--
+	<h2>${clog_authors_label}</h2>
+	<div id="clogcloggerPager">
 	<form>
 		<img class="first" src="/library/image/silk/control_start_blue.png"/>
 		<img class="prev" src="/library/image/silk/control_rewind_blue.png"/>
@@ -182,13 +182,13 @@ else
 		
 	</form>
 	</div>
-    <table id="blog_author_table" cols="4" class="listHier speciallistHier">
+    <table id="clog_author_table" cols="4" class="listHier speciallistHier">
 		<thead>
 		<tr>
-			<th width="20%">${blog_author_label}</th>
+			<th width="20%">${clog_author_label}</th>
 			<th width="10%">${posts}</th>
 			<th width="20%">${dateOfLastPostHeader}</th>
-			<th width="50%">${blog_number_of_comments_label}</th>
+			<th width="50%">${clog_number_of_comments_label}</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -205,24 +205,24 @@ else
 -->
 </div>
 
-<div id="blog_post_page_content_template" style="display:none"><!--
-	<a id="blog_user_posts_link" href="javascript:;">${creatorDisplayName}'s Posts</a>
+<div id="clog_post_page_content_template" style="display:none"><!--
+	<a id="clog_user_posts_link" href="javascript:;">${creatorDisplayName}'s Posts</a>
 	<div id="post_${id}" style="width:100%"></div>
 -->
 </div>
 
-<div id="blog_post_template" style="display:none"><!--
+<div id="clog_post_template" style="display:none"><!--
 	<div class="postOuterContainer">
 		<div class="postInnerContainer">
 			<span class="postOptionsPanel">
-			{if blogCurrentUserPermissions.commentCreate && commentable}
-				<a href="#" title="${blog_comment_on_post_tooltip}" onClick="switchState('createComment',{postId: '${id}'});"><img src="/library/image/silk/comment_add.png" width="16" height="16" alt="Add Comment"/></a>&nbsp;
+			{if clogCurrentUserPermissions.commentCreate && commentable}
+				<a href="#" title="${clog_comment_on_post_tooltip}" onClick="switchState('createComment',{postId: '${id}'});"><img src="/library/image/silk/comment_add.png" width="16" height="16" alt="Add Comment"/></a>&nbsp;
 			{/if}
-			{if blogCurrentUserPermissions.postDeleteAny || (blogCurrentUserPermissions.postDeleteOwn && creatorId == blogCurrentUser.id)}
-				<a href="#" title="${blog_delete_post_tooltip}" onclick="return BlogUtils.recyclePost('${id}');"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete"/></a>&nbsp;
+			{if clogCurrentUserPermissions.postDeleteAny || (clogCurrentUserPermissions.postDeleteOwn && creatorId == clogCurrentUser.id)}
+				<a href="#" title="${clog_delete_post_tooltip}" onclick="return clogUtils.recyclePost('${id}');"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete"/></a>&nbsp;
 			{/if}
-			{if blogCurrentUserPermissions.postUpdateAny || (blogCurrentUserPermissions.postUpdateOwn && creatorId == blogCurrentUser.id)}
-				<a href="#" onClick="switchState('createPost',{postId:'${id}'});" title="${blog_edit_post_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit"/></a>&nbsp;
+			{if clogCurrentUserPermissions.postUpdateAny || (clogCurrentUserPermissions.postUpdateOwn && creatorId == clogCurrentUser.id)}
+				<a href="#" onClick="switchState('createPost',{postId:'${id}'});" title="${clog_edit_post_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit"/></a>&nbsp;
 			{/if}
 			</span>
 			<div class="author">
@@ -232,10 +232,10 @@ else
 			<br/>
 			<div class="title">
 				<span>
-					<a href="#" onclick="switchState('post',{'postId':'${id}'});" title="${blog_view_post_tooltip}"><span>${title}</span></a>
+					<a href="#" onclick="switchState('post',{'postId':'${id}'});" title="${clog_view_post_tooltip}"><span>${title}</span></a>
 				</span>
 				{if private}
-				<img src="/library/image/silk/key.png" title="${blog_private_post_tooltip}" width="16" height="16"/>
+				<img src="/library/image/silk/key.png" title="${clog_private_post_tooltip}" width="16" height="16"/>
 				{/if}
 			</div>
 
@@ -245,17 +245,17 @@ else
 
 			<span id="${id}_comments" class="comments">
 					{for comment in comments}
-					<div class="blog_comment">
+					<div class="clog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
 							<div style="float:left; margin-right: 10px;"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
-							<div style="float:left;"><span>${comment.creatorDisplayName}</span><br/><span class="blog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span><br/><span class="blog_comment_date">Modified: ${new Date(comment.modifiedDate).toLocaleString()}</span></div>
+							<div style="float:left;"><span>${comment.creatorDisplayName}</span><br/><span class="clog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span><br/><span class="clog_comment_date">Modified: ${new Date(comment.modifiedDate).toLocaleString()}</span></div>
 						</div>
-						<div class="blog_comment_content">${comment.content}</div>
-						{if blogCurrentUserPermissions.commentDeleteAny || (blogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == blogCurrentUser.id)}
-							<a href="#" onclick="return BlogUtils.deleteComment('${comment.id}');" title="${blog_delete_comment_tooltip}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
+						<div class="clog_comment_content">${comment.content}</div>
+						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == clogCurrentUser.id)}
+							<a href="#" onclick="return clogUtils.deleteComment('${comment.id}');" title="${clog_delete_comment_tooltip}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
 						{/if}
-						{if blogCurrentUserPermissions.commentUpdateAny || (blogCurrentUserPermissions.commentUpdateOwn && comment.creatorId == blogCurrentUser.id)}
-							<a href="#" onClick="switchState('createComment',{postId:'${id}',commentId:'${comment.id}'});" title="${blog_edit_comment_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
+						{if clogCurrentUserPermissions.commentUpdateAny || (clogCurrentUserPermissions.commentUpdateOwn && comment.creatorId == clogCurrentUser.id)}
+							<a href="#" onClick="switchState('createComment',{postId:'${id}',commentId:'${comment.id}'});" title="${clog_edit_comment_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
 						{/if}
 					</div>
 					{/for}
@@ -265,14 +265,14 @@ else
 -->
 </div>
 
-<div id="blog_all_posts_template" style="display:none"><!--
-	<h2>${blog_worksite_posts_label}</h2>
+<div id="clog_all_posts_template" style="display:none"><!--
+	<h2>${clog_worksite_posts_label}</h2>
 	{if posts.length <= 0}
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
 	{else}
 	<div style="clear: left; margin-top: 10px;" id="viewOptions">
    		<input type="checkbox" onclick="toggleFullContent(this);"/>
-		<span>${blog_show_title_only_label}</span>
+		<span>${clog_show_title_only_label}</span>
    	</div>
 	{/if}
     <div id="postsWrapper">
@@ -294,14 +294,14 @@ else
 -->
 </div>
 
-<div id="blog_user_posts_template" style="display:none"><!--
-	<div id="blog_author_profile"></div>
+<div id="clog_user_posts_template" style="display:none"><!--
+	<div id="clog_author_profile"></div>
 	{if posts.length <= 0}
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
 	{else}
 	<div style="clear: left; margin-top: 10px;" id="viewOptions">
    		<input type="checkbox" onclick="toggleFullContent(this);"/>
-		<span>${blog_show_title_only_label}</span>
+		<span>${clog_show_title_only_label}</span>
    	</div>
 	{/if}
     <div id="postsWrapper">
@@ -323,20 +323,20 @@ else
 -->
 </div>
 
-<div id="blog_recycled_posts_template" style="display:none"><!--
-	<h2>${blog_recycle_bin_label}</h2>
+<div id="clog_recycled_posts_template" style="display:none"><!--
+	<h2>${clog_recycle_bin_label}</h2>
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
     <div id="postsWrapper">
     
-    	<input type="button" id="blog_really_delete_button" value="${del}"/>
-    	<input type="button" id="blog_restore_button" value="${restore}"/>
+    	<input type="button" id="clog_really_delete_button" value="${del}"/>
+    	<input type="button" id="clog_restore_button" value="${restore}"/>
   	    
   	 	<div id="posts">
   	    <table class="tableHeader">
 		<tbody>
 			{for post in posts}
 			<tr>
-				<td valign="top" width="20px"><input type="checkbox" id="${post.id}" class="blog_recycled_post_checkbox"/></td>
+				<td valign="top" width="20px"><input type="checkbox" id="${post.id}" class="clog_recycled_post_checkbox"/></td>
 				<td>
 					<div id="post_${post.id}"></div>
 				</td>
@@ -350,7 +350,7 @@ else
 -->
 </div>
 
-<div id="blog_posts_print_template" style="display:none"><!--
+<div id="clog_posts_print_template" style="display:none"><!--
     <div id="postsWrapper">
     	<br />
   	 	<div id="posts">
@@ -370,31 +370,31 @@ else
 -->
 </div>
 
-<div id="blog_preferences_template" style="display:none"><!--
-<h2>${blog_preferences_label}</h2>
-<fieldset id="blog_email_preferences_fieldset">
-<legend>${blog_email_alerts_label}</legend>
-<input id="blog_email_option_never_checkbox" class="blog_email_option" type="radio" name="emailPreference" value="never"/>${blog_email_never_label}
+<div id="clog_preferences_template" style="display:none"><!--
+<h2>${clog_preferences_label}</h2>
+<fieldset id="clog_email_preferences_fieldset">
+<legend>${clog_email_alerts_label}</legend>
+<input id="clog_email_option_never_checkbox" class="clog_email_option" type="radio" name="emailPreference" value="never"/>${clog_email_never_label}
 <br />
-<input id="blog_email_option_each_checkbox" class="blog_email_option" type="radio" name="emailPreference" value="each"/>${blog_email_each_label}
+<input id="clog_email_option_each_checkbox" class="clog_email_option" type="radio" name="emailPreference" value="each"/>${clog_email_each_label}
 <br />
-<input id="blog_email_option_digest_checkbox" class="blog_email_option" type="radio" name="emailPreference" value="digest"/>${blog_email_digest_label}
+<input id="clog_email_option_digest_checkbox" class="clog_email_option" type="radio" name="emailPreference" value="digest"/>${clog_email_digest_label}
 <br />
 </fieldset>
 <br />
 
-<input id="blog_preferences_save_button" type="button" value="${save}"/>
+<input id="clog_preferences_save_button" type="button" value="${save}"/>
 <input type="button" value="${cancel}" onclick="return switchState('home');"/>
 </form>
 -->
 </div>
 
-<div id="blog_search_results_template" style="display:none;"><!--
+<div id="clog_search_results_template" style="display:none;"><!--
 <h2>${searchResults}</h2>
 {for result in results}
         <b>${result.tool}:</b><a href="${result.url}">${result.title}</a>
         <br />
-        <div class="blog_search_result">${result.searchResult}</div>
+        <div class="clog_search_result">${result.searchResult}</div>
         <br />
         <br />
 {/for}
@@ -403,7 +403,7 @@ else
 
 <!--  Templates End -->
 
-<script type="text/javascript" src="js/blog.js"></script>
+<script type="text/javascript" src="js/clog.js"></script>
 <link rel="stylesheet" type="text/css" href="css/jquery.cluetip.css" />
 
 </body>
