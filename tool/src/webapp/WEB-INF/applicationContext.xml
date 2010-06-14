@@ -4,7 +4,7 @@
 <beans>
 
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
-		class="org.sakaiproject.clog.tool.entityprovider.BlogPostEntityProvider">
+		class="org.sakaiproject.clog.tool.entityprovider.ClogPostEntityProvider">
 		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
         <property name="sakaiProxy">
@@ -13,13 +13,13 @@
 	</bean>
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
-		class="org.sakaiproject.clog.tool.entityprovider.BlogAuthorEntityProvider">
+		class="org.sakaiproject.clog.tool.entityprovider.ClogAuthorEntityProvider">
 		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
 	</bean>
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
-		class="org.sakaiproject.clog.tool.entityprovider.BlogCommentEntityProvider">
+		class="org.sakaiproject.clog.tool.entityprovider.ClogCommentEntityProvider">
 		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
         <property name="sakaiProxy">
@@ -28,7 +28,7 @@
 	</bean>
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider"
-		class="org.sakaiproject.clog.tool.entityprovider.BlogPreferencesEntityProvider">
+		class="org.sakaiproject.clog.tool.entityprovider.ClogPreferencesEntityProvider">
 		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
 	</bean>
