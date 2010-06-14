@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.SakaiProxy;
+import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.component.api.ComponentManager;
 import org.sakaiproject.util.ResourceLoader;
 
