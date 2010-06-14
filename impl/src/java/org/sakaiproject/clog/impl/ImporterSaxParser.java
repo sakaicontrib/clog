@@ -1,4 +1,4 @@
-package org.sakaiproject.blog.impl;
+package org.sakaiproject.clog.impl;
 
 import java.io.StringReader;
 import java.sql.Blob;
@@ -10,9 +10,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.SakaiProxy;
-import org.sakaiproject.blog.api.datamodel.Comment;
-import org.sakaiproject.blog.api.datamodel.Post;
+import org.sakaiproject.blog.api.Comment;
+import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.clog.api.SakaiProxy;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;

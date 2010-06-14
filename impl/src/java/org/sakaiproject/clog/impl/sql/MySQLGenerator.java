@@ -15,14 +15,13 @@
 
  *************************************************************************************/
 
-package org.sakaiproject.blog.impl.sql;
+package org.sakaiproject.clog.impl.sql;
 
-public class HiperSonicGenerator extends SQLGenerator{
-	public HiperSonicGenerator(){
-		BLOB="VARBINARY"; 
+public class MySQLGenerator extends SQLGenerator {
+
+	public MySQLGenerator(){
+		BLOB="LONGBLOB";
 		BIGINT = "BIGINT";
-		CLOB="LONGVARCHAR";		
+		CLOB="MEDIUMTEXT";
 	}
-    
-
 }

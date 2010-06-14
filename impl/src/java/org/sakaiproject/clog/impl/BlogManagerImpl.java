@@ -1,4 +1,4 @@
-package org.sakaiproject.blog.impl;
+package org.sakaiproject.clog.impl;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,16 +11,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.BlogFunctions;
-import org.sakaiproject.blog.api.BlogManager;
-import org.sakaiproject.blog.api.BlogMember;
-import org.sakaiproject.blog.api.QueryBean;
-import org.sakaiproject.blog.api.SakaiProxy;
-import org.sakaiproject.blog.api.XmlDefs;
-import org.sakaiproject.blog.api.datamodel.Comment;
-import org.sakaiproject.blog.api.datamodel.Post;
-import org.sakaiproject.blog.api.datamodel.Preferences;
-import org.sakaiproject.blog.api.datamodel.Visibilities;
+import org.sakaiproject.blog.api.Comment;
+import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.blog.api.Preferences;
+import org.sakaiproject.blog.api.Visibilities;
+import org.sakaiproject.clog.api.BlogFunctions;
+import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.BlogMember;
+import org.sakaiproject.clog.api.QueryBean;
+import org.sakaiproject.clog.api.SakaiProxy;
+import org.sakaiproject.clog.api.XmlDefs;
 import org.sakaiproject.entity.api.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

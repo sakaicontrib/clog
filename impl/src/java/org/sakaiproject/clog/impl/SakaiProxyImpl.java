@@ -14,7 +14,7 @@
  * limitations under the License.
 
  *************************************************************************************/
-package org.sakaiproject.blog.impl;
+package org.sakaiproject.clog.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,11 +1,11 @@
-package org.sakaiproject.blog.impl.entity;
+package org.sakaiproject.clog.impl.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.BlogManager;
-import org.sakaiproject.blog.api.BlogMember;
+import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.BlogMember;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.entityprovider.CoreEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;

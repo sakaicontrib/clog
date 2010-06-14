@@ -15,7 +15,7 @@
 
  *************************************************************************************/
 
-package org.sakaiproject.blog.impl.sql;
+package org.sakaiproject.clog.impl.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,12 +27,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.sakaiproject.blog.api.QueryBean;
-import org.sakaiproject.blog.api.sql.ISQLGenerator;
-import org.sakaiproject.blog.api.datamodel.Comment;
-import org.sakaiproject.blog.api.datamodel.Post;
-import org.sakaiproject.blog.api.datamodel.Preferences;
-import org.sakaiproject.blog.api.datamodel.Visibilities;
+import org.sakaiproject.blog.api.Comment;
+import org.sakaiproject.blog.api.ISQLGenerator;
+import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.blog.api.Preferences;
+import org.sakaiproject.blog.api.Visibilities;
+import org.sakaiproject.clog.api.QueryBean;
 
 public class SQLGenerator implements ISQLGenerator
 {

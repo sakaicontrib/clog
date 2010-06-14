@@ -15,15 +15,15 @@
 
  *************************************************************************************/
 
-package org.sakaiproject.blog.impl;
+package org.sakaiproject.clog.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.BlogFunctions;
-import org.sakaiproject.blog.api.SakaiProxy;
-import org.sakaiproject.blog.api.datamodel.Post;
+import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.clog.api.BlogFunctions;
+import org.sakaiproject.clog.api.SakaiProxy;
 
 public class BlogSecurityManager
 {

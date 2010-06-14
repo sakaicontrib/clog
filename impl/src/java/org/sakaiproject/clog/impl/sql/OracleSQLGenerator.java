@@ -1,4 +1,4 @@
-package org.sakaiproject.blog.impl.sql;
+package org.sakaiproject.clog.impl.sql;
 
 public class OracleSQLGenerator extends SQLGenerator
 {

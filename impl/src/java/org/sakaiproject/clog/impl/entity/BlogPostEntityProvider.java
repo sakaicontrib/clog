@@ -1,4 +1,4 @@
-package org.sakaiproject.blog.impl.entity;
+package org.sakaiproject.clog.impl.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,11 +7,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.BlogManager;
-import org.sakaiproject.blog.api.QueryBean;
-import org.sakaiproject.blog.api.SakaiProxy;
-import org.sakaiproject.blog.api.datamodel.Post;
-import org.sakaiproject.blog.api.datamodel.Visibilities;
+import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.blog.api.Visibilities;
+import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.QueryBean;
+import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;

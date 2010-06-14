@@ -1,10 +1,10 @@
-package org.sakaiproject.blog.impl.entity;
+package org.sakaiproject.clog.impl.entity;
 
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.BlogManager;
-import org.sakaiproject.blog.api.datamodel.Preferences;
+import org.sakaiproject.blog.api.Preferences;
+import org.sakaiproject.clog.api.BlogManager;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.entityprovider.EntityProvider;

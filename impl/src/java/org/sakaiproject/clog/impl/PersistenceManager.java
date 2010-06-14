@@ -1,4 +1,4 @@
-package org.sakaiproject.blog.impl;
+package org.sakaiproject.clog.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,16 +10,16 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.blog.api.BlogMember;
-import org.sakaiproject.blog.api.QueryBean;
-import org.sakaiproject.blog.api.SakaiProxy;
-import org.sakaiproject.blog.api.datamodel.Comment;
-import org.sakaiproject.blog.api.datamodel.Post;
-import org.sakaiproject.blog.api.datamodel.Preferences;
-import org.sakaiproject.blog.impl.sql.HiperSonicGenerator;
-import org.sakaiproject.blog.api.sql.ISQLGenerator;
-import org.sakaiproject.blog.impl.sql.MySQLGenerator;
-import org.sakaiproject.blog.impl.sql.OracleSQLGenerator;
+import org.sakaiproject.blog.api.Comment;
+import org.sakaiproject.blog.api.ISQLGenerator;
+import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.blog.api.Preferences;
+import org.sakaiproject.blog.impl.HiperSonicGenerator;
+import org.sakaiproject.blog.impl.MySQLGenerator;
+import org.sakaiproject.blog.impl.OracleSQLGenerator;
+import org.sakaiproject.clog.api.BlogMember;
+import org.sakaiproject.clog.api.QueryBean;
+import org.sakaiproject.clog.api.SakaiProxy;
 
 public class PersistenceManager
 {

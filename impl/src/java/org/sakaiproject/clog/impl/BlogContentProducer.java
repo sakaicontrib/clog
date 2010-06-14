@@ -1,4 +1,4 @@
-package org.sakaiproject.blog.impl;
+package org.sakaiproject.clog.impl;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.io.Reader;
 
-import org.sakaiproject.blog.api.BlogManager;
-import org.sakaiproject.blog.api.QueryBean;
-import org.sakaiproject.blog.api.datamodel.Post;
-import org.sakaiproject.blog.api.datamodel.Comment;
+import org.sakaiproject.blog.api.Comment;
+import org.sakaiproject.blog.api.Post;
+import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.event.api.Event;
 import org.sakaiproject.search.api.EntityContentProducer;
