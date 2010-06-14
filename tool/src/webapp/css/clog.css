@@ -30,7 +30,7 @@ td.tdCommentHeader{
 	margin: 5px;
 }
 
-#blogMainContainer{
+#clogMainContainer{
 	margin: 5px;
 }
 
@@ -142,7 +142,7 @@ td.tdCommentHeader{
 	float: left;
 }
 
-th.blogSortableTableHeader { 
+th.clogSortableTableHeader { 
     background-image: url(../images/bg.gif);     
     cursor: pointer; 
     /*font-weight: bold; */
@@ -153,30 +153,30 @@ th.blogSortableTableHeader {
     /*margin-left: -100px; */
 }
 
-th.blogSortableTableHeaderSortUp { 
+th.clogSortableTableHeaderSortUp { 
     background-image: url(../images/asc.gif); 
     /*background-color: #3399FF;*/
 }
 
-th.blogSortableTableHeaderSortDown { 
+th.clogSortableTableHeaderSortDown { 
     background-image: url(../images/desc.gif); 
     /*background-color: #3399FF;*/
 }
 
-#blogBloggerPager{
+#clogcloggerPager{
 	float: right;
 }
 
-.blog_profile_popup{
+.clog_profile_popup{
 	display: none;
 }
 
-.blog_profile_popup_img{
+.clog_profile_popup_img{
 	float: right;
 	padding-left: 2px;
 }
 
-.blog_profile_popup_name{
+.clog_profile_popup_name{
 	width: 190px;
 	font-weight: bold;
 	font-size: bigger;
@@ -184,7 +184,7 @@ th.blogSortableTableHeaderSortDown {
 	padding-left: 5px;
 }
 
-.blog_profile_popup_name{
+.clog_profile_popup_name{
 	padding-left: 5px;
 }
 
@@ -197,21 +197,21 @@ th.blogSortableTableHeaderSortDown {
 	margin-top: 5px;
 }
 
-.cluetip-blog {
+.cluetip-clog {
 	padding: 10px;
 	border: black solid 1px;
 	background-color: white;
 }
 
-.clue-right-blog .cluetip-arrows {
+.clue-right-clog .cluetip-arrows {
   background-image: url(../images/darrowleft.gif);
 }
-.clue-left-blog .cluetip-arrows {
+.clue-left-clog .cluetip-arrows {
   background-image: url(../images/darrowright.gif);
   left: 100%;
   margin-right: -11px;
 }
-.clue-top-blog .cluetip-arrows {
+.clue-top-clog .cluetip-arrows {
   background-image: url(../images/darrowdown.gif);
   top: 100%;
   left: 50%;
@@ -219,7 +219,7 @@ th.blogSortableTableHeaderSortDown {
   height: 11px;
   width: 22px;  
 }  
-.clue-bottom-blog .cluetip-arrows {
+.clue-bottom-clog .cluetip-arrows {
   background-image: url(../images/darrowup.gif);
   top: -11px;
   left: 50%;
@@ -228,13 +228,13 @@ th.blogSortableTableHeaderSortDown {
   width: 22px;
 }
 
-.cluetip-blog div#cluetip-close {
+.cluetip-clog div#cluetip-close {
 	text-align: right;
 	margin: 0 5px 5px;
 	color: #900;
 }
 
-.blog_comment {
+.clog_comment {
 	border: black solid 1px;
 	padding: 10px;
 	margin-top: 10px;
@@ -242,24 +242,24 @@ th.blogSortableTableHeaderSortDown {
 	background-color: #FFFFEE;
 }
 
-.blog_comment_content {
+.clog_comment_content {
 	margin-bottom: 5px;
 }
 
-.blog_comment_date {
+.clog_comment_date {
 	font-style: italic;
 	font-size: smaller;
 }
 
-#blog_toolbar_items{
+#clog_toolbar_items{
 	float: left;
 }
 
-#blog_search_bar{
+#clog_search_bar{
 	float: right;
 }
 
-.blog_search_result{
+.clog_search_result{
 	margin-left: 5px;
 	margin-top: 3px;
 }
