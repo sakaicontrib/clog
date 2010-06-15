@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Comment;
-import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
@@ -20,7 +20,7 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 public class ClogCommentEntityProvider extends AbstractEntityProvider implements EntityProvider, AutoRegisterEntityProvider, 
 	Inputable, Createable, Describeable, Deleteable
 {
-	private BlogManager blogManager;
+	private ClogManager blogManager;
 	
 	private DeveloperHelperService developerService = null;
 	  
@@ -54,8 +54,8 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 		{
 			if(isNew)
 			{
-				String reference = BlogManager.REFERENCE_ROOT + "/" + siteId + "/comment/" + postId;
-				sakaiProxy.postEvent(BlogManager.BLOG_COMMENT_CREATED,reference,siteId);
+				String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/comment/" + postId;
+				sakaiProxy.postEvent(ClogManager.BLOG_COMMENT_CREATED,reference,siteId);
 				
 				// Send an email to the post author
 				blogManager.sendNewCommentAlert(comment);
@@ -77,7 +77,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 		return ENTITY_PREFIX;
 	}
 	
-	public void setBlogManager(BlogManager blogManager)
+	public void setBlogManager(ClogManager blogManager)
 	{
 		this.blogManager = blogManager;
 	}
@@ -97,7 +97,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 		String siteId = (String) params.get("siteId");
 		
 		if(blogManager.deleteComment(ref.getId()))
-			sakaiProxy.postEvent(BlogManager.BLOG_COMMENT_DELETED,ref.getId(),siteId);
+			sakaiProxy.postEvent(ClogManager.BLOG_COMMENT_DELETED,ref.getId(),siteId);
 	}
 
 	public void setDeveloperService(DeveloperHelperService developerService)

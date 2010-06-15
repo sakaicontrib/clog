@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Preferences;
-import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.entityprovider.EntityProvider;
@@ -20,7 +20,7 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 public class ClogPreferencesEntityProvider extends AbstractEntityProvider implements EntityProvider, AutoRegisterEntityProvider, 
 	Inputable, Outputable, Resolvable,Createable, Describeable
 {
-	private BlogManager blogManager;
+	private ClogManager blogManager;
 	
 	private DeveloperHelperService developerService = null;
 	  
@@ -60,12 +60,12 @@ public class ClogPreferencesEntityProvider extends AbstractEntityProvider implem
 		return ENTITY_PREFIX;
 	}
 
-	public BlogManager getBlogManager()
+	public ClogManager getBlogManager()
 	{
 		return blogManager;
 	}
 	
-	public void setBlogManager(BlogManager blogManager)
+	public void setBlogManager(ClogManager blogManager)
 	{
 		this.blogManager = blogManager;
 	}

@@ -54,7 +54,7 @@ import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.BaseResourceProperties;
-import org.sakaiproject.clog.api.BlogMember;
+import org.sakaiproject.clog.api.ClogMember;
 
 public class SakaiProxyImpl implements SakaiProxy
 {
@@ -205,13 +205,13 @@ public class SakaiProxyImpl implements SakaiProxy
 		return serverConfigurationService.getString(string);
 	}
 
-	public BlogMember getMember(String memberId)
+	public ClogMember getMember(String memberId)
 	{
 		User user;
 		try
 		{
 			user = userDirectoryService.getUser(memberId);
-			BlogMember member = new BlogMember(user);
+			ClogMember member = new ClogMember(user);
 
 			return member;
 		}
@@ -262,9 +262,9 @@ public class SakaiProxyImpl implements SakaiProxy
 	 * public List<String> getEidMaintainerSiteMembers() { // TODO Auto-generated method stub return null; }
 	 */
 
-	public List<BlogMember> getSiteMembers(String siteId)
+	public List<ClogMember> getSiteMembers(String siteId)
 	{
-		ArrayList<BlogMember> result = new ArrayList<BlogMember>();
+		ArrayList<ClogMember> result = new ArrayList<ClogMember>();
 		try
 		{
 			Site site = siteService.getSite(siteId);
@@ -274,7 +274,7 @@ public class SakaiProxyImpl implements SakaiProxy
 				try
 				{
 					User sakaiUser = userDirectoryService.getUser(userId);
-					BlogMember member = new BlogMember(sakaiUser);
+					ClogMember member = new ClogMember(sakaiUser);
 					result.add(member);
 				}
 				catch (UserNotDefinedException unde)

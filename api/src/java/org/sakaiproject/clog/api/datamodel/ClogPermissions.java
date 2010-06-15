@@ -1,6 +1,6 @@
 package org.sakaiproject.clog.api.datamodel;
 
-public class BlogPermissions
+public class ClogPermissions
 {
 	private String role;
 	private boolean postCreate;

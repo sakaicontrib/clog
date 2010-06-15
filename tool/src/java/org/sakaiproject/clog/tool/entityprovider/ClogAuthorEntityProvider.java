@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.clog.api.BlogManager;
-import org.sakaiproject.clog.api.BlogMember;
+import org.sakaiproject.clog.api.ClogManager;
+import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.entityprovider.CoreEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
@@ -21,7 +21,7 @@ import org.sakaiproject.user.api.UserDirectoryService;
 public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, 
 	Outputable, Describeable, CollectionResolvable
 {
-	private BlogManager blogManager;
+	private ClogManager blogManager;
 	
 	private UserDirectoryService userDirectoryService = null;
 	  
@@ -67,7 +67,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 
 	public Object getSampleEntity()
 	{
-		return new BlogMember();
+		return new ClogMember();
 	}
 
 	public String getEntityPrefix()
@@ -75,12 +75,12 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 		return ENTITY_PREFIX;
 	}
 
-	public BlogManager getBlogManager()
+	public ClogManager getBlogManager()
 	{
 		return blogManager;
 	}
 	
-	public void setBlogManager(BlogManager blogManager)
+	public void setBlogManager(ClogManager blogManager)
 	{
 		this.blogManager = blogManager;
 	}
@@ -89,9 +89,9 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 	    return new String[] { Formats.JSON };
 	}
 
-	public List<BlogMember> getEntities(EntityReference ref, Search search) {
+	public List<ClogMember> getEntities(EntityReference ref, Search search) {
 
-		List<BlogMember> authors = new ArrayList<BlogMember>();
+		List<ClogMember> authors = new ArrayList<ClogMember>();
 		
 		Restriction locRes = search.getRestrictionByProperty(CollectionResolvable.SEARCH_LOCATION_REFERENCE);
 		

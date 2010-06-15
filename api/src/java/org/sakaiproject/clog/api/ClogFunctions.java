@@ -1,6 +1,6 @@
 package org.sakaiproject.clog.api;
 
-public class BlogFunctions
+public class ClogFunctions
 {
 	public static final String CLOG_POST_CREATE    = "clog.post.create";
 	public static final String CLOG_POST_READ_ANY = "clog.post.read.any";

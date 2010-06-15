@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.entity.api.EntityProducer;
-import org.sakaiproject.clog.api.BlogMember;
+import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.SakaiProxy;
 
 public interface SakaiProxy
@@ -50,11 +50,11 @@ public interface SakaiProxy
 
 	public String getSakaiProperty(String string);
 
-	public BlogMember getMember(String memberId);
+	public ClogMember getMember(String memberId);
 	
 	public boolean isAutoDDL();
 
-	public List<BlogMember> getSiteMembers(String siteId);
+	public List<ClogMember> getSiteMembers(String siteId);
 	
 	public String getServerUrl();
 	

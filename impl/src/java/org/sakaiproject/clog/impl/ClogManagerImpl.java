@@ -15,9 +15,9 @@ import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
-import org.sakaiproject.clog.api.BlogFunctions;
-import org.sakaiproject.clog.api.BlogManager;
-import org.sakaiproject.clog.api.BlogMember;
+import org.sakaiproject.clog.api.ClogFunctions;
+import org.sakaiproject.clog.api.ClogManager;
+import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.XmlDefs;
@@ -27,13 +27,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class BlogManagerImpl implements BlogManager
+public class ClogManagerImpl implements ClogManager
 {
-	private Logger logger = Logger.getLogger(BlogManagerImpl.class);
+	private Logger logger = Logger.getLogger(ClogManagerImpl.class);
 
 	private PersistenceManager persistenceManager;
 
-	private BlogSecurityManager securityManager;
+	private ClogSecurityManager securityManager;
 
 	private SakaiProxy sakaiProxy;
 
@@ -47,20 +47,20 @@ public class BlogManagerImpl implements BlogManager
 
 		logger.info("Registering Blog functions ...");
 
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_CREATE);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_READ_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_UPDATE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_UPDATE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_DELETE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_POST_DELETE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_CREATE);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_READ_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_READ_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_UPDATE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_UPDATE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_DELETE_ANY);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_COMMENT_DELETE_OWN);
-		sakaiProxy.registerFunction(BlogFunctions.CLOG_MODIFY_PERMISSIONS);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_CREATE);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_READ_ANY);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_UPDATE_ANY);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_UPDATE_OWN);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_DELETE_ANY);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_DELETE_OWN);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_CREATE);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_READ_ANY);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_READ_OWN);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_UPDATE_ANY);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_UPDATE_OWN);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_DELETE_ANY);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_DELETE_OWN);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_MODIFY_PERMISSIONS);
 
 		logger.info("Registered Blog functions ...");
 
@@ -74,7 +74,7 @@ public class BlogManagerImpl implements BlogManager
 		if (importBlog2Data)
 			persistenceManager.importBlog2Data();
 
-		securityManager = new BlogSecurityManager(sakaiProxy);
+		securityManager = new ClogSecurityManager(sakaiProxy);
 	}
 
 	public Post getPost(String postId) throws Exception
@@ -194,12 +194,12 @@ public class BlogManagerImpl implements BlogManager
 		return false;
 	}
 
-	public BlogSecurityManager getSecurityManager()
+	public ClogSecurityManager getSecurityManager()
 	{
 		return securityManager;
 	}
 
-	public void setSecurityManager(BlogSecurityManager securityManager)
+	public void setSecurityManager(ClogSecurityManager securityManager)
 	{
 		this.securityManager = securityManager;
 	}
@@ -211,7 +211,7 @@ public class BlogManagerImpl implements BlogManager
 
 	private String serviceName()
 	{
-		return BlogManager.class.getName();
+		return ClogManager.class.getName();
 	}
 
 	public String archive(String siteId, Document doc, Stack stack, String archivePath, List attachments)
@@ -409,7 +409,7 @@ public class BlogManagerImpl implements BlogManager
 	 */
 	public boolean parseEntityReference(String reference, Reference ref)
 	{
-		if (!reference.startsWith(BlogManager.REFERENCE_ROOT))
+		if (!reference.startsWith(ClogManager.REFERENCE_ROOT))
 			return false;
 
 		return true;
@@ -422,7 +422,7 @@ public class BlogManagerImpl implements BlogManager
 
 	public String getEntityPrefix()
 	{
-		return BlogManager.ENTITY_PREFIX;
+		return ClogManager.ENTITY_PREFIX;
 	}
 
 	public boolean entityExists(String id)
@@ -442,10 +442,10 @@ public class BlogManagerImpl implements BlogManager
 		return false;
 	}
 
-	public List<BlogMember> getAuthors(String siteId)
+	public List<ClogMember> getAuthors(String siteId)
 	{
-		List<BlogMember> authors = sakaiProxy.getSiteMembers(siteId);
-		for (BlogMember author : authors)
+		List<ClogMember> authors = sakaiProxy.getSiteMembers(siteId);
+		for (ClogMember author : authors)
 			persistenceManager.populateAuthorData(author, siteId);
 		return authors;
 	}
@@ -514,7 +514,7 @@ public class BlogManagerImpl implements BlogManager
 			if(comment.getCreatorId().equals(post.getCreatorId()))
 				return;
 
-			BlogMember author = sakaiProxy.getMember(post.getCreatorId());
+			ClogMember author = sakaiProxy.getMember(post.getCreatorId());
 
 			String userId = author.getUserId();
 

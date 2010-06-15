@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
-import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
@@ -36,14 +36,14 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 {
 	private static final String[] EVENT_KEYS
 		= new String[] {
-			BlogManager.BLOG_POST_CREATED,
-			BlogManager.BLOG_POST_DELETED,
-			BlogManager.BLOG_POST_RECYCLED,
-			BlogManager.BLOG_POST_RESTORED,
-			BlogManager.BLOG_COMMENT_CREATED,
-			BlogManager.BLOG_COMMENT_DELETED};
+			ClogManager.BLOG_POST_CREATED,
+			ClogManager.BLOG_POST_DELETED,
+			ClogManager.BLOG_POST_RECYCLED,
+			ClogManager.BLOG_POST_RESTORED,
+			ClogManager.BLOG_COMMENT_CREATED,
+			ClogManager.BLOG_COMMENT_DELETED};
 	
-	private BlogManager blogManager;
+	private ClogManager blogManager;
 
 	private DeveloperHelperService developerService = null;
 	
@@ -143,8 +143,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		{
 			if((isNew || (mode != null && "publish".equals(mode))) && post.isReady())
 			{
-				String reference = BlogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + post.getId();
-				sakaiProxy.postEvent(BlogManager.BLOG_POST_CREATED,reference,post.getSiteId());
+				String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + post.getId();
+				sakaiProxy.postEvent(ClogManager.BLOG_POST_CREATED,reference,post.getSiteId());
 				
 				// Send an email to all site participants apart from the author
 				blogManager.sendNewPostAlert(post);
@@ -166,7 +166,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		return ENTITY_PREFIX;
 	}
 
-	public void setBlogManager(BlogManager blogManager)
+	public void setBlogManager(ClogManager blogManager)
 	{
 		this.blogManager = blogManager;
 	}
@@ -232,8 +232,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		if(blogManager.deletePost(ref.getId()))
 		{
-			String reference = BlogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + ref.getId();
-			sakaiProxy.postEvent(BlogManager.BLOG_POST_DELETED,reference,siteId);
+			String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + ref.getId();
+			sakaiProxy.postEvent(ClogManager.BLOG_POST_DELETED,reference,siteId);
 		}
 	}
 
@@ -260,8 +260,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		if(blogManager.recyclePost(postId))
 		{
-			String reference = BlogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
-			sakaiProxy.postEvent(BlogManager.BLOG_POST_RECYCLED,reference,post.getSiteId());
+			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
+			sakaiProxy.postEvent(ClogManager.BLOG_POST_RECYCLED,reference,post.getSiteId());
 			
 			return "SUCCESS";
 		}
@@ -296,8 +296,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		if(blogManager.restorePost(postId))
 		{
-			String reference = BlogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
-			sakaiProxy.postEvent(BlogManager.BLOG_POST_RESTORED,reference,post.getSiteId());
+			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
+			sakaiProxy.postEvent(ClogManager.BLOG_POST_RESTORED,reference,post.getSiteId());
 			
 			return "SUCCESS";
 		}

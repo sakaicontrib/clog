@@ -8,7 +8,7 @@ import java.io.Reader;
 
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
-import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.event.api.Event;
@@ -19,20 +19,34 @@ import org.sakaiproject.search.model.SearchBuilderItem;
 
 import org.apache.log4j.Logger;
 
-public class BlogContentProducer implements EntityContentProducer
+public class ClogContentProducer implements EntityContentProducer
 {
-	private BlogManager blogManager = null;
-	private SearchService searchService = null;
-	private SearchIndexBuilder searchIndexBuilder = null;
+	private ClogManager clogManager = null;
+	public void setClogManager(ClogManager clogManager)
+	{
+		this.clogManager = clogManager;
+	}
 	
-	private Logger logger = Logger.getLogger(BlogContentProducer.class);
+	private SearchService searchService = null;
+	public void setSearchService(SearchService searchService)
+	{
+		this.searchService = searchService;
+	}
+	
+	private SearchIndexBuilder searchIndexBuilder = null;
+	public void setSearchIndexBuilder(SearchIndexBuilder searchIndexBuilder)
+	{
+		this.searchIndexBuilder = searchIndexBuilder;
+	}
+	
+	private Logger logger = Logger.getLogger(ClogContentProducer.class);
 	
 	public void init()
 	{
-		searchService.registerFunction(BlogManager.BLOG_POST_CREATED);
-		searchService.registerFunction(BlogManager.BLOG_POST_DELETED);
-		searchService.registerFunction(BlogManager.BLOG_COMMENT_CREATED);
-		searchService.registerFunction(BlogManager.BLOG_COMMENT_DELETED);
+		searchService.registerFunction(ClogManager.BLOG_POST_CREATED);
+		searchService.registerFunction(ClogManager.BLOG_POST_DELETED);
+		searchService.registerFunction(ClogManager.BLOG_COMMENT_CREATED);
+		searchService.registerFunction(ClogManager.BLOG_COMMENT_DELETED);
 		searchIndexBuilder.registerEntityContentProducer(this);
 	}
 	
@@ -52,13 +66,13 @@ public class BlogContentProducer implements EntityContentProducer
 		
 		String eventName = event.getEvent();
 		
-		if(BlogManager.BLOG_POST_CREATED.equals(eventName)
-				|| BlogManager.BLOG_COMMENT_CREATED.equals(eventName))
+		if(ClogManager.BLOG_POST_CREATED.equals(eventName)
+				|| ClogManager.BLOG_COMMENT_CREATED.equals(eventName))
 		{
 			return SearchBuilderItem.ACTION_ADD;
 		}
-		else if(BlogManager.BLOG_POST_DELETED.equals(eventName)
-				|| BlogManager.BLOG_COMMENT_DELETED.equals(eventName))
+		else if(ClogManager.BLOG_POST_DELETED.equals(eventName)
+				|| ClogManager.BLOG_COMMENT_DELETED.equals(eventName))
 		{
 			return SearchBuilderItem.ACTION_DELETE;
 		}
@@ -118,7 +132,7 @@ public class BlogContentProducer implements EntityContentProducer
 		//{
 			try
 			{
-				Post post = blogManager.getPost(id);
+				Post post = clogManager.getPost(id);
 				String content = post.getTitle() + " " + post.getContent();
 			
 				for(Comment comment : post.getComments())
@@ -188,7 +202,7 @@ public class BlogContentProducer implements EntityContentProducer
 		
 		try
 		{
-			List<Post> posts = blogManager.getPosts(siteId);
+			List<Post> posts = clogManager.getPosts(siteId);
 		
 			for(Post post : posts)
 				refs.add(post.getReference());
@@ -258,7 +272,7 @@ public class BlogContentProducer implements EntityContentProducer
 		//{
 			try
 			{
-				Post post = blogManager.getPost(id);
+				Post post = clogManager.getPost(id);
 				return post.getTitle();
 			}
 			catch(Exception e)
@@ -302,7 +316,7 @@ public class BlogContentProducer implements EntityContentProducer
 		//{
 			try
 			{
-				Post post = blogManager.getPost(id);
+				Post post = clogManager.getPost(id);
 				return post.getUrl();
 			}
 			catch(Exception e)
@@ -337,7 +351,7 @@ public class BlogContentProducer implements EntityContentProducer
 		
 		String[] parts = ref.split(Entity.SEPARATOR);
 		
-		if(BlogManager.ENTITY_PREFIX.equals(parts[1]))
+		if(ClogManager.ENTITY_PREFIX.equals(parts[1]))
 			return true;
 		
 		return false;
@@ -347,40 +361,14 @@ public class BlogContentProducer implements EntityContentProducer
 	{
 		String eventName = event.getEvent();
 		
-		if(BlogManager.BLOG_POST_CREATED.equals(eventName)
-				|| BlogManager.BLOG_POST_DELETED.equals(eventName)
-				|| BlogManager.BLOG_COMMENT_CREATED.equals(eventName)
-				|| BlogManager.BLOG_COMMENT_DELETED.equals(eventName))
+		if(ClogManager.BLOG_POST_CREATED.equals(eventName)
+				|| ClogManager.BLOG_POST_DELETED.equals(eventName)
+				|| ClogManager.BLOG_COMMENT_CREATED.equals(eventName)
+				|| ClogManager.BLOG_COMMENT_DELETED.equals(eventName))
 		{
 			return true;
 		}
 			
 		return false;
 	}
-
-	public void setBlogManager(BlogManager blogManager)
-	{
-		this.blogManager = blogManager;
-	}
-
-	public void setSearchService(SearchService searchService)
-	{
-		this.searchService = searchService;
-	}
-
-	public SearchService getSearchService()
-	{
-		return searchService;
-	}
-
-	public void setSearchIndexBuilder(SearchIndexBuilder searchIndexBuilder)
-	{
-		this.searchIndexBuilder = searchIndexBuilder;
-	}
-
-	public SearchIndexBuilder getSearchIndexBuilder()
-	{
-		return searchIndexBuilder;
-	}
-
 }

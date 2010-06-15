@@ -2,7 +2,7 @@ package org.sakaiproject.clog.api;
 
 import org.sakaiproject.user.api.User;
 
-public class BlogMember
+public class ClogMember
 {
 	private int numberOfPosts = 0;
 	
@@ -16,11 +16,11 @@ public class BlogMember
 
 	private transient User sakaiUser = null;
 	
-	public BlogMember()
+	public ClogMember()
 	{
 	}
 	
-	public BlogMember(User user)
+	public ClogMember(User user)
 	{
 		this.sakaiUser = user;
 	}

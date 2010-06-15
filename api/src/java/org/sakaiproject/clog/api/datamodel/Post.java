@@ -7,7 +7,7 @@ import java.util.Stack;
 
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
-import org.sakaiproject.clog.api.BlogManager;
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.XmlDefs;
 import org.sakaiproject.clog.api.cover.SakaiProxy;
 import org.sakaiproject.entity.api.Entity;
@@ -169,7 +169,7 @@ public class Post implements Entity
 	 */
 	public String getReference()
 	{
-		return BlogManager.REFERENCE_ROOT + Entity.SEPARATOR + "post" + Entity.SEPARATOR + id;
+		return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + "post" + Entity.SEPARATOR + id;
 	}
 
 	/**

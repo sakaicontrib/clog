@@ -17,7 +17,7 @@ import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.impl.sql.HiperSonicGenerator;
 import org.sakaiproject.clog.impl.sql.MySQLGenerator;
 import org.sakaiproject.clog.impl.sql.OracleSQLGenerator;
-import org.sakaiproject.clog.api.BlogMember;
+import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 
@@ -709,9 +709,9 @@ public class PersistenceManager
 		return sakaiProxy;
 	}
 
-	public List<BlogMember> getPublicBloggers()
+	public List<ClogMember> getPublicBloggers()
 	{
-		List<BlogMember> members = new ArrayList<BlogMember>();
+		List<ClogMember> members = new ArrayList<ClogMember>();
 
 		Connection connection = null;
 		Statement publicST = null;
@@ -728,7 +728,7 @@ public class PersistenceManager
 			while (rs.next())
 			{
 				String userId = rs.getString(ISQLGenerator.CREATOR_ID);
-				BlogMember member = sakaiProxy.getMember(userId);
+				ClogMember member = sakaiProxy.getMember(userId);
 				String countPostsQuery = sqlGenerator.getCountPublicPosts(userId);
 				ResultSet countRS = countST.executeQuery(countPostsQuery);
 
@@ -881,7 +881,7 @@ public class PersistenceManager
 		}
 	}
 
-	public boolean populateAuthorData(BlogMember author,String siteId)
+	public boolean populateAuthorData(ClogMember author,String siteId)
 	{
 		Connection connection = null;
 		Statement st = null;

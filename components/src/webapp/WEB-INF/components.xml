@@ -23,8 +23,8 @@
 
 	</bean>
 
-	<bean id="org.sakaiproject.clog.api.BlogManager"
-    	class="org.sakaiproject.clog.impl.BlogManagerImpl"
+	<bean id="org.sakaiproject.clog.api.ClogManager"
+    	class="org.sakaiproject.clog.impl.ClogManagerImpl"
     	init-method="init">
 
           <property name="sakaiProxy">
@@ -33,11 +33,11 @@
 
     </bean>
 	
- 	<bean id="org.sakaiproject.clog.impl.BlogContentProducer"
-    	class="org.sakaiproject.clog.impl.BlogContentProducer"
+ 	<bean id="org.sakaiproject.clog.impl.ClogContentProducer"
+    	class="org.sakaiproject.clog.impl.ClogContentProducer"
     	init-method="init">
     	
-    	<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+    	<property name="clogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
     	<property name="searchService"><ref bean="org.sakaiproject.search.api.SearchService"/></property>
      	<property name="searchIndexBuilder"><ref bean="org.sakaiproject.search.api.SearchIndexBuilder" /></property>
      	

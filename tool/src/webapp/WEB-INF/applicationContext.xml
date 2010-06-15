@@ -5,7 +5,7 @@
 
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
 		class="org.sakaiproject.clog.tool.entityprovider.ClogPostEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
         <property name="sakaiProxy">
             <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
@@ -14,13 +14,13 @@
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
 		class="org.sakaiproject.clog.tool.entityprovider.ClogAuthorEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
 		<property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
 	</bean>
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
 		class="org.sakaiproject.clog.tool.entityprovider.ClogCommentEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
         <property name="sakaiProxy">
             <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
@@ -29,7 +29,7 @@
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider"
 		class="org.sakaiproject.clog.tool.entityprovider.ClogPreferencesEntityProvider">
-		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.BlogManager"/></property>
+		<property name="blogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
 		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
 	</bean>
 	
