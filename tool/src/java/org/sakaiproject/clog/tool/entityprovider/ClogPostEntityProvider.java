@@ -36,14 +36,18 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 {
 	private static final String[] EVENT_KEYS
 		= new String[] {
-			ClogManager.BLOG_POST_CREATED,
-			ClogManager.BLOG_POST_DELETED,
-			ClogManager.BLOG_POST_RECYCLED,
-			ClogManager.BLOG_POST_RESTORED,
-			ClogManager.BLOG_COMMENT_CREATED,
-			ClogManager.BLOG_COMMENT_DELETED};
+			ClogManager.CLOG_POST_CREATED,
+			ClogManager.CLOG_POST_DELETED,
+			ClogManager.CLOG_POST_RECYCLED,
+			ClogManager.CLOG_POST_RESTORED,
+			ClogManager.CLOG_COMMENT_CREATED,
+			ClogManager.CLOG_COMMENT_DELETED};
 	
-	private ClogManager blogManager;
+	private ClogManager clogManager;
+	public void setClogManager(ClogManager clogManager)
+	{
+		this.clogManager = clogManager;
+	}
 
 	private DeveloperHelperService developerService = null;
 	
@@ -70,7 +74,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 		try
 		{
-			return (blogManager.getPost(id) != null);
+			return (clogManager.getPost(id) != null);
 		}
 		catch (Exception e)
 		{
@@ -96,7 +100,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 		try
 		{
-			post = blogManager.getPost(id);
+			post = clogManager.getPost(id);
 		}
 		catch (Exception e)
 		{
@@ -139,15 +143,15 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		boolean isNew = "".equals(post.getId());
 
-		if (blogManager.savePost(post))
+		if (clogManager.savePost(post))
 		{
 			if((isNew || (mode != null && "publish".equals(mode))) && post.isReady())
 			{
 				String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + post.getId();
-				sakaiProxy.postEvent(ClogManager.BLOG_POST_CREATED,reference,post.getSiteId());
+				sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED,reference,post.getSiteId());
 				
 				// Send an email to all site participants apart from the author
-				blogManager.sendNewPostAlert(post);
+				clogManager.sendNewPostAlert(post);
 			}
 			
 			return post.getId();
@@ -164,11 +168,6 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	public String getEntityPrefix()
 	{
 		return ENTITY_PREFIX;
-	}
-
-	public void setBlogManager(ClogManager blogManager)
-	{
-		this.blogManager = blogManager;
 	}
 
 	public String[] getHandledOutputFormats()
@@ -213,7 +212,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 		try
 		{
-			posts = blogManager.getPosts(query);
+			posts = clogManager.getPosts(query);
 		}
 		catch (Exception e)
 		{
@@ -230,10 +229,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		String siteId = (String) params.get("siteId");
 		
-		if(blogManager.deletePost(ref.getId()))
+		if(clogManager.deletePost(ref.getId()))
 		{
 			String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + ref.getId();
-			sakaiProxy.postEvent(ClogManager.BLOG_POST_DELETED,reference,siteId);
+			sakaiProxy.postEvent(ClogManager.CLOG_POST_DELETED,reference,siteId);
 		}
 	}
 
@@ -249,7 +248,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		try
 		{
-			post = blogManager.getPost(postId);
+			post = clogManager.getPost(postId);
 		}
 		catch(Exception e)
 		{
@@ -258,10 +257,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		if(post == null)
 			throw new IllegalArgumentException("Invalid post id");
 		
-		if(blogManager.recyclePost(postId))
+		if(clogManager.recyclePost(postId))
 		{
 			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
-			sakaiProxy.postEvent(ClogManager.BLOG_POST_RECYCLED,reference,post.getSiteId());
+			sakaiProxy.postEvent(ClogManager.CLOG_POST_RECYCLED,reference,post.getSiteId());
 			
 			return "SUCCESS";
 		}
@@ -285,7 +284,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		try
 		{
-			post = blogManager.getPost(postId);
+			post = clogManager.getPost(postId);
 		}
 		catch(Exception e)
 		{
@@ -294,10 +293,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		if(post == null)
 			throw new IllegalArgumentException("Invalid post id");
 		
-		if(blogManager.restorePost(postId))
+		if(clogManager.restorePost(postId))
 		{
 			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
-			sakaiProxy.postEvent(ClogManager.BLOG_POST_RESTORED,reference,post.getSiteId());
+			sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED,reference,post.getSiteId());
 			
 			return "SUCCESS";
 		}
@@ -311,7 +310,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	public String handleImport1(EntityReference ref)
 	{
 		if(allowImportAction)
-			blogManager.importBlog1Data();
+			clogManager.importBlog1Data();
 		return "SUCCESS";
 	}
 	
@@ -319,7 +318,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	public String handleImport2(EntityReference ref)
 	{
 		if(allowImportAction)
-			blogManager.importBlog2Data();
+			clogManager.importBlog2Data();
 		return "SUCCESS";
 	}
 
@@ -328,7 +327,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	 */
 	public String getAssociatedToolId()
 	{
-		return "blogger";
+		return "sakai.clog";
 	}
 
 	/**

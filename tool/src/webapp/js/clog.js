@@ -4,6 +4,7 @@ var clogCurrentUserPermissions = null;
 var clogCurrentUserPreferences = null;
 var clogCurrentPost = null;
 var clogCurrentPosts = null;
+var clogCurrentState = null;
 var clogCurrentUser = null;
 var clogHomeState = null;
 var clogOnMyWorkspace = false;
@@ -91,12 +92,16 @@ var clogOnMyWorkspace = false;
 
 	if(window.frameElement)
 		window.frameElement.style.minHeight = '600px';
+
 	
 	// Now switch into the requested state
 	switchState(arg.state,arg);
 })();
 
 function switchState(state,arg) {
+
+	clogCurrentState = state;
+
 	$('#cluetip').hide();
 
 	if(clogCurrentUserPermissions.postCreate)
@@ -107,7 +112,7 @@ function switchState(state,arg) {
 	if('home' === state) {
 		switchState(clogHomeState,arg);
 	}
-	if('viewAllPosts' === state) {
+	else if('viewAllPosts' === state) {
 
 		ClogUtils.setPostsForCurrentSite();
 			
@@ -333,13 +338,21 @@ function switchState(state,arg) {
 		   	success : function(data) {
 
 				var posts = data['clog-post_collection'];
+
+				clogRecycledPosts = posts;
 	 			
 				SakaiUtils.renderTrimpathTemplate('clog_recycled_posts_template',{'posts':posts},'clog_content');
 	 			for(var i=0,j=posts.length;i<j;i++)
 					SakaiUtils.renderTrimpathTemplate('clog_post_template',posts[i],'post_' + posts[i].id);
 
-				$('#clog_really_delete_button').bind('click',ClogUtils.deleteSelectedPosts);
-				$('#clog_restore_button').bind('click',ClogUtils.restoreSelectedPosts);
+				if(posts.length > 0) {
+					$('#clog_really_delete_button').bind('click',ClogUtils.deleteSelectedPosts);
+					$('#clog_restore_button').bind('click',ClogUtils.restoreSelectedPosts);
+				}
+				else {
+					$('#clog_really_delete_button').attr('disabled','disabled');
+					$('#clog_restore_button').attr('disabled','disabled');
+				}
 
 	 			if(window.frameElement) {
 	 				$(document).ready(function() {

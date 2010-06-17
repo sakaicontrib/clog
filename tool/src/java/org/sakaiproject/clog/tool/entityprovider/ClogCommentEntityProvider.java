@@ -20,7 +20,11 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 public class ClogCommentEntityProvider extends AbstractEntityProvider implements EntityProvider, AutoRegisterEntityProvider, 
 	Inputable, Createable, Describeable, Deleteable
 {
-	private ClogManager blogManager;
+	private ClogManager clogManager;
+	public void setClogManager(ClogManager clogManager)
+	{
+		this.clogManager = clogManager;
+	}
 	
 	private DeveloperHelperService developerService = null;
 	  
@@ -50,15 +54,15 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 		
 		boolean isNew = "".equals(comment.getId());
 		
-		if(blogManager.saveComment(comment))
+		if(clogManager.saveComment(comment))
 		{
 			if(isNew)
 			{
 				String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/comment/" + postId;
-				sakaiProxy.postEvent(ClogManager.BLOG_COMMENT_CREATED,reference,siteId);
+				sakaiProxy.postEvent(ClogManager.CLOG_COMMENT_CREATED,reference,siteId);
 				
 				// Send an email to the post author
-				blogManager.sendNewCommentAlert(comment);
+				clogManager.sendNewCommentAlert(comment);
 			}
 			
 			return comment.getId();
@@ -76,11 +80,6 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 	{
 		return ENTITY_PREFIX;
 	}
-	
-	public void setBlogManager(ClogManager blogManager)
-	{
-		this.blogManager = blogManager;
-	}
 
 	public String[] getHandledOutputFormats() {
 	    return new String[] { Formats.JSON };
@@ -96,8 +95,8 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 		
 		String siteId = (String) params.get("siteId");
 		
-		if(blogManager.deleteComment(ref.getId()))
-			sakaiProxy.postEvent(ClogManager.BLOG_COMMENT_DELETED,ref.getId(),siteId);
+		if(clogManager.deleteComment(ref.getId()))
+			sakaiProxy.postEvent(ClogManager.CLOG_COMMENT_DELETED,ref.getId(),siteId);
 	}
 
 	public void setDeveloperService(DeveloperHelperService developerService)

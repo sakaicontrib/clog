@@ -10,14 +10,14 @@ import org.sakaiproject.entity.api.EntityProducer;
 
 public interface ClogManager extends EntityProducer
 {
-	public static final String ENTITY_PREFIX = "blog";
+	public static final String ENTITY_PREFIX = "clog";
 	public static final String REFERENCE_ROOT = Entity.SEPARATOR + ENTITY_PREFIX;
-	public static final String BLOG_POST_CREATED = "blog.post.created";
-	public static final String BLOG_POST_DELETED = "blog.post.deleted";
-	public static final String BLOG_COMMENT_CREATED = "blog.comment.created";
-	public static final String BLOG_COMMENT_DELETED = "blog.comment.deleted";
-	public static final String BLOG_POST_RECYCLED = "blog.post.recycled";
-	public static final String BLOG_POST_RESTORED = "blog.post.restored";
+	public static final String CLOG_POST_CREATED = "clog.post.created";
+	public static final String CLOG_POST_DELETED = "clog.post.deleted";
+	public static final String CLOG_COMMENT_CREATED = "clog.comment.created";
+	public static final String CLOG_COMMENT_DELETED = "clog.comment.deleted";
+	public static final String CLOG_POST_RECYCLED = "clog.post.recycled";
+	public static final String CLOG_POST_RESTORED = "clog.post.restored";
 	
     public Post getPost(String postId) throws Exception;
 

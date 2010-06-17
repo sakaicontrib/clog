@@ -9,7 +9,6 @@ import java.io.Reader;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogManager;
-import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.event.api.Event;
 import org.sakaiproject.search.api.EntityContentProducer;
@@ -43,10 +42,10 @@ public class ClogContentProducer implements EntityContentProducer
 	
 	public void init()
 	{
-		searchService.registerFunction(ClogManager.BLOG_POST_CREATED);
-		searchService.registerFunction(ClogManager.BLOG_POST_DELETED);
-		searchService.registerFunction(ClogManager.BLOG_COMMENT_CREATED);
-		searchService.registerFunction(ClogManager.BLOG_COMMENT_DELETED);
+		searchService.registerFunction(ClogManager.CLOG_POST_CREATED);
+		searchService.registerFunction(ClogManager.CLOG_POST_DELETED);
+		searchService.registerFunction(ClogManager.CLOG_COMMENT_CREATED);
+		searchService.registerFunction(ClogManager.CLOG_COMMENT_DELETED);
 		searchIndexBuilder.registerEntityContentProducer(this);
 	}
 	
@@ -66,43 +65,19 @@ public class ClogContentProducer implements EntityContentProducer
 		
 		String eventName = event.getEvent();
 		
-		if(ClogManager.BLOG_POST_CREATED.equals(eventName)
-				|| ClogManager.BLOG_COMMENT_CREATED.equals(eventName))
+		if(ClogManager.CLOG_POST_CREATED.equals(eventName)
+				|| ClogManager.CLOG_COMMENT_CREATED.equals(eventName))
 		{
 			return SearchBuilderItem.ACTION_ADD;
 		}
-		else if(ClogManager.BLOG_POST_DELETED.equals(eventName)
-				|| ClogManager.BLOG_COMMENT_DELETED.equals(eventName))
+		else if(ClogManager.CLOG_POST_DELETED.equals(eventName)
+				|| ClogManager.CLOG_COMMENT_DELETED.equals(eventName))
 		{
 			return SearchBuilderItem.ACTION_DELETE;
 		}
 		else
 			return SearchBuilderItem.ACTION_UNKNOWN;
 	}
-
-	/*
-	public List getAllContent()
-	{
-		if(logger.isDebugEnabled())
-			logger.debug("getAllContent()");
-		
-		List refs = new ArrayList();
-		
-		try
-		{
-			List<Post> posts = blogManager.getPosts(new QueryBean());
-		
-			for(Post post : posts)
-				refs.add(post.getReference());
-		}
-		catch(Exception e)
-		{
-			logger.error("Caught exception whilst getting all content",e);
-		}
-		
-		return refs;
-	}
-	*/
 
 	public String getContainer(String ref)
 	{
@@ -128,23 +103,20 @@ public class ClogContentProducer implements EntityContentProducer
 			id = parts[4];
 		}
 		
-		//if("post".equals(type))
-		//{
-			try
-			{
-				Post post = clogManager.getPost(id);
-				String content = post.getTitle() + " " + post.getContent();
-			
-				for(Comment comment : post.getComments())
-					content += " " + comment.getContent();
-			
-				return content;
-			}
-			catch(Exception e)
-			{
-				logger.error("Caught exception whilst getting content for post '" + id + "'",e);
-			}
-		//}
+		try
+		{
+			Post post = clogManager.getPost(id);
+			String content = post.getTitle() + " " + post.getContent();
+		
+			for(Comment comment : post.getComments())
+				content += " " + comment.getContent();
+		
+			return content;
+		}
+		catch(Exception e)
+		{
+			logger.error("Caught exception whilst getting content for post '" + id + "'",e);
+		}
 		
 		return null;
 	}
@@ -161,7 +133,6 @@ public class ClogContentProducer implements EntityContentProducer
 	{
 		if(logger.isDebugEnabled())
 			logger.debug("getCustomProperties(" + ref + ")");
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -170,7 +141,6 @@ public class ClogContentProducer implements EntityContentProducer
 		if(logger.isDebugEnabled())
 			logger.debug("getCustomRDF(" + ref + ")");
 		
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -233,7 +203,6 @@ public class ClogContentProducer implements EntityContentProducer
 		{
 			String id = parts[3];
 			return id;
-			//return forumService.getIdOfSiteContainingMessage(id);
 		}
 		else if(parts.length == 5)
 		{
@@ -249,7 +218,6 @@ public class ClogContentProducer implements EntityContentProducer
 		if(logger.isDebugEnabled())
 			logger.debug("getSubType(" + ref + ")");
 		
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -268,25 +236,22 @@ public class ClogContentProducer implements EntityContentProducer
 			id = parts[4];
 		}
 		
-		//if("post".equals(type))
-		//{
-			try
-			{
-				Post post = clogManager.getPost(id);
-				return post.getTitle();
-			}
-			catch(Exception e)
-			{
-				logger.error("Caught exception whilst getting title for post '" + id + "'",e);
-			}
-		//}
-		
+		try
+		{
+			Post post = clogManager.getPost(id);
+			return post.getTitle();
+		}
+		catch(Exception e)
+		{
+			logger.error("Caught exception whilst getting title for post '" + id + "'",e);
+		}
+	
 		return "Unrecognised";
 	}
 
 	public String getTool()
 	{
-		return "Blog";
+		return "Clog";
 	}
 
 	public String getType(String ref)
@@ -294,7 +259,7 @@ public class ClogContentProducer implements EntityContentProducer
 		if(logger.isDebugEnabled())
 			logger.debug("getType(" + ref + ")");
 		
-		return "blog";
+		return "clog";
 	}
 
 	public String getUrl(String ref)
@@ -312,18 +277,15 @@ public class ClogContentProducer implements EntityContentProducer
 			id = parts[4];
 		}
 		
-		//if("post".equals(type))
-		//{
-			try
-			{
-				Post post = clogManager.getPost(id);
-				return post.getUrl();
-			}
-			catch(Exception e)
-			{
-				logger.error("Caught exception whilst getting url for post '" + id + "'",e);
-			}
-		//}
+		try
+		{
+			Post post = clogManager.getPost(id);
+			return post.getUrl();
+		}
+		catch(Exception e)
+		{
+			logger.error("Caught exception whilst getting url for post '" + id + "'",e);
+		}
 		
 		return null;
 	}
@@ -361,10 +323,10 @@ public class ClogContentProducer implements EntityContentProducer
 	{
 		String eventName = event.getEvent();
 		
-		if(ClogManager.BLOG_POST_CREATED.equals(eventName)
-				|| ClogManager.BLOG_POST_DELETED.equals(eventName)
-				|| ClogManager.BLOG_COMMENT_CREATED.equals(eventName)
-				|| ClogManager.BLOG_COMMENT_DELETED.equals(eventName))
+		if(ClogManager.CLOG_POST_CREATED.equals(eventName)
+				|| ClogManager.CLOG_POST_DELETED.equals(eventName)
+				|| ClogManager.CLOG_COMMENT_CREATED.equals(eventName)
+				|| ClogManager.CLOG_COMMENT_DELETED.equals(eventName))
 		{
 			return true;
 		}

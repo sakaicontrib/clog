@@ -176,7 +176,7 @@ var ClogUtils;
 			dataType : 'text',
 			async : false,
 		   	success : function(result) {
-				switchState('viewAllPosts');
+				switchState(clogCurrentState);
 			},
 			error : function(xmlHttpRequest,status,error) {
 				alert("Failed to recycle post. Status: " + status + '. Error: ' + error);

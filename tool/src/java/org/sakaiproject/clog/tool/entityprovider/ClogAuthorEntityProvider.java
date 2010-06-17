@@ -21,7 +21,11 @@ import org.sakaiproject.user.api.UserDirectoryService;
 public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, 
 	Outputable, Describeable, CollectionResolvable
 {
-	private ClogManager blogManager;
+	private ClogManager clogManager;
+	public void setClogManager(ClogManager clogManager)
+	{
+		this.clogManager = clogManager;
+	}
 	
 	private UserDirectoryService userDirectoryService = null;
 	  
@@ -75,16 +79,6 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 		return ENTITY_PREFIX;
 	}
 
-	public ClogManager getBlogManager()
-	{
-		return blogManager;
-	}
-	
-	public void setBlogManager(ClogManager blogManager)
-	{
-		this.blogManager = blogManager;
-	}
-
 	public String[] getHandledOutputFormats() {
 	    return new String[] { Formats.JSON };
 	}
@@ -102,7 +96,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
         
         	try
         	{
-        		authors = blogManager.getAuthors(context);
+        		authors = clogManager.getAuthors(context);
         	}
         	catch (Exception e)
         	{

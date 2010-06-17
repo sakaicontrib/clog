@@ -197,6 +197,18 @@ public class SakaiProxyImpl implements SakaiProxy
 		String userId = getCurrentUserId();
 		if(userId == null)
 			return false;
+		
+		try
+		{
+			Site adminWorkspace = siteService.getSite("!admin");
+			Set<String> users = adminWorkspace.getUsers();
+			if(users.contains(userId))
+				return true;
+		}
+		catch(Exception e)
+		{
+		}
+		
 		return userId.equals(userDirectoryService.ADMIN_ID);
 	}
 
@@ -615,12 +627,12 @@ public class SakaiProxyImpl implements SakaiProxy
 		return "";
 	}
 
-	public String getBlogPageId(String siteId)
+	public String getClogPageId(String siteId)
 	{
 		try
 		{
 			Site site = siteService.getSite(siteId);
-			ToolConfiguration tc = site.getToolForCommonId("blogger");
+			ToolConfiguration tc = site.getToolForCommonId("sakai.clog");
 			return tc.getPageId();
 		}
 		catch (Exception e)
@@ -629,12 +641,12 @@ public class SakaiProxyImpl implements SakaiProxy
 		}
 	}
 
-	public String getBlogToolId(String siteId)
+	public String getClogToolId(String siteId)
 	{
 		try
 		{
 			Site site = siteService.getSite(siteId);
-			ToolConfiguration tc = site.getToolForCommonId("blogger");
+			ToolConfiguration tc = site.getToolForCommonId("sakai.clog");
 			return tc.getId();
 		}
 		catch (Exception e)

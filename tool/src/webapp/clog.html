@@ -166,7 +166,7 @@ else
 
 <div id="clog_authors_content_template" style="display:none"><!--
 	<h2>${clog_authors_label}</h2>
-	<div id="clogcloggerPager">
+	<div id="clogAuthorPager">
 	<form>
 		<img class="first" src="/library/image/silk/control_start_blue.png"/>
 		<img class="prev" src="/library/image/silk/control_rewind_blue.png"/>
@@ -213,16 +213,21 @@ else
 
 <div id="clog_post_template" style="display:none"><!--
 	<div class="postOuterContainer">
+		{if 'RECYCLED' === visibility && !clogCurrentUserPermissions.postDeleteAny}
+			<span>POST DELETED</span>
+		{else}
 		<div class="postInnerContainer">
 			<span class="postOptionsPanel">
+			{if 'RECYCLED' != visibility}
 			{if clogCurrentUserPermissions.commentCreate && commentable}
 				<a href="#" title="${clog_comment_on_post_tooltip}" onClick="switchState('createComment',{postId: '${id}'});"><img src="/library/image/silk/comment_add.png" width="16" height="16" alt="Add Comment"/></a>&nbsp;
 			{/if}
-			{if clogCurrentUserPermissions.postDeleteAny || (clogCurrentUserPermissions.postDeleteOwn && creatorId == clogCurrentUser.id)}
-				<a href="#" title="${clog_delete_post_tooltip}" onclick="return clogUtils.recyclePost('${id}');"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete"/></a>&nbsp;
+			{if clogCurrentUser.id == '!admin' || clogCurrentUserPermissions.postDeleteAny || (clogCurrentUserPermissions.postDeleteOwn && creatorId == clogCurrentUser.id)}
+				<a href="#" title="${clog_delete_post_tooltip}" onclick="return ClogUtils.recyclePost('${id}');"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete"/></a>&nbsp;
 			{/if}
 			{if clogCurrentUserPermissions.postUpdateAny || (clogCurrentUserPermissions.postUpdateOwn && creatorId == clogCurrentUser.id)}
 				<a href="#" onClick="switchState('createPost',{postId:'${id}'});" title="${clog_edit_post_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit"/></a>&nbsp;
+			{/if}
 			{/if}
 			</span>
 			<div class="author">
@@ -252,7 +257,7 @@ else
 						</div>
 						<div class="clog_comment_content">${comment.content}</div>
 						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == clogCurrentUser.id)}
-							<a href="#" onclick="return clogUtils.deleteComment('${comment.id}');" title="${clog_delete_comment_tooltip}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
+							<a href="#" onclick="return ClogUtils.deleteComment('${comment.id}');" title="${clog_delete_comment_tooltip}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
 						{/if}
 						{if clogCurrentUserPermissions.commentUpdateAny || (clogCurrentUserPermissions.commentUpdateOwn && comment.creatorId == clogCurrentUser.id)}
 							<a href="#" onClick="switchState('createComment',{postId:'${id}',commentId:'${comment.id}'});" title="${clog_edit_comment_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
@@ -261,6 +266,7 @@ else
 					{/for}
 			</span>
 		</div>
+		{/if}
 	</div>
 -->
 </div>

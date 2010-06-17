@@ -54,15 +54,15 @@ public class SakaiProxy
 		return sp.getServerUrl();
 	}
 	
-	public static String getBlogPageId(String siteId)
+	public static String getClogPageId(String siteId)
 	{
 		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
-		return sp.getBlogPageId(siteId);
+		return sp.getClogPageId(siteId);
 	}
 	
-	public static String getBlogToolId(String siteId)
+	public static String getClogToolId(String siteId)
 	{
 		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
-		return sp.getBlogToolId(siteId);
+		return sp.getClogToolId(siteId);
 	}
 }

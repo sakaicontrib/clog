@@ -20,7 +20,11 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 public class ClogPreferencesEntityProvider extends AbstractEntityProvider implements EntityProvider, AutoRegisterEntityProvider, 
 	Inputable, Outputable, Resolvable,Createable, Describeable
 {
-	private ClogManager blogManager;
+	private ClogManager clogManager;
+	public void setClogManager(ClogManager clogManager)
+	{
+		this.clogManager = clogManager;
+	}
 	
 	private DeveloperHelperService developerService = null;
 	  
@@ -42,7 +46,7 @@ public class ClogPreferencesEntityProvider extends AbstractEntityProvider implem
 		preferences.setSiteId(siteId);
 		preferences.setEmailFrequency(emailFrequency);
 		
-		if(blogManager.savePreferences(preferences))
+		if(clogManager.savePreferences(preferences))
 		{
 			return "SUCCESS";
 		}
@@ -58,16 +62,6 @@ public class ClogPreferencesEntityProvider extends AbstractEntityProvider implem
 	public String getEntityPrefix()
 	{
 		return ENTITY_PREFIX;
-	}
-
-	public ClogManager getBlogManager()
-	{
-		return blogManager;
-	}
-	
-	public void setBlogManager(ClogManager blogManager)
-	{
-		this.blogManager = blogManager;
 	}
 
 	public String[] getHandledOutputFormats() {
@@ -91,6 +85,6 @@ public class ClogPreferencesEntityProvider extends AbstractEntityProvider implem
 	public Object getEntity(EntityReference ref)
 	{
 		String siteId = ref.getId();
-		return blogManager.getPreferences(siteId,null);
+		return clogManager.getPreferences(siteId,null);
 	}
 }
