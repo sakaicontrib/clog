@@ -113,12 +113,12 @@ public class ClogContentProducer implements EntityContentProducer
 			 
 			 SearchUtils.appendCleanString(post.getTitle(),sb);
 			 
-			 for (HTMLParser hp = new HTMLParser(post.getContent()); hp.hasNext();)
+			 for (HTMLParser hp = new HTMLParser("<p>" + post.getContent() + "</p>"); hp.hasNext();)
 				 SearchUtils.appendCleanString(hp.next(), sb);
 		
 			 for(Comment comment : post.getComments())
 			 {	
-				for (HTMLParser hp = new HTMLParser(comment.getContent()); hp.hasNext();)
+				for (HTMLParser hp = new HTMLParser("<p>" + comment.getContent() + "</p>"); hp.hasNext();)
 					SearchUtils.appendCleanString(hp.next(), sb);
 			 }
 		
