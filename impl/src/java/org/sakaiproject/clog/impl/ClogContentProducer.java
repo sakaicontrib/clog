@@ -14,6 +14,8 @@ import org.sakaiproject.event.api.Event;
 import org.sakaiproject.search.api.EntityContentProducer;
 import org.sakaiproject.search.api.SearchIndexBuilder;
 import org.sakaiproject.search.api.SearchService;
+import org.sakaiproject.search.api.SearchUtils;
+import org.sakaiproject.search.util.HTMLParser;
 import org.sakaiproject.search.model.SearchBuilderItem;
 
 import org.apache.log4j.Logger;
@@ -106,12 +108,21 @@ public class ClogContentProducer implements EntityContentProducer
 		try
 		{
 			Post post = clogManager.getPost(id);
-			String content = post.getTitle() + " " + post.getContent();
+			
+			 StringBuilder sb = new StringBuilder();
+			 
+			 SearchUtils.appendCleanString(post.getTitle(),sb);
+			 
+			 for (HTMLParser hp = new HTMLParser(post.getContent()); hp.hasNext();)
+				 SearchUtils.appendCleanString(hp.next(), sb);
 		
-			for(Comment comment : post.getComments())
-				content += " " + comment.getContent();
+			 for(Comment comment : post.getComments())
+			 {	
+				for (HTMLParser hp = new HTMLParser(comment.getContent()); hp.hasNext();)
+					SearchUtils.appendCleanString(hp.next(), sb);
+			 }
 		
-			return content;
+			 return sb.toString();
 		}
 		catch(Exception e)
 		{
