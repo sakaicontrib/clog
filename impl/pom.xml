@@ -54,6 +54,11 @@
 		</dependency>
 
 		<dependency>
+		    <groupId>org.sakaiproject.search</groupId>
+		    <artifactId>search-util</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.sakaiproject.kernel</groupId>
 			<artifactId>sakai-component-manager</artifactId>
       		<scope>provided</scope>
