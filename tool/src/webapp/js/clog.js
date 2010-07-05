@@ -144,15 +144,6 @@ function switchState(state,arg) {
 
  				$(document).ready(function() {
  					ClogUtils.attachProfilePopup();
- 					/*
-					$('a.showPostsLink').cluetip({
-						width: '620px',
-						cluetipClass: 'clog',
- 						dropShadow: false,
-						arrows: true,
-						showTitle: false
-						});
-						*/
   									
   					$("#clog_author_table").tablesorter({
 							widgets: ['zebra'],
