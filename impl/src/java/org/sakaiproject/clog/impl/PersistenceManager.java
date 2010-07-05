@@ -86,7 +86,7 @@ public class PersistenceManager
 			}
 			catch (Exception e)
 			{
-				logger.error("Caught exception whilst setting up tables. Rolling back ...", e);
+				logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage() + ". Rolling back ...");
 				connection.rollback();
 			}
 			finally
@@ -96,7 +96,7 @@ public class PersistenceManager
 		}
 		catch (Exception e)
 		{
-			logger.error("Caught exception whilst setting up tables", e);
+			logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage());
 		}
 		finally
 		{
