@@ -5,7 +5,7 @@
 	
   	<modelVersion>4.0.0</modelVersion>
   	
-  	<name>BLOG TOOL</name>
+  	<name>CLOG TOOL</name>
   	<artifactId>clog-tool</artifactId>
   	<groupId>org.sakaiproject.clog</groupId>
   
