@@ -145,3 +145,8 @@ th.clogSortableTableHeaderSortDown {
 	margin-left: 5px;
 	margin-top: 3px;
 }
+
+#clog_content table td { padding: 3px; }
+#clog_content table tr.odd td {
+	background-color: #FFFFC0;
+}

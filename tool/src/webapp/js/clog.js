@@ -156,7 +156,7 @@ function switchState(state,arg) {
 	 						{
 	 							2: {sorter: "isoDate"},
 	 							3: {sorter: "isoDate"}
-	 						} }).tablesorterPager({container: $("#clogcloggerPager"),positionFixed: false});
+	 						} }).tablesorterPager({container: $("#clogAuthorPager"),positionFixed: false});
 	 						
  					if(window.frameElement)
 	 					setMainFrameHeight(window.frameElement.id);
