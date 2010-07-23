@@ -98,20 +98,26 @@ var ClogUtils;
 			}
 	   	});
 	}
+	
+	ClogUtils.autosavePost = function() {
+		return ClogUtils.storePost('AUTOSAVE');
+	}
 
 	ClogUtils.savePostAsDraft = function() {
-		ClogUtils.storePost('PRIVATE');
+		return ClogUtils.storePost('PRIVATE');
 	}
 
 	ClogUtils.publishPost = function() {
-		ClogUtils.storePost('READY',true);
+		return ClogUtils.storePost('READY',true);
 	}
 
 	ClogUtils.publicisePost = function() {
-		ClogUtils.storePost('PUBLIC');
+		return ClogUtils.storePost('PUBLIC');
 	}
 		
 	ClogUtils.storePost = function(visibility,isPublish) {
+
+		var success = false;
 
 		var post = {
 				'id':$('#clog_post_id_field').val(),
@@ -121,6 +127,11 @@ var ClogUtils;
 				'content':FCKeditorAPI.GetInstance('clog_content_editor').GetXHTML(true),
 				'siteId':clogSiteId
 				};
+
+		if(post.title.length < 4) {
+			// The title has got to be at least 4 chars.
+			return 0;
+		}
 				
 		if(isPublish) post['mode'] = 'publish';
 
@@ -132,12 +143,22 @@ var ClogUtils;
 			async : false,
 			dataType: 'text',
 		   	success : function(id) {
-				switchState(clogHomeState);
+		   		if('AUTOSAVE' !== visibility) {
+					switchState(clogHomeState);
+				}
+				else {
+					clogCurrentPost.id = id;
+					$('#clog_post_id_field').val(id);
+				}
+
+				success = true;
 			},
 			error : function(xmlHttpRequest,status,error) {
 				alert("Failed to store post. Status: " + status + '. Error: ' + error);
 			}
 	  	});
+
+		return success;
 	}
 	
 	ClogUtils.saveComment = function() {
@@ -165,6 +186,21 @@ var ClogUtils;
 	  	});
 
 		return false;
+	}
+
+	ClogUtils.deleteAutosavedCopy = function(postId) {
+		jQuery.ajax( {
+	 		url : "/direct/clog-post/" + postId + "/deleteAutosavedCopy",
+			timeout: 30000,
+			async : false,
+			dataType: 'text',
+		   	success : function(result) {
+				switchState('viewAllPosts');
+			},
+			error : function(xmlHttpRequest,status,error) {
+				alert("Failed to delete authosaved copy. Status: " + status + '. Error: ' + error);
+			}
+	  	});
 	}
 
 	ClogUtils.recyclePost = function(postId) {

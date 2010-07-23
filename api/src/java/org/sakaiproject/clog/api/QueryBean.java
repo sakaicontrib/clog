@@ -22,25 +22,19 @@ import java.util.List;
 
 public class QueryBean
 {
-	private String _queryString;
-
 	private List<String> visibilities;
-
-	private long _initDate;
-
-	private long _endDate;
 
 	private String _user;
 
 	private String siteId;
 	
 	private String caller;
+	
+	private boolean searchAutoSaved = false;
 
 	public QueryBean()
 	{
 		visibilities = new ArrayList<String>(); // this mean no filter by visibility
-		_initDate = -1; // this mean no filter by initDate;
-		_endDate = -1; // this mean no filter by endDate
 		_user = "";
 		siteId = "";
 		caller = "";
@@ -48,17 +42,7 @@ public class QueryBean
 
 	public boolean hasConditions()
 	{
-		return siteId.length() > 0 || visibilities.size() > 0 || _initDate != -1 || _endDate != -1;
-	}
-
-	public void setQueryString(String queryString)
-	{
-		_queryString = queryString;
-	}
-
-	public String getQueryString()
-	{
-		return _queryString;
+		return siteId.length() > 0 || visibilities.size() > 0;
 	}
 
 	public boolean queryBySiteId()
@@ -84,36 +68,6 @@ public class QueryBean
 	public List<String> getVisibilities()
 	{
 		return visibilities;
-	}
-
-	public boolean queryByInitDate()
-	{
-		return _initDate != -1;
-	}
-
-	public void setInitDate(long initDate)
-	{
-		_initDate = initDate;
-	}
-
-	public long getInitDate()
-	{
-		return _initDate;
-	}
-
-	public boolean queryByEndDate()
-	{
-		return _endDate != -1;
-	}
-
-	public void setEndDate(long endDate)
-	{
-		_endDate = endDate;
-	}
-
-	public long getEndDate()
-	{
-		return _endDate;
 	}
 
 	public void setCreator(String user)
@@ -149,5 +103,15 @@ public class QueryBean
 	public String getCaller()
 	{
 		return caller;
+	}
+
+	public void setSearchAutoSaved(boolean searchAutoSaved)
+	{
+		this.searchAutoSaved = searchAutoSaved;
+	}
+
+	public boolean isSearchAutoSaved()
+	{
+		return searchAutoSaved;
 	}
 }

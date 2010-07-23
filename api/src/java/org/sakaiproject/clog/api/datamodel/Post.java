@@ -45,6 +45,8 @@ public class Post implements Entity
 	private List<Comment> comments = new ArrayList<Comment>();
 
 	private String siteId;
+	
+	private Post autosavedVersion = null;
 
 	public Post()
 	{
@@ -112,6 +114,11 @@ public class Post implements Entity
 	public List<Comment> getComments()
 	{
 		return comments;
+	}
+	
+	public void setComments(List<Comment> comments)
+	{
+		this.comments = comments;
 	}
 
 	public void setSiteId(String siteId)
@@ -401,5 +408,20 @@ public class Post implements Entity
 	public String getCreatorDisplayName()
 	{
 		return creatorDisplayName;
+	}
+
+	public boolean isAutoSave()
+	{
+		return Visibilities.AUTOSAVE.equals(visibility);
+	}
+
+	public void setAutosavedVersion(Post autosavedVersion)
+	{
+		this.autosavedVersion = autosavedVersion;
+	}
+
+	public Post getAutosavedVersion()
+	{
+		return autosavedVersion;
 	}
 }

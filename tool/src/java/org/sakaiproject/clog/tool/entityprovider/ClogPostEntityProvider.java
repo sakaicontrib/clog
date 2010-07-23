@@ -29,6 +29,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Statisticable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.entityprovider.search.Restriction;
 import org.sakaiproject.entitybroker.entityprovider.search.Search;
+import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.util.ResourceLoader;
 
@@ -188,6 +189,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 		Restriction locRes = search.getRestrictionByProperty(CollectionResolvable.SEARCH_LOCATION_REFERENCE);
 		Restriction visibilities = search.getRestrictionByProperty("visibilities");
+		
+		Restriction autosaveRes = search.getRestrictionByProperty("autosaved");
 
 		QueryBean query = new QueryBean();
 		query.setVisibilities(new String[] {Visibilities.READY,Visibilities.PRIVATE});
@@ -209,6 +212,9 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			String[] values = visibilitiesValue.split(",");
 			query.setVisibilities(values);
 		}
+		
+		if(autosaveRes != null)
+			query.setSearchAutoSaved(true);
 
 		try
 		{
@@ -304,6 +310,22 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		{
 			return "FAIL";
 		}
+	}
+	
+	@EntityCustomAction(action = "deleteAutosavedCopy", viewKey = EntityView.VIEW_SHOW)
+	public String handleDeleteAutosavedCopy(EntityReference ref)
+	{
+		String postId = ref.getId();
+		
+		if (postId == null)
+		{
+			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
+		}
+		
+		if(clogManager.deleteAutosavedCopy(postId))
+			return "SUCCESS";
+		else
+			throw new EntityException("Failed to delete the autosaved copy.", postId);
 	}
 	
 	@EntityCustomAction(action = "import1", viewKey = EntityView.VIEW_LIST)

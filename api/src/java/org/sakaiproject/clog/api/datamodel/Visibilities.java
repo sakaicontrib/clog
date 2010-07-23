@@ -26,4 +26,6 @@ public class Visibilities
 	public static final String PUBLIC = "PUBLIC";
 	
 	public static final String RECYCLED = "RECYCLED";
+	
+	public static final String AUTOSAVE = "AUTOSAVE";
 }

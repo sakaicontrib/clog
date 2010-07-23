@@ -113,6 +113,11 @@ public class ClogManagerImpl implements ClogManager
 	{
 		try
 		{
+			//Post asPost = persistenceManager.getAutosavedPost(post.getId());
+			
+			//if(asPost != null)
+				//post.setId("");
+			
 			return persistenceManager.savePost(post);
 		}
 		catch (Exception e)
@@ -575,5 +580,10 @@ public class ClogManagerImpl implements ClogManager
 	public boolean isImportBlog2Data()
 	{
 		return importBlog2Data;
+	}
+
+	public boolean deleteAutosavedCopy(String postId)
+	{
+		return persistenceManager.deleteAutosavedCopy(postId);
 	}
 }

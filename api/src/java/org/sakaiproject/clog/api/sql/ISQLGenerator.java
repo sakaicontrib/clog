@@ -14,6 +14,7 @@ public interface ISQLGenerator
 	public static final String DEFAULT_PREFIX = "CLOG_";
 
 	public static final String TABLE_POST = DEFAULT_PREFIX + "POST";
+	public static final String TABLE_AUTOSAVED_POST = DEFAULT_PREFIX + "AUTOSAVED_POST";
 	public static final String TABLE_COMMENT = DEFAULT_PREFIX + "COMMENT";
 	public static final String TABLE_AUTHOR = DEFAULT_PREFIX + "AUTHOR";
 	public static final String TABLE_PREFERENCES = DEFAULT_PREFIX + "PREFERENCES";
@@ -85,4 +86,10 @@ public interface ISQLGenerator
 	public abstract PreparedStatement getSavePreferencesStatement(Preferences preferences, Connection connection) throws Exception;
 
 	public abstract String getSelectAuthorStatement(String userId,String siteId);
+
+	public abstract PreparedStatement getDeleteAutosavedCopyStatement(String postId, Connection connection) throws Exception;
+
+	public abstract PreparedStatement getSelectAutosavedPost(String postId,Connection connection) throws Exception;
+
+	public abstract List<PreparedStatement> getInsertStatementsForAutoSavedPost(Post post, Connection connection) throws Exception;
 }

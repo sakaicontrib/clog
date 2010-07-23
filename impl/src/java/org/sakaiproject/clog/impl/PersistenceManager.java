@@ -14,6 +14,7 @@ import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Preferences;
+import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.impl.sql.HiperSonicGenerator;
 import org.sakaiproject.clog.impl.sql.MySQLGenerator;
 import org.sakaiproject.clog.impl.sql.OracleSQLGenerator;
@@ -315,7 +316,10 @@ public class PersistenceManager
 
 			try
 			{
-				statements = sqlGenerator.getInsertStatementsForPost(post, connection);
+				if(post.isAutoSave())
+					statements = sqlGenerator.getInsertStatementsForAutoSavedPost(post, connection);
+				else
+					statements = sqlGenerator.getInsertStatementsForPost(post, connection);
 				
 				for(PreparedStatement st : statements)
 					st.executeUpdate();
@@ -606,6 +610,54 @@ public class PersistenceManager
 			sakaiProxy.returnConnection(connection);
 		}
 	}
+	
+	public Post getAutosavedPost(String postId)
+	{
+		if (logger.isDebugEnabled())
+			logger.debug("getAutosavedPost(" + postId + ")");
+
+		Connection connection = null;
+		PreparedStatement st = null;
+		try
+		{
+			connection = sakaiProxy.borrowConnection();
+			st = sqlGenerator.getSelectAutosavedPost(postId,connection);
+			ResultSet rs = st.executeQuery();
+			List<Post> posts = transformResultSetInPostCollection(rs, connection);
+			rs.close();
+
+			if (posts.size() == 0)
+			{
+				logger.error("getAutosavedPost: Unable to find post with id:" + postId);
+				return null;
+			}
+			if (posts.size() > 1)
+			{
+				logger.error("getAutosavedPost: there is more than one post with id:" + postId);
+				return null;
+			}
+
+			return posts.get(0);
+		}
+		catch(Exception e)
+		{
+			logger.error("Caught exception whilst getting autosaved post",e);
+			return null;
+		}
+		finally
+		{
+			if(st != null)
+			{
+				try
+				{
+					st.close();
+				}
+				catch (Exception e) {}
+			}
+
+			sakaiProxy.returnConnection(connection);
+		}
+	}
 
 	private List<Post> transformResultSetInPostCollection(ResultSet rs, Connection connection) throws Exception
 	{
@@ -626,6 +678,12 @@ public class PersistenceManager
 
 				String postId = rs.getString(ISQLGenerator.POST_ID);
 				post.setId(postId);
+				
+				String visibility = rs.getString(ISQLGenerator.VISIBILITY);
+				post.setVisibility(visibility);
+				
+				if(!post.isAutoSave())
+					post.setAutosavedVersion(getAutosavedPost(postId));
 				
 				String siteId = rs.getString(ISQLGenerator.SITE_ID);
 				post.setSiteId(siteId);
@@ -650,9 +708,6 @@ public class PersistenceManager
 
 				int allowComments = rs.getInt(ISQLGenerator.ALLOW_COMMENTS);
 				post.setCommentable(allowComments == 1);
-				
-				String visibility = rs.getString(ISQLGenerator.VISIBILITY);
-				post.setVisibility(visibility);
 
 				String sql = sqlGenerator.getSelectComments(postId);
 				ResultSet commentRS = commentST.executeQuery(sql);
@@ -1264,5 +1319,40 @@ public class PersistenceManager
 				catch (Exception e) {}
 			}
 		}
+	}
+
+	public boolean deleteAutosavedCopy(String postId)
+	{
+		Connection connection = null;
+		PreparedStatement st = null;
+		
+		try
+		{
+			connection = sakaiProxy.borrowConnection();
+			st = sqlGenerator.getDeleteAutosavedCopyStatement(postId,connection);
+			if(st.executeUpdate() > 0)
+				return true;
+			else
+				return false;
+		}
+		catch (Exception e)
+		{
+			logger.error("Caught exception whilst deleting autosaved copy.", e);
+		}
+		finally
+		{
+			if(st != null)
+			{
+				try
+				{
+					st.close();
+				}
+				catch (Exception e) {}
+			}
+			
+			sakaiProxy.returnConnection(connection);
+		}
+
+		return false;
 	}
 }

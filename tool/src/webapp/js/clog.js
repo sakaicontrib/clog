@@ -9,6 +9,8 @@ var clogCurrentUser = null;
 var clogHomeState = null;
 var clogOnMyWorkspace = false;
 
+var autosave_id = null;
+
 (function()
 {
 	// We need the toolbar in a template so we can swap in the translations
@@ -92,7 +94,10 @@ var clogOnMyWorkspace = false;
 
 	if(window.frameElement)
 		window.frameElement.style.minHeight = '600px';
-
+		
+	// Clear the autosave interval
+	if(autosave_id)
+		clearInterval(autosave_id);
 	
 	// Now switch into the requested state
 	switchState(arg.state,arg);
@@ -176,7 +181,7 @@ function switchState(state,arg) {
 		if(arg && arg.userId)
 			userId = arg.userId;
 
-		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId;
+		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&autosaved=true";
 
 		if(clogOnMyWorkspace) url += "&visibilities=PRIVATE,PUBLIC";
 
@@ -189,12 +194,12 @@ function switchState(state,arg) {
 
 				var profileMarkup = SakaiUtils.getProfileMarkup(userId);
 
-				var posts = data['clog-post_collection'];
+				clogCurrentPosts = data['clog-post_collection'];
 	 			
-				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':posts},'clog_content');
+				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':clogCurrentPosts},'clog_content');
 				$('#clog_author_profile').html(profileMarkup);
-	 			for(var i=0,j=posts.length;i<j;i++)
-					SakaiUtils.renderTrimpathTemplate('clog_post_template',posts[i],'post_' + posts[i].id);
+	 			for(var i=0,j=clogCurrentPosts.length;i<j;i++)
+					SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
 
 	 			if(window.frameElement) {
 	 				$(document).ready(function() {
@@ -231,12 +236,18 @@ function switchState(state,arg) {
 	 	});
 	}
 	else if('createPost' === state) {
-		var post = {id:'',title:'',content:'',commentable:true};
+		clogCurrentPost = {id:'',title:'',content:'',commentable:true};
 
-		if(arg && arg.postId)
-			post = ClogUtils.findPost(arg.postId);
+		if(arg && arg.postId) {
+			clogCurrentPost = ClogUtils.findPost(arg.postId);
+			if(clogCurrentPost.autosavedVersion) {
+				if(confirm('There is an autosaved version of this post. Do you want to use that instead?')) {
+					clogCurrentPost = clogCurrentPost.autosavedVersion;
+				}
+			}
+		}
 
-		SakaiUtils.renderTrimpathTemplate('clog_create_post_template',post,'clog_content');
+		SakaiUtils.renderTrimpathTemplate('clog_create_post_template',clogCurrentPost,'clog_content');
 		
 		SakaiUtils.setupFCKEditor('clog_content_editor',600,400,'Default',clogSiteId);
 
@@ -251,8 +262,22 @@ function switchState(state,arg) {
 				$('#clog_publish_post_button').bind('click',ClogUtils.publishPost);
 
 			$('#clog_cancel_button').bind('click',function(e) {
+				// If the current post has neither been saved or published, delete the autosaved copy
+				if(!clogCurrentPost.visibility) {
+					ClogUtils.deleteAutosavedCopy(clogCurrentPost.id);
+				}
 				switchState('home');
 			});
+			
+			// Start the auto saver
+			autosave_id = setInterval(function() {
+					if(ClogUtils.autosavePost()) {
+						$('#clog_autosaved_message').show();
+						setTimeout(function() {
+								$('#clog_autosaved_message').fadeOut(200);
+							},2000);
+					}
+				},10000);
 
 	 		setMainFrameHeight(window.frameElement.id);
 	 	});

@@ -150,3 +150,8 @@ th.clogSortableTableHeaderSortDown {
 #clog_content table tr.odd td {
 	background-color: #FFFFC0;
 }
+
+#clog_autosaved_message {
+	display: none;
+	font-weight: bold;
+}

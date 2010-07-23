@@ -61,6 +61,7 @@ public class SQLGenerator implements ISQLGenerator
 		ArrayList result = new ArrayList();
 
 		result.add(doTableForPost());
+		result.add(doTableForAutoSavedPost());
 		result.add(doTableForComments());
 		result.add(doTableForAuthor());
 		result.add(doTableForPreferences());
@@ -77,71 +78,66 @@ public class SQLGenerator implements ISQLGenerator
 	{
 		List<String> statements = new ArrayList<String>();
 
-		String queryString = query.getQueryString();
+		StringBuilder statement = new StringBuilder();
 
-		if (queryString != null && queryString.length() > 0)
+		if (query.isSearchAutoSaved())
 		{
-			String sql = "SELECT *" + " FROM " + TABLE_POST + " WHERE " + TITLE + " LIKE '%" + queryString + "%'";
+			statement.append("SELECT * FROM ").append(TABLE_AUTOSAVED_POST);
 
-			if (query.queryBySiteId())
-				sql += " AND " + SITE_ID + " = '" + query.getSiteId() + "'";
+			if (query.hasConditions())
+			{
+				// we know that there are conditions. Build the statement
+				statement.append(" WHERE ");
 
-			sql += " ORDER BY " + CREATED_DATE + " DESC";
+				if (query.queryBySiteId())
+					statement.append(SITE_ID).append(" = '").append(query.getSiteId()).append("' AND ");
 
-			statements.add(sql);
+				if (query.queryByCreator())
+					statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND ");
 
-			sql = "SELECT DISTINCT " + TABLE_POST + ".*" + " FROM " + TABLE_POST + "," + TABLE_COMMENT + " WHERE " + TABLE_POST + "." + POST_ID + " = " + TABLE_COMMENT + "." + POST_ID;
+				// in this point, we know that there is a AND at the end of the statement. Remove it.
+				statement = new StringBuilder(statement.toString().substring(0, statement.length() - 4)); // 4 is the length of AND with the last space
+			}
 
-			if (query.queryBySiteId())
-				sql += " AND " + TABLE_POST + "." + SITE_ID + " = '" + query.getSiteId() + "'";
-
-			sql += " AND " + TABLE_COMMENT + "." + CONTENT + " like '%" + queryString + "%'" + " ORDER BY " + CREATED_DATE + " DESC";
-
-			statements.add(sql);
-
-			return statements;
+			statement.append(" UNION ");
 		}
 
-		StringBuilder statement = new StringBuilder();
 		statement.append("SELECT * FROM ").append(TABLE_POST);
 
 		if (query.hasConditions())
+		{
 			statement.append(" WHERE ");
 
-		// we know that there are conditions. Build the statement
-		if (query.queryBySiteId())
-			statement.append(SITE_ID).append(" = '").append(query.getSiteId()).append("' AND ");
+			// we know that there are conditions. Build the statement
+			if (query.queryBySiteId())
+				statement.append(SITE_ID).append(" = '").append(query.getSiteId()).append("' AND ");
 
-		if (query.queryByCreator())
-			statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND");
+			if (query.queryByCreator())
+				statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND");
 
-		if (query.queryByVisibility())
-		{
-			statement.append("(");
-
-			List<String> visibilities = query.getVisibilities();
-			int length = visibilities.size();
-			for (int i = 0; i < length; i++)
+			if (query.queryByVisibility())
 			{
-				statement.append(VISIBILITY).append("='").append(visibilities.get(i)).append("'");
+				statement.append("(");
 
-				if (i < (length - 1) )
+				List<String> visibilities = query.getVisibilities();
+				int length = visibilities.size();
+				for (int i = 0; i < length; i++)
 				{
-					statement.append(" OR ");
+					statement.append(VISIBILITY).append("='").append(visibilities.get(i)).append("'");
+
+					if (i < (length - 1))
+					{
+						statement.append(" OR ");
+					}
 				}
+
+				statement.append(") AND ");
 			}
-
-			statement.append(") AND ");
 		}
-
-		if (query.queryByInitDate())
-			statement.append(CREATED_DATE).append(">='").append(query.getInitDate()).append("' AND ");
-
-		if (query.queryByEndDate())
-			statement.append(CREATED_DATE).append("<='").append(query.getEndDate()).append("' AND ");
 
 		// in this point, we know that there is a AND at the end of the statement. Remove it.
 		statement = new StringBuilder(statement.toString().substring(0, statement.length() - 4)); // 4 is the length of AND with the last space
+
 		statement.append(" ORDER BY ").append(CREATED_DATE).append(" DESC ");
 
 		statements.add(statement.toString());
@@ -164,6 +160,26 @@ public class SQLGenerator implements ISQLGenerator
 		statement.append(ALLOW_COMMENTS + " INT, ");
 		statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
 		statement.append("CONSTRAINT post_pk PRIMARY KEY (" + POST_ID + ")");
+		statement.append(")");
+		return statement.toString();
+	}
+
+	protected String doTableForAutoSavedPost()
+	{
+		StringBuilder statement = new StringBuilder();
+		statement.append("CREATE TABLE ").append(TABLE_AUTOSAVED_POST);
+		statement.append("(");
+		statement.append(POST_ID + " CHAR(36) NOT NULL,");
+		statement.append(SITE_ID + " " + VARCHAR + "(255), ");
+		statement.append(TITLE + " " + VARCHAR + "(255) NOT NULL, ");
+		statement.append(CONTENT + " " + CLOB + ", ");
+		statement.append(CREATED_DATE + " " + TIMESTAMP + ", ");
+		statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
+		statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
+		statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
+		statement.append(ALLOW_COMMENTS + " INT, ");
+		statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
+		statement.append("CONSTRAINT autosaved_post_pk PRIMARY KEY (" + POST_ID + ")");
 		statement.append(")");
 		return statement.toString();
 	}
@@ -274,7 +290,6 @@ public class SQLGenerator implements ISQLGenerator
 					String blogCreatorId = rs.getString(CREATOR_ID);
 					String siteId = rs.getString(SITE_ID);
 
-
 					PreparedStatement authorST = connection.prepareStatement("UPDATE " + TABLE_AUTHOR + " SET " + TOTAL_COMMENTS + " = " + TOTAL_COMMENTS + " + 1 WHERE " + USER_ID + " = ? AND " + SITE_ID + " = ?");
 					authorST.setString(1, blogCreatorId);
 					authorST.setString(2, siteId);
@@ -302,7 +317,9 @@ public class SQLGenerator implements ISQLGenerator
 				{
 					testST.close();
 				}
-				catch (Exception e) {}
+				catch (Exception e)
+				{
+				}
 			}
 		}
 
@@ -319,11 +336,11 @@ public class SQLGenerator implements ISQLGenerator
 		List<PreparedStatement> result = new ArrayList<PreparedStatement>();
 
 		PreparedStatement commentST = connection.prepareStatement("DELETE FROM " + TABLE_COMMENT + " WHERE " + POST_ID + " = ?");
-		commentST.setString(1,post.getId());
+		commentST.setString(1, post.getId());
 		result.add(commentST);
 
 		PreparedStatement postST = connection.prepareStatement("DELETE FROM " + TABLE_POST + " WHERE " + POST_ID + " = ?");
-		postST.setString(1,post.getId());
+		postST.setString(1, post.getId());
 		result.add(postST);
 
 		return result;
@@ -350,19 +367,66 @@ public class SQLGenerator implements ISQLGenerator
 
 	}
 
+	public List<PreparedStatement> getInsertStatementsForAutoSavedPost(Post post, Connection connection) throws Exception
+	{
+		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
+
+		if ("".equals(post.getId()))
+			post.setId(UUID.randomUUID().toString());
+
+		// We always replace autosaved posts with the latest, so delete the old one.
+		statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
+
+		String sql = "INSERT INTO " + TABLE_AUTOSAVED_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + KEYWORDS + "," + VISIBILITY + ") VALUES (?,?,?,?,?,?,?,?,'" + Visibilities.AUTOSAVE + "')";
+
+		PreparedStatement postST = connection.prepareStatement(sql);
+		postST.setString(1, post.getId());
+
+		postST.setString(2, post.getSiteId());
+
+		postST.setString(3, post.getTitle());
+
+		postST.setString(4, post.getContent());
+
+		postST.setTimestamp(5, new Timestamp(post.getCreatedDate()));
+		postST.setTimestamp(6, new Timestamp(post.getModifiedDate()));
+
+		postST.setString(7, post.getCreatorId());
+
+		postST.setString(8, post.getKeywords());
+
+		statements.add(postST);
+
+		return statements;
+
+	}
+
 	public List<PreparedStatement> getInsertStatementsForPost(Post post, Connection connection) throws Exception
 	{
 		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
 
 		Statement testST = null;
+		ResultSet testRS = null;
+		
+		// If no id has been assigned, assign one
+		if ("".equals(post.getId()))
+			post.setId(UUID.randomUUID().toString());
+
+		// We always replace autosaved posts with the latest, so delete the old one.
+		statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
 		try
 		{
-			if ("".equals(post.getId()))
-			{
-				// Empty post id == new post
+			boolean isNew = false;
+			
+			testST = connection.createStatement();
+			testRS = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + post.getId() + "'");
 
-				post.setId(UUID.randomUUID().toString());
+			if (!testRS.next())
+				isNew = true;
+			
+			if (isNew)
+			{
 				String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + KEYWORDS + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
 
 				PreparedStatement postST = connection.prepareStatement(sql);
@@ -395,19 +459,8 @@ public class SQLGenerator implements ISQLGenerator
 			}
 			else
 			{
-				testST = connection.createStatement();
-				ResultSet rs = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + post.getId() + "'");
-				
-				if (!rs.next())
-				{
-					rs.close();
-					throw new Exception("Failed to get data for post '" + post.getId() + "'");
-				}
-				
-				String currentVisibility = rs.getString(VISIBILITY);
-				
-				rs.close();
-				
+				String currentVisibility = testRS.getString(VISIBILITY);
+
 				String sql = "UPDATE " + TABLE_POST + " " + "SET " + TITLE + " = ?," + CONTENT + " = ?," + VISIBILITY + " = ?," + MODIFIED_DATE + " = ?," + ALLOW_COMMENTS + " = ? WHERE " + POST_ID + " = ?";
 
 				PreparedStatement postST = connection.prepareStatement(sql);
@@ -441,13 +494,17 @@ public class SQLGenerator implements ISQLGenerator
 		}
 		finally
 		{
+			if(testRS != null) testRS.close();
+			
 			if (testST != null)
 			{
 				try
 				{
 					testST.close();
 				}
-				catch (Exception e) {}
+				catch (Exception e)
+				{
+				}
 			}
 		}
 
@@ -468,7 +525,7 @@ public class SQLGenerator implements ISQLGenerator
 			int numComments = testRS.getInt(1);
 			testRS.close();
 			testST.close();
-			
+
 			String postAmount = " - 1";
 			String commentAmount = " - ";
 			if (increment)
@@ -476,9 +533,9 @@ public class SQLGenerator implements ISQLGenerator
 				postAmount = " + 1";
 				commentAmount = " + ";
 			}
-			
+
 			commentAmount += numComments;
-			
+
 			testST = connection.createStatement();
 			testRS = testST.executeQuery("SELECT * FROM " + TABLE_AUTHOR + " WHERE " + USER_ID + " = '" + post.getCreatorId() + "' AND " + SITE_ID + " = '" + post.getSiteId() + "'");
 
@@ -515,7 +572,9 @@ public class SQLGenerator implements ISQLGenerator
 				{
 					testST.close();
 				}
-				catch (Exception e) {}
+				catch (Exception e)
+				{
+				}
 			}
 		}
 
@@ -552,24 +611,26 @@ public class SQLGenerator implements ISQLGenerator
 
 				statements.add(authorST);
 			}
-			
+
 			rs.close();
-			
+
 			PreparedStatement commentST = connection.prepareStatement("DELETE FROM " + TABLE_COMMENT + " WHERE " + COMMENT_ID + " = ?");
 			commentST.setString(1, commentId);
 			statements.add(commentST);
-			
+
 			return statements;
 		}
 		finally
 		{
-			if(testST != null)
+			if (testST != null)
 			{
 				try
 				{
 					testST.close();
 				}
-				catch(Exception e) {}
+				catch (Exception e)
+				{
+				}
 			}
 		}
 	}
@@ -585,44 +646,46 @@ public class SQLGenerator implements ISQLGenerator
 		String siteId = preferences.getSiteId();
 
 		Statement testST = null;
-		
+
 		try
 		{
 			testST = connection.createStatement();
 			ResultSet rs = testST.executeQuery("SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'");
-			
+
 			PreparedStatement st = null;
 
 			if (rs.next())
 			{
 				String sql = "UPDATE " + TABLE_PREFERENCES + " SET " + EMAIL_FREQUENCY + " = ? WHERE " + USER_ID + " = ? AND " + SITE_ID + " = ?";
 				st = connection.prepareStatement(sql);
-				st.setString(1,preferences.getEmailFrequency());
-				st.setString(2,userId);
-				st.setString(3,siteId);
+				st.setString(1, preferences.getEmailFrequency());
+				st.setString(2, userId);
+				st.setString(3, siteId);
 			}
 			else
 			{
 				String sql = "INSERT INTO " + TABLE_PREFERENCES + " (" + USER_ID + "," + SITE_ID + "," + EMAIL_FREQUENCY + ") VALUES(?,?,?)";
 				st = connection.prepareStatement(sql);
-				st.setString(1,userId);
-				st.setString(2,siteId);
-				st.setString(3,preferences.getEmailFrequency());
+				st.setString(1, userId);
+				st.setString(2, siteId);
+				st.setString(3, preferences.getEmailFrequency());
 			}
 
 			rs.close();
-			
+
 			return st;
 		}
 		finally
 		{
-			if(testST != null)
+			if (testST != null)
 			{
 				try
 				{
 					testST.close();
 				}
-				catch(Exception e) {}
+				catch (Exception e)
+				{
+				}
 			}
 		}
 	}
@@ -630,5 +693,19 @@ public class SQLGenerator implements ISQLGenerator
 	public String getSelectAuthorStatement(String userId, String siteId)
 	{
 		return "SELECT * FROM " + TABLE_AUTHOR + " WHERE USER_ID = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'";
+	}
+
+	public PreparedStatement getDeleteAutosavedCopyStatement(String postId, Connection connection) throws Exception
+	{
+		PreparedStatement st = connection.prepareStatement("DELETE FROM " + TABLE_AUTOSAVED_POST + " WHERE " + POST_ID + " = ?");
+		st.setString(1, postId);
+		return st;
+	}
+
+	public PreparedStatement getSelectAutosavedPost(String postId, Connection connection) throws Exception
+	{
+		PreparedStatement st = connection.prepareStatement("SELECT * FROM " + TABLE_AUTOSAVED_POST + " WHERE " + POST_ID + " = ?");
+		st.setString(1, postId);
+		return st;
 	}
 }
