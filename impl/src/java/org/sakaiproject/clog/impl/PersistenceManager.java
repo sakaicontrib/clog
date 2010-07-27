@@ -989,6 +989,7 @@ public class PersistenceManager
 		
 		Connection connection = null;
 		Statement postST = null;
+		Statement testST = null;
 		Statement postElementST = null;
 		Statement elementST = null;
 		Statement commentST = null;
@@ -1000,14 +1001,25 @@ public class PersistenceManager
 			connection = sakaiProxy.borrowConnection();
 			
 			postST = connection.createStatement();
+			testST = connection.createStatement();
 			postElementST = connection.createStatement();
 			elementST = connection.createStatement();
 			commentST = connection.createStatement();
 			
-			ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p,BLOG_OPTIONS as o WHERE p.SITE_ID = o.SITE_ID AND o.BLOGMODE <> 'LEARNING_LOG'");
-			//ResultSet rs = postST.executeQuery("SELECT p.* FROM BLOG_POST as p");
+			ResultSet rs = postST.executeQuery("SELECT * FROM BLOG_POST");
+			
 			while(rs.next())
 			{
+				String siteId = rs.getString(ISQLGenerator.SITE_ID);
+				
+				ResultSet testRS = testST.executeQuery("SELECT * FROM BLOG_OPTIONS WHERE SITE_ID = '" + siteId + "'");
+				
+				if(testRS.next() && "LEARNING_LOG".equals(testRS.getString("BLOGMODE")))
+				{
+					testRS.close();
+					continue;
+				}
+				
 				boolean brokenPost = false;
 				
 				Post post = new Post();
@@ -1015,7 +1027,6 @@ public class PersistenceManager
 				String postId = rs.getString(ISQLGenerator.POST_ID);
 				//post.setId(postId);
 				
-				String siteId = rs.getString(ISQLGenerator.SITE_ID);
 				post.setSiteId(siteId);
 
 				String title = rs.getString(ISQLGenerator.TITLE);
@@ -1065,7 +1076,7 @@ public class PersistenceManager
 						}
 						
 						String content = elementRS.getString("CONTENT");
-						collectedMarkup += content;
+						collectedMarkup += content + "<br /><br />";
 						elementRS.close();
 					}
 					else if("LINK".equals(elementType))
@@ -1100,7 +1111,7 @@ public class PersistenceManager
 						
 						String img = "<img src=\"" + webUrl + "\" onclick=\"window.open('"+ fullUrl + "','Full Image','width=400,height=300,status=no,resizable=yes,location=no,scrollbars=yes');\"/><br />";
 						
-						collectedMarkup += img;
+						collectedMarkup += img + "<br />";
 					}
 					else if("FILE".equals(elementType))
 					{
@@ -1175,6 +1186,15 @@ public class PersistenceManager
 				try
 				{
 					postST.close();
+				}
+				catch (Exception e) {}
+			}
+			
+			if(testST != null)
+			{
+				try
+				{
+					testST.close();
 				}
 				catch (Exception e) {}
 			}
