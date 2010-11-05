@@ -5,14 +5,19 @@ var ClogUtils;
 	if(ClogUtils == null)
 		ClogUtils = new Object();
 
-	ClogUtils.showSearchResults = function(searchTerms) {
+	ClogUtils.showSearchResults = function() {
+	
+		var searchTerms = $('#clog_search_field').val();
+		
     	jQuery.ajax( {
-			url : "/direct/search.json?tool=clog&contexts=" + clogSiteId + "&searchTerms=" + searchTerms,
+			url : "/portal/tool/" + clogPlacementId + "/search",
+			type : 'POST',
         	dataType : "json",
         	async : false,
 			cache: false,
+        	data : {'searchTerms':searchTerms},
         	success : function(results) {
-        		var hits = results["search_collection"];
+        		var hits = results;
 				for(var i=0,j=hits.length;i<j;i++) {
 					var postId = hits[i].id;
 					hits[i].url = "javascript: switchState('post',{postId:'" + postId + "'});";
@@ -24,6 +29,81 @@ var ClogUtils;
 			}
 		});
 	}
+	
+	ClogUtils.getCurrentUserPermissions = function() {
+		var permissions = null;
+		jQuery.ajax( {
+	 		url : "/portal/tool/" + clogPlacementId + "/userPerms",
+	   		dataType : "json",
+	   		async : false,
+	   		cache : false,
+		   	success : function(perms,status) {
+				permissions = perms;
+			},
+			error : function(xmlHttpRequest,stat,error) {
+				alert("Failed to get the current user permissions. Status: " + stat + ". Error: " + error);
+			}
+	  	});
+	  	
+	  	return permissions;
+	}
+	
+	ClogUtils.getSitePermissionMatrix = function() {
+        var perms = [];
+
+        jQuery.ajax( {
+            url : "/portal/tool/" + clogPlacementId + "/perms",
+            dataType : "json",
+            async : false,
+            cache: false,
+            success : function(p) {
+                for(role in p) {
+                    var permSet = {'role':role};
+
+                    for(var i=0,j=p[role].length;i<j;i++) {
+                        var perm = p[role][i].replace(/\./g,"_");
+                        eval("permSet." + perm + " = true");
+                    }
+
+                    perms.push(permSet);
+                }
+            },
+            error : function(xmlHttpRequest,stat,error) {
+                alert("Failed to get permissions. Status: " + stat + ". Error: " + error);
+            }
+        });
+
+        return perms;
+    }
+    
+    ClogUtils.savePermissions = function() {
+        var boxes = $('.clog_permission_checkbox');
+        var myData = {};
+        for(var i=0,j=boxes.length;i<j;i++) {
+            var box = boxes[i];
+            if(box.checked)
+                myData[box.id] = 'true';
+            else
+                myData[box.id] = 'false';
+        }
+
+        jQuery.ajax( {
+            url : "/portal/tool/" + clogPlacementId + "/setPerms",
+            type : 'POST',
+            data : myData,
+            timeout: 30000,
+            async : false,
+            dataType: 'text',
+            success : function(result) {
+                switchState('viewAllPosts');
+            },
+            error : function(xmlHttpRequest,status,error) {
+                alert("Failed to save permissions. Status: " + status + '. Error: ' + error);
+            }
+        });
+
+        return false;
+    }
 	
 	ClogUtils.attachProfilePopup = function() {
 		$('a.profile').cluetip({

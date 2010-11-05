@@ -19,16 +19,21 @@ package org.sakaiproject.clog.api;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.entity.api.EntityProducer;
+import org.sakaiproject.search.api.SearchList;
+import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.SakaiProxy;
 
 public interface SakaiProxy
 {
 	public String getCurrentSiteId();
+	
+	public String getCurrentToolId();
 
 	public String getCurrentUserId();
 	
@@ -89,4 +94,12 @@ public interface SakaiProxy
 	public String getClogToolId(String siteId);
 
 	public String storeResource(byte[] blob,String siteId,String creatorId);
+	
+	public List<SearchResult> searchInCurrentSite(String searchTerms);
+
+	public Map<String, Set<String>> getPermsForCurrentSite();
+
+	public Set<String> getPermissionsForCurrentUserAndSite();
+
+	public boolean setPermsForCurrentSite(Map<String,String[]> parameterMap);
 }

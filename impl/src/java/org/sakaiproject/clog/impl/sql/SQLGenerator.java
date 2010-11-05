@@ -377,7 +377,7 @@ public class SQLGenerator implements ISQLGenerator
 		// We always replace autosaved posts with the latest, so delete the old one.
 		statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
-		String sql = "INSERT INTO " + TABLE_AUTOSAVED_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + KEYWORDS + "," + VISIBILITY + ") VALUES (?,?,?,?,?,?,?,?,'" + Visibilities.AUTOSAVE + "')";
+		String sql = "INSERT INTO " + TABLE_AUTOSAVED_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + KEYWORDS + "," + ALLOW_COMMENTS + "," + VISIBILITY + ") VALUES (?,?,?,?,?,?,?,?,?,'" + Visibilities.AUTOSAVE + "')";
 
 		PreparedStatement postST = connection.prepareStatement(sql);
 		postST.setString(1, post.getId());
@@ -394,6 +394,8 @@ public class SQLGenerator implements ISQLGenerator
 		postST.setString(7, post.getCreatorId());
 
 		postST.setString(8, post.getKeywords());
+		
+		postST.setInt(9, (post.isCommentable()) ? 1 : 0);
 
 		statements.add(postST);
 

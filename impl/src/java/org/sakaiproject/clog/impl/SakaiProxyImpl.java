@@ -19,15 +19,20 @@ package org.sakaiproject.clog.impl;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
+import org.sakaiproject.authz.api.AuthzPermissionException;
 import org.sakaiproject.authz.api.FunctionManager;
+import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityService;
@@ -42,12 +47,17 @@ import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.event.cover.NotificationService;
+import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.search.api.SearchList;
+import org.sakaiproject.search.api.SearchResult;
+import org.sakaiproject.search.api.SearchService;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.tool.api.ToolManager;
+import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.user.api.AuthenticationManager;
 import org.sakaiproject.user.api.User;
@@ -89,6 +99,8 @@ public class SakaiProxyImpl implements SakaiProxy
 	private EmailService emailService;
 
 	private DigestService digestService;
+	
+	private SearchService searchService;
 
 	/** Inject this in your components.xml */
 	private String fromAddress = "sakai-blog@sakai.lancs.ac.uk";
@@ -100,6 +112,11 @@ public class SakaiProxyImpl implements SakaiProxy
 	public String getCurrentSiteId()
 	{
 		return toolManager.getCurrentPlacement().getContext(); // equivalent to PortalService.getCurrentSiteId();
+	}
+	
+	public String getCurrentToolId()
+	{
+		return toolManager.getCurrentPlacement().getId();
 	}
 
 	public String getCurrentUserId()
@@ -692,5 +709,219 @@ public class SakaiProxyImpl implements SakaiProxy
 			logger.error("Caught an exception whilst storing resource. Returning null ...",e);
 			return null;
 		}
+	}
+	
+	public List<SearchResult> searchInCurrentSite(String searchTerms)
+	{
+		List<SearchResult> results = new ArrayList<SearchResult>();
+		
+		List<String> contexts = new ArrayList<String>(1);
+		contexts.add(getCurrentSiteId());
+
+		try
+		{
+			SearchList sl = searchService.search(searchTerms, contexts, 0, 50, "normal", "normal");
+			for(SearchResult sr : sl)
+			{
+				if("Clog".equals(sr.getTool()))
+					results.add(sr);
+			}
+			
+		}
+		catch (Exception e)
+		{
+			logger.error("Caught exception whilst searching",e);
+		}
+		
+		return results;
+	}
+	
+	public Set<String> getPermissionsForCurrentUserAndSite()
+	{
+		String userId = getCurrentUserId();
+
+		if (userId == null)
+		{
+			throw new SecurityException("This action (userPerms) is not accessible to anon and there is no current user.");
+		}
+
+		Set<String> filteredFunctions = new TreeSet<String>();
+
+		if (securityService.isSuperUser(userId))
+		{
+			// Special case for the super admin
+			filteredFunctions.addAll(functionManager.getRegisteredFunctions("clog"));
+		}
+		else
+		{
+			Site site = null;
+			AuthzGroup siteHelperRealm = null;
+
+			try
+			{
+				site = siteService.getSite(getCurrentSiteId());
+				siteHelperRealm = authzGroupService.getAuthzGroup("!site.helper");
+			}
+			catch (Exception e)
+			{
+				// This should probably be logged but not rethrown.
+			}
+
+			Role currentUserRole = site.getUserRole(userId);
+
+			Role siteHelperRole = siteHelperRealm.getRole(currentUserRole.getId());
+
+			Set<String> functions = currentUserRole.getAllowedFunctions();
+
+			if (siteHelperRole != null)
+			{
+				// Merge in all the functions from the same role in !site.helper
+				functions.addAll(siteHelperRole.getAllowedFunctions());
+			}
+
+			for (String function : functions)
+			{
+				if (function.startsWith("clog"))
+					filteredFunctions.add(function);
+			}
+		}
+
+		return filteredFunctions;
+	}
+	
+	public Map<String, Set<String>> getPermsForCurrentSite()
+	{
+		Map<String, Set<String>> perms = new HashMap<String, Set<String>>();
+
+		String userId = getCurrentUserId();
+
+		if (userId == null)
+		{
+			throw new SecurityException("This action (perms) is not accessible to anon and there is no current user.");
+		}
+
+		String siteId = getCurrentSiteId();
+		Site site = null;
+
+		try
+		{
+			site = siteService.getSite(siteId);
+
+			Set<Role> roles = site.getRoles();
+			for (Role role : roles)
+			{
+				Set<String> functions = role.getAllowedFunctions();
+				Set<String> filteredFunctions = new TreeSet<String>();
+				for (String function : functions)
+				{
+					if (function.startsWith("clog"))
+						filteredFunctions.add(function);
+				}
+
+				perms.put(role.getId(), filteredFunctions);
+			}
+		}
+		catch (Exception e)
+		{
+			logger.error("Failed to get current site permissions.", e);
+		}
+
+		return perms;
+	}
+	
+	public boolean setPermsForCurrentSite(Map<String, String[]> params)
+	{
+		String userId = getCurrentUserId();
+
+		if (userId == null)
+			throw new SecurityException("This action (setPerms) is not accessible to anon and there is no current user.");
+
+		String siteId = getCurrentSiteId();
+
+		Site site = null;
+
+		try
+		{
+			site = siteService.getSite(siteId);
+		}
+		catch (IdUnusedException ide)
+		{
+			logger.warn(userId + " attempted to update YAFT permissions for unknown site " + siteId);
+			return false;
+		}
+
+		boolean admin = securityService.isSuperUser(userId);
+
+		try
+		{
+			AuthzGroup authzGroup = authzGroupService.getAuthzGroup(site.getReference());
+			Role siteRole = authzGroup.getUserRole(userId);
+			AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
+			Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
+
+			if (!securityService.isSuperUser()
+					&& !siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS)
+					&& !siteHelperRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS))
+			{
+				logger.warn(userId + " attempted to update CLOG permissions for site " + site.getTitle());
+				return false;
+			}
+
+			boolean changed = false;
+
+			for (String name : params.keySet())
+			{
+				if (!name.contains(":"))
+					continue;
+
+				String value = params.get(name)[0];
+
+				String roleId = name.substring(0, name.indexOf(":"));
+
+				Role role = authzGroup.getRole(roleId);
+				if (role == null)
+				{
+					throw new IllegalArgumentException("Invalid role id '" + roleId + "' provided in POST parameters.");
+				}
+				String function = name.substring(name.indexOf(":") + 1);
+
+				if ("true".equals(value))
+					role.allowFunction(function);
+				else
+					role.disallowFunction(function);
+
+				changed = true;
+			}
+
+			if (changed)
+			{
+				try
+				{
+					authzGroupService.save(authzGroup);
+				}
+				catch (AuthzPermissionException ape)
+				{
+					throw new SecurityException("The permissions for this site (" + siteId + ") cannot be updated by the current user.");
+				}
+			}
+
+			return true;
+		}
+		catch (GroupNotDefinedException gnde)
+		{
+			logger.error("No realm defined for site (" + siteId + ").");
+		}
+
+		return false;
+	}
+
+	public void setSearchService(SearchService searchService)
+	{
+		this.searchService = searchService;
+	}
+
+	public SearchService getSearchService()
+	{
+		return searchService;
 	}
 }

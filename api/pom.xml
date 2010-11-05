@@ -43,6 +43,12 @@
            	<artifactId>sakai-kernel-util</artifactId>
 	  		<scope>provided</scope>
         </dependency>
+
+		<dependency>
+			<groupId>org.sakaiproject.search</groupId>
+			<artifactId>search-api</artifactId>
+		</dependency>
+
     	<dependency>
       		<groupId>log4j</groupId>
       		<artifactId>log4j</artifactId>

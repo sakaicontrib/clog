@@ -23,25 +23,6 @@ var SakaiUtils;
 		return user;
 	}
 
-	SakaiUtils.showSearchResults = function(tool,siteId,searchTerms) {
-		var results = [];
-
-    	jQuery.ajax( {
-			url : "/direct/search.json?tool=" + tool + "&contexts=" + siteId + "&searchTerms=" + searchTerms,
-        	dataType : "json",
-        	async : false,
-			cache: false,
-        	success : function(r) {
-        		results = r["search_collection"];
-        	},
-        	error : function(xmlHttpRequest,status,error) {
-				alert("Failed to search. Status: " + status + ". Error: " + error);
-			}
-		});
-
-		return results;
-	}
-
 	SakaiUtils.getProfileMarkup = function(userId) {
 		var profile = '';
 
@@ -83,81 +64,6 @@ var SakaiUtils;
 		return arg;
 	}
 
-	SakaiUtils.getCurrentUserPermissions = function(siteId,scope) {
-		var permissions = null;
-		jQuery.ajax( {
-	 		url : "/direct/site/" + siteId + "/userPerms/" + scope + ".json",
-	   		dataType : "json",
-	   		async : false,
-	   		cache : false,
-		   	success : function(perms,status) {
-				permissions = perms.data;
-			},
-			error : function(xmlHttpRequest,stat,error) {
-				alert("Failed to get the current user permissions. Status: " + stat + ". Error: " + error);
-			}
-	  	});
-	  	
-	  	return permissions;
-	}
-
-	SakaiUtils.getSitePermissionMatrix = function(siteId,scope) {
-        var perms = [];
-
-        jQuery.ajax( {
-            url : "/direct/site/" + siteId + "/perms/" + scope + ".json",
-            dataType : "json",
-            async : false,
-            cache: false,
-            success : function(p) {
-                for(role in p.data) {
-                    var permSet = {'role':role};
-
-                    for(var i=0,j=p.data[role].length;i<j;i++) {
-                        var perm = p.data[role][i].replace(/\./g,"_");
-                        eval("permSet." + perm + " = true");
-                    }
-
-                    perms.push(permSet);
-                }
-            },
-            error : function(xmlHttpRequest,stat,error) {
-                alert("Failed to get permissions. Status: " + stat + ". Error: " + error);
-            }
-        });
-
-        return perms;
-    }
-
-	SakaiUtils.savePermissions = function(siteId,checkboxClass,callback) {
-        var boxes = $('.' + checkboxClass);
-        var myData = {};
-        for(var i=0,j=boxes.length;i<j;i++) {
-            var box = boxes[i];
-            if(box.checked)
-                myData[box.id] = 'true';
-            else
-                myData[box.id] = 'false';
-        }
-
-        jQuery.ajax( {
-            url : "/direct/site/" + siteId + "/setPerms",
-            type : 'POST',
-            data : myData,
-            timeout: 30000,
-            async : false,
-            dataType: 'text',
-            success : function(result) {
-                callback();
-            },
-            error : function(xmlHttpRequest,status,error) {
-                alert("Failed to create meeting. Status: " + status + '. Error: ' + error);
-            }
-        });
-
-        return false;
-    }
-	
 	SakaiUtils.renderTrimpathTemplate = function(templateName,contextObject,output) {
 		var templateNode = document.getElementById(templateName);
 		var firstNode = templateNode.firstChild;

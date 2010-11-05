@@ -1,5 +1,6 @@
 /* Stuff that we always expect to be setup */
 var clogSiteId = null;
+var clogPlacementId = null;
 var clogCurrentUserPermissions = null;
 var clogCurrentUserPreferences = null;
 var clogCurrentPost = null;
@@ -45,19 +46,24 @@ var autosave_id = null;
 	});
 
 	$('#clog_search_field').change(function(e) {
-		ClogUtils.showSearchResults(e.target.value);
+		ClogUtils.showSearchResults();
+	});
+	
+	$('#clog_search_button').click(function(e) {
+		ClogUtils.showSearchResults();
 	});
 	
 	var arg = SakaiUtils.getParameters();
 	
-	if(!arg || !arg.siteId) {
-		alert('The site id  MUST be supplied as a page parameter');
+	if(!arg || !arg.placementId || !arg.siteId) {
+		alert('The placement id and site id MUST be supplied as page parameters');
 		return;
 	}
-
-	clogHomeState = 'viewAllPosts';
 	
 	clogSiteId = arg.siteId;
+	clogPlacementId = arg.placementId;
+
+	clogHomeState = 'viewAllPosts';
 
 	if(clogSiteId.match(/^~/)) clogOnMyWorkspace = true;
 
@@ -79,7 +85,7 @@ var autosave_id = null;
 
 	clogCurrentUserPreferences = ClogUtils.getPreferences();
 	
-	clogCurrentUserPermissions = new ClogPermissions(SakaiUtils.getCurrentUserPermissions(clogSiteId,'clog'));
+	clogCurrentUserPermissions = new ClogPermissions(ClogUtils.getCurrentUserPermissions());
 	
 	if(clogCurrentUserPermissions == null) return;
 	
@@ -94,16 +100,16 @@ var autosave_id = null;
 
 	if(window.frameElement)
 		window.frameElement.style.minHeight = '600px';
-		
-	// Clear the autosave interval
-	if(autosave_id)
-		clearInterval(autosave_id);
 	
 	// Now switch into the requested state
 	switchState(arg.state,arg);
 })();
 
 function switchState(state,arg) {
+
+	// Clear the autosave interval
+	if(autosave_id)
+		clearInterval(autosave_id);
 
 	clogCurrentState = state;
 
@@ -316,13 +322,11 @@ function switchState(state,arg) {
 		});
 	}
 	else if('permissions' === state) {
-		var perms = SakaiUtils.getSitePermissionMatrix(clogSiteId,'clog');
+		var perms = ClogUtils.getSitePermissionMatrix();
 		SakaiUtils.renderTrimpathTemplate('clog_permissions_content_template',{'perms':perms},'clog_content');
 
 	 	$(document).ready(function() {
-			$('#clog_permissions_save_button').bind('click',function(e) {
-				return SakaiUtils.savePermissions(clogSiteId,'clog_permission_checkbox',function() { switchState('viewAllPosts'); });
-			});
+			$('#clog_permissions_save_button').bind('click',ClogUtils.savePermissions);
 
 			if(window.frameElement)
 				setMainFrameHeight(window.frameElement.id);
