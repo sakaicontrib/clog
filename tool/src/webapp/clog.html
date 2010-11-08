@@ -137,7 +137,7 @@ else
    	<br />
 	<span style="font-weight: bold;">${clog_content_label}</span>
 	<br />
-	<textarea name="content" id="clog_content_editor">${content}</textarea>
+	<textarea name="content" id="clog_content_editor" cols="45" rows="10">${content}</textarea>
 	<br />
 	<br />
 	<input type="checkbox" id="clog_commentable_checkbox" {if commentable}checked="checked"{/if}/>${clog_allow_comments_label}
@@ -158,7 +158,7 @@ else
 
 	<div style="height: 20px;"></div>
 
-	<textarea name="text" id="clog_content_editor">${content}</textarea>
+	<textarea name="text" id="clog_content_editor" cols="45" rows="10">${content}</textarea>
 	<br />
 	<br />
     <input id="clog_comment_id_field" type="hidden" value="${id}"/>
