@@ -50,6 +50,8 @@ public class SQLGenerator implements ISQLGenerator
 	public String VARCHAR = "VARCHAR";
 
 	public String TEXT = "TEXT";
+	
+	protected String INT = "INT";
 
 	/*
 	 * (non-Javadoc)
@@ -157,7 +159,7 @@ public class SQLGenerator implements ISQLGenerator
 		statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
 		statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
 		statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
-		statement.append(ALLOW_COMMENTS + " INT, ");
+		statement.append(ALLOW_COMMENTS + " " + INT + ", ");
 		statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
 		statement.append("CONSTRAINT post_pk PRIMARY KEY (" + POST_ID + ")");
 		statement.append(")");
@@ -177,7 +179,7 @@ public class SQLGenerator implements ISQLGenerator
 		statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
 		statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
 		statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
-		statement.append(ALLOW_COMMENTS + " INT, ");
+		statement.append(ALLOW_COMMENTS + " " + INT + ", ");
 		statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
 		statement.append("CONSTRAINT autosaved_post_pk PRIMARY KEY (" + POST_ID + ")");
 		statement.append(")");
@@ -207,9 +209,9 @@ public class SQLGenerator implements ISQLGenerator
 		statement.append("(");
 		statement.append(USER_ID + " CHAR(36) NOT NULL,");
 		statement.append(SITE_ID + " " + VARCHAR + "(255), ");
-		statement.append(TOTAL_POSTS + " INT NOT NULL,");
+		statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
 		statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
-		statement.append(TOTAL_COMMENTS + " INT NOT NULL,");
+		statement.append(TOTAL_COMMENTS + " " + INT + " NOT NULL,");
 		statement.append("CONSTRAINT blog_author_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
 		statement.append(")");
 		return statement.toString();

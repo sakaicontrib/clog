@@ -9,6 +9,7 @@ public class OracleSQLGenerator extends SQLGenerator
 		TIMESTAMP = "TIMESTAMP";
 		VARCHAR = "VARCHAR2";
 		TEXT  = "LONG";
+		INT = "NUMBER(10, 0)";
 	}
 
 }
