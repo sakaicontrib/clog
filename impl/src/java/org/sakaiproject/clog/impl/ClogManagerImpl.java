@@ -505,8 +505,8 @@ public class ClogManagerImpl implements ClogManager
 
 		String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()) + "</b>" + " created a new post titled '" + post.getTitle() + "' in '" + siteTitle + "'<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it";
 
-		sakaiProxy.sendEmailWithMessage(eachList, "[ " + siteTitle + " - Blog ] New Blog Post", message);
-		sakaiProxy.addDigestMessage(digestList, "[ " + siteTitle + " - Blog ] New Blog Post", message);
+		sakaiProxy.sendEmailWithMessage(eachList, "[ " + siteTitle + " - Clog ] New Clog Post", message);
+		sakaiProxy.addDigestMessage(digestList, "[ " + siteTitle + " - Clog ] New Clog Post", message);
 	}
 
 	public void sendNewCommentAlert(Comment comment)
@@ -532,9 +532,9 @@ public class ClogManagerImpl implements ClogManager
 			String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()) + "</b>" + " commented on your post titled '" + post.getTitle() + "' in '" + siteTitle + "'<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it";
 
 			if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
-				sakaiProxy.sendEmailWithMessage(userId, "[ " + siteTitle + " - Blog ] New Comment", message);
+				sakaiProxy.sendEmailWithMessage(userId, "[ " + siteTitle + " - Clog ] New Comment", message);
 			else if (Preferences.MAIL_DIGEST.equals(prefs.getEmailFrequency()))
-				sakaiProxy.addDigestMessage(userId, "[ " + siteTitle + " - Blog ] New Comment", message);
+				sakaiProxy.addDigestMessage(userId, "[ " + siteTitle + " - Clog ] New Comment", message);
 		}
 		catch (Exception e)
 		{
