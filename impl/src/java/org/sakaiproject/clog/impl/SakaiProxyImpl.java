@@ -103,7 +103,7 @@ public class SakaiProxyImpl implements SakaiProxy
 	private SearchService searchService;
 
 	/** Inject this in your components.xml */
-	private String fromAddress = "sakai-blog@sakai.lancs.ac.uk";
+	private String fromAddress = "sakai-clog@sakai.lancs.ac.uk";
 
 	public void init() {}
 
@@ -387,7 +387,7 @@ public class SakaiProxyImpl implements SakaiProxy
 
 	public void registerEntityProducer(EntityProducer entityProducer)
 	{
-		entityManager.registerEntityProducer(entityProducer, "blog");
+		entityManager.registerEntityProducer(entityProducer, "clog");
 	}
 
 	public void setEntityManager(EntityManager entityManager)
@@ -412,7 +412,7 @@ public class SakaiProxyImpl implements SakaiProxy
 
 	public void registerFunction(String function)
 	{
-		List functions = functionManager.getRegisteredFunctions("blog.");
+		List functions = functionManager.getRegisteredFunctions("clog.");
 
 		if (!functions.contains(function))
 		{
@@ -535,7 +535,7 @@ public class SakaiProxyImpl implements SakaiProxy
 				this.participants = to;
 				this.text = text;
 				this.subject = subject;
-				runner = new Thread(this, "Blog Emailer Thread");
+				runner = new Thread(this, "Clog Emailer Thread");
 				runner.start();
 			}
 
@@ -679,7 +679,7 @@ public class SakaiProxyImpl implements SakaiProxy
 		
 		String id = UUID.randomUUID().toString();
 		
-		String resourceId = "/group/" + siteId + "/blog-files/" + id;
+		String resourceId = "/group/" + siteId + "/clog-files/" + id;
 		
 		try
 		{

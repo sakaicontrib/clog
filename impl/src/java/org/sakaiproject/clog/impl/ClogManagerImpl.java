@@ -45,7 +45,7 @@ public class ClogManagerImpl implements ClogManager
 		if (logger.isDebugEnabled())
 			logger.debug("init()");
 
-		logger.info("Registering Blog functions ...");
+		logger.info("Registering Clog functions ...");
 
 		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_CREATE);
 		sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_READ_ANY);
@@ -62,7 +62,7 @@ public class ClogManagerImpl implements ClogManager
 		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_DELETE_OWN);
 		sakaiProxy.registerFunction(ClogFunctions.CLOG_MODIFY_PERMISSIONS);
 
-		logger.info("Registered Blog functions ...");
+		logger.info("Registered Clog functions ...");
 
 		sakaiProxy.registerEntityProducer(this);
 
@@ -238,20 +238,20 @@ public class ClogManagerImpl implements ClogManager
 			((Element) stack.peek()).appendChild(element);
 			stack.push(element);
 
-			Element blog = doc.createElement("blog");
+			Element clog = doc.createElement("clog");
 			List<Post> posts = getPosts(siteId);
 			if (posts != null && posts.size() > 0)
 			{
 				for (Post post : posts)
 				{
 					Element postElement = post.toXml(doc, stack);
-					blog.appendChild(postElement);
+					clog.appendChild(postElement);
 					postCount++;
 				}
 			}
 
-			((Element) stack.peek()).appendChild(blog);
-			stack.push(blog);
+			((Element) stack.peek()).appendChild(clog);
+			stack.push(clog);
 
 			stack.pop();
 
@@ -389,7 +389,7 @@ public class ClogManagerImpl implements ClogManager
 					String referenceString = arg2.getReference();
 					String postId = referenceString.substring(referenceString.lastIndexOf(Entity.SEPARATOR) + 1);
 					Post post = getPost(postId);
-					String url = "http://btc224000006.lancs.ac.uk/blog-tool/blog.html?state=post&postId=" + postId + "&siteId=" + post.getSiteId();
+					String url = "http://btc224000006.lancs.ac.uk/clog-tool/clog.html?state=post&postId=" + postId + "&siteId=" + post.getSiteId();
 					logger.debug("URL:" + url);
 					arg1.sendRedirect(url);
 				}
@@ -406,7 +406,7 @@ public class ClogManagerImpl implements ClogManager
 	 */
 	public String getLabel()
 	{
-		return "blog";
+		return "clog";
 	}
 
 	/**
