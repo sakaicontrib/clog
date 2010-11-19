@@ -1,7 +1,6 @@
 package org.sakaiproject.clog.impl;
 
 import java.io.StringReader;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -145,11 +144,12 @@ public class ImporterSaxParser extends DefaultHandler
 		else if("file".equals(qName))
 		{
 			Statement st = null;
+			ResultSet rs = null;
 			
 			try
 			{
 				st = connection.createStatement();
-				ResultSet rs = st.executeQuery("SELECT * FROM BLOGGER_FILE WHERE FILE_ID = '" + currentFileId + "'");
+				rs = st.executeQuery("SELECT * FROM BLOGGER_FILE WHERE FILE_ID = '" + currentFileId + "'");
 				if(rs.next())
 				{
 					byte[] blob = rs.getBytes("FILE_CONTENT");
@@ -161,8 +161,6 @@ public class ImporterSaxParser extends DefaultHandler
 						collectedText += link;
 					}
 				}
-				
-				rs.close();
 			}
 			catch(Exception e)
 			{
@@ -170,16 +168,13 @@ public class ImporterSaxParser extends DefaultHandler
 			}
 			finally
 			{
-				if(st != null)
+				try
 				{
-					try
-					{
-						st.close();
-					}
-					catch(Exception e) {}
+					if(rs != null) rs.close();
+					if(st != null) st.close();
 				}
+				catch(Exception e) {}
 			}
-			
 		}
 		else if("linkRuleDescription".equals(qName))
 			processingLinkRuleDescription = false;
@@ -256,11 +251,12 @@ public class ImporterSaxParser extends DefaultHandler
 		else if(processingImageId)
 		{
 			Statement st = null;
+			ResultSet rs = null;
 			
 			try
 			{
 				st = connection.createStatement();
-				ResultSet rs = st.executeQuery("SELECT * FROM BLOGGER_IMAGE WHERE IMAGE_ID = '" + data + "'");
+				rs = st.executeQuery("SELECT * FROM BLOGGER_IMAGE WHERE IMAGE_ID = '" + data + "'");
 				if(rs.next())
 				{
 					byte[] blob = rs.getBytes("IMAGE_CONTENT");
@@ -272,8 +268,6 @@ public class ImporterSaxParser extends DefaultHandler
 						collectedText += img;
 					}
 				}
-				
-				rs.close();
 			}
 			catch(Exception e)
 			{
@@ -281,16 +275,13 @@ public class ImporterSaxParser extends DefaultHandler
 			}
 			finally
 			{
-				if(st != null)
+				try
 				{
-					try
-					{
-						st.close();
-					}
-					catch(Exception e) {}
+					if(rs != null) rs.close();
+					if(st != null) st.close();
 				}
+				catch(Exception e) {}
 			}
-			
 		}
 		else if(processingFileId)
 			currentFileId = data;

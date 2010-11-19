@@ -265,6 +265,7 @@ public class SQLGenerator implements ISQLGenerator
 		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
 
 		Statement testST = null;
+		ResultSet rs = null;
 
 		try
 		{
@@ -286,7 +287,7 @@ public class SQLGenerator implements ISQLGenerator
 				statements.add(statement);
 
 				testST = connection.createStatement();
-				ResultSet rs = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + comment.getPostId() + "'");
+				rs = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + comment.getPostId() + "'");
 				if (rs.next())
 				{
 					String blogCreatorId = rs.getString(CREATOR_ID);
@@ -298,7 +299,6 @@ public class SQLGenerator implements ISQLGenerator
 
 					statements.add(authorST);
 				}
-				rs.close();
 			}
 			else
 			{
@@ -313,16 +313,12 @@ public class SQLGenerator implements ISQLGenerator
 		}
 		finally
 		{
-			if (testST != null)
+			try
 			{
-				try
-				{
-					testST.close();
-				}
-				catch (Exception e)
-				{
-				}
+				if (rs != null) rs.close();
+				if (testST != null) testST.close();
 			}
+			catch (Exception e) {}
 		}
 
 		return statements;

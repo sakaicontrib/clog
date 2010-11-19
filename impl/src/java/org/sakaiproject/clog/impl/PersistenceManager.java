@@ -163,25 +163,23 @@ public class PersistenceManager
 
 		Connection connection = null;
 		Statement statement = null;
+		ResultSet rs = null;
 		
 		try
 		{
 			connection = sakaiProxy.borrowConnection();
 			statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery(sqlGenerator.getSelectAllPost(placementId));
+			rs = statement.executeQuery(sqlGenerator.getSelectAllPost(placementId));
 			result = transformResultSetInPostCollection(rs, connection);
-			rs.close();
 		}
 		finally
 		{
-			if(statement != null)
+			try
 			{
-				try
-				{
-					statement.close();
-				}
-				catch (Exception e) {}
+				if(rs != null) rs.close();
+				if(statement != null) statement.close();
 			}
+			catch (Exception e) {}
 			
 			sakaiProxy.returnConnection(connection);
 		}
