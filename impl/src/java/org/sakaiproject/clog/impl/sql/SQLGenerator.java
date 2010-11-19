@@ -494,7 +494,14 @@ public class SQLGenerator implements ISQLGenerator
 		}
 		finally
 		{
-			if(testRS != null) testRS.close();
+			if(testRS != null)
+			{
+				try
+				{
+					testRS.close();
+				}
+				catch (Exception e) {}
+			}
 			
 			if (testST != null)
 			{
@@ -502,9 +509,7 @@ public class SQLGenerator implements ISQLGenerator
 				{
 					testST.close();
 				}
-				catch (Exception e)
-				{
-				}
+				catch (Exception e) {}
 			}
 		}
 

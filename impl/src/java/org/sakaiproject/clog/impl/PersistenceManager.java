@@ -174,12 +174,23 @@ public class PersistenceManager
 		}
 		finally
 		{
-			try
+			if(rs != null)
 			{
-				if(rs != null) rs.close();
-				if(statement != null) statement.close();
+				try
+				{
+					rs.close();
+				}
+				catch(Exception e) {}
 			}
-			catch (Exception e) {}
+			
+			if(statement != null)
+			{
+				try
+				{
+					statement.close();
+				}
+				catch(Exception e) {}
+			}
 			
 			sakaiProxy.returnConnection(connection);
 		}

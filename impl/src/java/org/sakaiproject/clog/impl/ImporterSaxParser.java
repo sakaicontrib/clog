@@ -168,12 +168,23 @@ public class ImporterSaxParser extends DefaultHandler
 			}
 			finally
 			{
-				try
+				if(rs != null)
 				{
-					if(rs != null) rs.close();
-					if(st != null) st.close();
+					try
+					{
+						rs.close();
+					}
+					catch(Exception e) {}
 				}
-				catch(Exception e) {}
+				
+				if(st != null)
+				{
+					try
+					{
+						st.close();
+					}
+					catch(Exception e) {}
+				}
 			}
 		}
 		else if("linkRuleDescription".equals(qName))
@@ -275,12 +286,23 @@ public class ImporterSaxParser extends DefaultHandler
 			}
 			finally
 			{
-				try
+				if(rs != null)
 				{
-					if(rs != null) rs.close();
-					if(st != null) st.close();
+					try
+					{
+						rs.close();
+					}
+					catch(Exception e) {}
 				}
-				catch(Exception e) {}
+				
+				if(st != null)
+				{
+					try
+					{
+						st.close();
+					}
+					catch(Exception e) {}
+				}
 			}
 		}
 		else if(processingFileId)
