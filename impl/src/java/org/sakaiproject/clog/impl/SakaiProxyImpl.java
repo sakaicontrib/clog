@@ -102,9 +102,6 @@ public class SakaiProxyImpl implements SakaiProxy
 	
 	private SearchService searchService;
 
-	/** Inject this in your components.xml */
-	private String fromAddress = "sakai-clog@sakai.lancs.ac.uk";
-
 	public void init() {}
 
 	public void destroy() {}
@@ -475,7 +472,7 @@ public class SakaiProxyImpl implements SakaiProxy
 
 	public void sendEmailWithMessage(Set<String> users, String subject, String message)
 	{
-		sendEmailToParticipants(fromAddress, users, subject, message);
+		sendEmailToParticipants(getFromAddress(), users, subject, message);
 	}
 
 	public void addDigestMessage(String userId, String subject, String message)
@@ -573,16 +570,6 @@ public class SakaiProxyImpl implements SakaiProxy
 		}
 
 		new EmailSender(from, to, subject, text);
-	}
-
-	public void setFromAddress(String fromAddress)
-	{
-		this.fromAddress = fromAddress;
-	}
-
-	public String getFromAddress()
-	{
-		return fromAddress;
 	}
 
 	public void registerSecurityAdvisor(SecurityAdvisor securityAdvisor)
@@ -924,4 +911,9 @@ public class SakaiProxyImpl implements SakaiProxy
 	{
 		return searchService;
 	}
+	
+	private String getFromAddress() {
+		return serverConfigurationService.getString("setup.request", "sakai-clog@sakai.lancs.ac.uk");
+	}
+	
 }
