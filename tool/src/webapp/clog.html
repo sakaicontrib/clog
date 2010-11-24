@@ -234,7 +234,7 @@ else
 			{/if}
 			</span>
 			<div class="author">
-				<a class="icon profile" rel="/direct/profile/${creatorId}/formatted">${creatorDisplayName}</a><br /><span style="font-size: smaller;font-style: italic;">Created:</span><span style="font-size: smaller;font-style: italic;">${new Date(createdDate).toLocaleString()}</span>{if modifiedDate > createdDate}<br/><span style="font-size: smaller;font-style: italic;">Modified:</span><span style="font-size: smaller;font-style: italic;">${new Date(modifiedDate).toLocaleString()}</span>{/if}
+				<a class="icon profile" rel="/direct/profile/${creatorId}/formatted">${creatorDisplayName}</a><br /><span style="font-size: smaller;font-style: italic;">Created:</span><span style="font-size: smaller;font-style: italic;">${new Date(createdDate).toLocaleString()}</span>{if modifiedDate > createdDate}<br/><span style="font-size: smaller;font-style: italic;">${clog_modified_label}</span><span style="font-size: smaller;font-style: italic;">${new Date(modifiedDate).toLocaleString()}</span>{/if}
 			</div>
 			<br/>
 			<br/>
@@ -256,7 +256,7 @@ else
 					<div class="clog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
 							<div style="float:left; margin-right: 10px;"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
-							<div style="float:left;"><span>${comment.creatorDisplayName}</span><br/><span class="clog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span><br/><span class="clog_comment_date">Modified: ${new Date(comment.modifiedDate).toLocaleString()}</span></div>
+							<div style="float:left;"><a class="icon profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${new Date(comment.modifiedDate).toLocaleString()}</span>{/if}</div>
 						</div>
 						<div class="clog_comment_content">${comment.content}</div>
 						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == clogCurrentUser.id)}

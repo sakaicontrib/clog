@@ -144,3 +144,4 @@ hours="Hours:";
 days="Days:";
 printTooltip="View a print friendly version of these posts";
 clog_autosaved_message_label="Autosaved";
+clog_modified_label="Modified:";
