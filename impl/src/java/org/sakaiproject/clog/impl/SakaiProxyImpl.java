@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -708,8 +709,10 @@ public class SakaiProxyImpl implements SakaiProxy
 		try
 		{
 			SearchList sl = searchService.search(searchTerms, contexts, 0, 50, "normal", "normal");
-			for(SearchResult sr : sl)
+			for(Iterator i = sl.iterator(0); i.hasNext();)
 			{
+				SearchResult sr = (SearchResult) i.next();
+				
 				if("Clog".equals(sr.getTool()))
 					results.add(sr);
 			}
