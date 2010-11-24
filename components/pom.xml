@@ -17,20 +17,15 @@
   	</parent>
   	
   	<packaging>sakai-component</packaging>
+  	
   	<properties>
     	<deploy.target>components</deploy.target>
   	</properties>
+  	
   	<dependencies>
     	<dependency>
       		<groupId>org.sakaiproject.clog</groupId>
       		<artifactId>clog-impl</artifactId>
-      		<version>${project.version}</version>
-      		<exclusions>
-        		<exclusion>
-          			<groupId>org.sakaiproject.clog</groupId>
-          			<artifactId>clog-api</artifactId>
-        		</exclusion>
-      		</exclusions>
     	</dependency>
   	</dependencies>
 </project>
