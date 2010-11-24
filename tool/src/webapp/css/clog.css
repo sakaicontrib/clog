@@ -159,3 +159,26 @@ th.clogSortableTableHeaderSortDown {
 #clog_author_table th div{
 	margin-right: 15px;
 }
+
+/** top nav icons **/
+.home {
+	background-image: url(/library/image/silk/house.png);
+}
+.authors {
+	background-image: url(/library/image/silk/group.png);
+}
+.my-clog {
+	background-image: url(/library/image/silk/book.png);
+}
+.create-post {
+	background-image: url(/library/image/silk/page_white_edit.png);
+}
+.permissions {
+	background-image: url(/library/image/silk/application_view_detail.png);
+}
+.preferences {
+	background-image: url(/library/image/silk/cog.png);
+}
+.recycle {
+	background-image: url(/library/image/silk/bin_closed.png);
+}
