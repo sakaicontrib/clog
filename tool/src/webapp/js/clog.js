@@ -9,6 +9,7 @@ var clogCurrentState = null;
 var clogCurrentUser = null;
 var clogHomeState = null;
 var clogOnMyWorkspace = false;
+var clogOnGateway = false;
 
 var autosave_id = null;
 
@@ -17,31 +18,31 @@ var autosave_id = null;
 	// We need the toolbar in a template so we can swap in the translations
 	SakaiUtils.renderTrimpathTemplate('clog_toolbar_template',{},'clog_toolbar');
 
-	$('#clog_home_link').bind('click',function(e) {
+	$('#clog_home_link').click(function(e) {
 		return switchState('home');
 	});
 
-	$('#clog_view_authors_link').bind('click',function(e) {
+	$('#clog_view_authors_link').click(function(e) {
 		return switchState('viewMembers');
 	});
 
-	$('#clog_my_clog_link').bind('click',function(e) {
+	$('#clog_my_clog_link').click(function(e) {
 		return switchState('userPosts');
 	});
 
-	$('#clog_create_post_link').bind('click',function(e) {
+	$('#clog_create_post_link').click(function(e) {
 		return switchState('createPost');
 	});
 
-	$('#clog_permissions_link').bind('click',function(e) {
+	$('#clog_permissions_link').click(function(e) {
 		return switchState('permissions');
 	});
 	
-	$('#clog_preferences_link').bind('click',function(e) {
+	$('#clog_preferences_link').click(function(e) {
 		return switchState('preferences');
 	});
 
-	$('#clog_recycle_bin_link').bind('click',function(e) {
+	$('#clog_recycle_bin_link').click(function(e) {
 		return switchState('viewRecycled');
 	});
 
@@ -67,6 +68,7 @@ var autosave_id = null;
 
 	if(clogSiteId.match(/^~/)) clogOnMyWorkspace = true;
 
+
 	// If we are on a My Workspace type site (characterised by a tilde as the
 	// first character in the site id), show the user's posts by default.
 	if(clogOnMyWorkspace) {
@@ -76,6 +78,8 @@ var autosave_id = null;
 		$("#clog_my_clog_link").hide();
 	}
 
+	if('!gateway' === clogSiteId) clogOnGateway = true;
+
 	clogCurrentUser = SakaiUtils.getCurrentUser();
 	
 	if(!clogCurrentUser) {
@@ -83,19 +87,28 @@ var autosave_id = null;
 		return;
 	}
 
-	clogCurrentUserPreferences = ClogUtils.getPreferences();
+	if(!clogOnGateway) {
+		clogCurrentUserPreferences = ClogUtils.getPreferences();
 	
-	clogCurrentUserPermissions = new ClogPermissions(ClogUtils.getCurrentUserPermissions());
+		clogCurrentUserPermissions = new ClogPermissions(ClogUtils.getCurrentUserPermissions());
 	
-	if(clogCurrentUserPermissions == null) return;
+		if(clogCurrentUserPermissions == null) return;
 	
-	if(clogCurrentUserPermissions.modifyPermissions) {
-		$("#clog_permissions_link").show();
-		$("#clog_recycle_bin_link").show();
+		if(clogCurrentUserPermissions.modifyPermissions) {
+			$("#clog_permissions_link").show();
+			$("#clog_recycle_bin_link").show();
+		}
+		else {
+			$("#clog_permissions_link").hide();
+			$("#clog_recycle_bin_link").hide();
+		}
 	}
 	else {
 		$("#clog_permissions_link").hide();
-		$("#clog_recycle_bin_link").hide();
+		$("#clog_preferences_link").hide();
+		$("#clog_my_clog_link").hide();
+		$('#clog_recycle_bin_link').hide();
+		clogCurrentUserPermissions = new ClogPermissions();
 	}
 
 	if(window.frameElement)
@@ -115,7 +128,7 @@ function switchState(state,arg) {
 
 	$('#cluetip').hide();
 
-	if(clogCurrentUserPermissions.postCreate)
+	if(!clogOnGateway && clogCurrentUserPermissions.postCreate)
 		$("#clog_create_post_link").show();
 	else
 		$("#clog_create_post_link").hide();
@@ -140,7 +153,7 @@ function switchState(state,arg) {
 		ClogUtils.attachProfilePopup();
 	}
 	else if('viewMembers' === state) {
-		if(clogCurrentUserPermissions.postCreate)
+		if(!clogOnGateway && clogCurrentUserPermissions.postCreate)
 			$("#clog_create_post_link").show();
 		else
 			$("#clog_create_post_link").hide();
@@ -258,16 +271,18 @@ function switchState(state,arg) {
 		SakaiUtils.setupFCKEditor('clog_content_editor',600,400,'Default',clogSiteId);
 
 	 	$(document).ready(function() {
-			$('#clog_save_post_button').bind('click',ClogUtils.savePostAsDraft);
+			$('#clog_save_post_button').click(ClogUtils.savePostAsDraft);
+
+			$('#clog_make_post_public_button').click(ClogUtils.publicisePost);
 
 			// If this is a My Workspace site, make the post PUBLIC when published.
-			if(clogOnMyWorkspace) {
-				$('#clog_publish_post_button').bind('click',ClogUtils.publicisePost);
-			}
-			else
-				$('#clog_publish_post_button').bind('click',ClogUtils.publishPost);
+			//if(clogOnMyWorkspace) {
+				//$('#clog_publish_post_button').click(ClogUtils.publicisePost);
+			//}
+			//else
+				$('#clog_publish_post_button').click(ClogUtils.publishPost);
 
-			$('#clog_cancel_button').bind('click',function(e) {
+			$('#clog_cancel_button').click(function(e) {
 				// If the current post has neither been saved or published, delete the autosaved copy
 				if(!clogCurrentPost.visibility) {
 					ClogUtils.deleteAutosavedCopy(clogCurrentPost.id);

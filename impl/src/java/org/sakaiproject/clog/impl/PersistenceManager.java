@@ -1359,10 +1359,8 @@ public class PersistenceManager
 		{
 			connection = sakaiProxy.borrowConnection();
 			st = sqlGenerator.getDeleteAutosavedCopyStatement(postId,connection);
-			if(st.executeUpdate() > 0)
-				return true;
-			else
-				return false;
+			st.executeUpdate();
+			return true;
 		}
 		catch (Exception e)
 		{

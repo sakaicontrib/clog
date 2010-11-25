@@ -1,5 +1,7 @@
 function ClogPermissions(data) {
 
+	if(!data) return;
+
 	for(var i=0,j=data.length;i<j;i++) {
 		if('clog.post.create' === data[i])
 			this.postCreate = true;

@@ -142,6 +142,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		post.setContent(content);
 		post.setCommentable(commentable);
 		
+		// If a user is posting from their MyWorkspace then it goes public. Otherwise, what's the point?
+		//if(siteId.startsWith("~") && "publish".equals(mode))
+			//post.setVisibility(Visibilities.PUBLIC);
+		
 		boolean isNew = "".equals(post.getId());
 
 		if (clogManager.savePost(post))
@@ -194,6 +198,13 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 		QueryBean query = new QueryBean();
 		query.setVisibilities(new String[] {Visibilities.READY,Visibilities.PRIVATE});
+		
+		if (visibilities != null)
+		{
+			String visibilitiesValue = visibilities.getStringValue();
+			String[] values = visibilitiesValue.split(",");
+			query.setVisibilities(values);
+		}
 
 		if (locRes != null)
 		{
@@ -201,17 +212,16 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			String context = new EntityReference(location).getId();
 
 			query.setSiteId(context);
+			
+			if("!gateway".equals(context))
+			{
+				query.setVisibilities(new String[] {Visibilities.PUBLIC});
+				query.setSiteId("");
+			}
 		}
 
 		if (creatorRes != null)
 			query.setCreator(creatorRes.getStringValue());
-
-		if (visibilities != null)
-		{
-			String visibilitiesValue = visibilities.getStringValue();
-			String[] values = visibilitiesValue.split(",");
-			query.setVisibilities(values);
-		}
 		
 		if(autosaveRes != null)
 			query.setSearchAutoSaved(true);

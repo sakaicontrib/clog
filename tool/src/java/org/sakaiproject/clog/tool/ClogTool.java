@@ -59,15 +59,20 @@ public class ClogTool extends HttpServlet
 		
 		if(postId == null) postId = "none";
 		
+		String siteId = sakaiProxy.getCurrentSiteId();
+		
 		String userId = sakaiProxy.getCurrentUserId();
 		
 		if(userId == null)
 		{
-			// We are not logged in
-			throw new ServletException("getCurrentUser returned null.");
+			// We are not logged in. Could be the gateway placement.
+			if( ! "!gateway".equals(siteId))
+			{
+				// There should be an authenticated user at this point.
+				throw new ServletException("getCurrentUser returned null.");
+			}
 		}
 		
-		String siteId = sakaiProxy.getCurrentSiteId();
 		String toolId = sakaiProxy.getCurrentToolId();
 		
 		// We need to pass the language code to the JQuery code in the pages.

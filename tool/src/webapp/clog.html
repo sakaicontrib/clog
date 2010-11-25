@@ -140,13 +140,16 @@ else
 	<textarea name="content" id="clog_content_editor" cols="45" rows="10">${content}</textarea>
 	<br />
 	<br />
+	{if clogOnMyWorkspace == false}
 	<input type="checkbox" id="clog_commentable_checkbox" {if commentable}checked="checked"{/if}/>${clog_allow_comments_label}
 	<br />
 	<br />
+	{/if} 
     <input id="clog_post_id_field" type="hidden" value="${id}"/>
-    <input id="clog_publish_post_button" type="button" value="Publish" title="Publishing will make this post visible to others"/>
-    <input id="clog_save_post_button" type="button" value="Save as Draft" title="Saving as Draft will save your changes but will not make those changes visible to others"/>
-    <input id="clog_cancel_button" type="button" value="Cancel"/>
+    <input id="clog_make_post_public_button" type="button" value="${clog_make_post_public_label}" title="${clog_make_post_public_tooltip}"/>
+    <input id="clog_publish_post_button" type="button" value="${clog_publish_label}" title="${clog_publish_tooltip}"/>
+    <input id="clog_save_post_button" type="button" value="${clog_save_as_draft_label}" title="${clog_save_as_draft_tooltip}"/>
+    <input id="clog_cancel_button" type="button" value="${cancel}"/>
 	<span id="clog_autosaved_message">${clog_autosaved_message_label}</span>
 -->
 </div>

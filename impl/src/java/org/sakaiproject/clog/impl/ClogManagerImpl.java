@@ -1,5 +1,6 @@
 package org.sakaiproject.clog.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -449,9 +450,19 @@ public class ClogManagerImpl implements ClogManager
 
 	public List<ClogMember> getAuthors(String siteId)
 	{
-		List<ClogMember> authors = sakaiProxy.getSiteMembers(siteId);
-		for (ClogMember author : authors)
-			persistenceManager.populateAuthorData(author, siteId);
+		List<ClogMember> authors = new ArrayList<ClogMember>();
+		
+		if("!gateway".equals(siteId))
+		{
+			authors = persistenceManager.getPublicBloggers();
+		}
+		else
+		{
+			authors = sakaiProxy.getSiteMembers(siteId);
+			for (ClogMember author : authors)
+				persistenceManager.populateAuthorData(author, siteId);
+		}
+		
 		return authors;
 	}
 
