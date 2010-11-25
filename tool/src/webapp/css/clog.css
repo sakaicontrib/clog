@@ -161,6 +161,11 @@ th.clogSortableTableHeaderSortDown {
 }
 
 /** top nav icons **/
+
+#clog_toolbar_items a {
+	background-repeat: no-repeat;
+	padding-left: 18px;
+}
 .home {
 	background-image: url(/library/image/silk/house.png);
 }
