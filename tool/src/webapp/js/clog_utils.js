@@ -192,7 +192,8 @@ var ClogUtils;
 	}
 
 	ClogUtils.publicisePost = function() {
-		return ClogUtils.storePost('PUBLIC');
+		if(confirm(clog_public_question))
+			return ClogUtils.storePost('PUBLIC');
 	}
 		
 	ClogUtils.storePost = function(visibility,isPublish) {
