@@ -119,10 +119,16 @@ public class SakaiProxyImpl implements SakaiProxy
 
 	public String getCurrentUserId()
 	{
-
 		Session session = sessionManager.getCurrentSession();
 		String userId = session.getUserId();
 		return userId;
+	}
+	
+	public String getCurrentUserEid()
+	{
+		Session session = sessionManager.getCurrentSession();
+		String userEid = session.getUserEid();
+		return userEid;
 	}
 
 	public Connection borrowConnection() throws SQLException
@@ -918,5 +924,20 @@ public class SakaiProxyImpl implements SakaiProxy
 	private String getFromAddress() {
 		return serverConfigurationService.getString("setup.request", "sakai-clog@sakai.lancs.ac.uk");
 	}
-	
+
+	@Override
+	public boolean isPublicAllowed() {
+		return "true".equals(serverConfigurationService.getString("clog.allowPublic", "false"));
+	}
+
+	@Override
+	public boolean makeResourcePublic(String contentId) {
+		try {
+			contentHostingService.setPubView(contentId, true);
+			return contentHostingService.isPubView(contentId);
+		} catch(Throwable t) {
+			t.printStackTrace();
+			return false;
+		}
+	}
 }

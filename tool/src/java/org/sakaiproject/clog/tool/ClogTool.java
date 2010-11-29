@@ -80,6 +80,8 @@ public class ClogTool extends HttpServlet
 		String languageCode = locale.getLanguage();
 		
 		String pathInfo = request.getPathInfo();
+		
+		boolean publicAllowed = sakaiProxy.isPublicAllowed();
 
 		if (pathInfo == null || pathInfo.length() < 1)
 		{
@@ -92,7 +94,7 @@ public class ClogTool extends HttpServlet
 				// means that we can't pass url parameters to the page.We can
 				// use a cookie and the JS will pull the initial state from that
 				// instead.
-				Cookie params = new Cookie("sakai-tool-params","state=" + state + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + postId + "&langage=" + languageCode);
+				Cookie params = new Cookie("sakai-tool-params","state=" + state + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + postId + "&langage=" + languageCode + "&publicAllowed=" + publicAllowed);
 				response.addCookie(params);
 			
 				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/clog.html");
@@ -101,7 +103,7 @@ public class ClogTool extends HttpServlet
 			}
 			else
 			{
-				String url = "/clog-tool/clog.html?state=" + state + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + postId + "&language=" + languageCode;
+				String url = "/clog-tool/clog.html?state=" + state + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + postId + "&language=" + languageCode + "&publicAllowed=" + publicAllowed;
 				response.sendRedirect(url);
 				return;
 			}

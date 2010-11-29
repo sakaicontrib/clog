@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Comment;
@@ -333,6 +335,18 @@ public class PersistenceManager
 				for(PreparedStatement st : statements)
 					st.executeUpdate();
 				
+				if(post.isPublic()) {
+					String accessUrl = sakaiProxy.getAccessUrl();
+					String content = post.getContent();
+					Pattern p = Pattern.compile(accessUrl + "/content(/user/" + sakaiProxy.getCurrentUserEid() + "[^\"]*)\"");
+					Matcher m = p.matcher(content);
+					while(m.find()) {
+						String contentId = m.group(1);
+						if(!sakaiProxy.makeResourcePublic(contentId))
+							throw new Exception("Failed to make embedded resource public");
+					}
+				}
+				
 				connection.commit();
 				
 				//post.setModifiedDate(new Date().getTime());
@@ -637,7 +651,7 @@ public class PersistenceManager
 
 			if (posts.size() == 0)
 			{
-				logger.error("getAutosavedPost: Unable to find post with id:" + postId);
+				if(logger.isInfoEnabled()) logger.info("getAutosavedPost: Unable to find post with id:" + postId);
 				return null;
 			}
 			if (posts.size() > 1)

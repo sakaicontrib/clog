@@ -102,4 +102,10 @@ public interface SakaiProxy
 	public Set<String> getPermissionsForCurrentUserAndSite();
 
 	public boolean setPermsForCurrentSite(Map<String,String[]> parameterMap);
+
+	public boolean isPublicAllowed();
+
+	public String getCurrentUserEid();
+
+	public boolean makeResourcePublic(String contentId);
 }

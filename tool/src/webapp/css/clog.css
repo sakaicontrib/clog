@@ -187,3 +187,6 @@ th.clogSortableTableHeaderSortDown {
 .recycle {
 	background-image: url(/library/image/silk/bin_closed.png);
 }
+.public {
+	background-image: url(/library/image/silk/world.png);
+}

@@ -1,6 +1,7 @@
 package org.sakaiproject.clog.tool.entityprovider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -142,10 +143,6 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		post.setContent(content);
 		post.setCommentable(commentable);
 		
-		// If a user is posting from their MyWorkspace then it goes public. Otherwise, what's the point?
-		//if(siteId.startsWith("~") && "publish".equals(mode))
-			//post.setVisibility(Visibilities.PUBLIC);
-		
 		boolean isNew = "".equals(post.getId());
 
 		if (clogManager.savePost(post))
@@ -216,6 +213,13 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			if("!gateway".equals(context))
 			{
 				query.setVisibilities(new String[] {Visibilities.PUBLIC});
+				query.setSiteId("");
+			}
+			else if(context.startsWith("~") && query.getVisibilities().equals(Arrays.asList(Visibilities.PUBLIC)))
+			{
+				// We are on a MyWorkspace and PUBLIC has been requested. PUBLIC posts always
+				// retain the site ID of the site they were originally created in so a site id
+				// query for the MyWorkspace will fail. We need to flatten the site id.
 				query.setSiteId("");
 			}
 		}

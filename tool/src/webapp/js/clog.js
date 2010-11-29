@@ -10,13 +10,18 @@ var clogCurrentUser = null;
 var clogHomeState = null;
 var clogOnMyWorkspace = false;
 var clogOnGateway = false;
+var clogPublicAllowed = false;
 
 var autosave_id = null;
 
 (function()
 {
+	var arg = SakaiUtils.getParameters();
+
 	// We need the toolbar in a template so we can swap in the translations
 	SakaiUtils.renderTrimpathTemplate('clog_toolbar_template',{},'clog_toolbar');
+	
+	if('true' === arg.publicAllowed) clogPublicAllowed = true;
 
 	$('#clog_home_link').click(function(e) {
 		return switchState('home');
@@ -29,6 +34,12 @@ var autosave_id = null;
 	$('#clog_my_clog_link').click(function(e) {
 		return switchState('userPosts');
 	});
+
+	if(clogPublicAllowed) {
+		$('#clog_my_public_posts_link').click(function(e) {
+			return switchState('myPublicPosts');
+		});
+	}
 
 	$('#clog_create_post_link').click(function(e) {
 		return switchState('createPost');
@@ -54,7 +65,6 @@ var autosave_id = null;
 		ClogUtils.showSearchResults();
 	});
 	
-	var arg = SakaiUtils.getParameters();
 	
 	if(!arg || !arg.placementId || !arg.siteId) {
 		alert('The placement id and site id MUST be supplied as page parameters');
@@ -68,7 +78,6 @@ var autosave_id = null;
 
 	if(clogSiteId.match(/^~/)) clogOnMyWorkspace = true;
 
-
 	// If we are on a My Workspace type site (characterised by a tilde as the
 	// first character in the site id), show the user's posts by default.
 	if(clogOnMyWorkspace) {
@@ -76,6 +85,8 @@ var autosave_id = null;
 		clogHomeState = 'userPosts';
 		$("#clog_view_authors_link").hide();
 		$("#clog_my_clog_link").hide();
+		
+		if(clogPublicAllowed) $("#clog_my_public_posts_link").show();
 	}
 
 	if('!gateway' === clogSiteId) clogOnGateway = true;
@@ -202,8 +213,42 @@ function switchState(state,arg) {
 
 		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&autosaved=true";
 
-		if(clogOnMyWorkspace) url += "&visibilities=PRIVATE,PUBLIC";
+		//if(clogOnMyWorkspace) url += "&visibilities=PRIVATE,PUBLIC";
 
+		jQuery.ajax( {
+	       	'url' : url,
+	       	dataType : "json",
+	       	async : false,
+			cache: false,
+		   	success : function(data) {
+
+				var profileMarkup = SakaiUtils.getProfileMarkup(userId);
+
+				clogCurrentPosts = data['clog-post_collection'];
+	 			
+				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':clogCurrentPosts},'clog_content');
+				$('#clog_author_profile').html(profileMarkup);
+	 			for(var i=0,j=clogCurrentPosts.length;i<j;i++)
+					SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
+
+	 			if(window.frameElement) {
+	 				$(document).ready(function() {
+	 					setMainFrameHeight(window.frameElement.id);
+	 				});
+				}
+			},
+			error : function(xmlHttpRequest,status,errorThrown) {
+				alert("Failed to get posts. Reason: " + errorThrown);
+			}
+	   	});
+	}
+	else if('myPublicPosts' === state) {
+		// Default to using the current session user id ...
+		var userId = clogCurrentUser.id;
+
+		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&autosaved=true&visibilities=PUBLIC";
+
+		// TODO: Factor this into a method. Same as above ...
 		jQuery.ajax( {
 	       	'url' : url,
 	       	dataType : "json",
