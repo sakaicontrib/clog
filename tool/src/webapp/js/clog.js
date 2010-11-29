@@ -213,8 +213,6 @@ function switchState(state,arg) {
 
 		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&autosaved=true";
 
-		//if(clogOnMyWorkspace) url += "&visibilities=PRIVATE,PUBLIC";
-
 		jQuery.ajax( {
 	       	'url' : url,
 	       	dataType : "json",
@@ -246,7 +244,7 @@ function switchState(state,arg) {
 		// Default to using the current session user id ...
 		var userId = clogCurrentUser.id;
 
-		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&autosaved=true&visibilities=PUBLIC";
+		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&visibilities=PUBLIC";
 
 		// TODO: Factor this into a method. Same as above ...
 		jQuery.ajax( {

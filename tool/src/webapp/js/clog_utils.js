@@ -166,7 +166,7 @@ var ClogUtils;
 	ClogUtils.setPostsForCurrentSite = function() {
 
 		jQuery.ajax( {
-	       	url : "/direct/clog-post.json?siteId=" + clogSiteId,
+	       	url : "/direct/clog-post.json?siteId=" + clogSiteId + "&autosaved=true",
 	       	dataType : "json",
 	       	async : false,
 			cache: false,

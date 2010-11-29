@@ -46,7 +46,7 @@ var SakaiUtils;
 				profile = p;
 			},
 			error : function(xmlHttpRequest,stat,error) {
-				alert("Failed to get profile markup. Status: " + stat + ". Error: " + error);
+				//alert("Failed to get profile markup. Status: " + stat + ". Error: " + error);
 			}
 	   	});
 
