@@ -37,7 +37,9 @@ public class ImporterSaxParser extends DefaultHandler
 	private boolean processingCommentText = false;
 	private boolean processingCommentDate = false;
 	private boolean processingCommentCreator = false;
+	private boolean processingImage = false;
 	private boolean processingImageId = false;
+	private boolean processingImageDescription = false;
 	private boolean processingFileId = false;
 	private boolean processingFileDescription = false;
 	private boolean processingLinkRuleDescription = false;
@@ -45,6 +47,9 @@ public class ImporterSaxParser extends DefaultHandler
 	
 	private String currentFileId = "";
 	private String currentFileName = "";
+	
+	private String currentImageId = "";
+	private String currentImageDescription = "";
 	
 	private String currentLinkRuleDescription = "";
 	private String currentLinkExpression = "";
@@ -95,8 +100,12 @@ public class ImporterSaxParser extends DefaultHandler
 			processingCommentDate = true;
 		else if("idCommentCreator".equals(qName))
 			processingCommentCreator = true;
+		else if("image".equals(qName))
+			processingImage = true;
 		else if("imageId".equals(qName))
 			processingImageId = true;
+		else if("imageDescription".equals(qName))
+			processingImageDescription = true;
 		else if("fileId".equals(qName))
 			processingFileId = true;
 		else if("fileDescription".equals(qName))
@@ -135,6 +144,56 @@ public class ImporterSaxParser extends DefaultHandler
 			processingCommentDate = false;
 		else if("idCommentCreator".equals(qName))
 			processingCommentCreator = false;
+		else if("imageDescription".equals(qName)) {
+			processingImageDescription = false;
+		}
+		else if("image".equals(qName)) {
+			processingImage = false;
+			
+			Statement st = null;
+			ResultSet rs = null;
+			
+			try
+			{
+				st = connection.createStatement();
+				rs = st.executeQuery("SELECT * FROM BLOGGER_IMAGE WHERE IMAGE_ID = '" + currentImageId + "'");
+				if(rs.next())
+				{
+					byte[] blob = rs.getBytes("IMAGE_CONTENT");
+					String resourceId = sakaiProxy.storeResource(blob,currentImageDescription,post.getSiteId(),post.getCreatorId());
+					if(resourceId != null)
+					{
+						String fullUrl = sakaiProxy.getServerUrl() + "/access/content" + resourceId;
+						String img = "<img src=\"" + fullUrl + "\"/><br /><br />";
+						collectedText += img;
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				logger.error("Caught exception whilst storing image.",e);
+			}
+			finally
+			{
+				if(rs != null)
+				{
+					try
+					{
+						rs.close();
+					}
+					catch(Exception e) {}
+				}
+				
+				if(st != null)
+				{
+					try
+					{
+						st.close();
+					}
+					catch(Exception e) {}
+				}
+			}
+		}
 		else if("imageId".equals(qName))
 			processingImageId = false;
 		else if("fileId".equals(qName))
@@ -153,7 +212,7 @@ public class ImporterSaxParser extends DefaultHandler
 				if(rs.next())
 				{
 					byte[] blob = rs.getBytes("FILE_CONTENT");
-					String resourceId = sakaiProxy.storeResource(blob,post.getSiteId(),post.getCreatorId());
+					String resourceId = sakaiProxy.storeResource(blob,currentFileName, post.getSiteId(),post.getCreatorId());
 					if(resourceId != null)
 					{
 						String fullUrl = sakaiProxy.getServerUrl() + "/access/content" + resourceId;
@@ -248,7 +307,7 @@ public class ImporterSaxParser extends DefaultHandler
 		else if(processingAllowComments)
 			post.setCommentable(Boolean.parseBoolean(data));
 		else if(processingParagraph)
-			collectedText += data;
+			collectedText += data + "<br /><br />";
 		else if(processingCommentText)
 			comment.setContent(data);
 		else if(processingCommentDate)
@@ -260,51 +319,9 @@ public class ImporterSaxParser extends DefaultHandler
 		else if(processingCommentCreator)
 			comment.setCreatorId(data);
 		else if(processingImageId)
-		{
-			Statement st = null;
-			ResultSet rs = null;
-			
-			try
-			{
-				st = connection.createStatement();
-				rs = st.executeQuery("SELECT * FROM BLOGGER_IMAGE WHERE IMAGE_ID = '" + data + "'");
-				if(rs.next())
-				{
-					byte[] blob = rs.getBytes("IMAGE_CONTENT");
-					String resourceId = sakaiProxy.storeResource(blob,post.getSiteId(),post.getCreatorId());
-					if(resourceId != null)
-					{
-						String fullUrl = sakaiProxy.getServerUrl() + "/access/content" + resourceId;
-						String img = "<img src=\"" + fullUrl + "\"/><br /><br />";
-						collectedText += img;
-					}
-				}
-			}
-			catch(Exception e)
-			{
-				logger.error("Caught exception whilst storing image.",e);
-			}
-			finally
-			{
-				if(rs != null)
-				{
-					try
-					{
-						rs.close();
-					}
-					catch(Exception e) {}
-				}
-				
-				if(st != null)
-				{
-					try
-					{
-						st.close();
-					}
-					catch(Exception e) {}
-				}
-			}
-		}
+			currentImageId = data;
+		else if(processingImageDescription)
+			currentImageDescription = data;
 		else if(processingFileId)
 			currentFileId = data;
 		else if(processingFileDescription)

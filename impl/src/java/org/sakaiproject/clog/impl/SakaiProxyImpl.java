@@ -666,7 +666,7 @@ public class SakaiProxyImpl implements SakaiProxy
 		}
 	}
 
-	public String storeResource(byte[] blob,String siteId,String creatorId)
+	public String storeResource(byte[] blob,String displayName,String siteId,String creatorId)
 	{
 		ContentResourceEdit resource = null;
 		ResourceProperties props = null;
@@ -690,6 +690,7 @@ public class SakaiProxyImpl implements SakaiProxy
 			{
 				resource.setContent(blob);
 				props.addProperty(ResourceProperties.PROP_CREATOR, creatorId);
+				props.addProperty(ResourceProperties.PROP_DISPLAY_NAME, displayName);
 			}
 				
 			resource.getPropertiesEdit().addAll(props);

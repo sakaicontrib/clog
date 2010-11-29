@@ -93,7 +93,7 @@ public interface SakaiProxy
 	
 	public String getClogToolId(String siteId);
 
-	public String storeResource(byte[] blob,String siteId,String creatorId);
+	public String storeResource(byte[] blob,String displayName, String siteId,String creatorId);
 	
 	public List<SearchResult> searchInCurrentSite(String searchTerms);
 
