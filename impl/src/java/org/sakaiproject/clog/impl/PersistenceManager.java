@@ -335,15 +335,25 @@ public class PersistenceManager
 				for(PreparedStatement st : statements)
 					st.executeUpdate();
 				
-				if(post.isPublic()) {
+				if(post.getSiteId().startsWith("~")) {
+					
+					// This post is on a MyWorkspace site
+				
 					String accessUrl = sakaiProxy.getAccessUrl();
 					String content = post.getContent();
-					Pattern p = Pattern.compile(accessUrl + "/content(/user/" + sakaiProxy.getCurrentUserEid() + "[^\"]*)\"");
+					Pattern p = Pattern.compile(accessUrl + "/content/user/" + sakaiProxy.getCurrentUserEid() + "/([^\"]*)\"");
 					Matcher m = p.matcher(content);
 					while(m.find()) {
 						String contentId = m.group(1);
-						if(!sakaiProxy.makeResourcePublic(contentId))
-							throw new Exception("Failed to make embedded resource public");
+						if(post.isPublic()) {
+							if(!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId,true))
+								throw new Exception("Failed to make embedded resource public");
+						}
+						else {
+							if(!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId,false))
+								throw new Exception("Failed to make embedded resource public");
+							
+						}
 					}
 				}
 				

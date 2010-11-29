@@ -107,5 +107,5 @@ public interface SakaiProxy
 
 	public String getCurrentUserEid();
 
-	public boolean makeResourcePublic(String contentId);
+	public boolean setResourcePublic(String contentId,boolean isPublic);
 }

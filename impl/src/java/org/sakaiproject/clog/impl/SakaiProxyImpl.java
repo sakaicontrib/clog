@@ -931,10 +931,10 @@ public class SakaiProxyImpl implements SakaiProxy
 	}
 
 	@Override
-	public boolean makeResourcePublic(String contentId) {
+	public boolean setResourcePublic(String contentId,boolean isPublic) {
 		try {
-			contentHostingService.setPubView(contentId, true);
-			return contentHostingService.isPubView(contentId);
+			contentHostingService.setPubView(contentId, isPublic);
+			return contentHostingService.isPubView(contentId) == isPublic;
 		} catch(Throwable t) {
 			t.printStackTrace();
 			return false;
