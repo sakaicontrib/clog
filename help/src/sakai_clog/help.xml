@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+   <bean id="clog_overview" class="org.sakaiproject.component.app.help.model.ResourceBean">
+      <property name="docId"><value>clog_overview</value></property>
+      <property name="name"><value>Clog Overview</value></property>
+      <property name="location"><value>/sakai_clog/overview.html</value></property>
+      <property name="defaultForTool"><value>sakai.clog</value></property>
+   </bean>
+   <bean id="clog_create_post" class="org.sakaiproject.component.app.help.model.ResourceBean">
+      <property name="docId"><value>clog_create_post</value></property>
+      <property name="name"><value>Creating a Post</value></property>
+      <property name="location"><value>/sakai_clog/post_creation.html</value></property>
+   </bean>
+
+    <bean id="org.sakaiproject.api.app.help.TableOfContents" 
+          class="org.sakaiproject.component.app.help.model.TableOfContentsBean">
+      <property name="name"><value>root</value></property>
+      <property name="categories">
+         <list>
+            <bean id="clogCategory" class="org.sakaiproject.component.app.help.model.CategoryBean">
+               <property name="name"><value>Clog</value></property>
+               <property name="resources">
+                  <list>
+                     <ref bean="clog_overview"/>
+                     <ref bean="clog_create_post"/>
+                  </list>
+               </property>
+            </bean>
+           </list>
+         </property>
+       </bean>
+</beans>

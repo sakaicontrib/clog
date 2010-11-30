@@ -30,6 +30,12 @@
    		</dependency>
    		<dependency>
    			<groupId>org.sakaiproject.clog</groupId>
+   			<artifactId>clog-help</artifactId>
+   			<version>${project.version}</version>
+   			<scope>compile</scope>
+   		</dependency>
+   		<dependency>
+   			<groupId>org.sakaiproject.clog</groupId>
    			<artifactId>clog-pack</artifactId>
    			<version>${project.version}</version>
    			<scope>compile</scope>

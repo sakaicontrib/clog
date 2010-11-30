@@ -86,6 +86,7 @@
     	<module>assembly</module>
     	<module>api</module>
     	<module>impl</module>
+    	<module>help</module>
     	<module>tool</module>
   	</modules>
 
