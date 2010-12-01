@@ -190,3 +190,8 @@ th.clogSortableTableHeaderSortDown {
 .public {
 	background-image: url(/library/image/silk/world.png);
 }
+
+.clog_author_image_div {
+	float: left;
+	margin-right: 5px;
+}
