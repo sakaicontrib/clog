@@ -201,7 +201,7 @@ else
 		<tbody>
 		{for m in authors}
 		<tr>
-			<td><img src="/library/image/silk/user.png" width="16" height="16" alt="User"/>&nbsp;<a href="javascript:;" onclick="switchState('userPosts',{userId:'${m.userId}'});" rel="/direct/profile/${m.userId}/formatted" class="icon profile">${m.userDisplayName}</a></td>
+			<td><img src="/direct/profile/${m.userId}/image" width="20" alt="User"/>&nbsp;<a href="javascript:;" onclick="switchState('userPosts',{userId:'${m.userId}'});" rel="/direct/profile/${m.userId}/formatted" class="icon profile">${m.userDisplayName}</a></td>
 			<td>${m.numberOfPosts}</td>
 			<td>{if m.dateOfLastPost > 0}${new Date(m.dateOfLastPost).toLocaleString()}{else}n/a{/if}</td>
 			<td>${m.numberOfComments}</td>
@@ -238,7 +238,10 @@ else
 			{/if}
 			</span>
 			<div class="author">
+				<div class="clog_author_image_div"><img src="/direct/profile/${creatorId}/image" width="50"/></div>
+				<div style="float: right;">
 				<a class="icon profile" rel="/direct/profile/${creatorId}/formatted">${creatorDisplayName}</a><br /><span style="font-size: smaller;font-style: italic;">Created:</span><span style="font-size: smaller;font-style: italic;">${new Date(createdDate).toLocaleString()}</span>{if modifiedDate > createdDate}<br/><span style="font-size: smaller;font-style: italic;">${clog_modified_label}</span><span style="font-size: smaller;font-style: italic;">${new Date(modifiedDate).toLocaleString()}</span>{/if}
+				</div>
 			</div>
 			<br/>
 			<br/>
@@ -259,7 +262,7 @@ else
 					{for comment in comments}
 					<div class="clog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
-							<div style="float:left; margin-right: 10px;"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
+							<div class="clog_author_image_div"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
 							<div style="float:left;"><a class="icon profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${new Date(comment.modifiedDate).toLocaleString()}</span>{/if}</div>
 						</div>
 						<div class="clog_comment_content">${comment.content}</div>
