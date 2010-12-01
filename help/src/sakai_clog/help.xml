@@ -13,6 +13,11 @@
       <property name="name"><value>Creating a Post</value></property>
       <property name="location"><value>/sakai_clog/post_creation.html</value></property>
    </bean>
+   <bean id="clog_create_comment" class="org.sakaiproject.component.app.help.model.ResourceBean">
+      <property name="docId"><value>clog_create_comment</value></property>
+      <property name="name"><value>Creating a Comment</value></property>
+      <property name="location"><value>/sakai_clog/comment_creation.html</value></property>
+   </bean>
 
     <bean id="org.sakaiproject.api.app.help.TableOfContents" 
           class="org.sakaiproject.component.app.help.model.TableOfContentsBean">
@@ -25,6 +30,7 @@
                   <list>
                      <ref bean="clog_overview"/>
                      <ref bean="clog_create_post"/>
+                     <ref bean="clog_create_comment"/>
                   </list>
                </property>
             </bean>
