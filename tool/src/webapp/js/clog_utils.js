@@ -270,6 +270,12 @@ var ClogUtils;
 	}
 
 	ClogUtils.deleteAutosavedCopy = function(postId) {
+
+        if(postId === '') {
+            // CLOG-19 The post hasn't been autosaved yet. If it had been it would have an id
+            return;
+        }
+
 		jQuery.ajax( {
 	 		url : "/direct/clog-post/" + postId + "/deleteAutosavedCopy",
 			timeout: 30000,
@@ -279,7 +285,7 @@ var ClogUtils;
 				switchState('viewAllPosts');
 			},
 			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to delete authosaved copy. Status: " + status + '. Error: ' + error);
+				alert("Failed to delete autosaved copy. Status: " + status + '. Error: ' + error);
 			}
 	  	});
 	}
