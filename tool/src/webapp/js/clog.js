@@ -343,7 +343,8 @@ function switchState(state,arg) {
 					}
 				},10000);
 
-	 		setMainFrameHeight(window.frameElement.id);
+	 		if(window.frameElement)
+	 			setMainFrameHeight(window.frameElement.id);
 	 	});
 	}
 	else if('createComment' === state) {
