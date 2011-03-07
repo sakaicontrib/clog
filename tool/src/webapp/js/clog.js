@@ -149,19 +149,20 @@ function switchState(state,arg) {
 	}
 	else if('viewAllPosts' === state) {
 
-		ClogUtils.setPostsForCurrentSite();
-			
-		if(window.frameElement) {
-	 		$(document).ready(function() {
-	 			setMainFrameHeight(window.frameElement.id);
-	 		});
-		}
+		ClogUtils.setCurrentPosts();
 	 			
 		SakaiUtils.renderTrimpathTemplate('clog_all_posts_template',{'posts':clogCurrentPosts},'clog_content');
-		for(var i=0,j=clogCurrentPosts.length;i<j;i++)
-			SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
-			
-		ClogUtils.attachProfilePopup();
+	 	$(document).ready(function () {
+		    for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
+			    SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
+            }
+	 	    $(document).ready(function () {
+		        ClogUtils.attachProfilePopup();
+		        if(window.frameElement) {
+	 			    setMainFrameHeight(window.frameElement.id);
+		        }
+            });
+        });
 	}
 	else if('viewMembers' === state) {
 		if(!clogOnGateway && clogCurrentUserPermissions.postCreate)
@@ -177,7 +178,7 @@ function switchState(state,arg) {
 		   	success : function(data) {
 				SakaiUtils.renderTrimpathTemplate('clog_authors_content_template',{'authors':data['clog-author_collection']},'clog_content');
 
- 				$(document).ready(function() {
+ 				$(document).ready(function () {
  					ClogUtils.attachProfilePopup();
   									
   					$("#clog_author_table").tablesorter({
@@ -225,15 +226,19 @@ function switchState(state,arg) {
 				clogCurrentPosts = data['clog-post_collection'];
 	 			
 				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':clogCurrentPosts},'clog_content');
-				$('#clog_author_profile').html(profileMarkup);
-	 			for(var i=0,j=clogCurrentPosts.length;i<j;i++)
-					SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
 
-	 			if(window.frameElement) {
-	 				$(document).ready(function() {
-	 					setMainFrameHeight(window.frameElement.id);
-	 				});
-				}
+	 			$(document).ready(function() {
+				    $('#clog_author_profile').html(profileMarkup);
+	 			    for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
+					    SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
+                    }
+
+	 			    $(document).ready(function() {
+	 			        if(window.frameElement) {
+	 					    setMainFrameHeight(window.frameElement.id);
+	 				    }
+				    });
+                });
 			},
 			error : function(xmlHttpRequest,status,errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);
@@ -285,7 +290,7 @@ function switchState(state,arg) {
 		SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPost,'post_' + clogCurrentPost.id);
 
 	 	$(document).ready(function() {
-			$('#clog_user_posts_link').bind('click',function(e) {
+			$('#clog_user_posts_link').click(function (e) {
 				switchState('userPosts',{'userId' : clogCurrentPost.creatorId});
 			});
 
@@ -310,20 +315,14 @@ function switchState(state,arg) {
 		}
 
 		SakaiUtils.renderTrimpathTemplate('clog_create_post_template',clogCurrentPost,'clog_content');
-		
-		SakaiUtils.setupFCKEditor('clog_content_editor',600,400,'Default',clogSiteId);
 
-	 	$(document).ready(function() {
+	 	$(document).ready(function () {
+		    SakaiUtils.setupFCKEditor('clog_content_editor',600,400,'Default',clogSiteId);
 			$('#clog_save_post_button').click(ClogUtils.savePostAsDraft);
 
 			$('#clog_make_post_public_button').click(ClogUtils.publicisePost);
 
-			// If this is a My Workspace site, make the post PUBLIC when published.
-			//if(clogOnMyWorkspace) {
-				//$('#clog_publish_post_button').click(ClogUtils.publicisePost);
-			//}
-			//else
-				$('#clog_publish_post_button').click(ClogUtils.publishPost);
+			$('#clog_publish_post_button').click(ClogUtils.publishPost);
 
 			$('#clog_cancel_button').click(function(e) {
 				// If the current post has neither been saved or published, delete the autosaved copy
@@ -455,10 +454,11 @@ function toggleFullContent(v)
 		$(document).ready(function() {
  			setMainFrameHeight(window.frameElement.id);
 		});
-}
+    }
 	
-	if(v.checked)
-		$('.content').hide();
-	else
-		$('.content').show();
+	if(v.checked) {
+		$('.clog_body').hide();
+    } else {
+		$('.clog_body').show();
+    }
 }

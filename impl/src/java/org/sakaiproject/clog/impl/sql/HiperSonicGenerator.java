@@ -17,12 +17,11 @@
 
 package org.sakaiproject.clog.impl.sql;
 
-public class HiperSonicGenerator extends SQLGenerator{
-	public HiperSonicGenerator(){
-		BLOB="VARBINARY"; 
-		BIGINT = "BIGINT";
-		CLOB="LONGVARCHAR";		
-	}
-    
+public class HiperSonicGenerator extends SQLGenerator {
+    public HiperSonicGenerator() {
+	BLOB = "VARBINARY";
+	BIGINT = "BIGINT";
+	CLOB = "LONGVARCHAR";
+    }
 
 }

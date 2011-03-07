@@ -20,98 +20,82 @@ package org.sakaiproject.clog.api;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueryBean
-{
-	private List<String> visibilities;
+public class QueryBean {
+    private List<String> visibilities;
 
-	private String _user;
+    private String _user;
 
-	private String siteId;
-	
-	private String caller;
-	
-	private boolean searchAutoSaved = false;
+    private String siteId;
 
-	public QueryBean()
-	{
-		visibilities = new ArrayList<String>(); // this mean no filter by visibility
-		_user = "";
-		siteId = "";
-		caller = "";
+    private String caller;
+
+    private boolean searchAutoSaved = false;
+
+    public QueryBean() {
+	visibilities = new ArrayList<String>(); // this mean no filter by
+						// visibility
+	_user = "";
+	siteId = "";
+	caller = "";
+    }
+
+    public boolean hasConditions() {
+	return siteId.length() > 0 || visibilities.size() > 0;
+    }
+
+    public boolean queryBySiteId() {
+	return !siteId.equals("");
+    }
+
+    public boolean queryByVisibility() {
+	return visibilities.size() > 0;
+    }
+
+    public void setVisibilities(String[] visibilities) {
+	this.visibilities.clear();
+
+	for (String v : visibilities) {
+	    this.visibilities.add(v);
 	}
+    }
 
-	public boolean hasConditions()
-	{
-		return siteId.length() > 0 || visibilities.size() > 0;
-	}
+    public List<String> getVisibilities() {
+	return visibilities;
+    }
 
-	public boolean queryBySiteId()
-	{
-		return !siteId.equals("");
-	}
+    public void setCreator(String user) {
+	this._user = user;
+    }
 
-	public boolean queryByVisibility()
-	{
-		return visibilities.size() > 0;
-	}
+    public String getCreator() {
+	return _user;
+    }
 
-	public void setVisibilities(String[] visibilities)
-	{
-		this.visibilities.clear();
-		
-		for(String v : visibilities)
-		{
-			this.visibilities.add(v);
-		}
-	}
+    public void setSiteId(String siteId) {
+	this.siteId = siteId;
+    }
 
-	public List<String> getVisibilities()
-	{
-		return visibilities;
-	}
+    public String getSiteId() {
+	return siteId;
+    }
 
-	public void setCreator(String user)
-	{
-		this._user = user;
-	}
+    public boolean queryByCreator() {
+	return !_user.trim().equals("");
+    }
 
-	public String getCreator()
-	{
-		return _user;
-	}
+    public void setCaller(String caller) {
+	this.caller = caller;
+    }
 
-	public void setSiteId(String siteId)
-	{
-		this.siteId = siteId;
-	}
+    public String getCaller() {
+	return caller;
+    }
 
-	public String getSiteId()
-	{
-		return siteId;
-	}
+    public void setSearchAutoSaved(boolean searchAutoSaved) {
+	this.searchAutoSaved = searchAutoSaved;
+    }
 
-	public boolean queryByCreator()
-	{
-		return ! _user.trim().equals("");
-	}
-
-	public void setCaller(String caller)
-	{
-		this.caller = caller;
-	}
-
-	public String getCaller()
-	{
-		return caller;
-	}
-
-	public void setSearchAutoSaved(boolean searchAutoSaved)
-	{
-		this.searchAutoSaved = searchAutoSaved;
-	}
-
-	public boolean isSearchAutoSaved()
-	{
-		return searchAutoSaved;
-	}
+    public boolean isSearchAutoSaved() {
+	return searchAutoSaved;
+    }
 }

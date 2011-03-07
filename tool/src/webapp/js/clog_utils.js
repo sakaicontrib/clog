@@ -136,8 +136,6 @@ var ClogUtils;
 	  	});
 
 		return prefs;
-
-		return {emailFrequency:'digest'};
 	}
 
 	ClogUtils.savePreferences = function() {
@@ -163,7 +161,7 @@ var ClogUtils;
 		return false;
 	}
 
-	ClogUtils.setPostsForCurrentSite = function() {
+	ClogUtils.setCurrentPosts = function() {
 
 		jQuery.ajax( {
 	       	url : "/direct/clog-post.json?siteId=" + clogSiteId + "&autosaved=true",

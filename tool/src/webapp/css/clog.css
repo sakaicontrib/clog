@@ -30,7 +30,7 @@
 	clear: both;
 }
 
-.author{
+.clog_author{
 	float: right;
 	font-size:12px;
 	clear:right;
@@ -192,6 +192,14 @@ th.clogSortableTableHeaderSortDown {
 }
 
 .clog_author_image_div {
-	float: left;
-	margin-right: 5px;
+	float: right;
+	margin-left: 5px;
+}
+
+.clog_author_details_div {
+	float: right;
+}
+
+.clog_post_title {
+    clear: both;
 }

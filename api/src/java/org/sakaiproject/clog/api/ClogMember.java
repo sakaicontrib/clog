@@ -2,93 +2,77 @@ package org.sakaiproject.clog.api;
 
 import org.sakaiproject.user.api.User;
 
-public class ClogMember
-{
-	private int numberOfPosts = 0;
-	
-	private int numberOfComments = 0;
+public class ClogMember {
+    private int numberOfPosts = 0;
 
-	private long dateOfLastPost = -1L;
-	
-	private long dateOfLastComment = -1L;
-	
-	private String lastCommentCreator = "";
+    private int numberOfComments = 0;
 
-	private transient User sakaiUser = null;
-	
-	public ClogMember()
-	{
-	}
-	
-	public ClogMember(User user)
-	{
-		this.sakaiUser = user;
-	}
+    private long dateOfLastPost = -1L;
 
-	public String getUserId()
-	{
-		return sakaiUser.getId();
-	}
+    private long dateOfLastComment = -1L;
 
-	public String getUserEid()
-	{
-		return sakaiUser.getEid();
+    private String lastCommentCreator = "";
 
-	}
+    private transient User sakaiUser = null;
 
-	public String getUserDisplayName()
-	{
-		return sakaiUser.getLastName() + ", " + sakaiUser.getFirstName();
-		//return sakaiUser.getDisplayName();
-	}
+    public ClogMember() {
+    }
 
-	public void setNumberOfPosts(int numberOfPosts)
-	{
-		this.numberOfPosts = numberOfPosts;
-	}
+    public ClogMember(User user) {
+	this.sakaiUser = user;
+    }
 
-	public int getNumberOfPosts()
-	{
-		return numberOfPosts;
-	}
+    public String getUserId() {
+	return sakaiUser.getId();
+    }
 
-	public void setDateOfLastPost(long last)
-	{
-		this.dateOfLastPost = last;
-	}
+    public String getUserEid() {
+	return sakaiUser.getEid();
 
-	public long getDateOfLastPost()
-	{
-		return dateOfLastPost;
-	}
+    }
 
-	public void setDateOfLastComment(long dateOfLastComment)
-	{
-		this.dateOfLastComment = dateOfLastComment;
-	}
+    public String getUserDisplayName() {
+	return sakaiUser.getLastName() + ", " + sakaiUser.getFirstName();
+	// return sakaiUser.getDisplayName();
+    }
 
-	public long getDateOfLastComment()
-	{
-		return dateOfLastComment;
-	}
+    public void setNumberOfPosts(int numberOfPosts) {
+	this.numberOfPosts = numberOfPosts;
+    }
 
-	public void setLastCommentCreator(String lastCommentCreator)
-	{
-		this.lastCommentCreator = lastCommentCreator;
-	}
+    public int getNumberOfPosts() {
+	return numberOfPosts;
+    }
 
-	public String getLastCommentCreator()
-	{
-		return lastCommentCreator;
-	}
+    public void setDateOfLastPost(long last) {
+	this.dateOfLastPost = last;
+    }
 
-	public void setNumberOfComments(int numberOfComments)
-	{
-		this.numberOfComments = numberOfComments;
-	}
+    public long getDateOfLastPost() {
+	return dateOfLastPost;
+    }
 
-	public int getNumberOfComments()
-	{
-		return numberOfComments;
-	}
+    public void setDateOfLastComment(long dateOfLastComment) {
+	this.dateOfLastComment = dateOfLastComment;
+    }
+
+    public long getDateOfLastComment() {
+	return dateOfLastComment;
+    }
+
+    public void setLastCommentCreator(String lastCommentCreator) {
+	this.lastCommentCreator = lastCommentCreator;
+    }
+
+    public String getLastCommentCreator() {
+	return lastCommentCreator;
+    }
+
+    public void setNumberOfComments(int numberOfComments) {
+	this.numberOfComments = numberOfComments;
+    }
+
+    public int getNumberOfComments() {
+	return numberOfComments;
+    }
 }

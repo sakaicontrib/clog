@@ -254,16 +254,18 @@ else
 				{/if}
 			</div>
 
-			<div class="content">${content}</div>
+            <div class="clog_body">
 
-			<br />
+			    <div class="content">${content}</div>
 
-			<span id="${id}_comments" class="comments">
+			    <br />
+
+			    <span id="${id}_comments" class="comments">
 					{for comment in comments}
 					<div class="clog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
 							<div class="clog_author_image_div"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
-							<div style="float:left;"><a class="icon profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${new Date(comment.modifiedDate).toLocaleString()}</span>{/if}</div>
+							<div style="float:left;"><a class="profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${new Date(comment.modifiedDate).toLocaleString()}</span>{/if}</div>
 						</div>
 						<div class="clog_comment_content">${comment.content}</div>
 						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == clogCurrentUser.id)}
@@ -274,7 +276,8 @@ else
 						{/if}
 					</div>
 					{/for}
-			</span>
+			    </span>
+		    </div>
 		</div>
 		{/if}
 	</div>

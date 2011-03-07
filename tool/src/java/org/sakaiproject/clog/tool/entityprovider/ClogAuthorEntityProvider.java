@@ -18,102 +18,89 @@ import org.sakaiproject.entitybroker.entityprovider.search.Search;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.user.api.UserDirectoryService;
 
-public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, 
-	Outputable, Describeable, CollectionResolvable
-{
-	private ClogManager clogManager;
-	public void setClogManager(ClogManager clogManager)
-	{
-		this.clogManager = clogManager;
-	}
-	
-	private UserDirectoryService userDirectoryService = null;
-	  
-	public final static String ENTITY_PREFIX = "clog-author";
+public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Outputable, Describeable, CollectionResolvable {
+    private ClogManager clogManager;
 
-	protected final Logger LOG = Logger.getLogger(getClass());
-	
-	public boolean entityExists(String id)
-	{
-		if(LOG.isDebugEnabled()) LOG.debug("entityExists("  + id + ")");
+    public void setClogManager(ClogManager clogManager) {
+	this.clogManager = clogManager;
+    }
 
-		if (id == null) {
-			return false;
-		}
-		
-		if ("".equals(id))
-			return false;
-		
-		try
-		{
-			userDirectoryService.getUser(id);
-			return true;
-		}
-		catch(Exception e)
-		{
-			LOG.error("Caught exception whilst getting user.",e);
-			return false;
-		}
+    private UserDirectoryService userDirectoryService = null;
+
+    public final static String ENTITY_PREFIX = "clog-author";
+
+    protected final Logger LOG = Logger.getLogger(getClass());
+
+    public boolean entityExists(String id) {
+	if (LOG.isDebugEnabled())
+	    LOG.debug("entityExists(" + id + ")");
+
+	if (id == null) {
+	    return false;
 	}
 
-	/**
-	 * No intention of implementing this. Forced to due to the fact that
-	 * CollectionsResolvable extends Resolvable
-	 */
-	public Object getEntity(EntityReference ref)
-	{
-		if(LOG.isDebugEnabled()) LOG.debug("getEntity(" + ref.getId() + ")");
-		
-		LOG.warn("getEntity is unimplemented. Returning null ...");
-		
-		return null;
+	if ("".equals(id))
+	    return false;
+
+	try {
+	    userDirectoryService.getUser(id);
+	    return true;
+	} catch (Exception e) {
+	    LOG.error("Caught exception whilst getting user.", e);
+	    return false;
+	}
+    }
+
+    /**
+     * No intention of implementing this. Forced to due to the fact that
+     * CollectionsResolvable extends Resolvable
+     */
+    public Object getEntity(EntityReference ref) {
+	if (LOG.isDebugEnabled())
+	    LOG.debug("getEntity(" + ref.getId() + ")");
+
+	LOG.warn("getEntity is unimplemented. Returning null ...");
+
+	return null;
+    }
+
+    public Object getSampleEntity() {
+	return new ClogMember();
+    }
+
+    public String getEntityPrefix() {
+	return ENTITY_PREFIX;
+    }
+
+    public String[] getHandledOutputFormats() {
+	return new String[] { Formats.JSON };
+    }
+
+    public List<ClogMember> getEntities(EntityReference ref, Search search) {
+
+	List<ClogMember> authors = new ArrayList<ClogMember>();
+
+	Restriction locRes = search.getRestrictionByProperty(CollectionResolvable.SEARCH_LOCATION_REFERENCE);
+
+	if (locRes != null) {
+	    String location = locRes.getStringValue();
+	    String context = new EntityReference(location).getId();
+
+	    try {
+		authors = clogManager.getAuthors(context);
+	    } catch (Exception e) {
+		LOG.error("Caught exception whilst getting posts.", e);
+	    }
 	}
 
-	public Object getSampleEntity()
-	{
-		return new ClogMember();
-	}
+	return authors;
+    }
 
-	public String getEntityPrefix()
-	{
-		return ENTITY_PREFIX;
-	}
+    public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
+	this.userDirectoryService = userDirectoryService;
+    }
 
-	public String[] getHandledOutputFormats() {
-	    return new String[] { Formats.JSON };
-	}
-
-	public List<ClogMember> getEntities(EntityReference ref, Search search) {
-
-		List<ClogMember> authors = new ArrayList<ClogMember>();
-		
-		Restriction locRes = search.getRestrictionByProperty(CollectionResolvable.SEARCH_LOCATION_REFERENCE);
-		
-        if (locRes != null)
-        {
-        	String location = locRes.getStringValue();
-        	String context = new EntityReference(location).getId();
-        
-        	try
-        	{
-        		authors = clogManager.getAuthors(context);
-        	}
-        	catch (Exception e)
-        	{
-        		LOG.error("Caught exception whilst getting posts.",e);
-        	}
-        }
-        
-		return authors;
-	}
-
-	public void setUserDirectoryService(UserDirectoryService userDirectoryService)
-	{
-		this.userDirectoryService = userDirectoryService;
-	}
-
-	public UserDirectoryService getUserDirectoryService()
-	{
-		return userDirectoryService;
-	}
+    public UserDirectoryService getUserDirectoryService() {
+	return userDirectoryService;
+    }
 }

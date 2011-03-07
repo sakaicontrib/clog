@@ -8,17 +8,16 @@ import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.EntityProducer;
 
-public interface ClogManager extends EntityProducer
-{
-	public static final String ENTITY_PREFIX = "clog";
-	public static final String REFERENCE_ROOT = Entity.SEPARATOR + ENTITY_PREFIX;
-	public static final String CLOG_POST_CREATED = "clog.post.created";
-	public static final String CLOG_POST_DELETED = "clog.post.deleted";
-	public static final String CLOG_COMMENT_CREATED = "clog.comment.created";
-	public static final String CLOG_COMMENT_DELETED = "clog.comment.deleted";
-	public static final String CLOG_POST_RECYCLED = "clog.post.recycled";
-	public static final String CLOG_POST_RESTORED = "clog.post.restored";
-	
+public interface ClogManager extends EntityProducer {
+    public static final String ENTITY_PREFIX = "clog";
+    public static final String REFERENCE_ROOT = Entity.SEPARATOR + ENTITY_PREFIX;
+    public static final String CLOG_POST_CREATED = "clog.post.created";
+    public static final String CLOG_POST_DELETED = "clog.post.deleted";
+    public static final String CLOG_COMMENT_CREATED = "clog.comment.created";
+    public static final String CLOG_COMMENT_DELETED = "clog.comment.deleted";
+    public static final String CLOG_POST_RECYCLED = "clog.post.recycled";
+    public static final String CLOG_POST_RESTORED = "clog.post.restored";
+
     public Post getPost(String postId) throws Exception;
 
     public List<Post> getPosts(String placementId) throws Exception;
@@ -34,22 +33,22 @@ public interface ClogManager extends EntityProducer
     public boolean deleteComment(String commentId);
 
     public boolean recyclePost(String postId);
-    
-	public boolean restorePost(String postId);
 
-	public List<ClogMember> getAuthors(String siteId);
+    public boolean restorePost(String postId);
 
-	public boolean savePreferences(Preferences preferences);
+    public List<ClogMember> getAuthors(String siteId);
 
-	public Preferences getPreferences(String siteId,String userId);
+    public boolean savePreferences(Preferences preferences);
 
-	public void sendNewPostAlert(Post post);
-	
-	public void sendNewCommentAlert(Comment comment);
+    public Preferences getPreferences(String siteId, String userId);
 
-	public void importBlog1Data();
-	
-	public void importBlog2Data();
+    public void sendNewPostAlert(Post post);
 
-	public boolean deleteAutosavedCopy(String postId);
+    public void sendNewCommentAlert(Comment comment);
+
+    public void importBlog1Data();
+
+    public void importBlog2Data();
+
+    public boolean deleteAutosavedCopy(String postId);
 }

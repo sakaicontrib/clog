@@ -29,83 +29,84 @@ import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.SakaiProxy;
 
-public interface SakaiProxy
-{
-	public String getCurrentSiteId();
-	
-	public String getCurrentToolId();
+public interface SakaiProxy {
+    public String getCurrentSiteId();
 
-	public String getCurrentUserId();
-	
-	public Connection borrowConnection() throws SQLException;
-	
-	public void returnConnection(Connection connection);
+    public String getCurrentToolId();
 
-	public String getCurrentUserDisplayName();
-	
-	public String getVendor();
+    public String getCurrentUserId();
 
-	public String getDisplayNameForTheUser(String userId);
-	
-    public boolean isMaintainer(String userId,String siteId);
+    public Connection borrowConnection() throws SQLException;
 
-	public boolean isCurrentUserMaintainer(String siteId);
-	
-	public boolean isCurrentUserAdmin();
+    public void returnConnection(Connection connection);
 
-	public String getSakaiProperty(String string);
+    public String getCurrentUserDisplayName();
 
-	public ClogMember getMember(String memberId);
-	
-	public boolean isAutoDDL();
+    public String getVendor();
 
-	public List<ClogMember> getSiteMembers(String siteId);
-	
-	public String getServerUrl();
-	
-	public String getPortalUrl();
-	
-	public String getAccessUrl();
+    public String getDisplayNameForTheUser(String userId);
 
-	public void registerEntityProducer(EntityProducer entityProducer);
+    public boolean isMaintainer(String userId, String siteId);
 
-	public void registerFunction(String function);
+    public boolean isCurrentUserMaintainer(String siteId);
 
-	public boolean isAllowedFunction(String function,String siteId);
+    public boolean isCurrentUserAdmin();
 
-	public void sendEmailWithMessage(String creatorId, String subject, String string);
-	
-	public void sendEmailWithMessage(Set<String> emails, String subject,String string);
-	
-	public void addDigestMessage(String userId,String subject, String message);
-	
-	public void addDigestMessage(Set<String> users,String subject, String message);
+    public String getSakaiProperty(String string);
 
-	public void registerSecurityAdvisor(SecurityAdvisor securityAdvisor);
+    public ClogMember getMember(String memberId);
 
-	public void postEvent(String event, String entityId, String siteId);
+    public boolean isAutoDDL();
 
-	public Set<String> getSiteUsers(String siteId);
+    public List<ClogMember> getSiteMembers(String siteId);
 
-	public String getSiteTitle(String siteId);
+    public String getServerUrl();
 
-	public String getClogPageId(String siteId);
-	
-	public String getClogToolId(String siteId);
+    public String getPortalUrl();
 
-	public String storeResource(byte[] blob,String displayName, String siteId,String creatorId);
-	
-	public List<SearchResult> searchInCurrentSite(String searchTerms);
+    public String getAccessUrl();
 
-	public Map<String, Set<String>> getPermsForCurrentSite();
+    public void registerEntityProducer(EntityProducer entityProducer);
 
-	public Set<String> getPermissionsForCurrentUserAndSite();
+    public void registerFunction(String function);
 
-	public boolean setPermsForCurrentSite(Map<String,String[]> parameterMap);
+    public boolean isAllowedFunction(String function, String siteId);
 
-	public boolean isPublicAllowed();
+    public void sendEmailWithMessage(String creatorId, String subject, String string);
 
-	public String getCurrentUserEid();
+    public void sendEmailWithMessage(Set<String> emails, String subject, String string);
 
-	public boolean setResourcePublic(String contentId,boolean isPublic);
+    public void addDigestMessage(String userId, String subject, String message);
+
+    public void addDigestMessage(Set<String> users, String subject, String message);
+
+    public void registerSecurityAdvisor(SecurityAdvisor securityAdvisor);
+
+    public void postEvent(String event, String entityId, String siteId);
+
+    public Set<String> getSiteUsers(String siteId);
+
+    public String getSiteTitle(String siteId);
+
+    public String getClogPageId(String siteId);
+
+    public String getClogToolId(String siteId);
+
+    public String storeResource(byte[] blob, String displayName, String siteId, String creatorId);
+
+    public List<SearchResult> searchInCurrentSite(String searchTerms);
+
+    public Map<String, Set<String>> getPermsForCurrentSite();
+
+    public Set<String> getPermissionsForCurrentUserAndSite();
+
+    public boolean setPermsForCurrentSite(Map<String, String[]> parameterMap);
+
+    public boolean isPublicAllowed();
+
+    public String getCurrentUserEid();
+
+    public boolean setResourcePublic(String contentId, boolean isPublic);
+
+    public boolean isCurrentUserMemberOfSite(String siteId) throws Exception;
 }
