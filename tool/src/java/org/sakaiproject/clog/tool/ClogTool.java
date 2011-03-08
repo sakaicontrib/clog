@@ -1,6 +1,7 @@
 package org.sakaiproject.clog.tool;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -91,14 +92,14 @@ public class ClogTool extends HttpServlet {
 		// means that we can't pass url parameters to the page.We can
 		// use a cookie and the JS will pull the initial state from that
 		// instead.
-		Cookie params = new Cookie("sakai-tool-params", "state=" + state + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + postId + "&langage=" + languageCode + "&publicAllowed=" + publicAllowed);
+		Cookie params = new Cookie("sakai-tool-params", "state=" + URLEncoder.encode(state,"UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId,"UTF-8") + "&langage=" + languageCode + "&publicAllowed=" + publicAllowed);
 		response.addCookie(params);
 
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/clog.html");
 		dispatcher.include(request, response);
 		return;
 	    } else {
-		String url = "/clog-tool/clog.html?state=" + state + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + postId + "&language=" + languageCode + "&publicAllowed=" + publicAllowed;
+		String url = "/clog-tool/clog.html?state=" + URLEncoder.encode(state,"UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId,"UTF-8") + "&language=" + languageCode + "&publicAllowed=" + publicAllowed;
 		response.sendRedirect(url);
 		return;
 	    }
