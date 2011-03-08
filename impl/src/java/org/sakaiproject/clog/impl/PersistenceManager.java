@@ -107,16 +107,22 @@ public class PersistenceManager {
 
 	Connection connection = null;
 	Statement statement = null;
+	ResultSet rs = null;
 
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    statement = connection.createStatement();
 	    String sql = sqlGenerator.getSelectPost(OID);
-	    ResultSet rs = statement.executeQuery(sql);
+	    rs = statement.executeQuery(sql);
 	    boolean exists = rs.next();
-	    rs.close();
 	    return exists;
 	} finally {
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (SQLException e) {
+		}
+	    }
 	    if (statement != null) {
 		try {
 		    statement.close();
@@ -459,17 +465,24 @@ public class PersistenceManager {
 
 	Connection connection = null;
 	Statement st = null;
+	ResultSet rs = null;
 
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    st = connection.createStatement();
 	    List<String> sqlStatements = sqlGenerator.getSelectStatementsForQuery(query);
 	    for (String sql : sqlStatements) {
-		ResultSet rs = st.executeQuery(sql);
+		rs = st.executeQuery(sql);
 		posts.addAll(transformResultSetInPostCollection(rs, connection));
-		rs.close();
 	    }
 	} finally {
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (st != null) {
 		try {
 		    st.close();
@@ -489,13 +502,13 @@ public class PersistenceManager {
 
 	Connection connection = null;
 	Statement st = null;
+	ResultSet rs = null;
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    st = connection.createStatement();
 	    String sql = sqlGenerator.getSelectPost(postId);
-	    ResultSet rs = st.executeQuery(sql);
+	    rs = st.executeQuery(sql);
 	    List<Post> posts = transformResultSetInPostCollection(rs, connection);
-	    rs.close();
 
 	    if (posts.size() == 0)
 		throw new Exception("getPost: Unable to find post with id:" + postId);
@@ -504,6 +517,13 @@ public class PersistenceManager {
 
 	    return posts.get(0);
 	} finally {
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (st != null) {
 		try {
 		    st.close();
@@ -521,12 +541,12 @@ public class PersistenceManager {
 
 	Connection connection = null;
 	PreparedStatement st = null;
+	ResultSet rs = null;
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    st = sqlGenerator.getSelectAutosavedPost(postId, connection);
-	    ResultSet rs = st.executeQuery();
+	    rs = st.executeQuery();
 	    List<Post> posts = transformResultSetInPostCollection(rs, connection);
-	    rs.close();
 
 	    if (posts.size() == 0) {
 		if (logger.isInfoEnabled())
@@ -543,6 +563,13 @@ public class PersistenceManager {
 	    logger.error("Caught exception whilst getting autosaved post", e);
 	    return null;
 	} finally {
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (st != null) {
 		try {
 		    st.close();
@@ -561,6 +588,7 @@ public class PersistenceManager {
 	    return result;
 
 	Statement commentST = null;
+	ResultSet commentRS = null;
 
 	try {
 	    commentST = connection.createStatement();
@@ -602,7 +630,7 @@ public class PersistenceManager {
 		post.setCommentable(allowComments == 1);
 
 		String sql = sqlGenerator.getSelectComments(postId);
-		ResultSet commentRS = commentST.executeQuery(sql);
+		commentRS = commentST.executeQuery(sql);
 
 		while (commentRS.next()) {
 		    String commentId = commentRS.getString(ISQLGenerator.COMMENT_ID);
@@ -630,6 +658,13 @@ public class PersistenceManager {
 		result.add(post);
 	    }
 	} finally {
+	    if (commentRS != null) {
+		try {
+		    commentRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (commentST != null) {
 		try {
 		    commentST.close();
@@ -655,19 +690,21 @@ public class PersistenceManager {
 	Connection connection = null;
 	Statement publicST = null;
 	Statement countST = null;
+	ResultSet rs = null;
+	ResultSet countRS = null;
 
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    publicST = connection.createStatement();
 	    countST = connection.createStatement();
 	    String sql = sqlGenerator.getSelectPublicBloggers();
-	    ResultSet rs = publicST.executeQuery(sql);
+	    rs = publicST.executeQuery(sql);
 
 	    while (rs.next()) {
 		String userId = rs.getString(ISQLGenerator.CREATOR_ID);
 		ClogMember member = sakaiProxy.getMember(userId);
 		String countPostsQuery = sqlGenerator.getCountPublicPosts(userId);
-		ResultSet countRS = countST.executeQuery(countPostsQuery);
+		countRS = countST.executeQuery(countPostsQuery);
 
 		countRS.next();
 
@@ -678,11 +715,23 @@ public class PersistenceManager {
 
 		members.add(member);
 	    }
-
-	    rs.close();
 	} catch (Exception e) {
 	    logger.error("Caught exception whilst getting public bloggers.", e);
 	} finally {
+	    if (countRS != null) {
+		try {
+		    countRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (publicST != null) {
 		try {
 		    publicST.close();
@@ -710,22 +759,28 @@ public class PersistenceManager {
 
 	Connection connection = null;
 	Statement st = null;
+	ResultSet rs = null;
 
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    st = connection.createStatement();
 	    String sql = sqlGenerator.getSelectPreferencesStatement(userId, siteId);
-	    ResultSet rs = st.executeQuery(sql);
+	    rs = st.executeQuery(sql);
 
 	    if (rs.next()) {
 		String emailFrequency = rs.getString(ISQLGenerator.EMAIL_FREQUENCY);
 		preferences.setEmailFrequency(emailFrequency);
 	    }
-
-	    rs.close();
 	} catch (Exception e) {
 	    logger.error("Caught exception whilst getting preferences.", e);
 	} finally {
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (st != null) {
 		try {
 		    st.close();
@@ -766,16 +821,23 @@ public class PersistenceManager {
     public boolean postExists(String postId) throws Exception {
 	Connection connection = null;
 	Statement st = null;
+	ResultSet rs = null;
 
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    st = connection.createStatement();
 	    String sql = sqlGenerator.getSelectPost(postId);
-	    ResultSet rs = st.executeQuery(sql);
+	    rs = st.executeQuery(sql);
 	    boolean exists = rs.next();
-	    rs.close();
 	    return exists;
 	} finally {
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (st != null) {
 		try {
 		    st.close();
@@ -790,12 +852,13 @@ public class PersistenceManager {
     public boolean populateAuthorData(ClogMember author, String siteId) {
 	Connection connection = null;
 	Statement st = null;
+	ResultSet rs = null;
 
 	try {
 	    connection = sakaiProxy.borrowConnection();
 	    st = connection.createStatement();
 	    String sql = sqlGenerator.getSelectAuthorStatement(author.getUserId(), siteId);
-	    ResultSet rs = st.executeQuery(sql);
+	    rs = st.executeQuery(sql);
 	    if (rs.next()) {
 		int totalPosts = rs.getInt(ISQLGenerator.TOTAL_POSTS);
 		int totalComments = rs.getInt(ISQLGenerator.TOTAL_COMMENTS);
@@ -805,12 +868,17 @@ public class PersistenceManager {
 		author.setDateOfLastPost(lastPostDate);
 	    }
 
-	    rs.close();
-
 	    return true;
 	} catch (Exception e) {
 	    return false;
 	} finally {
+	    if (rs != null) {
+		try {
+		    rs.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (st != null) {
 		try {
 		    st.close();
@@ -833,6 +901,11 @@ public class PersistenceManager {
 	Statement postElementST = null;
 	Statement elementST = null;
 	Statement commentST = null;
+	ResultSet postRS = null;
+	ResultSet testRS = null;
+	ResultSet postElementRS = null;
+	ResultSet elementRS = null;
+	ResultSet commentRS = null;
 
 	int numberImported = 0;
 
@@ -845,12 +918,12 @@ public class PersistenceManager {
 	    elementST = connection.createStatement();
 	    commentST = connection.createStatement();
 
-	    ResultSet rs = postST.executeQuery("SELECT * FROM BLOG_POST");
+	    postRS = postST.executeQuery("SELECT * FROM BLOG_POST");
 
-	    while (rs.next()) {
-		String siteId = rs.getString(ISQLGenerator.SITE_ID);
+	    while (postRS.next()) {
+		String siteId = postRS.getString(ISQLGenerator.SITE_ID);
 
-		ResultSet testRS = testST.executeQuery("SELECT * FROM BLOG_OPTIONS WHERE SITE_ID = '" + siteId + "'");
+		testRS = testST.executeQuery("SELECT * FROM BLOG_OPTIONS WHERE SITE_ID = '" + siteId + "'");
 
 		if (testRS.next() && "LEARNING_LOG".equals(testRS.getString("BLOGMODE"))) {
 		    testRS.close();
@@ -861,48 +934,48 @@ public class PersistenceManager {
 
 		Post post = new Post();
 
-		String postId = rs.getString(ISQLGenerator.POST_ID);
+		String postId = postRS.getString(ISQLGenerator.POST_ID);
 		// post.setId(postId);
 
 		post.setSiteId(siteId);
 
-		String title = rs.getString(ISQLGenerator.TITLE);
+		String title = postRS.getString(ISQLGenerator.TITLE);
 		post.setTitle(title);
 
-		Date postCreatedDate = rs.getTimestamp(ISQLGenerator.CREATED_DATE);
+		Date postCreatedDate = postRS.getTimestamp(ISQLGenerator.CREATED_DATE);
 		post.setCreatedDate(postCreatedDate.getTime());
 
-		Date postModifiedDate = rs.getTimestamp(ISQLGenerator.MODIFIED_DATE);
+		Date postModifiedDate = postRS.getTimestamp(ISQLGenerator.MODIFIED_DATE);
 		post.setModifiedDate(postModifiedDate.getTime());
 
-		String postCreatorId = rs.getString(ISQLGenerator.CREATOR_ID);
+		String postCreatorId = postRS.getString(ISQLGenerator.CREATOR_ID);
 		post.setCreatorId(postCreatorId);
 
-		String keywords = rs.getString(ISQLGenerator.KEYWORDS);
+		String keywords = postRS.getString(ISQLGenerator.KEYWORDS);
 		post.setKeywords(keywords);
 
-		int allowComments = rs.getInt(ISQLGenerator.ALLOW_COMMENTS);
+		int allowComments = postRS.getInt(ISQLGenerator.ALLOW_COMMENTS);
 		post.setCommentable(allowComments == 1);
 
-		String visibility = rs.getString(ISQLGenerator.VISIBILITY);
+		String visibility = postRS.getString(ISQLGenerator.VISIBILITY);
 
 		if ("PUBLIC".equals(visibility))
 		    visibility = "READY";
 
 		post.setVisibility(visibility);
 
-		String shortText = rs.getString("SHORT_TEXT");
+		String shortText = postRS.getString("SHORT_TEXT");
 
 		String collectedMarkup = "<i>" + shortText + "</i><br /><br />";
 
-		ResultSet postElementRS = postElementST.executeQuery("SELECT * FROM BLOG_POST_ELEMENT WHERE POST_ID = '" + postId + "' ORDER BY POSITION");
+		postElementRS = postElementST.executeQuery("SELECT * FROM BLOG_POST_ELEMENT WHERE POST_ID = '" + postId + "' ORDER BY POSITION");
 		while (postElementRS.next()) {
 		    String elementId = postElementRS.getString("ELEMENT_ID");
 		    String elementType = postElementRS.getString("ELEMENT_TYPE").trim();
 		    String displayName = postElementRS.getString("DISPLAY_NAME");
 
 		    if ("PARAGRAPH".equals(elementType)) {
-			ResultSet elementRS = elementST.executeQuery("SELECT CONTENT FROM BLOG_PARAGRAPH WHERE PARAGRAPH_ID = '" + elementId + "'");
+			elementRS = elementST.executeQuery("SELECT CONTENT FROM BLOG_PARAGRAPH WHERE PARAGRAPH_ID = '" + elementId + "'");
 			if (!elementRS.next()) {
 			    logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No paragraph element found for post element with id '" + elementId + "'. Skipping this post ...");
 			    brokenPost = true;
@@ -913,7 +986,7 @@ public class PersistenceManager {
 			collectedMarkup += content + "<br /><br />";
 			elementRS.close();
 		    } else if ("LINK".equals(elementType)) {
-			ResultSet elementRS = elementST.executeQuery("SELECT URL FROM BLOG_LINK WHERE LINK_ID = '" + elementId + "'");
+			elementRS = elementST.executeQuery("SELECT URL FROM BLOG_LINK WHERE LINK_ID = '" + elementId + "'");
 			if (!elementRS.next()) {
 			    logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No link element found for post element with id '" + elementId + "'. Skipping this post ...");
 			    brokenPost = true;
@@ -925,7 +998,7 @@ public class PersistenceManager {
 			collectedMarkup += link;
 			elementRS.close();
 		    } else if ("IMAGE".equals(elementType)) {
-			ResultSet elementRS = elementST.executeQuery("SELECT * FROM BLOG_IMAGE WHERE IMAGE_ID = '" + elementId + "'");
+			elementRS = elementST.executeQuery("SELECT * FROM BLOG_IMAGE WHERE IMAGE_ID = '" + elementId + "'");
 			if (!elementRS.next()) {
 			    logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No image element found for post element with id '" + elementId + "'. Skipping this post ...");
 			    brokenPost = true;
@@ -940,8 +1013,9 @@ public class PersistenceManager {
 			String img = "<img src=\"" + webUrl + "\" onclick=\"window.open('" + fullUrl + "','Full Image','width=400,height=300,status=no,resizable=yes,location=no,scrollbars=yes');\"/><br />";
 
 			collectedMarkup += img + "<br />";
+			elementRS.close();
 		    } else if ("FILE".equals(elementType)) {
-			ResultSet elementRS = elementST.executeQuery("SELECT * FROM BLOG_FILE WHERE FILE_ID = '" + elementId + "'");
+			elementRS = elementST.executeQuery("SELECT * FROM BLOG_FILE WHERE FILE_ID = '" + elementId + "'");
 			if (!elementRS.next()) {
 			    logger.error("Inconsistent Database. Post ID: " + postId + ". Post Title: " + post.getTitle() + ". No file element found for post element with id '" + elementId + "'. Skipping this post ...");
 			    brokenPost = true;
@@ -953,6 +1027,7 @@ public class PersistenceManager {
 			String file = "<a href=\"" + sakaiProxy.getServerUrl() + "/access/content" + resourceId + "\">" + displayName + "</a><br /><br />";
 
 			collectedMarkup += file;
+			elementRS.close();
 		    }
 		} // while(postElementRS.next())
 
@@ -963,7 +1038,7 @@ public class PersistenceManager {
 		if (!brokenPost && savePost(post)) {
 		    numberImported++;
 
-		    ResultSet commentRS = commentST.executeQuery("SELECT * FROM BLOG_COMMENT WHERE POST_ID = '" + postId + "'");
+		    commentRS = commentST.executeQuery("SELECT * FROM BLOG_COMMENT WHERE POST_ID = '" + postId + "'");
 
 		    while (commentRS.next()) {
 			Comment comment = new Comment();
@@ -988,8 +1063,6 @@ public class PersistenceManager {
 		}
 	    }
 
-	    rs.close();
-
 	    if (logger.isDebugEnabled()) {
 		logger.debug("Finished import of blog 2 data. " + numberImported + " posts imported.");
 	    }
@@ -999,6 +1072,41 @@ public class PersistenceManager {
 	    logger.error("Exception thrown whilst importing blog 2 data", e);
 	    return false;
 	} finally {
+	    if (commentRS != null) {
+		try {
+		    commentRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
+	    if (elementRS != null) {
+		try {
+		    elementRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
+	    if (postElementRS != null) {
+		try {
+		    postElementRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
+	    if (testRS != null) {
+		try {
+		    testRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
+	    if (postRS != null) {
+		try {
+		    postRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (postST != null) {
 		try {
 		    postST.close();
@@ -1047,6 +1155,7 @@ public class PersistenceManager {
 	Statement postST = null;
 	Statement imageST = null;
 	Statement fileST = null;
+	ResultSet postRS = null;
 
 	int numberImported = 0;
 
@@ -1059,20 +1168,20 @@ public class PersistenceManager {
 	    imageST = connection.createStatement();
 	    fileST = connection.createStatement();
 
-	    ResultSet rs = postST.executeQuery("SELECT * FROM BLOGGER_POST");
+	    postRS = postST.executeQuery("SELECT * FROM BLOGGER_POST");
 
-	    while (rs.next()) {
-		String siteId = rs.getString(ISQLGenerator.SITE_ID);
+	    while (postRS.next()) {
+		String siteId = postRS.getString(ISQLGenerator.SITE_ID);
 
-		String title = rs.getString(ISQLGenerator.TITLE);
+		String title = postRS.getString(ISQLGenerator.TITLE);
 
-		String postCreatorId = rs.getString("IDCREATOR");
+		String postCreatorId = postRS.getString("IDCREATOR");
 
-		long createdDate = rs.getLong("DATEPOST");
+		long createdDate = postRS.getLong("DATEPOST");
 
-		int visibility = rs.getInt("VISIBILITY");
+		int visibility = postRS.getInt("VISIBILITY");
 
-		String xml = rs.getString("XML");
+		String xml = postRS.getString("XML");
 
 		Post post = new Post();
 		post.setSiteId(siteId);
@@ -1111,6 +1220,13 @@ public class PersistenceManager {
 	    logger.error("Exception thrown whilst importing old blog 1 data", e);
 	    return false;
 	} finally {
+	    if (postRS != null) {
+		try {
+		    postRS.close();
+		} catch (Exception e) {
+		}
+	    }
+	    
 	    if (postST != null) {
 		try {
 		    postST.close();
