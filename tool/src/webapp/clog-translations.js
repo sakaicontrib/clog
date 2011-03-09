@@ -154,3 +154,4 @@ printTooltip="View a print friendly version of these posts";
 clog_autosaved_message_label="Autosaved";
 clog_modified_label="Modified:";
 clog_public_question="Are you sure you want to make this post public?";
+clog_short_title_warning="The post title must be at least four characters in length";

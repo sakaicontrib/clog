@@ -196,21 +196,25 @@ var ClogUtils;
 		
 	ClogUtils.storePost = function(visibility,isPublish) {
 
+	    var title = $('#clog_title_field').val();
+
+		if(title.length < 4) {
+            if('AUTOSAVE' !== visibility) {
+                alert(clog_short_title_warning);
+            }
+			return 0;
+		}
+
 		var success = false;
 
 		var post = {
 				'id':$('#clog_post_id_field').val(),
 				'visibility':visibility,
 				'commentable':$('#clog_commentable_checkbox').attr('checked'),
-				'title':$('#clog_title_field').val(),
+				'title':title,
 				'content':FCKeditorAPI.GetInstance('clog_content_editor').GetXHTML(true),
 				'siteId':clogSiteId
 				};
-
-		if(post.title.length < 4) {
-			// The title has got to be at least 4 chars.
-			return 0;
-		}
 				
 		if(isPublish) post['mode'] = 'publish';
 
