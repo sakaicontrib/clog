@@ -3,7 +3,10 @@ var SakaiUtils;
 (function()
 {
 	if(SakaiUtils == null)
-		SakaiUtils = new Object();
+		SakaiUtils = {};
+
+    // CLOG-27 and PRFL-566
+    var jqueryImport = /<script type="text\/javascript" src="\/profile2-tool\/javascript\/jquery-[\w\.]*\.js">\s*<\/script>/;
 		
 	SakaiUtils.readCookie = function(name) {
     	var nameEQ = name + "=";
@@ -43,6 +46,12 @@ var SakaiUtils;
 	       	async : false,
 			cache: false,
 		   	success : function(p) {
+
+                // CLOG-27 and PRFL-566
+                if(p.match(jqueryImport)) {
+                    p = p.replace(jqueryImport,'');
+                }
+
 				profile = p;
 			},
 			error : function(xmlHttpRequest,stat,error) {
