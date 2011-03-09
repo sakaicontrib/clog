@@ -193,6 +193,8 @@ function switchState(state,arg) {
 	 							2: {sorter: "isoDate"},
 	 							3: {sorter: "isoDate"}
 	 						} }).tablesorterPager({container: $("#clogAuthorPager"),positionFixed: false});
+
+                    $('.pagedisplay').attr('disabled','true');
 	 						
  					if(window.frameElement)
 	 					setMainFrameHeight(window.frameElement.id);
@@ -424,8 +426,8 @@ function switchState(state,arg) {
 					SakaiUtils.renderTrimpathTemplate('clog_post_template',posts[i],'post_' + posts[i].id);
 
 				if(posts.length > 0) {
-					$('#clog_really_delete_button').bind('click',ClogUtils.deleteSelectedPosts);
-					$('#clog_restore_button').bind('click',ClogUtils.restoreSelectedPosts);
+					$('#clog_really_delete_button').click(ClogUtils.deleteSelectedPosts);
+					$('#clog_restore_button').click(ClogUtils.restoreSelectedPosts);
 				}
 				else {
 					$('#clog_really_delete_button').attr('disabled','disabled');
