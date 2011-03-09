@@ -24,8 +24,8 @@ var ClogUtils;
 				}
         		switchState('searchResults',{'results':hits});
         	},
-        	error : function(xmlHttpRequest,status,error) {
-				alert("Failed to search. Status: " + status + ". Error: " + error);
+        	error : function(xhr,textStatus,errorThrown) {
+				alert(xhr.responseText);
 			}
 		});
 	}

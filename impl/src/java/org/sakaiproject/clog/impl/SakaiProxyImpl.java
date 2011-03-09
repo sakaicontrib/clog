@@ -49,6 +49,7 @@ import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.event.cover.NotificationService;
 import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchList;
 import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.search.api.SearchService;
@@ -585,7 +586,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
     }
 
-    public List<SearchResult> searchInCurrentSite(String searchTerms) {
+    public List<SearchResult> searchInCurrentSite(String searchTerms) throws InvalidSearchQueryException{
 	List<SearchResult> results = new ArrayList<SearchResult>();
 
 	List<String> contexts = new ArrayList<String>(1);
@@ -599,7 +600,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 		if ("Clog".equals(sr.getTool()))
 		    results.add(sr);
 	    }
-
+	}catch(InvalidSearchQueryException isqe) {
+	    throw isqe;
 	} catch (Exception e) {
 	    logger.error("Caught exception whilst searching", e);
 	}

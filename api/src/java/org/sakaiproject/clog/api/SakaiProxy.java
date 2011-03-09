@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.entity.api.EntityProducer;
+import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchList;
 import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.clog.api.ClogMember;
@@ -94,7 +95,7 @@ public interface SakaiProxy {
 
     public String storeResource(byte[] blob, String displayName, String siteId, String creatorId);
 
-    public List<SearchResult> searchInCurrentSite(String searchTerms);
+    public List<SearchResult> searchInCurrentSite(String searchTerms) throws InvalidSearchQueryException;
 
     public Map<String, Set<String>> getPermsForCurrentSite();
 

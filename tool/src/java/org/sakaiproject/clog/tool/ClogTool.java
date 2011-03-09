@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.component.api.ComponentManager;
+import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.util.ResourceLoader;
 
@@ -180,13 +181,20 @@ public class ClogTool extends HttpServlet {
 	if (searchTerms == null || searchTerms.length() == 0)
 	    throw new ServletException("No search terms supplied.");
 
-	List<SearchResult> results = sakaiProxy.searchInCurrentSite(searchTerms);
-
-	JSONArray data = JSONArray.fromObject(results);
-	response.setStatus(HttpServletResponse.SC_OK);
-	response.setContentType("application/json");
-	response.getWriter().write(data.toString());
-	response.getWriter().close();
-	return;
+	try {
+	    List<SearchResult> results = sakaiProxy.searchInCurrentSite(searchTerms);
+	
+	    JSONArray data = JSONArray.fromObject(results);
+	    response.setStatus(HttpServletResponse.SC_OK);
+	    response.setContentType("application/json");
+	    response.getWriter().write(data.toString());
+	    response.getWriter().close();
+	    return;
+	} catch(InvalidSearchQueryException isqe) {
+	    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    response.getWriter().write("Your search terms were invalid");
+	    response.getWriter().close();
+	    return;
+	}
     }
 }
