@@ -1,6 +1,9 @@
 package org.sakaiproject.clog.api;
 
+import java.net.URLEncoder;
+
 import org.sakaiproject.user.api.User;
+import org.sakaiproject.util.FormattedText;
 
 public class ClogMember {
     private int numberOfPosts = 0;
@@ -28,12 +31,15 @@ public class ClogMember {
 
     public String getUserEid() {
 	return sakaiUser.getEid();
-
     }
 
     public String getUserDisplayName() {
-	return sakaiUser.getLastName() + ", " + sakaiUser.getFirstName();
-	// return sakaiUser.getDisplayName();
+	// CLOG-24
+	try {
+	    return URLEncoder.encode(sakaiUser.getLastName(),"UTF-8") + ", " + URLEncoder.encode(sakaiUser.getFirstName(),"UTF-8");
+	}catch(Exception e) {
+	    return null;
+	}
     }
 
     public void setNumberOfPosts(int numberOfPosts) {

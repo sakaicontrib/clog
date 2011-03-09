@@ -66,6 +66,7 @@ import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.BaseResourceProperties;
+import org.sakaiproject.util.FormattedText;
 import org.sakaiproject.clog.api.ClogMember;
 
 public class SakaiProxyImpl implements SakaiProxy {
@@ -149,7 +150,8 @@ public class SakaiProxyImpl implements SakaiProxy {
     public String getDisplayNameForTheUser(String userId) {
 	try {
 	    User sakaiUser = userDirectoryService.getUser(userId);
-	    return sakaiUser.getDisplayName();
+	    // CLOG-24
+	    return FormattedText.escapeHtmlFormattedText(sakaiUser.getDisplayName());
 	} catch (Exception e) {
 	    return userId; // this can happen if the user does not longer exist
 			   // in the system
@@ -554,6 +556,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
     }
 
+    /**
+     * Used by the blog 1 and 2 data importers
+     */
     public String storeResource(byte[] blob, String displayName, String siteId, String creatorId) {
 	ContentResourceEdit resource = null;
 	ResourceProperties props = null;
