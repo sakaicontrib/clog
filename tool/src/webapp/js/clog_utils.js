@@ -310,6 +310,11 @@ var ClogUtils;
 	ClogUtils.deleteSelectedPosts = function() {
 		var selected = $('.clog_recycled_post_checkbox:checked');
 
+        if(selected.length <= 0) {
+            // No posts selected for deletion
+            return;
+        }
+
 		var commands = '';
 
 		for(var i=0,j=selected.length;i<j;i++) {
@@ -335,6 +340,12 @@ var ClogUtils;
 
 	ClogUtils.restoreSelectedPosts = function() {
 		var selected = $('.clog_recycled_post_checkbox:checked');
+
+        // CLOG-29
+        if(selected.length <= 0) {
+            // No posts selected for restoration
+            return;
+        }
 
 		var commands = '';
 
