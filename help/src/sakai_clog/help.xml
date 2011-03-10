@@ -8,13 +8,13 @@
       <property name="location"><value>/sakai_clog/overview.html</value></property>
       <property name="defaultForTool"><value>sakai.clog</value></property>
    </bean>
-   <bean id="clog_create_post" class="org.sakaiproject.component.app.help.model.ResourceBean">
-      <property name="docId"><value>clog_create_post</value></property>
+   <bean id="clog_post_creation" class="org.sakaiproject.component.app.help.model.ResourceBean">
+      <property name="docId"><value>clog_post_creation</value></property>
       <property name="name"><value>Creating a Post</value></property>
       <property name="location"><value>/sakai_clog/post_creation.html</value></property>
    </bean>
-   <bean id="clog_create_comment" class="org.sakaiproject.component.app.help.model.ResourceBean">
-      <property name="docId"><value>clog_create_comment</value></property>
+   <bean id="clog_comment_creation" class="org.sakaiproject.component.app.help.model.ResourceBean">
+      <property name="docId"><value>clog_comment_creation</value></property>
       <property name="name"><value>Creating a Comment</value></property>
       <property name="location"><value>/sakai_clog/comment_creation.html</value></property>
    </bean>
@@ -29,8 +29,8 @@
                <property name="resources">
                   <list>
                      <ref bean="clog_overview"/>
-                     <ref bean="clog_create_post"/>
-                     <ref bean="clog_create_comment"/>
+                     <ref bean="clog_post_creation"/>
+                     <ref bean="clog_comment_creation"/>
                   </list>
                </property>
             </bean>
