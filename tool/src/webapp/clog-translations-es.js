@@ -70,4 +70,10 @@ clog_created_label="Creado:";
 clog_modified_label="Modificado:";
 clog_public_question="\u00BFEst\u00E1 seguro que quiere hacer p\u00FAblica esta entrada?";
 clog_short_title_warning="El t\u00EDtulo de la entrada debe tener al menos cuatro caracteres";
+clog_permissions_create="Crear"
+clog_permissions_read_any="Leer";
+clog_permissions_update_any="Actualizar cualquiera";
+clog_permissions_update_own="Actualizar solamente los propios";
+clog_permissions_delete_any="Eliminar cualquiera";
+clog_permissions_delete_own="Eliminar solamente los propios";
 
