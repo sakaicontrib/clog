@@ -78,7 +78,7 @@ else
 			<th colspan="6">${clog_comment_label}</th>
 		</tr>
 		<tr class="listHier">
-			<th align="left">Role</th>
+			<th align="left">${clog_permissions_role_label}:</th>
 			<th style="background: white;border: none;"></th>
 			<th style="text-align:center;">create</th>
 			<th style="text-align:center;">read.any</th>
@@ -158,7 +158,7 @@ else
 <div id="clog_create_comment_template" style="display:none"><!--
 	<div id="clog_post_${postId}" style="width:100%"></div>
 
-	<h3>Add your comment:</h3>
+	<h3>${clog_add_your_comment_label}:</h3>
 
 	<div style="height: 20px;"></div>
 
@@ -240,7 +240,7 @@ else
 			<div class="author">
 				<div class="clog_author_image_div"><img src="/direct/profile/${creatorId}/image" width="50"/></div>
 				<div style="float: right;">
-				<a class="profile" rel="/direct/profile/${creatorId}/formatted">${creatorDisplayName}</a><br /><span style="font-size: smaller;font-style: italic;">Created:</span><span style="font-size: smaller;font-style: italic;">${new Date(createdDate).toLocaleString()}</span>{if modifiedDate > createdDate}<br/><span style="font-size: smaller;font-style: italic;">${clog_modified_label}</span><span style="font-size: smaller;font-style: italic;">${new Date(modifiedDate).toLocaleString()}</span>{/if}
+				<a class="profile" rel="/direct/profile/${creatorId}/formatted">${creatorDisplayName}</a><br /><span style="font-size: smaller;font-style: italic;">${clog_created_label}</span><span style="font-size: smaller;font-style: italic;">${new Date(createdDate).toLocaleString()}</span>{if modifiedDate > createdDate}<br/><span style="font-size: smaller;font-style: italic;">${clog_modified_label}</span><span style="font-size: smaller;font-style: italic;">${new Date(modifiedDate).toLocaleString()}</span>{/if}
 				</div>
 			</div>
 			<br/>
@@ -265,7 +265,7 @@ else
 					<div class="clog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
 							<div class="clog_author_image_div"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
-							<div style="float:left;"><a class="profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">Created: ${new Date(comment.createdDate).toLocaleString()}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${new Date(comment.modifiedDate).toLocaleString()}</span>{/if}</div>
+							<div style="float:left;"><a class="profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">${clog_created_label} ${new Date(comment.createdDate).toLocaleString()}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${new Date(comment.modifiedDate).toLocaleString()}</span>{/if}</div>
 						</div>
 						<div class="clog_comment_content">${comment.content}</div>
 						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == clogCurrentUser.id)}
