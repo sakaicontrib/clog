@@ -74,18 +74,9 @@ else
 			<th></th>
 			<th width="5px"></th>
 			<th align="center" colspan="6">${clog_post_label}</th>
-			<th width="5px"></th>
-			<th colspan="6">${clog_comment_label}</th>
 		</tr>
 		<tr class="listHier">
 			<th align="left">${clog_permissions_role_label}:</th>
-			<th style="background: white;border: none;"></th>
-			<th style="text-align:center;">${clog_permissions_create}</th>
-			<th style="text-align:center;">${clog_permissions_read_any}</th>
-			<th style="text-align:center;">${clog_permissions_update_any}</th>
-			<th style="text-align:center;">${clog_permissions_update_own}</th>
-			<th style="text-align:center;">${clog_permissions_delete_any}</th>
-			<th style="text-align:center;">${clog_permissions_delete_own}</th>
 			<th style="background: white;border: none;"></th>
 			<th style="text-align:center;">${clog_permissions_create}</th>
 			<th style="text-align:center;">${clog_permissions_read_any}</th>
@@ -106,7 +97,32 @@ else
 	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_update_own}checked="checked"{/if}" id="${p.role}:clog.post.update.own"/></td>
 	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_delete_any}checked="checked"{/if}" id="${p.role}:clog.post.delete.any"/></td>
 	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_delete_own}checked="checked"{/if}" id="${p.role}:clog.post.delete.own"/></td>
-	<td></td>
+</tr>
+{/for}
+</tbody>
+</table>
+<table id="clog_permissions_table">	
+<thead>
+		<tr>
+			<th></th>
+			<th width="5px"></th>
+			<th colspan="6">${clog_comment_label}</th>
+		</tr>
+		<tr class="listHier">
+			<th align="left">${clog_permissions_role_label}:</th>
+			<th style="background: white;border: none;"></th>
+			<th style="text-align:center;">${clog_permissions_create}</th>
+			<th style="text-align:center;">${clog_permissions_read_any}</th>
+			<th style="text-align:center;">${clog_permissions_update_any}</th>
+			<th style="text-align:center;">${clog_permissions_update_own}</th>
+			<th style="text-align:center;">${clog_permissions_delete_any}</th>
+			<th style="text-align:center;">${clog_permissions_delete_own}</th>
+		</tr>
+	</thead>
+{for p in perms}
+<tr>
+	<td align="left">${p.role}</td>
+	<td></td>	
 	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_create}checked="checked"{/if}" id="${p.role}:clog.comment.create"/></td>
 	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_read_any}checked="checked"{/if}" id="${p.role}:clog.comment.read.any"/></td>
 	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_update_any}checked="checked"{/if}" id="${p.role}:clog.comment.update.any"/></td>
