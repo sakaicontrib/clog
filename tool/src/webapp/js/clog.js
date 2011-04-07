@@ -11,6 +11,7 @@ var clogHomeState = null;
 var clogOnMyWorkspace = false;
 var clogOnGateway = false;
 var clogPublicAllowed = false;
+var clogTitleChanged = false;
 
 var autosave_id = null;
 
@@ -319,6 +320,9 @@ function switchState(state,arg) {
 		SakaiUtils.renderTrimpathTemplate('clog_create_post_template',clogCurrentPost,'clog_content');
 
 	 	$(document).ready(function () {
+	 		$('#clog_title_field').bind('keypress',function (e) {
+				clogTitleChanged = true;	 		
+	 		});
 		    SakaiUtils.setupFCKEditor('clog_content_editor',600,400,'Default',clogSiteId);
 			$('#clog_save_post_button').click(ClogUtils.savePostAsDraft);
 

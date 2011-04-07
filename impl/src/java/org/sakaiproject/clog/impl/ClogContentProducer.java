@@ -181,8 +181,15 @@ public class ClogContentProducer implements EntityContentProducer {
 
 	String[] parts = eventRef.split(Entity.SEPARATOR);
 	if (parts.length == 4) {
-	    String id = parts[3];
-	    return id;
+	    String postId = parts[3];
+	    try {
+		Post post = clogManager.getPost(postId);
+		return post.getSiteId();
+	    }
+	    catch(Exception e) {
+		logger.error("Failed to find post with id '" + postId + "'");
+		return null;
+	    }
 	} else if (parts.length == 5) {
 	    String siteId = parts[2];
 	    return siteId;

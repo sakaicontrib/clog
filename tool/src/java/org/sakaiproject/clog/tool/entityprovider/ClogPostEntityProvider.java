@@ -126,7 +126,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	boolean isNew = "".equals(post.getId());
 
 	if (clogManager.savePost(post)) {
-	    if ((isNew || (mode != null && "publish".equals(mode))) && post.isReady()) {
+	    if ((isNew || (mode != null && "publish".equals(mode))) && post.isReady() && !post.isAutoSave()) {
 		String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + post.getId();
 		sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED, reference, post.getSiteId());
 

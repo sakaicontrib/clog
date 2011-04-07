@@ -84,36 +84,6 @@ public class SQLGenerator implements ISQLGenerator {
 
 	StringBuilder statement = new StringBuilder();
 
-	if (query.isSearchAutoSaved()) {
-	    statement.append("SELECT * FROM ").append(TABLE_AUTOSAVED_POST);
-
-	    if (query.hasConditions()) {
-		// we know that there are conditions. Build the statement
-		statement.append(" WHERE ");
-
-		if (query.queryBySiteId())
-		    statement.append(SITE_ID).append(" = '").append(query.getSiteId()).append("' AND ");
-
-		if (query.queryByCreator())
-		    statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND ");
-
-		// in this point, we know that there is a AND at the end of the
-		// statement. Remove it.
-		statement = new StringBuilder(statement.toString().substring(0, statement.length() - 4)); // 4
-													  // is
-													  // the
-													  // length
-													  // of
-													  // AND
-													  // with
-													  // the
-													  // last
-													  // space
-	    }
-
-	    statement.append(" UNION ");
-	}
-
 	statement.append("SELECT * FROM ").append(TABLE_POST);
 
 	if (query.hasConditions()) {
@@ -143,18 +113,9 @@ public class SQLGenerator implements ISQLGenerator {
 	    }
 	}
 
-	// in this point, we know that there is a AND at the end of the
-	// statement. Remove it.
-	statement = new StringBuilder(statement.toString().substring(0, statement.length() - 4)); // 4
-												  // is
-												  // the
-												  // length
-												  // of
-												  // AND
-												  // with
-												  // the
-												  // last
-												  // space
+	// At this point, we know that there is an AND at the end of the
+	// statement. Remove it. 4 is the length of AND with the last space.
+	statement = new StringBuilder(statement.toString().substring(0, statement.length() - 4));
 
 	statement.append(" ORDER BY ").append(CREATED_DATE).append(" DESC ");
 
@@ -188,8 +149,8 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append(POST_ID + " CHAR(36) NOT NULL,");
 	statement.append(SITE_ID + " " + VARCHAR + "(255), ");
 	statement.append(TITLE + " " + VARCHAR + "(255) NOT NULL, ");
-	statement.append(CONTENT + " " + CLOB + ", ");
-	statement.append(CREATED_DATE + " " + TIMESTAMP + ", ");
+	statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
+	statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL, ");
 	statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
 	statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
 	statement.append(KEYWORDS + " " + VARCHAR + "(255), ");

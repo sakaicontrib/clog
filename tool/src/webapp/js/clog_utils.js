@@ -178,6 +178,11 @@ var ClogUtils;
 	}
 	
 	ClogUtils.autosavePost = function() {
+		
+		if(!FCKeditorAPI.GetInstance('clog_content_editor').IsDirty() && !clogTitleChanged) {
+			return;
+		}
+	
 		return ClogUtils.storePost('AUTOSAVE');
 	}
 
@@ -207,12 +212,14 @@ var ClogUtils;
 
 		var success = false;
 
+		var editor = FCKeditorAPI.GetInstance('clog_content_editor');
+
 		var post = {
 				'id':$('#clog_post_id_field').val(),
 				'visibility':visibility,
 				'commentable':$('#clog_commentable_checkbox').attr('checked'),
 				'title':title,
-				'content':FCKeditorAPI.GetInstance('clog_content_editor').GetXHTML(true),
+				'content':editor.GetXHTML(true),
 				'siteId':clogSiteId
 				};
 				
@@ -235,6 +242,8 @@ var ClogUtils;
 				}
 
 				success = true;
+				clogTitleChanged = false;
+                editor.ResetIsDirty();
 			},
 			error : function(xmlHttpRequest,status,error) {
 				alert("Failed to store post. Status: " + status + '. Error: ' + error);
