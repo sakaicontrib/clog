@@ -1,4 +1,5 @@
 clog_post_label="Post";
+clog_author_posts="Posts of";
 clog_email_alerts_label="Email Alerts";
 clog_email_never_label="I don't want to receive email alerts for this site";
 clog_email_each_label="Send me an email alert every time something happens in this site";

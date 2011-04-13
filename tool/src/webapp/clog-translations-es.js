@@ -1,4 +1,5 @@
 clog_post_label="Publicar";
+clog_author_posts="Entradas de";
 clog_email_alerts_label="Alertas de correo";
 clog_email_never_label="No deseo recibir notificaciones por correo del sitio";
 clog_email_each_label="Deseo recibir una notificaci\u00F3n por correo por cada novedad del sitio";
