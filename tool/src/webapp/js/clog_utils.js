@@ -213,6 +213,10 @@ var ClogUtils;
 		var success = false;
 
 		var editor = FCKeditorAPI.GetInstance('clog_content_editor');
+		
+		if('READY' === visibility) {
+			visibility = ($('#clog_visibility_maintainer').attr('checked')) ? 'MAINTAINER':'SITE';
+		}
 
 		var post = {
 				'id':$('#clog_post_id_field').val(),

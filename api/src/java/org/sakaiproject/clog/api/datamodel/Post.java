@@ -343,7 +343,7 @@ public class Post implements Entity {
     }
 
     public boolean isReady() {
-	return Visibilities.READY.equals(visibility);
+	return Visibilities.SITE.equals(visibility) || Visibilities.MAINTAINER.equals(visibility);
     }
 
     public void setContent(String content) {
@@ -372,5 +372,13 @@ public class Post implements Entity {
 
     public Post getAutosavedVersion() {
 	return autosavedVersion;
+    }
+
+    public boolean isVisibleToSite() {
+	return Visibilities.SITE.equals(visibility);
+    }
+    
+    public boolean isVisibleToMaintainers() {
+	return Visibilities.MAINTAINER.equals(visibility);
     }
 }

@@ -337,6 +337,10 @@ function switchState(state,arg) {
 				}
 				switchState('home');
 			});
+
+            if("MAINTAINER" === clogCurrentPost.visibility) {
+                $('#clog_visibility_maintainer').attr("checked","true");
+            }
 			
 			// Start the auto saver
 			autosave_id = setInterval(function() {

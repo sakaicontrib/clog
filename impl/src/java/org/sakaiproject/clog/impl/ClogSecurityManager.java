@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.SakaiProxy;
 
@@ -114,13 +115,26 @@ public class ClogSecurityManager {
     }
 
     public boolean canCurrentUserReadPost(Post post) {
+	
+	boolean maintainer = sakaiProxy.isCurrentUserMaintainer(post.getSiteId());
+	
 	// If the post is public, yes.
 	if (post.isPublic()) {
 	    return true;
 	}
 	
 	try {
-	    if(post.isReady() && sakaiProxy.isCurrentUserMemberOfSite(post.getSiteId())) {
+	    if(post.isVisibleToSite() && sakaiProxy.isCurrentUserMemberOfSite(post.getSiteId())) {
+		return true;
+	    }
+	}
+	catch(Exception e) {
+	    logger.error("Exception during security check.",e);
+	    return false;
+	}
+	
+	try {
+	    if(post.isVisibleToMaintainers() && maintainer) {
 		return true;
 	    }
 	}
@@ -130,16 +144,20 @@ public class ClogSecurityManager {
 	}
 
 	// Only maintainers can view recycled posts
-	if (post.isRecycled() && sakaiProxy.isCurrentUserMaintainer(post.getSiteId())) {
+	if (post.isRecycled() && maintainer) {
 	    return true;
 	}
 
+	// Allow search to index posts
 	String threadName = Thread.currentThread().getName();
+	if (!post.isPrivate() && "IndexManager".equals(threadName)) {
+	    return true;
+	}
 
 	// This acts as an override
-	if (!post.isPrivate() && (sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId()) || "IndexManager".equals(threadName))) {
-	    return true;
-	}
+	//if (!post.isPrivate() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
+	 //   return true;
+	//}
 
 	String currentUser = sakaiProxy.getCurrentUserId();
 

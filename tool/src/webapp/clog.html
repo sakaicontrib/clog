@@ -163,7 +163,15 @@ else
 	<br />
 	{/if} 
     <input id="clog_post_id_field" type="hidden" value="${id}"/>
-    {if clogOnMyWorkspace && clogPublicAllowed}<input id="clog_make_post_public_button" type="button" value="${clog_make_post_public_label}" title="${clog_make_post_public_tooltip}"/>{/if}
+    {if clogOnMyWorkspace && clogPublicAllowed}
+        <input id="clog_make_post_public_button" type="button" value="${clog_make_post_public_label}" title="${clog_make_post_public_tooltip}"/>
+    {else}
+       <input id="clog_visibility_maintainer" type="radio" name="visibility"/>${clog_admin_visibility}
+       <br/>
+       <input id="clog_visibility_site" type="radio" name="visibility" checked="checked"/>${clog_site_visibility}
+       <br/>
+       <br/>
+    {/if}
     <input id="clog_publish_post_button" type="button" value="${clog_publish_label}" title="${clog_publish_tooltip}"/>
     <input id="clog_save_post_button" type="button" value="${clog_save_as_draft_label}" title="${clog_save_as_draft_tooltip}"/>
     <input id="clog_cancel_button" type="button" value="${cancel}"/>

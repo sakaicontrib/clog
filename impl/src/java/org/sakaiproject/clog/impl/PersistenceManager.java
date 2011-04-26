@@ -960,7 +960,7 @@ public class PersistenceManager {
 		String visibility = postRS.getString(ISQLGenerator.VISIBILITY);
 
 		if ("PUBLIC".equals(visibility))
-		    visibility = "READY";
+		    visibility = "SITE";
 
 		post.setVisibility(visibility);
 

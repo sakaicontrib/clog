@@ -77,3 +77,5 @@ clog_permissions_update_any="update.any";
 clog_permissions_update_own="update.own";
 clog_permissions_delete_any="delete.any";
 clog_permissions_delete_own="delete.own";
+clog_admin_visibility="Only site administrators and I can see this post";
+clog_site_visibility="All members of this site can see this post";

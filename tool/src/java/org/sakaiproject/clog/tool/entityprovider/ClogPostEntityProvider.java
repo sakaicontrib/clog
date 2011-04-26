@@ -166,7 +166,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	Restriction autosaveRes = search.getRestrictionByProperty("autosaved");
 
 	QueryBean query = new QueryBean();
-	query.setVisibilities(new String[] { Visibilities.READY, Visibilities.PRIVATE });
+	query.setVisibilities(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE });
 
 	if (visibilities != null) {
 	    String visibilitiesValue = visibilities.getStringValue();
