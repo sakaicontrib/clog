@@ -8,7 +8,7 @@
   	<name>CLOG</name>
   	<groupId>org.sakaiproject.clog</groupId>
   	<artifactId>clog</artifactId>
-  	<version>1.0-SNAPSHOT</version>
+  	<version>0.9.1-SNAPSHOT</version>
   	<packaging>pom</packaging>
 
 	<parent>
