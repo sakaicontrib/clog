@@ -34,12 +34,7 @@ public class ClogMember {
     }
 
     public String getUserDisplayName() {
-	// CLOG-24
-	try {
-	    return URLEncoder.encode(sakaiUser.getLastName(),"UTF-8") + ", " + URLEncoder.encode(sakaiUser.getFirstName(),"UTF-8");
-	}catch(Exception e) {
-	    return null;
-	}
+	return sakaiUser.getLastName()+ ", " + sakaiUser.getFirstName();
     }
 
     public void setNumberOfPosts(int numberOfPosts) {
