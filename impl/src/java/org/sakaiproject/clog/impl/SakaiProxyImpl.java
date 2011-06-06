@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.AuthzPermissionException;
@@ -37,12 +38,16 @@ import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.clog.api.ClogFunctions;
+import org.sakaiproject.clog.api.ClogMember;
+import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.email.api.DigestService;
 import org.sakaiproject.email.api.EmailService;
+import org.sakaiproject.emailtemplateservice.service.EmailTemplateService;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.entity.api.ResourceProperties;
@@ -59,15 +64,12 @@ import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.tool.api.ToolManager;
-import org.sakaiproject.clog.api.ClogFunctions;
-import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.user.api.AuthenticationManager;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.BaseResourceProperties;
 import org.sakaiproject.util.FormattedText;
-import org.sakaiproject.clog.api.ClogMember;
 
 public class SakaiProxyImpl implements SakaiProxy {
     private Logger logger = Logger.getLogger(SakaiProxyImpl.class);
@@ -103,6 +105,8 @@ public class SakaiProxyImpl implements SakaiProxy {
     private DigestService digestService;
 
     private SearchService searchService;
+    
+    private EmailTemplateService emailTemplateService;
 
     public void init() {
     }
@@ -792,5 +796,9 @@ public class SakaiProxyImpl implements SakaiProxy {
     public boolean isCurrentUserMemberOfSite(String siteId) throws Exception{
 	Site site = siteService.getSite(siteId);
 	return site.getMember(getCurrentUserId()) != null;
+    }
+    
+    public void setEmailTemplateService(EmailTemplateService emailTemplateService) {
+    	this.emailTemplateService = emailTemplateService;
     }
 }

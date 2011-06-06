@@ -21,7 +21,7 @@
 		<property name="searchService"><ref bean="org.sakaiproject.search.api.SearchService"/></property>
 		<property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
 		<property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
-
+		<property name="emailTemplateService"><ref bean="org.sakaiproject.emailtemplateservice.service.EmailTemplateService"/></property>
 	</bean>
 
 	<bean id="org.sakaiproject.clog.api.ClogManager"
