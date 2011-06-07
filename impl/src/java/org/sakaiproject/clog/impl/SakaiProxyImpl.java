@@ -19,6 +19,7 @@ package org.sakaiproject.clog.impl;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,8 +29,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.AuthzPermissionException;
@@ -47,6 +48,7 @@ import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.email.api.DigestService;
 import org.sakaiproject.email.api.EmailService;
+import org.sakaiproject.emailtemplateservice.model.RenderedTemplate;
 import org.sakaiproject.emailtemplateservice.service.EmailTemplateService;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.EntityProducer;
@@ -63,6 +65,7 @@ import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.SessionManager;
+import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.user.api.AuthenticationManager;
 import org.sakaiproject.user.api.User;
@@ -70,6 +73,7 @@ import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.BaseResourceProperties;
 import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.util.Validator;
 
 public class SakaiProxyImpl implements SakaiProxy {
     private Logger logger = Logger.getLogger(SakaiProxyImpl.class);
@@ -109,6 +113,7 @@ public class SakaiProxyImpl implements SakaiProxy {
     private EmailTemplateService emailTemplateService;
 
     public void init() {
+    	emailTemplateService.processEmailTemplates(emailTemplates);   	
     }
 
     public void destroy() {
@@ -122,6 +127,14 @@ public class SakaiProxyImpl implements SakaiProxy {
     public String getCurrentToolId() {
 	return toolManager.getCurrentPlacement().getId();
     }
+    
+	public String getCurrentToolTitle() {
+		Tool tool = toolManager.getCurrentTool();
+		if(tool != null)
+			return tool.getTitle();
+		else
+			return "Clog";
+	}
 
     public String getCurrentUserId() {
 	Session session = sessionManager.getCurrentSession();
@@ -288,14 +301,20 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 	return result;
     }
-
+  
     public String getPortalUrl() {
-	return serverConfigurationService.getPortalUrl();
+    	// don't use serverConfigurationService.getPortalUrl() as it can return
+    	// 'sakai-entitybroker-direct' instead of 'portal'
+    	return getServerUrl() + serverConfigurationService.getString("portalPath");
     }
 
     public String getServerUrl() {
 	return serverConfigurationService.getServerUrl();
     }
+    
+	public String getServiceName() {
+		return serverConfigurationService.getString("ui.service", "Sakai");
+	}
 
     public String getAccessUrl() {
 	return serverConfigurationService.getAccessUrl();
@@ -405,33 +424,40 @@ public class SakaiProxyImpl implements SakaiProxy {
 	return eventTrackingService;
     }
 
-    public void sendEmailWithMessage(String user, String subject, String message) {
-	Set<String> users = new HashSet<String>(1);
-	users.add(user);
-	sendEmailWithMessage(users, subject, message);
-
+    public void sendEmailWithMessage(String user, String emailTemplateKey, Map<String, String> replacementValues) {
+    	
+		Set<String> users = new HashSet<String>(1);
+		users.add(user);
+		sendEmailWithMessage(users, emailTemplateKey, replacementValues);
     }
 
-    public void sendEmailWithMessage(Set<String> users, String subject, String message) {
-	sendEmailToParticipants(getFromAddress(), users, subject, message);
-    }
+	public void sendEmailWithMessage(Set<String> users, String emailTemplateKey,
+			Map<String, String> replacementValues) {
 
-    public void addDigestMessage(String userId, String subject, String message) {
-	try {
-	    digestService.digest(userId, subject, message);
-	} catch (Exception e) {
-	    logger.error("Failed to add message to digest.", e);
+		sendEmailToParticipants(getFromAddress(), users, emailTemplateKey, replacementValues);
 	}
+
+    public void addDigestMessage(String userId, String emailTemplateKey, Map<String, String> replacementValues) {
+		try {
+			User user = userDirectoryService.getUser(userId);
+			RenderedTemplate email = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, user.getReference(), replacementValues);
+		    digestService.digest(userId, email.getRenderedSubject(), email.getRenderedHtmlMessage());
+		} catch (Exception e) {
+		    logger.error("Failed to add message to digest.", e);
+		}
     }
 
-    public void addDigestMessage(Set<String> users, String subject, String message) {
-	for (String userId : users) {
-	    try {
-		digestService.digest(userId, subject, message);
-	    } catch (Exception e) {
-		logger.error("Failed to add message to digest.", e);
-	    }
-	}
+    public void addDigestMessage(Set<String> users, String emailTemplateKey, Map<String, String> replacementValues) {
+		for (String userId : users) {
+		    try {
+				User user = userDirectoryService.getUser(userId);
+				RenderedTemplate email = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, user.getReference(), replacementValues);
+				
+				digestService.digest(userId, email.getRenderedSubject(), email.getRenderedHtmlMessage());
+			} catch (Exception e) {
+				logger.error("Failed to add message to digest.", e);
+		    }
+		}
     }
 
     public void setEmailService(EmailService emailService) {
@@ -442,59 +468,142 @@ public class SakaiProxyImpl implements SakaiProxy {
 	return emailService;
     }
 
-    private void sendEmailToParticipants(String from, Set<String> to, String subject, String text) {
-	class EmailSender implements Runnable {
-	    private Thread runner;
+	private void sendEmailToParticipants(String from, Set<String> to,
+			final String emailTemplateKey, final Map<String, String> replacementValues) {
+		
+		class EmailSender implements Runnable {
+			
+			public final String MULTIPART_BOUNDARY = "======sakai-multi-part-boundary======";
+			public final String BOUNDARY_LINE = "\n\n--" + MULTIPART_BOUNDARY + "\n";
+			public final String TERMINATION_LINE = "\n\n--" + MULTIPART_BOUNDARY + "--\n\n";
+			public final String MIME_ADVISORY = "This message is for MIME-compliant mail readers.";
+			public final String PLAIN_TEXT_HEADERS = "Content-Type: text/plain\n\n";
+			public final String HTML_HEADERS = "Content-Type: text/html; charset=ISO-8859-1\n\n";
+			public final String HTML_END = "\n  </body>\n</html>\n";
+			
+			private Thread runner;
+			private String sender;
 
-	    private String sender;
+			private Set<String> participants;
 
-	    private String subject;
+			public EmailSender(String from, Set<String> to) {
+				this.sender = from;
+				this.participants = to;
+				runner = new Thread(this, "Clog Emailer Thread");
+				runner.start();
+			}
 
-	    private String text;
+			public synchronized void run() {
 
-	    private Set<String> participants;
+				List<String> additionalHeader = new ArrayList<String>();
+				additionalHeader.add("subject");
+				additionalHeader.add("Content-Type: text/html; charset=ISO-8859-1");
 
-	    public EmailSender(String from, Set<String> to, String subject, String text) {
-		this.sender = from;
-		this.participants = to;
-		this.text = text;
-		this.subject = subject;
-		runner = new Thread(this, "Clog Emailer Thread");
-		runner.start();
-	    }
+				String emailSender = getEmailForTheUser(sender);
+				if (emailSender == null || emailSender.trim().equals("")) {
+					emailSender = getDisplayNameForTheUser(sender);
+				}
 
-	    public synchronized void run() {
-		String emailText = "<html><body>";
-		emailText += text;
-		emailText += "</body></html>";
-
-		List<String> additionalHeader = new ArrayList<String>();
-		additionalHeader.add("Content-Type: text/html; charset=ISO-8859-1");
-		// aditionalHeader.add("Content-Type: text/html; charset=UTF-8");
-
-		String emailSender = getEmailForTheUser(sender);
-		if (emailSender == null || emailSender.trim().equals("")) {
-		    emailSender = getDisplayNameForTheUser(sender);
+				//get the rendered template for each user
+				RenderedTemplate template = null;
+				
+				for (String userId : participants) {
+					User emailParticipant;
+					try {
+						emailParticipant = userDirectoryService.getUser(userId);
+					} catch (UserNotDefinedException e) {
+						//skip
+						continue;
+					}
+					
+					try { 
+						template = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, emailParticipant.getReference(), replacementValues); 
+						if (template == null) {
+							logger.warn("SakaiProxy.sendEmail() no template with key: " + emailTemplateKey);
+							return;	//no template
+						}
+					}
+					catch (Exception e) {
+						logger.error("SakaiProxy.sendEmail() error retrieving template for user: " + emailParticipant.getId() + " with key: " + emailTemplateKey + " : " + e.getClass() + " : " + e.getMessage());
+						continue; //try next user
+					}
+					
+					try {						
+						emailService.sendToUsers(Collections.singleton(emailParticipant),
+								getHeaders(emailParticipant.getEmail(), template.getRenderedSubject()),
+								formatMessage(template.getRenderedSubject(), template.getRenderedHtmlMessage()));
+					} catch (Exception e) {
+						logger.error("Failed to send email to '" + userId
+								+ "'. Message: " + e.getMessage());
+					}
+				}
+			}
+			
+			private List<String> getHeaders(String emailTo, String subject){
+				List<String> headers = new ArrayList<String>();
+				headers.add("MIME-Version: 1.0");
+				headers.add("Content-Type: multipart/alternative; boundary=\""+MULTIPART_BOUNDARY+"\"");
+				headers.add(formatSubject(subject));
+				headers.add(getFrom());
+				if (StringUtils.isNotBlank(emailTo)) {
+					headers.add("To: " + emailTo);
+				}
+				
+				return headers;
+			}
+			
+			private String formatSubject(String subject) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Subject: ");
+				sb.append(subject);
+				
+				return sb.toString();
+			}
+			
+			private String getFrom(){
+				StringBuilder sb = new StringBuilder();
+				sb.append("From: ");
+				sb.append(getServiceName());
+				sb.append(" <no-reply@");
+				sb.append(serverConfigurationService.getServerName());
+				sb.append(">");
+				
+				return sb.toString();
+			}
+			
+			private String formatMessage(String subject, String message) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(MIME_ADVISORY);
+				sb.append(BOUNDARY_LINE);
+				sb.append(PLAIN_TEXT_HEADERS);
+				sb.append(Validator.escapeHtmlFormattedText(message));
+				sb.append(BOUNDARY_LINE);
+				sb.append(HTML_HEADERS);
+				sb.append(htmlPreamble(subject));
+				sb.append(message);
+				sb.append(HTML_END);
+				sb.append(TERMINATION_LINE);
+				
+				return sb.toString();
+			}
+			
+			private String htmlPreamble(String subject) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
+				sb.append("\"http://www.w3.org/TR/html4/loose.dtd\">\n");
+				sb.append("<html>\n");
+				sb.append("<head><title>");
+				sb.append(subject);
+				sb.append("</title></head>\n");
+				sb.append("<body>\n");
+				
+				return sb.toString();
+			}
 		}
 
-		for (String userId : participants) {
-		    String emailParticipant = getEmailForTheUser(userId);
-		    try {
-			// TODO: This should all be parameterised and
-			// internationalised.
-			// logger.info("Sending email to " + participantId +
-			// " ...");
-			emailService.send(emailSender, emailParticipant, subject, emailText, emailParticipant/* participantEid */, sender, additionalHeader);
-		    } catch (Exception e) {
-			System.out.println("Failed to send email to '" + userId + "'. Message: " + e.getMessage());
-		    }
-		}
-	    }
+		new EmailSender(from, to);
 	}
-
-	new EmailSender(from, to, subject, text);
-    }
-
+	
     public void registerSecurityAdvisor(SecurityAdvisor securityAdvisor) {
 	securityService.pushAdvisor(securityAdvisor);
     }
@@ -776,12 +885,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 	return serverConfigurationService.getString("setup.request", "sakai-clog@sakai.lancs.ac.uk");
     }
 
-    @Override
     public boolean isPublicAllowed() {
 	return "true".equals(serverConfigurationService.getString("clog.allowPublic", "false"));
     }
 
-    @Override
     public boolean setResourcePublic(String contentId, boolean isPublic) {
 	try {
 	    contentHostingService.setPubView(contentId, isPublic);
@@ -792,7 +899,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
     }
 
-    @Override
     public boolean isCurrentUserMemberOfSite(String siteId) throws Exception{
 	Site site = siteService.getSite(siteId);
 	return site.getMember(getCurrentUserId()) != null;
@@ -801,4 +907,10 @@ public class SakaiProxyImpl implements SakaiProxy {
     public void setEmailTemplateService(EmailTemplateService emailTemplateService) {
     	this.emailTemplateService = emailTemplateService;
     }
+    
+    // other resources
+	private ArrayList<String> emailTemplates;
+	public void setEmailTemplates(ArrayList<String> emailTemplates) {
+		this.emailTemplates = emailTemplates;
+	}
 }

@@ -2,6 +2,7 @@ package org.sakaiproject.clog.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,17 +13,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.sakaiproject.clog.api.datamodel.Comment;
-import org.sakaiproject.clog.api.datamodel.Post;
-import org.sakaiproject.clog.api.datamodel.Preferences;
-import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.XmlDefs;
-import org.sakaiproject.entity.api.*;
+import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.clog.api.datamodel.Preferences;
+import org.sakaiproject.clog.api.datamodel.Visibilities;
+import org.sakaiproject.entity.api.Entity;
+import org.sakaiproject.entity.api.EntityAccessOverloadException;
+import org.sakaiproject.entity.api.EntityCopyrightException;
+import org.sakaiproject.entity.api.EntityNotDefinedException;
+import org.sakaiproject.entity.api.EntityPermissionException;
+import org.sakaiproject.entity.api.HttpAccess;
+import org.sakaiproject.entity.api.Reference;
+import org.sakaiproject.entity.api.ResourceProperties;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -418,58 +426,68 @@ public class ClogManagerImpl implements ClogManager {
 	return persistenceManager.getPreferences(siteId, userId);
     }
 
-    public void sendNewPostAlert(Post post) {
-	Set<String> eachList = new TreeSet<String>();
-	Set<String> digestList = new TreeSet<String>();
+	public void sendNewPostAlert(Post post) {
+		Set<String> eachList = new TreeSet<String>();
+		Set<String> digestList = new TreeSet<String>();
 
-	Set<String> users = sakaiProxy.getSiteUsers(post.getSiteId());
+		Set<String> users = sakaiProxy.getSiteUsers(post.getSiteId());
 
-	for (String userId : users) {
-	    Preferences prefs = getPreferences(post.getSiteId(), userId);
-	    if (Preferences.MAIL_NEVER.equals(prefs.getEmailFrequency()))
-		continue;
-	    else if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
-		eachList.add(userId);
-	    else if (Preferences.MAIL_DIGEST.equals(prefs.getEmailFrequency()))
-		digestList.add(userId);
+		for (String userId : users) {
+			Preferences prefs = getPreferences(post.getSiteId(), userId);
+			if (Preferences.MAIL_NEVER.equals(prefs.getEmailFrequency()))
+				continue;
+			else if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
+				eachList.add(userId);
+			else if (Preferences.MAIL_DIGEST.equals(prefs.getEmailFrequency()))
+				digestList.add(userId);
+		}
+
+		Map<String, String> replacementValues = new HashMap<String, String>();
+		replacementValues.put("siteTitle", sakaiProxy.getSiteTitle(post.getSiteId()));
+		replacementValues.put("creatorDisplayName", sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
+		replacementValues.put("postTitle", post.getTitle());
+		replacementValues.put("postUrl", post.getUrl());
+		replacementValues.put("localSakaiName", sakaiProxy.getServiceName());
+		replacementValues.put("localSakaiUrl", sakaiProxy.getPortalUrl());
+		replacementValues.put("toolName", sakaiProxy.getCurrentToolTitle());
+		
+		sakaiProxy.sendEmailWithMessage(eachList, "clog.postNew", replacementValues);
+		sakaiProxy.addDigestMessage(digestList, "clog.postNew", replacementValues);
 	}
 
-	String siteTitle = sakaiProxy.getSiteTitle(post.getSiteId());
+	public void sendNewCommentAlert(Comment comment) {
+		try {
+			Post post = getPost(comment.getPostId());
 
-	String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()) + "</b>" + " created a new post titled '" + post.getTitle() + "' in '" + siteTitle + "'<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it";
+			// We don't really want an email when we comment on our own posts
+			if (comment.getCreatorId().equals(post.getCreatorId()))
+				return;
 
-	sakaiProxy.sendEmailWithMessage(eachList, "[ " + siteTitle + " - Clog ] New Clog Post", message);
-	sakaiProxy.addDigestMessage(digestList, "[ " + siteTitle + " - Clog ] New Clog Post", message);
-    }
+			ClogMember author = sakaiProxy.getMember(post.getCreatorId());
 
-    public void sendNewCommentAlert(Comment comment) {
-	try {
-	    Post post = getPost(comment.getPostId());
+			String userId = author.getUserId();
 
-	    // We don't really want an email when we comment on our own posts
-	    if (comment.getCreatorId().equals(post.getCreatorId()))
-		return;
+			Preferences prefs = getPreferences(post.getSiteId(), userId);
+			if (Preferences.MAIL_NEVER.equals(prefs.getEmailFrequency()))
+				return;
 
-	    ClogMember author = sakaiProxy.getMember(post.getCreatorId());
-
-	    String userId = author.getUserId();
-
-	    Preferences prefs = getPreferences(post.getSiteId(), userId);
-	    if (Preferences.MAIL_NEVER.equals(prefs.getEmailFrequency()))
-		return;
-
-	    String siteTitle = sakaiProxy.getSiteTitle(post.getSiteId());
-
-	    String message = "<b>" + sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()) + "</b>" + " commented on your post titled '" + post.getTitle() + "' in '" + siteTitle + "'<br/><br />Click <a href=\"" + post.getUrl() + "\">here</a> to read it";
-
-	    if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
-		sakaiProxy.sendEmailWithMessage(userId, "[ " + siteTitle + " - Clog ] New Comment", message);
-	    else if (Preferences.MAIL_DIGEST.equals(prefs.getEmailFrequency()))
-		sakaiProxy.addDigestMessage(userId, "[ " + siteTitle + " - Clog ] New Comment", message);
-	} catch (Exception e) {
-	    logger.error("Failed to send new comment alert.", e);
+			Map<String, String> replacementValues = new HashMap<String, String>();
+			replacementValues.put("siteTitle", sakaiProxy.getSiteTitle(post.getSiteId()));
+			replacementValues.put("creatorDisplayName", sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
+			replacementValues.put("postTitle", post.getTitle());
+			replacementValues.put("postUrl", post.getUrl());
+			replacementValues.put("localSakaiName", sakaiProxy.getServiceName());
+			replacementValues.put("localSakaiUrl", sakaiProxy.getPortalUrl());
+			replacementValues.put("toolName", sakaiProxy.getCurrentToolTitle());
+			
+			if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
+				sakaiProxy.sendEmailWithMessage(userId, "clog.commentNew", replacementValues);
+			else if (Preferences.MAIL_DIGEST.equals(prefs.getEmailFrequency()))
+				sakaiProxy.addDigestMessage(userId, "clog.commentNew", replacementValues);
+		} catch (Exception e) {
+			logger.error("Failed to send new comment alert.", e);
+		}
 	}
-    }
 
     public void setSakaiProxy(SakaiProxy sakaiProxy) {
 	this.sakaiProxy = sakaiProxy;

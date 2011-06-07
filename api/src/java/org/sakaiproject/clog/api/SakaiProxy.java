@@ -25,16 +25,15 @@ import java.util.Set;
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
-import org.sakaiproject.search.api.SearchList;
 import org.sakaiproject.search.api.SearchResult;
-import org.sakaiproject.clog.api.ClogMember;
-import org.sakaiproject.clog.api.SakaiProxy;
 
 public interface SakaiProxy {
     public String getCurrentSiteId();
 
     public String getCurrentToolId();
 
+	public String getCurrentToolTitle();
+	
     public String getCurrentUserId();
 
     public Connection borrowConnection() throws SQLException;
@@ -63,6 +62,8 @@ public interface SakaiProxy {
 
     public String getServerUrl();
 
+    public String getServiceName();
+    
     public String getPortalUrl();
 
     public String getAccessUrl();
@@ -73,13 +74,13 @@ public interface SakaiProxy {
 
     public boolean isAllowedFunction(String function, String siteId);
 
-    public void sendEmailWithMessage(String creatorId, String subject, String string);
+    public void sendEmailWithMessage(String creatorId, String emailTemplateKey, Map<String, String> replacementValues);
 
-    public void sendEmailWithMessage(Set<String> emails, String subject, String string);
+    public void sendEmailWithMessage(Set<String> emails, String emailTemplateKey, Map<String, String> replacementValues);
 
-    public void addDigestMessage(String userId, String subject, String message);
+    public void addDigestMessage(String userId, String emailTemplateKey, Map<String, String> replacementValues);
 
-    public void addDigestMessage(Set<String> users, String subject, String message);
+    public void addDigestMessage(Set<String> users, String emailTemplateKey, Map<String, String> replacementValues);
 
     public void registerSecurityAdvisor(SecurityAdvisor securityAdvisor);
 

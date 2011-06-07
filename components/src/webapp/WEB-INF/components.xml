@@ -3,7 +3,8 @@
 <beans>
 
     <bean id="org.sakaiproject.clog.api.SakaiProxy"
-		class="org.sakaiproject.clog.impl.SakaiProxyImpl">
+		class="org.sakaiproject.clog.impl.SakaiProxyImpl"
+		init-method="init">
 
 		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
 		<property name="emailService"><ref bean="org.sakaiproject.email.api.EmailService"/></property>
@@ -22,8 +23,21 @@
 		<property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
 		<property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
 		<property name="emailTemplateService"><ref bean="org.sakaiproject.emailtemplateservice.service.EmailTemplateService"/></property>
+		
+		<!-- other resources -->
+		<property name="emailTemplates" ref="org.sakaiproject.clog.emailtemplates.List" />
 	</bean>
 
+	<!-- Setup email templates -->
+	<bean id="org.sakaiproject.clog.emailtemplates.List" class="java.util.ArrayList">
+		<constructor-arg>
+      		<list>
+        		<value>org/sakaiproject/clog/emailtemplates/template-commentNew.xml</value>
+        		<value>org/sakaiproject/clog/emailtemplates/template-postNew.xml</value>
+      		</list>      
+    	</constructor-arg>
+  	</bean>
+  	
 	<bean id="org.sakaiproject.clog.api.ClogManager"
     	class="org.sakaiproject.clog.impl.ClogManagerImpl"
     	init-method="init">

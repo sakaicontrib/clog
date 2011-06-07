@@ -64,7 +64,14 @@
           			<include>**/*.properties</include>
         		</includes>
       		</resource>
+   			<!-- include email templates -->
+      		<resource>
+                <directory>${basedir}/src/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
         </resources>
 	</build>
-
 </project>
