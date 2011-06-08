@@ -33,7 +33,9 @@
 		<constructor-arg>
       		<list>
         		<value>org/sakaiproject/clog/emailtemplates/template-commentNew.xml</value>
+        		<value>org/sakaiproject/clog/emailtemplates/template-commentNew_es_ES.xml</value>
         		<value>org/sakaiproject/clog/emailtemplates/template-postNew.xml</value>
+        		<value>org/sakaiproject/clog/emailtemplates/template-postNew_es_ES.xml</value>
       		</list>      
     	</constructor-arg>
   	</bean>
