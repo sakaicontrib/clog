@@ -12,6 +12,7 @@ var clogOnMyWorkspace = false;
 var clogOnGateway = false;
 var clogPublicAllowed = false;
 var clogTitleChanged = false;
+var wysiwygEditor = 'fckEditor'; //default
 
 var autosave_id = null;
 
@@ -65,6 +66,10 @@ var autosave_id = null;
 	$('#clog_search_button').click(function(e) {
 		ClogUtils.showSearchResults();
 	});
+	
+	if (arg.editor) {
+		wysiwygEditor = arg.editor;
+	}
 	
 	
 	if(!arg || !arg.placementId || !arg.siteId) {
@@ -131,7 +136,7 @@ var autosave_id = null;
 })();
 
 function switchState(state,arg) {
-
+	
 	// Clear the autosave interval
 	if(autosave_id)
 		clearInterval(autosave_id);
@@ -323,12 +328,20 @@ function switchState(state,arg) {
 	 		$('#clog_title_field').bind('keypress',function (e) {
 				clogTitleChanged = true;	 		
 	 		});
-		    SakaiUtils.setupFCKEditor('clog_content_editor',600,400,'Default',clogSiteId);
-			$('#clog_save_post_button').click(ClogUtils.savePostAsDraft);
+	 		
+ 			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
+	 		
+			$('#clog_save_post_button').click(function () {
+				ClogUtils.savePostAsDraft(wysiwygEditor);
+			});
 
-			$('#clog_make_post_public_button').click(ClogUtils.publicisePost);
+			$('#clog_make_post_public_button').click(function () {
+				ClogUtils.publicisePost(wysiwygEditor);
+			});
 
-			$('#clog_publish_post_button').click(ClogUtils.publishPost);
+			$('#clog_publish_post_button').click(function() {
+				ClogUtils.publishPost(wysiwygEditor);
+			});
 
 			$('#clog_cancel_button').click(function(e) {
 				// If the current post has neither been saved or published, delete the autosaved copy
@@ -344,7 +357,7 @@ function switchState(state,arg) {
 			
 			// Start the auto saver
 			autosave_id = setInterval(function() {
-					if(ClogUtils.autosavePost()) {
+					if(ClogUtils.autosavePost(wysiwygEditor)) {
 						$('#clog_autosaved_message').show();
 						setTimeout(function() {
 								$('#clog_autosaved_message').fadeOut(200);
@@ -381,10 +394,13 @@ function switchState(state,arg) {
 		SakaiUtils.renderTrimpathTemplate('clog_create_comment_template',comment,'clog_content');
 
 		$(document).ready(function() {
-			SakaiUtils.setupFCKEditor('clog_content_editor',600,400,'Default',clogSiteId);
+			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
 			SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPost,'clog_post_' + arg.postId);
-			$('#clog_save_comment_button').bind('click',ClogUtils.saveComment);
 
+			$('#clog_save_comment_button').click(function () {
+				ClogUtils.saveComment(wysiwygEditor);
+			});
+			
 			if(window.frameElement)
 				setMainFrameHeight(window.frameElement.id);
 		});

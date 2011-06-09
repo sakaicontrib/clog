@@ -177,29 +177,29 @@ var ClogUtils;
 	   	});
 	}
 	
-	ClogUtils.autosavePost = function() {
+	ClogUtils.autosavePost = function(wysiwygEditor) {
 		
-		if(!FCKeditorAPI.GetInstance('clog_content_editor').IsDirty() && !clogTitleChanged) {
+		if(!SakaiUtils.isEditorDirty(wysiwygEditor,'clog_content_editor') && !clogTitleChanged) {
 			return;
 		}
 	
-		return ClogUtils.storePost('AUTOSAVE');
+		return ClogUtils.storePost('AUTOSAVE',null,wysiwygEditor);
 	}
 
-	ClogUtils.savePostAsDraft = function() {
-		return ClogUtils.storePost('PRIVATE');
+	ClogUtils.savePostAsDraft = function(wysiwygEditor) {
+		return ClogUtils.storePost('PRIVATE',null,wysiwygEditor);
 	}
 
-	ClogUtils.publishPost = function() {
-		return ClogUtils.storePost('READY',true);
+	ClogUtils.publishPost = function(wysiwygEditor) {
+		return ClogUtils.storePost('READY',true,wysiwygEditor);
 	}
 
-	ClogUtils.publicisePost = function() {
+	ClogUtils.publicisePost = function(wysiwygEditor) {
 		if(confirm(clog_public_question))
-			return ClogUtils.storePost('PUBLIC');
+			return ClogUtils.storePost('PUBLIC',null,wysiwygEditor);
 	}
 		
-	ClogUtils.storePost = function(visibility,isPublish) {
+	ClogUtils.storePost = function(visibility,isPublish,wysiwygEditor) {
 
 	    var title = $('#clog_title_field').val();
 
@@ -211,8 +211,6 @@ var ClogUtils;
 		}
 
 		var success = false;
-
-		var editor = FCKeditorAPI.GetInstance('clog_content_editor');
 		
 		if('READY' === visibility) {
 			visibility = ($('#clog_visibility_maintainer').attr('checked')) ? 'MAINTAINER':'SITE';
@@ -223,7 +221,7 @@ var ClogUtils;
 				'visibility':visibility,
 				'commentable':$('#clog_commentable_checkbox').attr('checked'),
 				'title':title,
-				'content':editor.GetXHTML(true),
+				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
 				'siteId':clogSiteId
 				};
 				
@@ -247,7 +245,7 @@ var ClogUtils;
 
 				success = true;
 				clogTitleChanged = false;
-                editor.ResetIsDirty();
+                SakaiUtils.resetEditor(wysiwygEditor,'clog_content_editor');
 			},
 			error : function(xmlHttpRequest,status,error) {
 				alert("Failed to store post. Status: " + status + '. Error: ' + error);
@@ -257,12 +255,12 @@ var ClogUtils;
 		return success;
 	}
 	
-	ClogUtils.saveComment = function() {
-
+	ClogUtils.saveComment = function(wysiwygEditor) {
+		
 		var comment = {
 				'id':$('#clog_comment_id_field').val(),
 				'postId':clogCurrentPost.id,
-				'content':FCKeditorAPI.GetInstance('clog_content_editor').GetXHTML(true),
+				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
 				'siteId':clogSiteId
 				};
 

@@ -132,5 +132,78 @@ var SakaiUtils;
 		oFCKeditor.Config['CustomConfigurationsPath'] = "/library/editor/FCKeditor/config.js";
 		oFCKeditor.ReplaceTextarea();
 	}
-
+	
+	SakaiUtils.setupCKEditor = function(textarea_id,width,height,toolbarSet,siteId) {
+		// CKEDITOR.basePath already set
+		
+		if (CKEDITOR.instances[textarea_id]) {
+			CKEDITOR.remove(CKEDITOR.instances[textarea_id]);
+		}
+		
+		if ('Default' === toolbarSet) {
+			toolbarSet = 'Full';
+		}
+		
+		var collectionId = "/group/" + siteId + "/";
+		
+		// used to point to file manager/browser 
+		fckBasePath = "/library/editor/FCKeditor/";
+	
+		CKEDITOR.replace(textarea_id, {
+			width:width,
+			height:height,
+			toolbar:toolbarSet,
+			customConfigurationsPath:"/library/editor/ckeditor/config.js",
+			/* using FCK browser: see https://jira.sakaiproject.org/browse/SAK-17885 */
+			filebrowserBrowseUrl:fckBasePath + "editor/filemanager/browser/default/browser.html",
+			filebrowserImageBrowseUrl:fckBasePath + "editor/filemanager/browser/default/browser.html?Connector=/sakai-fck-connector/filemanager/connector&Type=Image&CurrentFolder=" + collectionId,
+			filebrowserLinkBrowseUrl:fckBasePath + "editor/filemanager/browser/default/browser.html?Connector=/sakai-fck-connector/filemanager/connector&Type=Link&CurrentFolder=" + collectionId,
+			filebrowserFlashBrowseUrl:fckBasePath + "editor/filemanager/browser/default/browser.html?Connector=/sakai-fck-connector/filemanager/connector&Type=Flash&CurrentFolder=" + collectionId,
+			filebrowserImageUploadUrl:fckBasePath + "/sakai-fck-connector/filemanager/connector?Type=Image&Command=QuickUpload&Type=Image&CurrentFolder=" + collectionId,
+			filebrowserFlashUploadUrl:fckBasePath + "/sakai-fck-connector/filemanager/connector?Type=Flash&Command=QuickUpload&Type=Flash&CurrentFolder=" + collectionId,
+			filebrowserLinkUploadUrl:fckBasePath + "/sakai-fck-connector/filemanager/connector?Type=File&Command=QuickUpload&Type=Link&CurrentFolder=" + collectionId
+		});
+		
+	}
+	
+	SakaiUtils.setupWysiwygEditor = function(editorId,textarea_id,width,height,toolbarSet,siteId) {
+		if ('FCKeditor' === editorId) {
+			SakaiUtils.setupFCKEditor(textarea_id,width,height,toolbarSet,siteId);
+		} else if ('ckeditor' === editorId) {
+			SakaiUtils.setupCKEditor(textarea_id,width,height,toolbarSet,siteId);
+		}
+	}
+	
+	SakaiUtils.getWysiwygEditor = function(editorId,textarea_id) {
+		if ('FCKeditor' === editorId) {
+			return FCKeditorAPI.GetInstance(textarea_id);
+		} else if ('ckeditor' === editorId) {
+			return CKEDITOR.instances[textarea_id];
+		}
+	}
+	
+	SakaiUtils.getEditorData = function(editorId,textarea_id) {
+		if ('FCKeditor' === editorId) {
+			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).GetXHTML(true);
+		} else if ('ckeditor' === editorId) {
+			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).getData();
+		}
+	}
+	
+	SakaiUtils.resetEditor = function(editorId,textarea_id) {
+		if ('FCKeditor' === editorId) {
+			SakaiUtils.getWysiwygEditor(editorId,textarea_id).ResetIsDirty();
+		} else if ('ckeditor' === editorId) {
+			SakaiUtils.getWysiwygEditor(editorId,textarea_id).resetDirty();
+		}
+	}
+		
+	SakaiUtils.isEditorDirty = function(editorId,textarea_id) {
+		if ('FCKeditor' === editorId) {
+			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).IsDirty();
+		} else if ('ckeditor' === editorId) {
+			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).checkDirty();
+		}
+	}
+		
 }) ();

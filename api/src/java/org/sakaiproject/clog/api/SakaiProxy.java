@@ -111,4 +111,6 @@ public interface SakaiProxy {
     public boolean setResourcePublic(String contentId, boolean isPublic);
 
     public boolean isCurrentUserMemberOfSite(String siteId) throws Exception;
+    
+    public String getWysiwygEditor();
 }

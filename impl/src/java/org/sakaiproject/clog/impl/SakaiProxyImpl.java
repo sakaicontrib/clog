@@ -904,6 +904,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 	return site.getMember(getCurrentUserId()) != null;
     }
     
+	public String getWysiwygEditor() {
+		return serverConfigurationService.getString("wysiwyg.editor");
+	}
+    
     public void setEmailTemplateService(EmailTemplateService emailTemplateService) {
     	this.emailTemplateService = emailTemplateService;
     }
