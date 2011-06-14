@@ -4,7 +4,7 @@
 <beans>
    <bean id="clog_overview" class="org.sakaiproject.component.app.help.model.ResourceBean">
       <property name="docId"><value>clog_overview</value></property>
-      <property name="name"><value>Clog Overview</value></property>
+      <property name="name"><value>Blog Overview</value></property>
       <property name="location"><value>/sakai_clog/overview.html</value></property>
       <property name="defaultForTool"><value>sakai.clog</value></property>
    </bean>
@@ -25,7 +25,7 @@
       <property name="categories">
          <list>
             <bean id="clogCategory" class="org.sakaiproject.component.app.help.model.CategoryBean">
-               <property name="name"><value>Clog</value></property>
+               <property name="name"><value>Blog</value></property>
                <property name="resources">
                   <list>
                      <ref bean="clog_overview"/>
