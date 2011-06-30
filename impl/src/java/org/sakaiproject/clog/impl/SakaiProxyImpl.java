@@ -191,6 +191,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 	    if (userId == null || siteId == null) {
 		return false;
 	    }
+	    
+	    if(isCurrentUserAdmin()) {
+	    	return true;
+	    }
 
 	    Site site = siteService.getSite(siteId);
 	    AuthzGroup realm = authzGroupService.getAuthzGroup(site.getReference());
@@ -215,19 +219,7 @@ public class SakaiProxyImpl implements SakaiProxy {
     }
 
     public boolean isCurrentUserAdmin() {
-	String userId = getCurrentUserId();
-	if (userId == null)
-	    return false;
-
-	try {
-	    Site adminWorkspace = siteService.getSite("!admin");
-	    Set<String> users = adminWorkspace.getUsers();
-	    if (users.contains(userId))
-		return true;
-	} catch (Exception e) {
-	}
-
-	return userId.equals(userDirectoryService.ADMIN_ID);
+    	return securityService.isSuperUser();
     }
 
     public String getSakaiProperty(String string) {
@@ -823,15 +815,21 @@ public class SakaiProxyImpl implements SakaiProxy {
 	boolean admin = securityService.isSuperUser(userId);
 
 	try {
-	    AuthzGroup authzGroup = authzGroupService.getAuthzGroup(site.getReference());
-	    Role siteRole = authzGroup.getUserRole(userId);
-	    AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
-	    Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
+		
+		AuthzGroup authzGroup = authzGroupService.getAuthzGroup(site.getReference());
+		
+		//admin can update permissions. check for anyone else
+		if(!securityService.isSuperUser()) {
+		
+			Role siteRole = authzGroup.getUserRole(userId);
+			AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
+			Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
 
-	    if (!securityService.isSuperUser() && !siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS) && !siteHelperRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS)) {
-		logger.warn(userId + " attempted to update CLOG permissions for site " + site.getTitle());
-		return false;
-	    }
+			if (!siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS) && !siteHelperRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS)) {
+				logger.warn(userId + " attempted to update CLOG permissions for site " + site.getTitle());
+				return false;
+			}
+		}
 
 	    boolean changed = false;
 
