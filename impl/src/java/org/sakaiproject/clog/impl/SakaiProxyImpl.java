@@ -898,8 +898,11 @@ public class SakaiProxyImpl implements SakaiProxy {
     }
 
     public boolean isCurrentUserMemberOfSite(String siteId) throws Exception{
-	Site site = siteService.getSite(siteId);
-	return site.getMember(getCurrentUserId()) != null;
+		if(securityService.isSuperUser()) {
+			return true;
+		}
+		Site site = siteService.getSite(siteId);
+		return site.getMember(getCurrentUserId()) != null;
     }
     
 	public String getWysiwygEditor() {
