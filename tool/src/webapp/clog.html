@@ -371,7 +371,9 @@ else
 
 <div id="clog_recycled_posts_template" style="display:none"><!--
 	<h2>${clog_recycle_bin_label}</h2>
-	<div id="noPostsLabel"><span>${noPosts}</span></div>
+        {if posts.length <= 0}
+        <div id="noPostsLabel"><span>${noPosts}</span></div>
+        {/if}
     <div id="postsWrapper">
     
     	<input type="button" id="clog_really_delete_button" value="${del}"/>
