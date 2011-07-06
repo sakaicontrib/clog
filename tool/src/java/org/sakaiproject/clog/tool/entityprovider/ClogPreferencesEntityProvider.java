@@ -3,11 +3,16 @@ package org.sakaiproject.clog.tool.entityprovider;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
+import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
+import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.EntityProvider;
+import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
+import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Createable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Describeable;
@@ -17,65 +22,86 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Resolvable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 
-public class ClogPreferencesEntityProvider extends AbstractEntityProvider implements EntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Resolvable, Createable, Describeable {
-    private ClogManager clogManager;
+public class ClogPreferencesEntityProvider extends AbstractEntityProvider implements EntityProvider, AutoRegisterEntityProvider, ActionsExecutable, Inputable, Outputable, Resolvable, Createable, Describeable {
+	private ClogManager clogManager;
 
-    public void setClogManager(ClogManager clogManager) {
-	this.clogManager = clogManager;
-    }
+	public void setClogManager(ClogManager clogManager) {
+		this.clogManager = clogManager;
+	}
 
-    private DeveloperHelperService developerService = null;
+	private DeveloperHelperService developerService = null;
 
-    public final static String ENTITY_PREFIX = "clog-preferences";
+	public final static String ENTITY_PREFIX = "clog-preferences";
 
-    protected final Logger LOG = Logger.getLogger(getClass());
+	protected final Logger LOG = Logger.getLogger(getClass());
 
-    public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
-	if (LOG.isDebugEnabled())
-	    LOG.debug("createEntity");
+	public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
+		if (LOG.isDebugEnabled())
+			LOG.debug("createEntity");
 
-	String userId = developerService.getCurrentUserId();
+		String userId = developerService.getCurrentUserId();
 
-	String siteId = (String) params.get("siteId");
-	String emailFrequency = (String) params.get("emailFrequency");
+		String siteId = (String) params.get("siteId");
+		String emailFrequency = (String) params.get("emailFrequency");
 
-	Preferences preferences = new Preferences();
-	preferences.setUserId(userId);
-	preferences.setSiteId(siteId);
-	preferences.setEmailFrequency(emailFrequency);
+		Preferences preferences = new Preferences();
+		preferences.setUserId(userId);
+		preferences.setSiteId(siteId);
+		preferences.setEmailFrequency(emailFrequency);
 
-	if (clogManager.savePreferences(preferences)) {
-	    return "SUCCESS";
-	} else
-	    return "FAIL";
-    }
+		if (clogManager.savePreferences(preferences)) {
+			return "SUCCESS";
+		} else
+			return "FAIL";
+	}
+	
+	@EntityCustomAction(action = "getGlobals", viewKey = EntityView.VIEW_SHOW)
+	public Object handleGetGlobals(EntityReference ref) {
+		String userId = developerService.getCurrentUserId();
+		
+		return clogManager.getGlobalPreferences(userId);
+	}
+	
+	@EntityCustomAction(action = "saveGlobals", viewKey = EntityView.VIEW_EDIT)
+	public String handleSaveGlobals(EntityReference ref,Map<String,Object> params) {
+		String userId = developerService.getCurrentUserId();
+		
+		String showBodyString = (String) params.get("showBody");
+		GlobalPreferences globalPrefs = new GlobalPreferences();
+		globalPrefs.setShowBody(Boolean.valueOf(showBodyString));
+		globalPrefs.setUserId(userId);
+		if (clogManager.saveGlobalPreferences(globalPrefs)) {
+			return "SUCCESS";
+		} else
+			return "FAIL";
+	}
 
-    public Object getSampleEntity() {
-	return new Preferences();
-    }
+	public Object getSampleEntity() {
+		return new Preferences();
+	}
 
-    public String getEntityPrefix() {
-	return ENTITY_PREFIX;
-    }
+	public String getEntityPrefix() {
+		return ENTITY_PREFIX;
+	}
 
-    public String[] getHandledOutputFormats() {
-	return new String[] { Formats.JSON };
-    }
+	public String[] getHandledOutputFormats() {
+		return new String[] { Formats.JSON };
+	}
 
-    public String[] getHandledInputFormats() {
-	return new String[] { Formats.HTML, Formats.JSON, Formats.FORM };
-    }
+	public String[] getHandledInputFormats() {
+		return new String[] { Formats.HTML, Formats.JSON, Formats.FORM };
+	}
 
-    public void setDeveloperService(DeveloperHelperService developerService) {
-	this.developerService = developerService;
-    }
+	public void setDeveloperService(DeveloperHelperService developerService) {
+		this.developerService = developerService;
+	}
 
-    public DeveloperHelperService getDeveloperService() {
-	return developerService;
-    }
+	public DeveloperHelperService getDeveloperService() {
+		return developerService;
+	}
 
-    public Object getEntity(EntityReference ref) {
-	String siteId = ref.getId();
-	return clogManager.getPreferences(siteId, null);
-    }
+	public Object getEntity(EntityReference ref) {
+		String siteId = ref.getId();
+		return clogManager.getPreferences(siteId, null);
+	}
 }

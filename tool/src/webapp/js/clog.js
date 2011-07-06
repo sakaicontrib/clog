@@ -3,6 +3,7 @@ var clogSiteId = null;
 var clogPlacementId = null;
 var clogCurrentUserPermissions = null;
 var clogCurrentUserPreferences = null;
+var clogCurrentUserGlobalPreferences = null;
 var clogCurrentPost = null;
 var clogCurrentPosts = null;
 var clogCurrentState = null;
@@ -106,7 +107,9 @@ var autosave_id = null;
 
 	if(!clogOnGateway) {
 		clogCurrentUserPreferences = ClogUtils.getPreferences();
-	
+		
+		clogCurrentUserGlobalPreferences = ClogUtils.getGlobalPreferences();
+		
 		clogCurrentUserPermissions = new ClogPermissions(ClogUtils.getCurrentUserPermissions());
 	
 		if(clogCurrentUserPermissions == null) return;
@@ -168,6 +171,9 @@ function switchState(state,arg) {
 	 			    setMainFrameHeight(window.frameElement.id);
 		        }
             });
+            if (!clogCurrentUserGlobalPreferences.showBody) {
+                $('.clog_body').hide();
+            }
         });
 	}
 	else if('viewMembers' === state) {
@@ -245,6 +251,9 @@ function switchState(state,arg) {
 	 			        if(window.frameElement) {
 	 					    setMainFrameHeight(window.frameElement.id);
 	 				    }
+                        if (!clogCurrentUserGlobalPreferences.showBody) {
+                            $('.clog_body').hide();
+                        }
 				    });
                 });
 			},
@@ -484,7 +493,13 @@ function toggleFullContent(v)
 	
 	if(v.checked) {
 		$('.clog_body').hide();
+        // CLOG-59
+        clogCurrentUserGlobalPreferences.showBody = 'false';
+        ClogUtils.saveGlobalPreferences();
     } else {
 		$('.clog_body').show();
+        // CLOG-59
+        clogCurrentUserGlobalPreferences.showBody = 'true';
+        ClogUtils.saveGlobalPreferences();
     }
 }

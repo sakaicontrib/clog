@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.QueryBean;
@@ -17,6 +18,7 @@ public interface ISQLGenerator {
     public static final String TABLE_COMMENT = DEFAULT_PREFIX + "COMMENT";
     public static final String TABLE_AUTHOR = DEFAULT_PREFIX + "AUTHOR";
     public static final String TABLE_PREFERENCES = DEFAULT_PREFIX + "PREFERENCES";
+    public static final String TABLE_GLOBAL_PREFERENCES = DEFAULT_PREFIX + "GLOBAL_PREFERENCES";
 
     public static final String POST_ID = "POST_ID";
 
@@ -38,6 +40,7 @@ public interface ISQLGenerator {
     public static final String CREATOR_ID = "CREATOR_ID";
 
     public static final String EMAIL_FREQUENCY = "EMAIL_FREQUENCY";
+    public static final String SHOW_BODY = "SHOW_BODY";
 
     // From BLOGGER_POST
     public static final String SITE_ID = "SITE_ID";
@@ -82,7 +85,11 @@ public interface ISQLGenerator {
 
     public abstract String getSelectPreferencesStatement(String userId, String placementId);
 
+	public abstract String getSelectGlobalPreferencesStatement(String userId);
+
     public abstract PreparedStatement getSavePreferencesStatement(Preferences preferences, Connection connection) throws Exception;
+
+	public abstract PreparedStatement getSaveGlobalPreferencesStatement(GlobalPreferences preferences, Connection connection) throws Exception;
 
     public abstract String getSelectAuthorStatement(String userId, String siteId);
 

@@ -3,6 +3,7 @@ package org.sakaiproject.clog.api;
 import java.util.*;
 
 import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.entity.api.Entity;
@@ -39,8 +40,12 @@ public interface ClogManager extends EntityProducer {
     public List<ClogMember> getAuthors(String siteId);
 
     public boolean savePreferences(Preferences preferences);
+    
+	public boolean saveGlobalPreferences(GlobalPreferences preferences);
 
     public Preferences getPreferences(String siteId, String userId);
+    
+	public GlobalPreferences getGlobalPreferences(String userId);
 
     public void sendNewPostAlert(Post post);
 
@@ -51,4 +56,6 @@ public interface ClogManager extends EntityProducer {
     public void importBlog2Data();
 
     public boolean deleteAutosavedCopy(String postId);
+
+
 }

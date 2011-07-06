@@ -139,8 +139,8 @@ var ClogUtils;
 	}
 
 	ClogUtils.savePreferences = function() {
-		var emailFrequency = $('.clog_email_option:checked').val();
-		var myData = {'siteId':clogSiteId,'emailFrequency':emailFrequency};
+
+		var myData = {'siteId':clogSiteId,'emailFrequency':$('.clog_email_option:checked').val()};
 
 		jQuery.ajax( {
 	 		url : "/direct/clog-preferences/new",
@@ -151,10 +151,47 @@ var ClogUtils;
 			dataType: 'text',
 		   	success : function(result) {
 		   		clogCurrentUserPreferences = myData;
-				switchState('viewAllPosts');
+			 	switchState('viewAllPosts');
 			},
 			error : function(xmlHttpRequest,status,error) {
 				alert("Failed to save preferences. Status: " + status + '. Error: ' + error);
+			}
+	  	});
+
+		return false;
+	}
+	
+	ClogUtils.getGlobalPreferences = function() {
+		var prefs = null;
+		jQuery.ajax( {
+	 		url : "/direct/clog-preferences/xyz/getGlobals.json",
+	   		dataType : "json",
+	   		async : false,
+	   		cache : false,
+		   	success : function(p) {
+				prefs = p;
+			},
+			error : function(xmlHttpRequest,stat,error) {
+				alert("Failed to get the current user global preferences. Status: " + stat + ". Error: " + error);
+			}
+	  	});
+
+		return prefs;
+	}
+	
+	ClogUtils.saveGlobalPreferences = function() {
+
+		jQuery.ajax( {
+	 		url : "/direct/clog-preferences/xyz/saveGlobals",
+			type : 'POST',
+			data : clogCurrentUserGlobalPreferences,
+			timeout: 30000,
+			async : false,
+			dataType: 'text',
+		   	success : function(result) {
+			},
+			error : function(xmlHttpRequest,status,error) {
+				alert("Failed to save global preferences. Status: " + status + '. Error: ' + error);
 			}
 	  	});
 

@@ -317,7 +317,9 @@ else
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
 	{else}
 	<div style="clear: left; margin-top: 10px;" id="viewOptions">
-   		<input type="checkbox" onclick="toggleFullContent(this);"/>
+   		<input type="checkbox"
+                 {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
+                 onclick="toggleFullContent(this);"/>
 		<span>${clog_show_title_only_label}</span>
    	</div>
 	{/if}
@@ -346,7 +348,9 @@ else
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
 	{else}
 	<div style="clear: left; margin-top: 10px;" id="viewOptions">
-   		<input type="checkbox" onclick="toggleFullContent(this);"/>
+   		<input type="checkbox"
+                 {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
+                 onclick="toggleFullContent(this);"/>
 		<span>${clog_show_title_only_label}</span>
    	</div>
 	{/if}

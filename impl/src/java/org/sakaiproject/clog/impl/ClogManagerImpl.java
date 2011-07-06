@@ -20,6 +20,7 @@ import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.XmlDefs;
 import org.sakaiproject.clog.api.datamodel.Comment;
+import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
@@ -419,12 +420,24 @@ public class ClogManagerImpl implements ClogManager {
 	return persistenceManager.savePreferences(preferences);
     }
 
+	public boolean saveGlobalPreferences(GlobalPreferences preferences) {
+		return persistenceManager.saveGlobalPreferences(preferences);
+	}
+
     public Preferences getPreferences(String siteId, String userId) {
 	if (userId == null)
 	    userId = sakaiProxy.getCurrentUserId();
 
 	return persistenceManager.getPreferences(siteId, userId);
     }
+    
+
+	public GlobalPreferences getGlobalPreferences(String userId) {
+		if (userId == null)
+			userId = sakaiProxy.getCurrentUserId();
+
+		return persistenceManager.getGlobalPreferences(userId);
+	}
 
 	public void sendNewPostAlert(Post post) {
 		Set<String> eachList = new TreeSet<String>();
