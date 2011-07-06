@@ -82,8 +82,6 @@ public interface SakaiProxy {
 
     public void addDigestMessage(Set<String> users, String emailTemplateKey, Map<String, String> replacementValues);
 
-    public void registerSecurityAdvisor(SecurityAdvisor securityAdvisor);
-
     public void postEvent(String event, String entityId, String siteId);
 
     public Set<String> getSiteUsers(String siteId);

@@ -39,6 +39,7 @@ import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.authz.api.SecurityAdvisor.SecurityAdvice;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.SakaiProxy;
@@ -56,6 +57,7 @@ import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.event.api.EventTrackingService;
 import org.sakaiproject.event.cover.NotificationService;
 import org.sakaiproject.exception.IdUnusedException;
+import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchList;
 import org.sakaiproject.search.api.SearchResult;
@@ -111,9 +113,9 @@ public class SakaiProxyImpl implements SakaiProxy {
     private SearchService searchService;
     
     private EmailTemplateService emailTemplateService;
-
+    
     public void init() {
-    	emailTemplateService.processEmailTemplates(emailTemplates);   	
+    	emailTemplateService.processEmailTemplates(emailTemplates);  
     }
 
     public void destroy() {
@@ -596,9 +598,14 @@ public class SakaiProxyImpl implements SakaiProxy {
 		new EmailSender(from, to);
 	}
 	
-    public void registerSecurityAdvisor(SecurityAdvisor securityAdvisor) {
-	securityService.pushAdvisor(securityAdvisor);
+    private void enableSecurityAdvisor(SecurityAdvisor securityAdvisor) {
+    	securityService.pushAdvisor(securityAdvisor);
     }
+    
+    
+	private void disableSecurityAdvisor(SecurityAdvisor securityAdvisor){
+		securityService.popAdvisor(securityAdvisor);
+	}
 
     public void setSecurityService(SecurityService securityService) {
 	this.securityService = securityService;
@@ -665,35 +672,48 @@ public class SakaiProxyImpl implements SakaiProxy {
      * Used by the blog 1 and 2 data importers
      */
     public String storeResource(byte[] blob, String displayName, String siteId, String creatorId) {
-	ContentResourceEdit resource = null;
-	ResourceProperties props = null;
-
-	String id = UUID.randomUUID().toString();
-
-	String resourceId = "/group/" + siteId + "/clog-files/" + id;
-
-	try {
-	    resource = contentHostingService.addResource(resourceId);
-	    props = new BaseResourceProperties();
-	} catch (Exception iue) {
-	}
-
-	try {
-	    if (blob.length > 0) {
-		resource.setContent(blob);
-		props.addProperty(ResourceProperties.PROP_CREATOR, creatorId);
-		props.addProperty(ResourceProperties.PROP_DISPLAY_NAME, displayName);
-	    }
-
-	    resource.getPropertiesEdit().addAll(props);
-
-	    contentHostingService.commitResource(resource, NotificationService.NOTI_NONE);
-
-	    return resourceId;
-	} catch (Exception e) {
-	    logger.error("Caught an exception whilst storing resource. Returning null ...", e);
-	    return null;
-	}
+		ContentResourceEdit resource = null;
+		ResourceProperties props = null;
+	
+		String id = UUID.randomUUID().toString();
+	
+		String resourceId = "/group/" + siteId + "/clog-files/" + id;
+	
+		//CLOG-61 get a security advisor so we can add resources
+		SecurityAdvisor securityAdvisor = new SecurityAdvisor(){
+			public SecurityAdvice isAllowed(String userId, String function, String reference){
+				  return SecurityAdvice.ALLOWED;
+			}
+		};
+    	
+		
+		
+		enableSecurityAdvisor(securityAdvisor);
+		
+		try {
+		    resource = contentHostingService.addResource(resourceId);
+		    props = new BaseResourceProperties();
+		
+		    if (blob.length > 0) {
+		    	resource.setContent(blob);
+		    	props.addProperty(ResourceProperties.PROP_CREATOR, creatorId);
+		    	props.addProperty(ResourceProperties.PROP_DISPLAY_NAME, displayName);
+		    }
+	
+		    resource.getPropertiesEdit().addAll(props);
+	
+		    contentHostingService.commitResource(resource, NotificationService.NOTI_NONE);
+	
+		    return resourceId;
+		    
+		} catch (PermissionException pe) {
+			logger.error("Caught permission exception whilst storing resource. Returning null ...", pe);
+		} catch (Exception e) {
+		    logger.error("Caught an exception whilst storing resource. Returning null ...", e);
+		} finally {
+			disableSecurityAdvisor(securityAdvisor);
+		}
+		return null;
     }
 
     public List<SearchResult> searchInCurrentSite(String searchTerms) throws InvalidSearchQueryException{
