@@ -17,9 +17,21 @@ var wysiwygEditor = 'fckEditor'; //default
 
 var autosave_id = null;
 
-(function()
-{
+(function () {
+
 	var arg = SakaiUtils.getParameters();
+
+    $(document).ready(function(){
+        // load Sakai skin
+        $.ajax({
+            url: '/library/skin/'+arg['skin']+'/tool.css',
+            async: false,
+            dataType: 'text/css',
+            success: function(data, textStatus) {
+                $('head').append('<style type="text/css" rel="stylesheet">'+data+'</style>');
+            }
+        });
+    });
 
 	// We need the toolbar in a template so we can swap in the translations
 	SakaiUtils.renderTrimpathTemplate('clog_toolbar_template',{},'clog_toolbar');

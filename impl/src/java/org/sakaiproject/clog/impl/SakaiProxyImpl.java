@@ -938,4 +938,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public void setEmailTemplates(ArrayList<String> emailTemplates) {
 		this.emailTemplates = emailTemplates;
 	}
+	
+	public String getSakaiSkin() {
+		String skin = serverConfigurationService.getString("skin.default");
+		String siteSkin = siteService.getSiteSkin(getCurrentSiteId());
+		return siteSkin != null ? siteSkin : (skin != null ? skin : "default");
+	}
 }

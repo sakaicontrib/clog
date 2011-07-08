@@ -95,14 +95,14 @@ public class ClogTool extends HttpServlet {
 				// means that we can't pass url parameters to the page.We can
 				// use a cookie and the JS will pull the initial state from that
 				// instead.
-				Cookie params = new Cookie("sakai-tool-params", "state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&langage=" + languageCode + "&publicAllowed=" + publicAllowed);
+				Cookie params = new Cookie("sakai-tool-params", "state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&langage=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() +"&publicAllowed=" + publicAllowed);
 				response.addCookie(params);
 
 				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/clog.html");
 				dispatcher.include(request, response);
 				return;
 			} else {
-				String url = "/clog-tool/clog.html?state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&language=" + languageCode + "&publicAllowed=" + publicAllowed + "&editor=" + sakaiProxy.getWysiwygEditor();
+				String url = "/clog-tool/clog.html?state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&language=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() +"&publicAllowed=" + publicAllowed + "&editor=" + sakaiProxy.getWysiwygEditor();
 				response.sendRedirect(url);
 				return;
 			}
