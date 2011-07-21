@@ -141,7 +141,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
 	statement.append(ALLOW_COMMENTS + " " + INT + ", ");
 	statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
-	statement.append("CONSTRAINT post_pk PRIMARY KEY (" + POST_ID + ")");
+	statement.append("CONSTRAINT clog_post_pk PRIMARY KEY (" + POST_ID + ")");
 	statement.append(")");
 	return statement.toString();
     }
@@ -160,7 +160,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
 	statement.append(ALLOW_COMMENTS + " " + INT + ", ");
 	statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
-	statement.append("CONSTRAINT autosaved_post_pk PRIMARY KEY (" + POST_ID + ")");
+	statement.append("CONSTRAINT clog_autosaved_post_pk PRIMARY KEY (" + POST_ID + ")");
 	statement.append(")");
 	return statement.toString();
     }
@@ -175,7 +175,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL,");
 	statement.append(MODIFIED_DATE + " " + TIMESTAMP + " NOT NULL,");
 	statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
-	statement.append("CONSTRAINT comment_pk PRIMARY KEY (" + COMMENT_ID + ")");
+	statement.append("CONSTRAINT clog_comment_pk PRIMARY KEY (" + COMMENT_ID + ")");
 	statement.append(")");
 	return statement.toString();
     }
@@ -189,7 +189,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
 	statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
 	statement.append(TOTAL_COMMENTS + " " + INT + " NOT NULL,");
-	statement.append("CONSTRAINT blog_author_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
+	statement.append("CONSTRAINT clog_author_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
 	statement.append(")");
 	return statement.toString();
     }
@@ -201,7 +201,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append(USER_ID + " " + VARCHAR + "(36), ");
 	statement.append(SITE_ID + " " + VARCHAR + "(255), ");
 	statement.append(EMAIL_FREQUENCY + " " + VARCHAR + "(32) NOT NULL,");
-	statement.append("CONSTRAINT blog_preferences_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
+	statement.append("CONSTRAINT clog_preferences_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
 	statement.append(")");
 	return statement.toString();
     }
@@ -212,7 +212,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append("(");
 	statement.append(USER_ID + " " + VARCHAR + "(36), ");
 	statement.append(SHOW_BODY + " " + TINYINT + "(1) DEFAULT '1',");
-	statement.append("CONSTRAINT blog_global_preferences_pk PRIMARY KEY (" + USER_ID + ")");
+	statement.append("CONSTRAINT clog_global_preferences_pk PRIMARY KEY (" + USER_ID + ")");
 	statement.append(")");
 	return statement.toString();
     }
