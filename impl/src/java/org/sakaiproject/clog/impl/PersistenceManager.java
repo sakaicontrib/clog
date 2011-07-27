@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -929,7 +930,11 @@ public class PersistenceManager {
 			if (rs.next()) {
 				int totalPosts = rs.getInt(ISQLGenerator.TOTAL_POSTS);
 				int totalComments = rs.getInt(ISQLGenerator.TOTAL_COMMENTS);
-				long lastPostDate = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE).getTime();
+				long lastPostDate = -1L;
+				Timestamp ts = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE);
+				if(ts != null) {
+					lastPostDate = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE).getTime();
+				}
 				author.setNumberOfPosts(totalPosts);
 				author.setNumberOfComments(totalComments);
 				author.setDateOfLastPost(lastPostDate);
@@ -937,6 +942,7 @@ public class PersistenceManager {
 
 			return true;
 		} catch (Exception e) {
+			logger.error("Failed to populate author data.",e);
 			return false;
 		} finally {
 			if (rs != null) {

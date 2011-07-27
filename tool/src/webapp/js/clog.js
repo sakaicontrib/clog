@@ -13,64 +13,98 @@ var clogOnMyWorkspace = false;
 var clogOnGateway = false;
 var clogPublicAllowed = false;
 var clogTitleChanged = false;
+var clogTextAreaChanged = false;
 var wysiwygEditor = 'fckEditor'; //default
 
 var autosave_id = null;
+
+var clogBaseDataUrl = "";
+
+var clogInPDA = false;
 
 (function () {
 
 	var arg = SakaiUtils.getParameters();
 
-    $(document).ready(function(){
-        // load Sakai skin
-        $.ajax({
-            url: '/library/skin/'+arg['skin']+'/tool.css',
-            async: false,
-            dataType: 'text/css',
-            success: function(data, textStatus) {
-                $('head').append('<style type="text/css" rel="stylesheet">'+data+'</style>');
-            }
-        });
+	if (arg.editor) {
+		wysiwygEditor = arg.editor;
+	}
+	
+	if(!arg || !arg.placementId || !arg.siteId) {
+		alert('The placement id and site id MUST be supplied as page parameters');
+		return;
+	}
+	
+	clogSiteId = arg.siteId;
+	clogPlacementId = arg.placementId;
+
+	if('true' === arg.publicAllowed) clogPublicAllowed = true;
+
+	var href = document.location.href;
+
+    if(href.indexOf("portal/pda") != -1) {
+        clogBaseDataUrl = "/portal/pda/" + clogSiteId + "/tool/" + clogPlacementId + "/";
+        clogInPDA = true;
+        wysiwygEditor = 'none';
+    } else {
+        clogBaseDataUrl = "/portal/tool/" + clogPlacementId + "/";
+        clogInPDA = false;
+    }
+
+    $(document).ready(function () {
+        if(arg['language']) {
+            $.localise('clog-translations',{language:arg['language'],loadBase: true});
+        }
+        else {
+            $.localise('clog-translations');
+        }
     });
 
 	// We need the toolbar in a template so we can swap in the translations
-	SakaiUtils.renderTrimpathTemplate('clog_toolbar_template',{},'clog_toolbar');
+    if(clogInPDA && screen.width < 800) {
+	    SakaiUtils.renderTrimpathTemplate('clog_pda_toolbar_template',{},'clog_toolbar');
+        $('#clog_toolbar_dropdown').change(function () {
+            if(clog_menu_label != this.value) { 
+                switchState(this.value);
+            }
+        });
+    } else {
+	    SakaiUtils.renderTrimpathTemplate('clog_toolbar_template',{},'clog_toolbar');
+
+	    $('#clog_home_link').click(function(e) {
+		    return switchState('home');
+	    });
+
+	    $('#clog_view_authors_link').click(function(e) {
+		    return switchState('viewMembers');
+	    });
+
+	    $('#clog_my_clog_link').click(function(e) {
+		    return switchState('userPosts');
+    	});
+
+	    if(clogPublicAllowed) {
+		    $('#clog_my_public_posts_link').click(function(e) {
+			    return switchState('myPublicPosts');
+		    });
+	    }
+
+	    $('#clog_create_post_link').click(function(e) {
+		    return switchState('createPost');
+	    });
+
+	    $('#clog_permissions_link').click(function(e) {
+		    return switchState('permissions');
+	    });
 	
-	if('true' === arg.publicAllowed) clogPublicAllowed = true;
+	    $('#clog_preferences_link').click(function(e) {
+		    return switchState('preferences');
+	    });
 
-	$('#clog_home_link').click(function(e) {
-		return switchState('home');
-	});
-
-	$('#clog_view_authors_link').click(function(e) {
-		return switchState('viewMembers');
-	});
-
-	$('#clog_my_clog_link').click(function(e) {
-		return switchState('userPosts');
-	});
-
-	if(clogPublicAllowed) {
-		$('#clog_my_public_posts_link').click(function(e) {
-			return switchState('myPublicPosts');
-		});
-	}
-
-	$('#clog_create_post_link').click(function(e) {
-		return switchState('createPost');
-	});
-
-	$('#clog_permissions_link').click(function(e) {
-		return switchState('permissions');
-	});
-	
-	$('#clog_preferences_link').click(function(e) {
-		return switchState('preferences');
-	});
-
-	$('#clog_recycle_bin_link').click(function(e) {
-		return switchState('viewRecycled');
-	});
+	    $('#clog_recycle_bin_link').click(function(e) {
+		    return switchState('viewRecycled');
+	    });
+    }
 
 	$('#clog_search_field').change(function(e) {
 		ClogUtils.showSearchResults();
@@ -80,18 +114,6 @@ var autosave_id = null;
 		ClogUtils.showSearchResults();
 	});
 	
-	if (arg.editor) {
-		wysiwygEditor = arg.editor;
-	}
-	
-	
-	if(!arg || !arg.placementId || !arg.siteId) {
-		alert('The placement id and site id MUST be supplied as page parameters');
-		return;
-	}
-	
-	clogSiteId = arg.siteId;
-	clogPlacementId = arg.placementId;
 
 	clogHomeState = 'viewAllPosts';
 
@@ -148,6 +170,7 @@ var autosave_id = null;
 	
 	// Now switch into the requested state
 	switchState(arg.state,arg);
+
 })();
 
 function switchState(state,arg) {
@@ -169,6 +192,8 @@ function switchState(state,arg) {
 		switchState(clogHomeState,arg);
 	}
 	else if('viewAllPosts' === state) {
+
+        $('#clog_toolbar_dropdown').val(clog_home_label);
 
 		ClogUtils.setCurrentPosts();
 	 			
@@ -250,6 +275,8 @@ function switchState(state,arg) {
 				var profileMarkup = SakaiUtils.getProfileMarkup(userId);
 
 				clogCurrentPosts = data['clog-post_collection'];
+
+                ClogUtils.addFormattedDatesToCurrentPosts();
 	 			
 				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':clogCurrentPosts},'clog_content');
 
@@ -349,6 +376,12 @@ function switchState(state,arg) {
 	 		$('#clog_title_field').bind('keypress',function (e) {
 				clogTitleChanged = true;	 		
 	 		});
+
+            if(clogInPDA) {
+	 		    $('#clog_content_editor').bind('keypress',function (e) {
+				    clogTextAreaChanged = true;	 		
+	 		    });
+            }
 	 		
  			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
 	 		

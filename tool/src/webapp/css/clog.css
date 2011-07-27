@@ -11,10 +11,6 @@
 	margin: 5px;
 }
 
-#clogMainContainer{
-	margin: 5px;
-}
-
 #postsWrapper{
 	clear: both;
 	margin-top: 10px;
@@ -131,6 +127,14 @@ th.clogSortableTableHeaderSortDown {
 .clog_comment_date {
 	font-style: italic;
 	font-size: smaller;
+}
+
+#clog_toolbar{
+    padding: 0px;
+}
+
+#clog_toolbar_items_wrapper {
+    overflow: hidden;
 }
 
 #clog_toolbar_items{

@@ -89,7 +89,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 	    try {
 		authors = clogManager.getAuthors(context);
 	    } catch (Exception e) {
-		LOG.error("Caught exception whilst getting posts.", e);
+		LOG.error("Caught exception whilst getting authors.", e);
 	    }
 	}
 

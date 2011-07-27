@@ -33,11 +33,11 @@ var ClogUtils;
 	ClogUtils.getCurrentUserPermissions = function() {
 		var permissions = null;
 		jQuery.ajax( {
-	 		url : "/portal/tool/" + clogPlacementId + "/userPerms",
+	 		url : clogBaseDataUrl + "userPerms.json",
 	   		dataType : "json",
 	   		async : false,
 	   		cache : false,
-		   	success : function(perms,status) {
+		   	success : function(perms) {
 				permissions = perms;
 			},
 			error : function(xmlHttpRequest,stat,error) {
@@ -52,7 +52,8 @@ var ClogUtils;
         var perms = [];
 
         jQuery.ajax( {
-            url : "/portal/tool/" + clogPlacementId + "/perms",
+	 		url : clogBaseDataUrl + "perms.json",
+            //url : "/portal/tool/" + clogPlacementId + "/perms",
             dataType : "json",
             async : false,
             cache: false,
@@ -198,6 +199,28 @@ var ClogUtils;
 		return false;
 	}
 
+    ClogUtils.addFormattedDatesToCurrentPosts = function () {
+        for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
+            var d = new Date(clogCurrentPosts[i].createdDate);
+            var formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+            clogCurrentPosts[i].formattedCreatedDate = formattedCreatedDate;
+
+            d = new Date(clogCurrentPosts[i].modifiedDate);
+            var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+            clogCurrentPosts[i].formattedModifiedDate = formattedModifiedDate;
+
+            for(var k=0,m=clogCurrentPosts[i].comments.length;k<m;k++) {
+                d = new Date(clogCurrentPosts[i].comments[k].createdDate);
+                formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+                clogCurrentPosts[i].comments[k].formattedCreatedDate = formattedCreatedDate;
+
+                d = new Date(clogCurrentPosts[i].comments[k].modifiedDate);
+                var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+                clogCurrentPosts[i].comments[k].formattedModifiedDate = formattedModifiedDate;
+            }
+        }
+    }
+
 	ClogUtils.setCurrentPosts = function() {
 
 		jQuery.ajax( {
@@ -207,6 +230,7 @@ var ClogUtils;
 			cache: false,
 		   	success : function(data) {
 				clogCurrentPosts = data['clog-post_collection'];
+                ClogUtils.addFormattedDatesToCurrentPosts();
 			},
 			error : function(xmlHttpRequest,status,errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);

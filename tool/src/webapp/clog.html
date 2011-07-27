@@ -5,39 +5,42 @@
       xml:lang="en"  
       lang="en">
 <head>
-<script type="text/javascript" src="/clog-tool/lib/jquery.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/jquery-ui.js"></script>
-<script type="text/javascript" src="/library/editor/ckeditor/ckeditor.js"></script>
-<script type="text/javascript" src="/library/editor/FCKeditor/fckeditor.js"></script>
-<script type="text/javascript" src="/library/js/headscripts.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/trimpath-template-latest.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/jquery.localisation.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/jquery.dimensions.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/jquery.cluetip.min.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="/clog-tool/js/clog_utils.js"></script>
-<script type="text/javascript" src="/clog-tool/clog-translations.js"></script>
-<script type="text/javascript" src="/clog-tool/js/clog_permissions.js"></script>
-<script type="text/javascript" src="/profile2-tool/javascript/profile2-eb.js"></script>
-<link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" />
-<link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" />
-<link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
-<link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css" />
-
-<script type="text/javascript">
-var arg = SakaiUtils.getParameters();
-if(arg['language'])
-{
-	$.localise('clog-translations',{language:arg['language'],loadBase: true});
-}
-else
-	$.localise('clog-translations');
-</script>
+    <link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" />
+    <link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" />
+    <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
+    <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css" />
+    <script type="text/javascript" src="/clog-tool/lib/jquery.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/jquery-ui.js"></script>
+    <script type="text/javascript" src="/library/editor/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="/library/editor/FCKeditor/fckeditor.js"></script>
+    <script type="text/javascript" src="/library/js/headscripts.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/trimpath-template-latest.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/jquery.localisation.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/jquery.dimensions.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/jquery.cluetip.min.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript" src="/clog-tool/js/clog_utils.js"></script>
+    <script type="text/javascript" src="/clog-tool/clog-translations.js"></script>
+    <script type="text/javascript" src="/clog-tool/js/clog_permissions.js"></script>
+    <script type="text/javascript" src="/profile2-tool/javascript/profile2-eb.js"></script>
 </head>
 <body>
+
+<script>
+    var arg = SakaiUtils.getParameters();
+    $.ajax({
+        url: '/library/skin/'+arg['skin']+'/tool.css',
+        dataType: 'text/css',
+        success: function(data, textStatus) {
+            $('head').append('<style type="text/css" rel="stylesheet">'+data+'</style>');
+        }
+    });
+</script>
+
+<div class="portletBody">
 
 <div id="clog_toolbar"></div>
 
@@ -47,8 +50,8 @@ else
 
 <!--  Templates Start -->
 
-<div id="clog_toolbar_template"><!--
-<div style="overflow: hidden;" class="navIntraTool">
+<div id="clog_toolbar_template" style="display: none;"><!--
+<div id="clog_toolbar_items_wrapper" class="navIntraTool">
 	<div id="clog_toolbar_items">
 		<a id="clog_home_link" title="${clog_home_tooltip}" href="javascript:;" class="icon home">${clog_home_label}</a>
 		<a id="clog_view_authors_link" title="${clog_view_members_tooltip}" href="javascript:;" class="icon authors">${clog_view_members_label}</a>
@@ -58,6 +61,27 @@ else
 		<a id="clog_preferences_link" title="${clog_preferences_tooltip}" href="javascript:;" class="icon preferences">${clog_preferences_label}</a>
 		<a id="clog_recycle_bin_link" title="${clog_recycle_bin_tooltip}" href="javascript:;" class="icon recycle">${clog_recycle_bin_label}</a>
 		<a style="display: none;" id="clog_my_public_posts_link" title="${clog_my_public_posts_tooltip}" href="javascript:;" class="icon public">${clog_my_public_posts_label}</a>
+	</div>
+	<div id="clog_search_bar">
+		<input id="clog_search_field" type="text"/><input type="button" value="${search}"/>
+	</div>
+</div>
+-->
+</div>
+
+<div id="clog_pda_toolbar_template" style="display: none;"><!--
+<div id="clog_toolbar_items_wrapper" class="navIntraTool actionToolBar">
+	<div id="clog_toolbar_items">
+        <select id="clog_toolbar_dropdown">
+         <option value="${clog_menu_label}">${clog_menu_label}</option>
+         <option value="home">${clog_home_label}</option>
+         <option value="viewMembers">${clog_view_members_label}</option>
+         <option value="userPosts">${clog_my_clog_label}</option>
+         <option value="createPost">${clog_create_post_label}</option>
+         <option value="permissions">${clog_permissions_label}</option>
+         <option value="preferences">${clog_preferences_label}</option>
+         <option value="viewRecycled">${clog_recycle_bin_label}</option>
+         </select>
 	</div>
 	<div id="clog_search_bar">
 		<input id="clog_search_field" type="text"/><input type="button" value="${search}"/>
@@ -264,7 +288,7 @@ else
 			<div class="author">
 				<div class="clog_author_image_div"><img src="/direct/profile/${creatorId}/image" width="50"/></div>
 				<div style="float: right;">
-				<a class="profile" rel="/direct/profile/${creatorId}/formatted">${creatorDisplayName}</a><br /><span style="font-size: smaller;font-style: italic;">${clog_created_label}</span><span style="font-size: smaller;font-style: italic;">${new Date(createdDate).toLocaleString()}</span>{if modifiedDate > createdDate}<br/><span style="font-size: smaller;font-style: italic;">${clog_modified_label}</span><span style="font-size: smaller;font-style: italic;">${new Date(modifiedDate).toLocaleString()}</span>{/if}
+				<a class="profile" rel="/direct/profile/${creatorId}/formatted">${creatorDisplayName}</a><br /><span style="font-size: smaller;font-style: italic;">${clog_created_label}</span><span style="font-size: smaller;font-style: italic;">${formattedCreatedDate}</span>{if modifiedDate > createdDate}<br/><span style="font-size: smaller;font-style: italic;">${clog_modified_label}</span><span style="font-size: smaller;font-style: italic;">${formattedModifiedDate}</span>{/if}
 				</div>
 			</div>
 			<br/>
@@ -289,7 +313,7 @@ else
 					<div class="clog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
 							<div class="clog_author_image_div"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
-							<div style="float:left;"><a class="profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">${clog_created_label} ${new Date(comment.createdDate).toLocaleString()}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${new Date(comment.modifiedDate).toLocaleString()}</span>{/if}</div>
+							<div style="float:left;"><a class="profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">${clog_created_label} ${comment.formattedCreatedDate}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${comment.formattedModifiedDate}</span>{/if}</div>
 						</div>
 						<div class="clog_comment_content">${comment.content}</div>
 						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == clogCurrentUser.id)}
@@ -454,8 +478,12 @@ else
 
 <!--  Templates End -->
 
-<script type="text/javascript" src="/clog-tool/js/clog.js"></script>
+</div> <!-- /portletBody-->
+
+    <script type="text/javascript" src="/clog-tool/js/clog.js"></script>
+
 <link rel="stylesheet" type="text/css" href="/clog-tool/css/jquery.cluetip.css" />
+
 
 </body>
 </HTML>

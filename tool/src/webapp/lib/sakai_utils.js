@@ -187,7 +187,9 @@ var SakaiUtils;
 			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).GetXHTML(true);
 		} else if ('ckeditor' === editorId) {
 			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).getData();
-		}
+		} else {
+            return $('#' + textarea_id).val();
+        }
 	}
 	
 	SakaiUtils.resetEditor = function(editorId,textarea_id) {
@@ -195,6 +197,8 @@ var SakaiUtils;
 			SakaiUtils.getWysiwygEditor(editorId,textarea_id).ResetIsDirty();
 		} else if ('ckeditor' === editorId) {
 			SakaiUtils.getWysiwygEditor(editorId,textarea_id).resetDirty();
+		} else {
+			clogTextAreaChanged = false;
 		}
 	}
 		
@@ -203,6 +207,8 @@ var SakaiUtils;
 			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).IsDirty();
 		} else if ('ckeditor' === editorId) {
 			return SakaiUtils.getWysiwygEditor(editorId,textarea_id).checkDirty();
+		} else {
+			return clogTextAreaChanged;
 		}
 	}
 		

@@ -95,7 +95,7 @@ public class ClogTool extends HttpServlet {
 				// means that we can't pass url parameters to the page.We can
 				// use a cookie and the JS will pull the initial state from that
 				// instead.
-				Cookie params = new Cookie("sakai-tool-params", "state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&langage=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() +"&publicAllowed=" + publicAllowed);
+				Cookie params = new Cookie("sakai-tool-params", "state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&language=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() +"&publicAllowed=" + publicAllowed);
 				response.addCookie(params);
 
 				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/clog.html");
@@ -112,11 +112,11 @@ public class ClogTool extends HttpServlet {
 			if (parts.length >= 1) {
 				String part1 = parts[0];
 
-				if ("perms".equals(part1)) {
+				if ("perms.json".equals(part1)) {
 					doPermsGet(response);
 				}
 
-				else if ("userPerms".equals(part1)) {
+				else if ("userPerms.json".equals(part1)) {
 					doUserPermsGet(response);
 				}
 			}
