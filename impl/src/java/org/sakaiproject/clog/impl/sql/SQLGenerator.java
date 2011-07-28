@@ -185,7 +185,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append("CREATE TABLE ").append(TABLE_AUTHOR);
 	statement.append("(");
 	statement.append(USER_ID + " CHAR(36) NOT NULL,");
-	statement.append(SITE_ID + " " + VARCHAR + "(255), ");
+	statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
 	statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
 	statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
 	statement.append(TOTAL_COMMENTS + " " + INT + " NOT NULL,");
@@ -198,8 +198,8 @@ public class SQLGenerator implements ISQLGenerator {
 	StringBuilder statement = new StringBuilder();
 	statement.append("CREATE TABLE ").append(TABLE_PREFERENCES);
 	statement.append("(");
-	statement.append(USER_ID + " " + VARCHAR + "(36), ");
-	statement.append(SITE_ID + " " + VARCHAR + "(255), ");
+	statement.append(USER_ID + " " + VARCHAR + "(36) NOT NULL, ");
+	statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
 	statement.append(EMAIL_FREQUENCY + " " + VARCHAR + "(32) NOT NULL,");
 	statement.append("CONSTRAINT clog_preferences_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
 	statement.append(")");
@@ -210,8 +210,8 @@ public class SQLGenerator implements ISQLGenerator {
 	StringBuilder statement = new StringBuilder();
 	statement.append("CREATE TABLE ").append(TABLE_GLOBAL_PREFERENCES);
 	statement.append("(");
-	statement.append(USER_ID + " " + VARCHAR + "(36), ");
-	statement.append(SHOW_BODY + " " + TINYINT + "(1) DEFAULT '1',");
+	statement.append(USER_ID + " " + VARCHAR + "(36) NOT NULL, ");
+	statement.append(SHOW_BODY + " " + TINYINT + "(1) NOT NULL DEFAULT '1',");
 	statement.append("CONSTRAINT clog_global_preferences_pk PRIMARY KEY (" + USER_ID + ")");
 	statement.append(")");
 	return statement.toString();
