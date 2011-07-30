@@ -11,7 +11,7 @@
   	<parent>
     	<artifactId>clog</artifactId>
     	<groupId>org.sakaiproject.clog</groupId>
-    	<version>0.9.1</version>
+    	<version>0.9.2-SNAPSHOT</version>
   	</parent>
   
   	<dependencies>
