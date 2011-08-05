@@ -75,7 +75,13 @@ public class ClogTool extends HttpServlet {
 
 		// We need to pass the language code to the JQuery code in the pages.
 		Locale locale = (new ResourceLoader(userId)).getLocale();
-		String languageCode = locale.getLanguage();
+		String languageCode = locale.getLanguage() + "_" + locale.getCountry();
+		
+		String variant = locale.getVariant();
+		
+		if(!"".equals(variant)) {
+			languageCode += "_" + variant;
+		}
 
 		// CLOG-44
 		if ("".equals(languageCode)) {

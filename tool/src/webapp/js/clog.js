@@ -51,14 +51,17 @@ var clogInPDA = false;
         clogInPDA = false;
     }
 
-    $(document).ready(function () {
-        if(arg['language']) {
-            $.localise('clog-translations',{language:arg['language'],loadBase: true});
-        }
-        else {
-            $.localise('clog-translations');
-        }
-    });
+    // CLOG-70. To support the en_US_DEBUG locales we need to do this as jquery.localisation
+    // seems to drop variants from locale strings. Needs to be fixed in jquery.localisation; the
+    // author has been contacted.
+    if('en_US_DEBUG' === arg['language']) arg['language'] = 'db_DB';
+
+    if(arg['language']) {
+        $.localise('clog-translations',{language:arg['language'],loadBase: true});
+    }
+    else {
+        $.localise('clog-translations');
+    }
 
 	// We need the toolbar in a template so we can swap in the translations
     if(clogInPDA && screen.width < 800) {
