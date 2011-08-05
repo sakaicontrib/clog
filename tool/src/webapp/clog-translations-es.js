@@ -79,4 +79,4 @@ clog_permissions_delete_any="Eliminar cualquiera";
 clog_permissions_delete_own="Eliminar solamente los propios";
 clog_admin_visibility="Solamente yo y los administradores del sitio pueden ver la entrada";
 clog_site_visibility="Todos los miembros del sitio pueden ver esta entrada";
-
+clog_month_names = ['Enero','Feb','Marzo','Abr','Mayo','Jun','Jul','Agosto','Set','Oct','Nov','Dic'];
