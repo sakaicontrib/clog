@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<emailTemplate>
+	<subject>[${siteTitle} - ** template-postNew.xml ** ] ** template-postNew.xml **</subject>
+	<message>${creatorDisplayName} ** template-postNew.xml ** "${postTitle}" ** template-postNew.xml ** ${siteTitle}.
+	
+** template-postNew.xml **
+
+${postUrl}
+
+---
+** template-postNew.xml ** ${localSakaiName} (${localSakaiUrl})
+** template-postNew.xml ** ${toolName} ** template-postNew.xml ** ${siteTitle} > ${toolName} > ** template-postNew.xml **
+	</message>
+	<htmlMessage>${creatorDisplayName} ** template-postNew.xml ** "${postTitle}" ** template-postNew.xml ** ${siteTitle}.
+
+&lt;p&gt;** template-postNew.xml **
+&lt;br /&gt;${postUrl}
+&lt;/p&gt;
+
+&lt;p&gt;
+---
+&lt;br /&gt;** template-postNew.xml ** ${localSakaiName} (${localSakaiUrl})
+&lt;br /&gt;** template-postNew.xml ** ${toolName} ** template-postNew.xml ** ${siteTitle} &gt; ${toolName} &gt; ** template-postNew.xml **
+&lt;/p&gt;
+	</htmlMessage>
+	<locale>en_us_DEBUG</locale>
+	<version>1</version>
+	<owner>admin</owner>
+	<key>clog.postNew</key>
+</emailTemplate>
