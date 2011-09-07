@@ -8,6 +8,10 @@ var ClogUtils;
 	ClogUtils.showSearchResults = function() {
 	
 		var searchTerms = $('#clog_search_field').val();
+
+        if(searchTerms.length == 0) {
+            return;
+        }
 		
     	jQuery.ajax( {
 			url : "/portal/tool/" + clogPlacementId + "/search",
