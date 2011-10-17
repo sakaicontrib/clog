@@ -171,12 +171,9 @@ public class Post implements Entity {
      * @see org.sakaiproject.entity.api.Entity#getUrl()
      */
     public String getUrl() {
-	String pageId = SakaiProxy.getClogPageId(siteId);
-	String toolId = SakaiProxy.getClogToolId(siteId);
-
-	String url = SakaiProxy.getServerUrl() + "/portal/site/" + siteId + "/page/" + pageId + "?toolstate-" + toolId + "=%3Fstate%3Dpost%26postId%3D" + getId();
-
-	return url;
+    	String pageId = SakaiProxy.getClogPageId(siteId);
+    	String toolId = SakaiProxy.getClogToolId(siteId);
+		return SakaiProxy.getServerUrl() + "/portal/directtool/" + toolId + "?state=post&postId=" + getId();
     }
 
     /**

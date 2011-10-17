@@ -205,25 +205,33 @@ var ClogUtils;
 
     ClogUtils.addFormattedDatesToCurrentPosts = function () {
         for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
-            var d = new Date(clogCurrentPosts[i].createdDate);
-            var formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-            clogCurrentPosts[i].formattedCreatedDate = formattedCreatedDate;
-
-            d = new Date(clogCurrentPosts[i].modifiedDate);
-            var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-            clogCurrentPosts[i].formattedModifiedDate = formattedModifiedDate;
-
-            for(var k=0,m=clogCurrentPosts[i].comments.length;k<m;k++) {
-                d = new Date(clogCurrentPosts[i].comments[k].createdDate);
-                formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-                clogCurrentPosts[i].comments[k].formattedCreatedDate = formattedCreatedDate;
-
-                d = new Date(clogCurrentPosts[i].comments[k].modifiedDate);
-                var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-                clogCurrentPosts[i].comments[k].formattedModifiedDate = formattedModifiedDate;
-            }
+        	ClogUtils.addFormattedDateToPost(clogCurrentPosts[i]);
         }
     }
+    
+    ClogUtils.addFormattedDateToPost = function(post) {
+            var d = new Date(post.createdDate);
+            var formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+            post.formattedCreatedDate = formattedCreatedDate;
+
+            d = new Date(post.modifiedDate);
+            var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+            post.formattedModifiedDate = formattedModifiedDate;
+
+            for(var k=0,m=post.comments.length;k<m;k++) {
+                d = new Date(post.comments[k].createdDate);
+                formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+                post.comments[k].formattedCreatedDate = formattedCreatedDate;
+
+                d = new Date(post.comments[k].modifiedDate);
+                var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+                post.comments[k].formattedModifiedDate = formattedModifiedDate;
+            }
+        }
+
+    ClogUtils.addFormattedDatesToCurrentPost = function () {
+    	ClogUtils.addFormattedDateToPost(clogCurrentPost);
+	}
 
 	ClogUtils.setCurrentPosts = function() {
 

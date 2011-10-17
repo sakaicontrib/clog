@@ -11,20 +11,8 @@ ${postUrl}
 This automatic notification message was sent by ${localSakaiName} (${localSakaiUrl})
 Control what email notifications you receive from ${toolName} at ${siteTitle} > ${toolName} > Preferences
 	</message>
-	<htmlMessage>${creatorDisplayName} commented on your post titled ${postTitle} in ${siteTitle}.
-
-&lt;p&gt;Follow the link below to read it:
-&lt;br /&gt;${postUrl}
-&lt;/p&gt;
-
-&lt;p&gt;
----
-&lt;br /&gt;This automatic notification message was sent by ${localSakaiName} (${localSakaiUrl})
-&lt;br /&gt;Control what email notifications you receive from ${toolName} at ${siteTitle} &gt; ${toolName} &gt; Preferences
-&lt;/p&gt;
-	</htmlMessage>
 	<locale>en</locale>
-	<version>1</version>
+	<version>2</version>
 	<owner>admin</owner>
 	<key>clog.commentNew</key>
 </emailTemplate>

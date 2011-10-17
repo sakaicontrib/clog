@@ -344,6 +344,8 @@ function switchState(state,arg) {
 
 		if(!clogCurrentPost)
 			return false;
+			
+		ClogUtils.addFormattedDatesToCurrentPost();
 	 			
 		SakaiUtils.renderTrimpathTemplate('clog_post_page_content_template',clogCurrentPost,'clog_content');
 		SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPost,'post_' + clogCurrentPost.id);

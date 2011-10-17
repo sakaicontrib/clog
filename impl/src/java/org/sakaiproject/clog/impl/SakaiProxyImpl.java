@@ -435,7 +435,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		try {
 			User user = userDirectoryService.getUser(userId);
 			RenderedTemplate email = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, user.getReference(), replacementValues);
-		    digestService.digest(userId, email.getRenderedSubject(), email.getRenderedHtmlMessage());
+		    digestService.digest(userId, email.getRenderedSubject(), email.getRenderedMessage());
 		} catch (Exception e) {
 		    logger.error("Failed to add message to digest.", e);
 		}
@@ -447,7 +447,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 				User user = userDirectoryService.getUser(userId);
 				RenderedTemplate email = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, user.getReference(), replacementValues);
 				
-				digestService.digest(userId, email.getRenderedSubject(), email.getRenderedHtmlMessage());
+				digestService.digest(userId, email.getRenderedSubject(), email.getRenderedMessage());
 			} catch (Exception e) {
 				logger.error("Failed to add message to digest.", e);
 		    }
@@ -472,8 +472,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 			public final String TERMINATION_LINE = "\n\n--" + MULTIPART_BOUNDARY + "--\n\n";
 			public final String MIME_ADVISORY = "This message is for MIME-compliant mail readers.";
 			public final String PLAIN_TEXT_HEADERS = "Content-Type: text/plain\n\n";
-			public final String HTML_HEADERS = "Content-Type: text/html; charset=ISO-8859-1\n\n";
-			public final String HTML_END = "\n  </body>\n</html>\n";
 			
 			private Thread runner;
 			private String sender;
@@ -491,7 +489,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 				List<String> additionalHeader = new ArrayList<String>();
 				additionalHeader.add("subject");
-				additionalHeader.add("Content-Type: text/html; charset=ISO-8859-1");
+				additionalHeader.add("Content-Type: text/plain");
 
 				String emailSender = getEmailForTheUser(sender);
 				if (emailSender == null || emailSender.trim().equals("")) {
@@ -525,7 +523,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 					try {						
 						emailService.sendToUsers(Collections.singleton(emailParticipant),
 								getHeaders(emailParticipant.getEmail(), template.getRenderedSubject()),
-								formatMessage(template.getRenderedSubject(), template.getRenderedHtmlMessage()));
+								formatMessage(template.getRenderedSubject(), template.getRenderedMessage()));
 					} catch (Exception e) {
 						logger.error("Failed to send email to '" + userId
 								+ "'. Message: " + e.getMessage());
@@ -549,8 +547,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 			private String formatSubject(String subject) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Subject: ");
-				sb.append(subject);
-				
+				sb.append(Validator.escapeHtmlFormattedText(subject));
 				return sb.toString();
 			}
 			
@@ -571,25 +568,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 				sb.append(BOUNDARY_LINE);
 				sb.append(PLAIN_TEXT_HEADERS);
 				sb.append(Validator.escapeHtmlFormattedText(message));
-				sb.append(BOUNDARY_LINE);
-				sb.append(HTML_HEADERS);
-				sb.append(htmlPreamble(subject));
-				sb.append(message);
-				sb.append(HTML_END);
 				sb.append(TERMINATION_LINE);
-				
-				return sb.toString();
-			}
-			
-			private String htmlPreamble(String subject) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n");
-				sb.append("\"http://www.w3.org/TR/html4/loose.dtd\">\n");
-				sb.append("<html>\n");
-				sb.append("<head><title>");
-				sb.append(subject);
-				sb.append("</title></head>\n");
-				sb.append("<body>\n");
 				
 				return sb.toString();
 			}
