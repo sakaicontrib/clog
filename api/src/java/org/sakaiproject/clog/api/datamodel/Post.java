@@ -155,7 +155,7 @@ public class Post implements Entity {
      * @return
      */
     public String getReference() {
-	return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + "post" + Entity.SEPARATOR + id;
+	return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + siteId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
     }
 
     /**

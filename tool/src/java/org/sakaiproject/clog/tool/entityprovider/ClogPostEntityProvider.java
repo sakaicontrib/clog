@@ -127,11 +127,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 		if (clogManager.savePost(post)) {
 			if ((isNew || (mode != null && "publish".equals(mode))) && post.isReady() && !post.isAutoSave()) {
-				String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + post.getId();
-				sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED, reference, post.getSiteId());
-
-				// Send an email to all site participants apart from the author
-				clogManager.sendNewPostAlert(post);
+				sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED, post.getReference(), post.getSiteId());
 			}
 
 			return post.getId();
@@ -216,7 +212,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		String siteId = (String) params.get("siteId");
 
 		if (clogManager.deletePost(ref.getId())) {
-			String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/post/" + ref.getId();
+			String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + ref.getId();
 			sakaiProxy.postEvent(ClogManager.CLOG_POST_DELETED, reference, siteId);
 		}
 	}
@@ -239,7 +235,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			throw new IllegalArgumentException("Invalid post id");
 
 		if (clogManager.recyclePost(postId)) {
-			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
+			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + ref.getId();
 			sakaiProxy.postEvent(ClogManager.CLOG_POST_RECYCLED, reference, post.getSiteId());
 
 			return "SUCCESS";
@@ -267,7 +263,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			throw new IllegalArgumentException("Invalid post id");
 
 		if (clogManager.restorePost(postId)) {
-			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/post/" + ref.getId();
+			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + ref.getId();
 			sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, reference, post.getSiteId());
 
 			return "SUCCESS";

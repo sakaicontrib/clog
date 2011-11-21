@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
@@ -39,8 +38,8 @@ import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityService;
-import org.sakaiproject.authz.api.SecurityAdvisor.SecurityAdvice;
 import org.sakaiproject.clog.api.ClogFunctions;
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.component.api.ServerConfigurationService;
@@ -49,13 +48,12 @@ import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.email.api.DigestService;
 import org.sakaiproject.email.api.EmailService;
-import org.sakaiproject.emailtemplateservice.model.RenderedTemplate;
-import org.sakaiproject.emailtemplateservice.service.EmailTemplateService;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.event.api.EventTrackingService;
-import org.sakaiproject.event.cover.NotificationService;
+import org.sakaiproject.event.api.NotificationEdit;
+import org.sakaiproject.event.api.NotificationService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
@@ -75,7 +73,6 @@ import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.BaseResourceProperties;
 import org.sakaiproject.util.FormattedText;
-import org.sakaiproject.util.Validator;
 
 public class SakaiProxyImpl implements SakaiProxy {
     private Logger logger = Logger.getLogger(SakaiProxyImpl.class);
@@ -106,16 +103,30 @@ public class SakaiProxyImpl implements SakaiProxy {
 
     private EventTrackingService eventTrackingService;
 
-    private EmailService emailService;
-
     private DigestService digestService;
 
     private SearchService searchService;
     
-    private EmailTemplateService emailTemplateService;
+    private NotificationService notificationService;
+	public void setNotificationService(NotificationService notificationService) {
+		this.notificationService = notificationService;
+	}
     
     public void init() {
-    	emailTemplateService.processEmailTemplates(emailTemplates);  
+    	
+		NotificationEdit ne = notificationService.addTransientNotification();
+		ne.setResourceFilter(ClogManager.REFERENCE_ROOT);
+		ne.setFunction(ClogManager.CLOG_POST_CREATED);
+		NewPostNotification yn = new NewPostNotification();
+		yn.setSakaiProxy(this);
+		ne.setAction(yn);
+		
+		NotificationEdit ne2 = notificationService.addTransientNotification();
+		ne2.setResourceFilter(ClogManager.REFERENCE_ROOT);
+		ne2.setFunction(ClogManager.CLOG_COMMENT_CREATED);
+		NewCommentNotification cn = new NewCommentNotification();
+		cn.setSakaiProxy(this);
+		ne2.setAction(cn);
     }
 
     public void destroy() {
@@ -417,170 +428,10 @@ public class SakaiProxyImpl implements SakaiProxy {
     public EventTrackingService getEventTrackingService() {
 	return eventTrackingService;
     }
-
-    public void sendEmailWithMessage(String user, String emailTemplateKey, Map<String, String> replacementValues) {
-    	
-		Set<String> users = new HashSet<String>(1);
-		users.add(user);
-		sendEmailWithMessage(users, emailTemplateKey, replacementValues);
-    }
-
-	public void sendEmailWithMessage(Set<String> users, String emailTemplateKey,
-			Map<String, String> replacementValues) {
-
-		sendEmailToParticipants(getFromAddress(), users, emailTemplateKey, replacementValues);
-	}
-
-    public void addDigestMessage(String userId, String emailTemplateKey, Map<String, String> replacementValues) {
-		try {
-			User user = userDirectoryService.getUser(userId);
-			RenderedTemplate email = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, user.getReference(), replacementValues);
-		    digestService.digest(userId, email.getRenderedSubject(), email.getRenderedMessage());
-		} catch (Exception e) {
-		    logger.error("Failed to add message to digest.", e);
-		}
-    }
-
-    public void addDigestMessage(Set<String> users, String emailTemplateKey, Map<String, String> replacementValues) {
-		for (String userId : users) {
-		    try {
-				User user = userDirectoryService.getUser(userId);
-				RenderedTemplate email = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, user.getReference(), replacementValues);
-				
-				digestService.digest(userId, email.getRenderedSubject(), email.getRenderedMessage());
-			} catch (Exception e) {
-				logger.error("Failed to add message to digest.", e);
-		    }
-		}
-    }
-
-    public void setEmailService(EmailService emailService) {
-	this.emailService = emailService;
-    }
-
-    public EmailService getEmailService() {
-	return emailService;
-    }
-
-	private void sendEmailToParticipants(String from, Set<String> to,
-			final String emailTemplateKey, final Map<String, String> replacementValues) {
-		
-		class EmailSender implements Runnable {
-			
-			public final String MULTIPART_BOUNDARY = "======sakai-multi-part-boundary======";
-			public final String BOUNDARY_LINE = "\n\n--" + MULTIPART_BOUNDARY + "\n";
-			public final String TERMINATION_LINE = "\n\n--" + MULTIPART_BOUNDARY + "--\n\n";
-			public final String MIME_ADVISORY = "This message is for MIME-compliant mail readers.";
-			public final String PLAIN_TEXT_HEADERS = "Content-Type: text/plain\n\n";
-			
-			private Thread runner;
-			private String sender;
-
-			private Set<String> participants;
-
-			public EmailSender(String from, Set<String> to) {
-				this.sender = from;
-				this.participants = to;
-				runner = new Thread(this, "Clog Emailer Thread");
-				runner.start();
-			}
-
-			public synchronized void run() {
-
-				List<String> additionalHeader = new ArrayList<String>();
-				additionalHeader.add("subject");
-				additionalHeader.add("Content-Type: text/plain");
-
-				String emailSender = getEmailForTheUser(sender);
-				if (emailSender == null || emailSender.trim().equals("")) {
-					emailSender = getDisplayNameForTheUser(sender);
-				}
-
-				//get the rendered template for each user
-				RenderedTemplate template = null;
-				
-				for (String userId : participants) {
-					User emailParticipant;
-					try {
-						emailParticipant = userDirectoryService.getUser(userId);
-					} catch (UserNotDefinedException e) {
-						//skip
-						continue;
-					}
-					
-					try { 
-						template = emailTemplateService.getRenderedTemplateForUser(emailTemplateKey, emailParticipant.getReference(), replacementValues); 
-						if (template == null) {
-							logger.warn("SakaiProxy.sendEmail() no template with key: " + emailTemplateKey);
-							return;	//no template
-						}
-					}
-					catch (Exception e) {
-						logger.error("SakaiProxy.sendEmail() error retrieving template for user: " + emailParticipant.getId() + " with key: " + emailTemplateKey + " : " + e.getClass() + " : " + e.getMessage());
-						continue; //try next user
-					}
-					
-					try {						
-						emailService.sendToUsers(Collections.singleton(emailParticipant),
-								getHeaders(emailParticipant.getEmail(), template.getRenderedSubject()),
-								formatMessage(template.getRenderedSubject(), template.getRenderedMessage()));
-					} catch (Exception e) {
-						logger.error("Failed to send email to '" + userId
-								+ "'. Message: " + e.getMessage());
-					}
-				}
-			}
-			
-			private List<String> getHeaders(String emailTo, String subject){
-				List<String> headers = new ArrayList<String>();
-				headers.add("MIME-Version: 1.0");
-				headers.add("Content-Type: multipart/alternative; boundary=\""+MULTIPART_BOUNDARY+"\"");
-				headers.add(formatSubject(subject));
-				headers.add(getFrom());
-				if (StringUtils.isNotBlank(emailTo)) {
-					headers.add("To: " + emailTo);
-				}
-				
-				return headers;
-			}
-			
-			private String formatSubject(String subject) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("Subject: ");
-				sb.append(Validator.escapeHtmlFormattedText(subject));
-				return sb.toString();
-			}
-			
-			private String getFrom(){
-				StringBuilder sb = new StringBuilder();
-				sb.append("From: ");
-				sb.append(getServiceName());
-				sb.append(" <no-reply@");
-				sb.append(serverConfigurationService.getServerName());
-				sb.append(">");
-				
-				return sb.toString();
-			}
-			
-			private String formatMessage(String subject, String message) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(MIME_ADVISORY);
-				sb.append(BOUNDARY_LINE);
-				sb.append(PLAIN_TEXT_HEADERS);
-				sb.append(Validator.escapeHtmlFormattedText(message));
-				sb.append(TERMINATION_LINE);
-				
-				return sb.toString();
-			}
-		}
-
-		new EmailSender(from, to);
-	}
 	
     private void enableSecurityAdvisor(SecurityAdvisor securityAdvisor) {
     	securityService.pushAdvisor(securityAdvisor);
     }
-    
     
 	private void disableSecurityAdvisor(SecurityAdvisor securityAdvisor){
 		securityService.popAdvisor(securityAdvisor);
@@ -594,8 +445,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 	return securityService;
     }
 
-    public void postEvent(String event, String entityId, String siteId) {
-	eventTrackingService.post(eventTrackingService.newEvent(event, entityId, siteId, true, NotificationService.NOTI_OPTIONAL));
+    public void postEvent(String event, String reference, String siteId) {
+	eventTrackingService.post(eventTrackingService.newEvent(event, reference, true));
     }
 
     public Set<String> getSiteUsers(String siteId) {
@@ -908,10 +759,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return serverConfigurationService.getString("wysiwyg.editor");
 	}
     
-    public void setEmailTemplateService(EmailTemplateService emailTemplateService) {
-    	this.emailTemplateService = emailTemplateService;
-    }
-    
     // other resources
 	private ArrayList<String> emailTemplates;
 	public void setEmailTemplates(ArrayList<String> emailTemplates) {
@@ -923,4 +770,5 @@ public class SakaiProxyImpl implements SakaiProxy {
 		String siteSkin = siteService.getSiteSkin(getCurrentSiteId());
 		return siteSkin != null ? siteSkin : (skin != null ? skin : "default");
 	}
+
 }

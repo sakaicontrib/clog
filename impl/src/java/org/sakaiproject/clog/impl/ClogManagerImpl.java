@@ -154,7 +154,6 @@ public class ClogManagerImpl implements ClogManager {
     public boolean deleteComment(String commentId) {
 	try {
 	    if (persistenceManager.deleteComment(commentId)) {
-		// sakaiProxy.postEvent(CLOG_COMMENT_DELETED,commentId(),post.getSiteId());
 		return true;
 	    }
 	} catch (Exception e) {
@@ -288,7 +287,7 @@ public class ClogManagerImpl implements ClogManager {
 	    String reference = ref.getReference();
 
 	    int lastIndex = reference.lastIndexOf(Entity.SEPARATOR);
-	    String postId = reference.substring(lastIndex, reference.length() - lastIndex);
+	    String postId = reference.substring(lastIndex + 1);
 	    rv = getPost(postId);
 	} catch (Exception e) {
 	    logger.warn("getEntity(): " + e);
@@ -301,11 +300,12 @@ public class ClogManagerImpl implements ClogManager {
      * From EntityProducer
      */
     public Collection getEntityAuthzGroups(Reference ref, String userId) {
-	if (logger.isDebugEnabled())
-	    logger.debug("getEntityAuthzGroups(Ref ID:" + ref.getId() + "," + userId + ")");
-
-	// TODO Auto-generated method stub
-	return null;
+    	if (logger.isDebugEnabled())
+    		logger.debug("getEntityAuthzGroups(Ref ID:" + ref.getId() + "," + userId + ")");
+	
+    	List ids = new ArrayList();
+    	ids.add("/site/" + ref.getContext());
+    	return ids;
     }
 
     public String getEntityDescription(Reference arg0) {
@@ -337,20 +337,7 @@ public class ClogManagerImpl implements ClogManager {
      * From EntityProducer
      */
     public HttpAccess getHttpAccess() {
-	return new HttpAccess() {
-	    public void handleAccess(HttpServletRequest arg0, HttpServletResponse arg1, Reference arg2, Collection arg3) throws EntityPermissionException, EntityNotDefinedException, EntityAccessOverloadException, EntityCopyrightException {
-		try {
-		    String referenceString = arg2.getReference();
-		    String postId = referenceString.substring(referenceString.lastIndexOf(Entity.SEPARATOR) + 1);
-		    Post post = getPost(postId);
-		    String url = "http://btc224000006.lancs.ac.uk/clog-tool/clog.html?state=post&postId=" + postId + "&siteId=" + post.getSiteId();
-		    logger.debug("URL:" + url);
-		    arg1.sendRedirect(url);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
-	    }
-	};
+    	return null;
     }
 
     /**
@@ -363,11 +350,28 @@ public class ClogManagerImpl implements ClogManager {
     /**
      * From EntityProducer
      */
-    public boolean parseEntityReference(String reference, Reference ref) {
-	if (!reference.startsWith(ClogManager.REFERENCE_ROOT))
-	    return false;
+    public boolean parseEntityReference(String referenceString, Reference reference) {
+    	
+    	String[] parts = referenceString.split(Entity.SEPARATOR);
+		
+		if (parts.length < 2 || !parts[1].equals("clog")) // Leading slash adds an empty element
+			return false;
+		
+		if(parts.length == 2) {
+			reference.set("sakai:clog", "", "", null, "");
+			return true;
+		}
+		
+		String siteId = parts[2];
+		String subType = parts[3];
+		String entityId = parts[4];
+		
+		if ("posts".equals(subType)) {
+			reference.set("clog","posts" , entityId, null, siteId);
+			return true;
+		}
 
-	return true;
+		return false;
     }
 
     public boolean willArchiveMerge() {
@@ -437,69 +441,6 @@ public class ClogManagerImpl implements ClogManager {
 			userId = sakaiProxy.getCurrentUserId();
 
 		return persistenceManager.getGlobalPreferences(userId);
-	}
-
-	public void sendNewPostAlert(Post post) {
-		Set<String> eachList = new TreeSet<String>();
-		Set<String> digestList = new TreeSet<String>();
-
-		Set<String> users = sakaiProxy.getSiteUsers(post.getSiteId());
-
-		for (String userId : users) {
-			Preferences prefs = getPreferences(post.getSiteId(), userId);
-			if (Preferences.MAIL_NEVER.equals(prefs.getEmailFrequency()))
-				continue;
-			else if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
-				eachList.add(userId);
-			else if (Preferences.MAIL_DIGEST.equals(prefs.getEmailFrequency()))
-				digestList.add(userId);
-		}
-
-		Map<String, String> replacementValues = new HashMap<String, String>();
-		replacementValues.put("siteTitle", sakaiProxy.getSiteTitle(post.getSiteId()));
-		replacementValues.put("creatorDisplayName", sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
-		replacementValues.put("postTitle", post.getTitle());
-		replacementValues.put("postUrl", post.getUrl());
-		replacementValues.put("localSakaiName", sakaiProxy.getServiceName());
-		replacementValues.put("localSakaiUrl", sakaiProxy.getPortalUrl());
-		replacementValues.put("toolName", sakaiProxy.getCurrentToolTitle());
-		
-		sakaiProxy.sendEmailWithMessage(eachList, "clog.postNew", replacementValues);
-		sakaiProxy.addDigestMessage(digestList, "clog.postNew", replacementValues);
-	}
-
-	public void sendNewCommentAlert(Comment comment) {
-		try {
-			Post post = getPost(comment.getPostId());
-
-			// We don't really want an email when we comment on our own posts
-			if (comment.getCreatorId().equals(post.getCreatorId()))
-				return;
-
-			ClogMember author = sakaiProxy.getMember(post.getCreatorId());
-
-			String userId = author.getUserId();
-
-			Preferences prefs = getPreferences(post.getSiteId(), userId);
-			if (Preferences.MAIL_NEVER.equals(prefs.getEmailFrequency()))
-				return;
-
-			Map<String, String> replacementValues = new HashMap<String, String>();
-			replacementValues.put("siteTitle", sakaiProxy.getSiteTitle(post.getSiteId()));
-			replacementValues.put("creatorDisplayName", sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
-			replacementValues.put("postTitle", post.getTitle());
-			replacementValues.put("postUrl", post.getUrl());
-			replacementValues.put("localSakaiName", sakaiProxy.getServiceName());
-			replacementValues.put("localSakaiUrl", sakaiProxy.getPortalUrl());
-			replacementValues.put("toolName", sakaiProxy.getCurrentToolTitle());
-			
-			if (Preferences.MAIL_EACH.equals(prefs.getEmailFrequency()))
-				sakaiProxy.sendEmailWithMessage(userId, "clog.commentNew", replacementValues);
-			else if (Preferences.MAIL_DIGEST.equals(prefs.getEmailFrequency()))
-				sakaiProxy.addDigestMessage(userId, "clog.commentNew", replacementValues);
-		} catch (Exception e) {
-			logger.error("Failed to send new comment alert.", e);
-		}
 	}
 
     public void setSakaiProxy(SakaiProxy sakaiProxy) {

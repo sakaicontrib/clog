@@ -47,10 +47,6 @@ public interface ClogManager extends EntityProducer {
     
 	public GlobalPreferences getGlobalPreferences(String userId);
 
-    public void sendNewPostAlert(Post post);
-
-    public void sendNewCommentAlert(Comment comment);
-
     public void importBlog1Data();
 
     public void importBlog2Data();

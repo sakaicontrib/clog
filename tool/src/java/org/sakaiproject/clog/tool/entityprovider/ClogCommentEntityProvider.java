@@ -53,11 +53,8 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 
 	if (clogManager.saveComment(comment)) {
 	    if (isNew) {
-		String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/comment/" + postId;
+		String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + postId;
 		sakaiProxy.postEvent(ClogManager.CLOG_COMMENT_CREATED, reference, siteId);
-
-		// Send an email to the post author
-		clogManager.sendNewCommentAlert(comment);
 	    }
 
 	    return comment.getId();

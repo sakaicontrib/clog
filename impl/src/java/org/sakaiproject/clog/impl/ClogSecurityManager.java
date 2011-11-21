@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
-import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.SakaiProxy;
 

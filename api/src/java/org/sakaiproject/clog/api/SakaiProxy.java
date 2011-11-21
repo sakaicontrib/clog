@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchResult;
@@ -73,14 +72,6 @@ public interface SakaiProxy {
     public void registerFunction(String function);
 
     public boolean isAllowedFunction(String function, String siteId);
-
-    public void sendEmailWithMessage(String creatorId, String emailTemplateKey, Map<String, String> replacementValues);
-
-    public void sendEmailWithMessage(Set<String> emails, String emailTemplateKey, Map<String, String> replacementValues);
-
-    public void addDigestMessage(String userId, String emailTemplateKey, Map<String, String> replacementValues);
-
-    public void addDigestMessage(Set<String> users, String emailTemplateKey, Map<String, String> replacementValues);
 
     public void postEvent(String event, String entityId, String siteId);
 

@@ -7,7 +7,6 @@
 		init-method="init">
 
 		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
-		<property name="emailService"><ref bean="org.sakaiproject.email.api.EmailService"/></property>
 		<property name="digestService"><ref bean="org.sakaiproject.email.api.DigestService"/></property>
 		<property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
 		<property name="sessionManager"><ref bean="org.sakaiproject.tool.api.SessionManager"/></property>
@@ -22,23 +21,31 @@
 		<property name="searchService"><ref bean="org.sakaiproject.search.api.SearchService"/></property>
 		<property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
 		<property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
-		<property name="emailTemplateService"><ref bean="org.sakaiproject.emailtemplateservice.service.EmailTemplateService"/></property>
-		
-		<!-- other resources -->
-		<property name="emailTemplates" ref="org.sakaiproject.clog.emailtemplates.List" />
+		<property name="notificationService"><ref bean="org.sakaiproject.event.api.NotificationService"/></property>
 	</bean>
-
-	<!-- Setup email templates -->
-	<bean id="org.sakaiproject.clog.emailtemplates.List" class="java.util.ArrayList">
-		<constructor-arg>
-      		<list>
-        		<value>org/sakaiproject/clog/emailtemplates/template-commentNew.xml</value>
-        		<value>org/sakaiproject/clog/emailtemplates/template-commentNew_es_ES.xml</value>
-        		<value>org/sakaiproject/clog/emailtemplates/template-postNew.xml</value>
-        		<value>org/sakaiproject/clog/emailtemplates/template-postNew_es_ES.xml</value>
-      		</list>      
-    	</constructor-arg>
-  	</bean>
+	
+	<bean id="org.sakaiproject.clog.api.ClogUserNotificationPreferencesRegistration"
+      parent="org.sakaiproject.user.api.UserNotificationPreferencesRegistration"
+      class="org.sakaiproject.clog.impl.ClogUserNotificationPreferencesRegistrationImpl"
+      init-method="init" singleton="true">
+      <property name="bundleLocation"><value>Messages</value></property>
+      <property name="sectionTitleBundleKey"><value>prefs_title</value></property>
+      <property name="sectionDescriptionBundleKey"><value>prefs_description</value></property>
+      <property name="overrideSectionTitleBundleKey"><value>prefs_title_override</value></property>
+      <property name="defaultValue"><value>3</value></property>
+      <property name="type"><value>sakai:clog</value></property>
+      <property name="prefix"><value>clog</value></property>
+      <property name="toolId"><value>sakai.clog</value></property>
+      <property name="rawOptions">
+         <map>
+            <entry key="1"><value>prefs_opt1</value></entry>
+            <entry key="2"><value>prefs_opt2</value></entry>
+            <entry key="3"><value>prefs_opt3</value></entry>
+         </map>
+      </property>
+     <property name="overrideBySite"><value>true</value></property>
+     <property name="expandByDefault"><value>true</value></property>
+   </bean>
   	
 	<bean id="org.sakaiproject.clog.api.ClogManager"
     	class="org.sakaiproject.clog.impl.ClogManagerImpl"
