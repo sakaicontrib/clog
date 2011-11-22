@@ -17,8 +17,6 @@ import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
 import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
-import org.sakaiproject.clog.api.datamodel.Preferences;
-import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.impl.sql.HiperSonicGenerator;
 import org.sakaiproject.clog.impl.sql.MySQLGenerator;
 import org.sakaiproject.clog.impl.sql.OracleSQLGenerator;
@@ -753,73 +751,6 @@ public class PersistenceManager {
 		return members;
 	}
 
-	public Preferences getPreferences(String siteId, String userId) {
-		Preferences preferences = new Preferences();
-
-		preferences.setSiteId(siteId);
-		preferences.setUserId(userId);
-
-		Connection connection = null;
-		Statement st = null;
-		ResultSet rs = null;
-
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = connection.createStatement();
-			String sql = sqlGenerator.getSelectPreferencesStatement(userId, siteId);
-			rs = st.executeQuery(sql);
-
-			if (rs.next()) {
-				String emailFrequency = rs.getString(ISQLGenerator.EMAIL_FREQUENCY);
-				preferences.setEmailFrequency(emailFrequency);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst getting preferences.", e);
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
-
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
-
-			sakaiProxy.returnConnection(connection);
-		}
-
-		return preferences;
-	}
-
-	public boolean savePreferences(Preferences preferences) {
-		Connection connection = null;
-		PreparedStatement st = null;
-
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = sqlGenerator.getSavePreferencesStatement(preferences, connection);
-			st.executeUpdate();
-			return true;
-		} catch (Exception e) {
-			logger.error("Caught exception whilst saving preferences.", e);
-			return false;
-		} finally {
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
-
-			sakaiProxy.returnConnection(connection);
-		}
-	}
-	
 	public GlobalPreferences getGlobalPreferences(String userId) {
 		GlobalPreferences preferences = new GlobalPreferences();
 

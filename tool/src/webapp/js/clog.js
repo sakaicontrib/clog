@@ -2,7 +2,6 @@
 var clogSiteId = null;
 var clogPlacementId = null;
 var clogCurrentUserPermissions = null;
-var clogCurrentUserPreferences = null;
 var clogCurrentUserGlobalPreferences = null;
 var clogCurrentPost = null;
 var clogCurrentPosts = null;
@@ -99,10 +98,6 @@ var clogInPDA = false;
 	    $('#clog_permissions_link').click(function(e) {
 		    return switchState('permissions');
 	    });
-	
-	    $('#clog_preferences_link').click(function(e) {
-		    return switchState('preferences');
-	    });
 
 	    $('#clog_recycle_bin_link').click(function(e) {
 		    return switchState('viewRecycled');
@@ -143,8 +138,6 @@ var clogInPDA = false;
 	}
 
 	if(!clogOnGateway) {
-		clogCurrentUserPreferences = ClogUtils.getPreferences();
-		
 		clogCurrentUserGlobalPreferences = ClogUtils.getGlobalPreferences();
 		
 		clogCurrentUserPermissions = new ClogPermissions(ClogUtils.getCurrentUserPermissions());
@@ -162,7 +155,6 @@ var clogInPDA = false;
 	}
 	else {
 		$("#clog_permissions_link").hide();
-		$("#clog_preferences_link").hide();
 		$("#clog_my_clog_link").hide();
 		$('#clog_recycle_bin_link').hide();
 		clogCurrentUserPermissions = new ClogPermissions();
@@ -279,7 +271,7 @@ function switchState(state,arg) {
 
 				clogCurrentPosts = data['clog-post_collection'];
 
-                ClogUtils.addFormattedDatesToCurrentPosts();
+                ClogUtils.addFormattedDatesToPosts(clogCurrentPosts);
 	 			
 				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':clogCurrentPosts},'clog_content');
 
@@ -475,23 +467,6 @@ function switchState(state,arg) {
 				setMainFrameHeight(window.frameElement.id);
 		});
 	}
-	else if('preferences' === state) {
-		SakaiUtils.renderTrimpathTemplate('clog_preferences_template',{},'clog_content');
-	 	$(document).ready(function() {
-			if('never' === clogCurrentUserPreferences.emailFrequency) {
-				$('#clog_email_option_never_checkbox').attr('checked',true);
-			}
-			else if('each' === clogCurrentUserPreferences.emailFrequency) {
-				$('#clog_email_option_each_checkbox').attr('checked','true');
-			}
-			else if('digest' === clogCurrentUserPreferences.emailFrequency) {
-				$('#clog_email_option_digest_checkbox').attr('checked','true');
-			}
-			$('#clog_preferences_save_button').bind('click',ClogUtils.savePreferences);
-			if(window.frameElement)
-				setMainFrameHeight(window.frameElement.id);
-		});
-	}
 	else if('viewRecycled' === state) {
 		jQuery.ajax( {
 	       	url : "/direct/clog-post.json?siteId=" + clogSiteId + "&visibilities=RECYCLED",
@@ -503,6 +478,7 @@ function switchState(state,arg) {
 				var posts = data['clog-post_collection'];
 
 				clogRecycledPosts = posts;
+                ClogUtils.addFormattedDatesToPosts(clogRecycledPosts);
 	 			
 				SakaiUtils.renderTrimpathTemplate('clog_recycled_posts_template',{'posts':posts},'clog_content');
 	 			for(var i=0,j=posts.length;i<j;i++)

@@ -2,15 +2,10 @@ package org.sakaiproject.clog.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogFunctions;
@@ -22,13 +17,8 @@ import org.sakaiproject.clog.api.XmlDefs;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
-import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.entity.api.Entity;
-import org.sakaiproject.entity.api.EntityAccessOverloadException;
-import org.sakaiproject.entity.api.EntityCopyrightException;
-import org.sakaiproject.entity.api.EntityNotDefinedException;
-import org.sakaiproject.entity.api.EntityPermissionException;
 import org.sakaiproject.entity.api.HttpAccess;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
@@ -420,21 +410,9 @@ public class ClogManagerImpl implements ClogManager {
 	return false;
     }
 
-    public boolean savePreferences(Preferences preferences) {
-	return persistenceManager.savePreferences(preferences);
-    }
-
 	public boolean saveGlobalPreferences(GlobalPreferences preferences) {
 		return persistenceManager.saveGlobalPreferences(preferences);
 	}
-
-    public Preferences getPreferences(String siteId, String userId) {
-	if (userId == null)
-	    userId = sakaiProxy.getCurrentUserId();
-
-	return persistenceManager.getPreferences(siteId, userId);
-    }
-    
 
 	public GlobalPreferences getGlobalPreferences(String userId) {
 		if (userId == null)

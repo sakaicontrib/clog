@@ -125,51 +125,10 @@ var ClogUtils;
 		});
 	}
 
-	ClogUtils.getPreferences = function() {
-		var prefs = null;
-		jQuery.ajax( {
-	 		url : "/direct/clog-preferences/" + clogSiteId + ".json",
-	   		dataType : "json",
-	   		async : false,
-	   		cache : false,
-		   	success : function(p) {
-				prefs = p;
-			},
-			error : function(xmlHttpRequest,stat,error) {
-				alert("Failed to get the current user preferences. Status: " + stat + ". Error: " + error);
-			}
-	  	});
-
-		return prefs;
-	}
-
-	ClogUtils.savePreferences = function() {
-
-		var myData = {'siteId':clogSiteId,'emailFrequency':$('.clog_email_option:checked').val()};
-
-		jQuery.ajax( {
-	 		url : "/direct/clog-preferences/new",
-			type : 'POST',
-			data : myData,
-			timeout: 30000,
-			async : false,
-			dataType: 'text',
-		   	success : function(result) {
-		   		clogCurrentUserPreferences = myData;
-			 	switchState('viewAllPosts');
-			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to save preferences. Status: " + status + '. Error: ' + error);
-			}
-	  	});
-
-		return false;
-	}
-	
 	ClogUtils.getGlobalPreferences = function() {
 		var prefs = null;
 		jQuery.ajax( {
-	 		url : "/direct/clog-preferences/xyz/getGlobals.json",
+	 		url : "/direct/clog-preferences/" + clogSiteId + ".json",
 	   		dataType : "json",
 	   		async : false,
 	   		cache : false,
@@ -187,7 +146,7 @@ var ClogUtils;
 	ClogUtils.saveGlobalPreferences = function() {
 
 		jQuery.ajax( {
-	 		url : "/direct/clog-preferences/xyz/saveGlobals",
+	 		url : "/direct/clog-preferences/new",
 			type : 'POST',
 			data : clogCurrentUserGlobalPreferences,
 			timeout: 30000,
@@ -203,9 +162,9 @@ var ClogUtils;
 		return false;
 	}
 
-    ClogUtils.addFormattedDatesToCurrentPosts = function () {
-        for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
-        	ClogUtils.addFormattedDateToPost(clogCurrentPosts[i]);
+    ClogUtils.addFormattedDatesToPosts = function (posts) {
+        for(var i=0,j=posts.length;i<j;i++) {
+        	ClogUtils.addFormattedDateToPost(posts[i]);
         }
     }
     
@@ -242,7 +201,7 @@ var ClogUtils;
 			cache: false,
 		   	success : function(data) {
 				clogCurrentPosts = data['clog-post_collection'];
-                ClogUtils.addFormattedDatesToCurrentPosts();
+                ClogUtils.addFormattedDatesToPosts(clogCurrentPosts);
 			},
 			error : function(xmlHttpRequest,status,errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);

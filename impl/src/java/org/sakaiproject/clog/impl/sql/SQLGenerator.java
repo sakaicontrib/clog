@@ -31,7 +31,6 @@ import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
 import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
-import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.QueryBean;
 
@@ -69,7 +68,6 @@ public class SQLGenerator implements ISQLGenerator {
 	result.add(doTableForAutoSavedPost());
 	result.add(doTableForComments());
 	result.add(doTableForAuthor());
-	result.add(doTableForPreferences());
 	result.add(doTableForGlobalPreferences());
 	return result;
     }
@@ -194,18 +192,6 @@ public class SQLGenerator implements ISQLGenerator {
 	return statement.toString();
     }
 
-    protected String doTableForPreferences() {
-	StringBuilder statement = new StringBuilder();
-	statement.append("CREATE TABLE ").append(TABLE_PREFERENCES);
-	statement.append("(");
-	statement.append(USER_ID + " " + VARCHAR + "(36) NOT NULL, ");
-	statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
-	statement.append(EMAIL_FREQUENCY + " " + VARCHAR + "(32) NOT NULL,");
-	statement.append("CONSTRAINT clog_preferences_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
-	statement.append(")");
-	return statement.toString();
-    }
-    
     protected String doTableForGlobalPreferences() {
 	StringBuilder statement = new StringBuilder();
 	statement.append("CREATE TABLE ").append(TABLE_GLOBAL_PREFERENCES);
@@ -599,49 +585,6 @@ public class SQLGenerator implements ISQLGenerator {
 	    statements.add(commentST);
 
 	    return statements;
-	} finally {
-	    if (testST != null) {
-		try {
-		    testST.close();
-		} catch (Exception e) {
-		}
-	    }
-	}
-    }
-
-    public String getSelectPreferencesStatement(String userId, String placementId) {
-	return "SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + placementId + "'";
-    }
-
-    public PreparedStatement getSavePreferencesStatement(Preferences preferences, Connection connection) throws Exception {
-	String userId = preferences.getUserId();
-	String siteId = preferences.getSiteId();
-
-	Statement testST = null;
-
-	try {
-	    testST = connection.createStatement();
-	    ResultSet rs = testST.executeQuery("SELECT * FROM " + TABLE_PREFERENCES + " WHERE " + USER_ID + " = '" + userId + "' AND " + SITE_ID + " = '" + siteId + "'");
-
-	    PreparedStatement st = null;
-
-	    if (rs.next()) {
-		String sql = "UPDATE " + TABLE_PREFERENCES + " SET " + EMAIL_FREQUENCY + " = ? WHERE " + USER_ID + " = ? AND " + SITE_ID + " = ?";
-		st = connection.prepareStatement(sql);
-		st.setString(1, preferences.getEmailFrequency());
-		st.setString(2, userId);
-		st.setString(3, siteId);
-	    } else {
-		String sql = "INSERT INTO " + TABLE_PREFERENCES + " (" + USER_ID + "," + SITE_ID + "," + EMAIL_FREQUENCY + ") VALUES(?,?,?)";
-		st = connection.prepareStatement(sql);
-		st.setString(1, userId);
-		st.setString(2, siteId);
-		st.setString(3, preferences.getEmailFrequency());
-	    }
-
-	    rs.close();
-
-	    return st;
 	} finally {
 	    if (testST != null) {
 		try {

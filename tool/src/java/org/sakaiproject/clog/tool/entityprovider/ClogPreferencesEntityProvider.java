@@ -4,14 +4,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
-import org.sakaiproject.clog.api.datamodel.Post;
-import org.sakaiproject.clog.api.datamodel.Preferences;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
-import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.EntityProvider;
-import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Createable;
@@ -38,32 +34,7 @@ public class ClogPreferencesEntityProvider extends AbstractEntityProvider implem
 	public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
 		if (LOG.isDebugEnabled())
 			LOG.debug("createEntity");
-
-		String userId = developerService.getCurrentUserId();
-
-		String siteId = (String) params.get("siteId");
-		String emailFrequency = (String) params.get("emailFrequency");
-
-		Preferences preferences = new Preferences();
-		preferences.setUserId(userId);
-		preferences.setSiteId(siteId);
-		preferences.setEmailFrequency(emailFrequency);
-
-		if (clogManager.savePreferences(preferences)) {
-			return "SUCCESS";
-		} else
-			return "FAIL";
-	}
-	
-	@EntityCustomAction(action = "getGlobals", viewKey = EntityView.VIEW_SHOW)
-	public Object handleGetGlobals(EntityReference ref) {
-		String userId = developerService.getCurrentUserId();
 		
-		return clogManager.getGlobalPreferences(userId);
-	}
-	
-	@EntityCustomAction(action = "saveGlobals", viewKey = EntityView.VIEW_EDIT)
-	public String handleSaveGlobals(EntityReference ref,Map<String,Object> params) {
 		String userId = developerService.getCurrentUserId();
 		
 		String showBodyString = (String) params.get("showBody");
@@ -77,7 +48,7 @@ public class ClogPreferencesEntityProvider extends AbstractEntityProvider implem
 	}
 
 	public Object getSampleEntity() {
-		return new Preferences();
+		return new GlobalPreferences();
 	}
 
 	public String getEntityPrefix() {
@@ -101,7 +72,7 @@ public class ClogPreferencesEntityProvider extends AbstractEntityProvider implem
 	}
 
 	public Object getEntity(EntityReference ref) {
-		String siteId = ref.getId();
-		return clogManager.getPreferences(siteId, null);
+		String userId = developerService.getCurrentUserId();
+		return clogManager.getGlobalPreferences(userId);
 	}
 }
