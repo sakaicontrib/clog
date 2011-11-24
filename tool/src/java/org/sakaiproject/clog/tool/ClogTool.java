@@ -125,6 +125,13 @@ public class ClogTool extends HttpServlet {
 				else if ("userPerms.json".equals(part1)) {
 					doUserPermsGet(response);
 				}
+				
+				else if ("posts".equals(part1)) {
+					postId = parts[1];
+					String url = "/clog-tool/clog.html?state=post&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&language=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() +"&publicAllowed=" + publicAllowed + "&editor=" + sakaiProxy.getWysiwygEditor();
+					response.sendRedirect(url);
+					return;
+				}
 			}
 		}
 	}

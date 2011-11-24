@@ -81,3 +81,4 @@ clog_permissions_delete_own="delete.own";
 clog_admin_visibility="Only site administrators and I can see this post";
 clog_site_visibility="All members of this site can see this post";
 clog_month_names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+clog_user_rss_tooltip="Subscribe to the RSS feed for this user's posts";

@@ -153,11 +153,6 @@ public class ClogSecurityManager {
 	    return true;
 	}
 
-	// This acts as an override
-	//if (!post.isPrivate() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
-	 //   return true;
-	//}
-
 	String currentUser = sakaiProxy.getCurrentUserId();
 
 	// If the current user is authenticated and the post author, yes.

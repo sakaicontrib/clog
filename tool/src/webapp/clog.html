@@ -242,7 +242,8 @@
 			<th width="20%"><div>${clog_author_label}</div></th>
 			<th width="10%"><div>${posts}</div></th>
 			<th width="20%"><div>${dateOfLastPostHeader}</div></th>
-			<th width="50%"><div>${clog_number_of_comments_label}</div></th>
+			<th width="45%"><div>${clog_number_of_comments_label}</div></th>
+			<th width="5%"><div>RSS</div></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -252,6 +253,7 @@
 			<td>${m.numberOfPosts}</td>
 			<td>{if m.dateOfLastPost > 0}${new Date(m.dateOfLastPost).toLocaleString()}{else}n/a{/if}</td>
 			<td>${m.numberOfComments}</td>
+			<td><a target="_blank" href="/direct/clog-rss/${m.userId}/authors.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>
 		</tr>
 		{/for}
 		</tbody>
@@ -333,7 +335,7 @@
 
 <div id="clog_all_posts_template" style="display:none"><!--
 	{if ! clogOnGateway}
-	<h2>${clog_worksite_posts_label}</h2>
+	<h2>${clog_worksite_posts_label}&nbsp;<a target="_blank" href="/direct/clog-rss/${clogSiteId}/allSite.xml" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></h2>
 	{/if}
 	{if posts.length <= 0}
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
@@ -373,7 +375,7 @@
    		<input type="checkbox"
                  {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
                  onclick="toggleFullContent(this);"/>
-		<span>${clog_show_title_only_label}</span>
+		<span>${clog_show_title_only_label}</span>&nbsp;<a target="_blank" href="/direct/clog-rss/${creatorId}/authors.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>
    	</div>
 	{/if}
     <div id="postsWrapper">

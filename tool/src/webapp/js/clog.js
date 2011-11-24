@@ -235,7 +235,8 @@ function switchState(state,arg) {
 	 						headers:
 	 						{
 	 							2: {sorter: "isoDate"},
-	 							3: {sorter: "isoDate"}
+	 							3: {sorter: "isoDate"},
+                                5: {sorter: false}
 	 						} }).tablesorterPager({container: $("#clogAuthorPager"),positionFixed: false});
 
                     $('.pagedisplay').attr('disabled','true');
