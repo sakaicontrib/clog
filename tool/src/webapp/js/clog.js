@@ -2,7 +2,7 @@
 var clogSiteId = null;
 var clogPlacementId = null;
 var clogCurrentUserPermissions = null;
-var clogCurrentUserGlobalPreferences = null;
+var clogCurrentUserGlobalPreferences = {'showBody':true};
 var clogCurrentPost = null;
 var clogCurrentPosts = null;
 var clogCurrentState = null;
@@ -156,6 +156,7 @@ var clogInPDA = false;
 	else {
 		$("#clog_permissions_link").hide();
 		$("#clog_my_clog_link").hide();
+		$("#clog_home_link").hide();
 		$('#clog_recycle_bin_link').hide();
 		clogCurrentUserPermissions = new ClogPermissions();
 	}
@@ -314,6 +315,8 @@ function switchState(state,arg) {
 				var profileMarkup = SakaiUtils.getProfileMarkup(userId);
 
 				clogCurrentPosts = data['clog-post_collection'];
+
+                ClogUtils.addFormattedDatesToPosts(clogCurrentPosts);
 	 			
 				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':clogCurrentPosts},'clog_content');
 				$('#clog_author_profile').html(profileMarkup);
