@@ -52,14 +52,21 @@ public class ClogTool extends HttpServlet {
 
 		String state = request.getParameter("state");
 		String postId = request.getParameter("postId");
+		
+		String siteId = sakaiProxy.getCurrentSiteId();
 
-		if (state == null)
-			state = "viewAllPosts";
+		if (state == null) {
+			// If we're on the gateway show the authors view by default
+			if ("!gateway".equals(siteId)) {
+				state = "viewMembers";
+			} else {
+				state = "viewAllPosts";
+			}
+		}
 
 		if (postId == null)
 			postId = "none";
 
-		String siteId = sakaiProxy.getCurrentSiteId();
 
 		String userId = sakaiProxy.getCurrentUserId();
 

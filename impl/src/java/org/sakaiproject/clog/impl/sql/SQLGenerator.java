@@ -521,7 +521,7 @@ public class SQLGenerator implements ISQLGenerator {
 		totalST.setString(1, post.getCreatorId());
 		statements.add(totalST);
 
-		PreparedStatement dateST = connection.prepareStatement("UPDATE " + TABLE_AUTHOR + " SET " + LAST_POST_DATE + " = " + "(SELECT MAX(" + CREATED_DATE + ") FROM " + TABLE_POST + " WHERE (" + VISIBILITY + " = 'READY' OR " + VISIBILITY + " = 'PUBLIC')" + " AND " + USER_ID + " = ?" + " AND " + SITE_ID + " = ?)" + " WHERE " + USER_ID + " = ?" + " AND " + SITE_ID + " = ?");
+		PreparedStatement dateST = connection.prepareStatement("UPDATE " + TABLE_AUTHOR + " SET " + LAST_POST_DATE + " = " + "(SELECT MAX(" + CREATED_DATE + ") FROM " + TABLE_POST + " WHERE (" + VISIBILITY + " = 'SITE' OR " + VISIBILITY + " = 'PUBLIC')" + " AND " + USER_ID + " = ?" + " AND " + SITE_ID + " = ?)" + " WHERE " + USER_ID + " = ?" + " AND " + SITE_ID + " = ?");
 		dateST.setString(1, post.getCreatorId());
 		dateST.setString(2, post.getSiteId());
 		dateST.setString(3, post.getCreatorId());

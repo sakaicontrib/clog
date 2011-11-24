@@ -186,8 +186,10 @@
 	<br />
 	{/if} 
     <input id="clog_post_id_field" type="hidden" value="${id}"/>
-    {if clogOnMyWorkspace && clogPublicAllowed}
+    {if clogOnMyWorkspace}
+     	{if clogPublicAllowed}
         <input id="clog_make_post_public_button" type="button" value="${clog_make_post_public_label}" title="${clog_make_post_public_tooltip}"/>
+        {/if}
     {else}
        <input id="clog_visibility_maintainer" type="radio" name="visibility"/>${clog_admin_visibility}
        <br/>
