@@ -255,7 +255,7 @@
 			<td>${m.numberOfPosts}</td>
 			<td>{if m.dateOfLastPost > 0}${new Date(m.dateOfLastPost).toLocaleString()}{else}n/a{/if}</td>
 			<td>${m.numberOfComments}</td>
-			<td><a target="_blank" href="/direct/clog-rss/${m.userId}/authors.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>
+			<td><a target="_blank" href="/direct/clog-rss/${m.userId}/authors.xml?siteId=${clogSiteId}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>
 		</tr>
 		{/for}
 		</tbody>
@@ -377,7 +377,7 @@
    		<input type="checkbox"
                  {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
                  onclick="toggleFullContent(this);"/>
-		<span>${clog_show_title_only_label}</span>&nbsp;<a target="_blank" href="/direct/clog-rss/${creatorId}/authors.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>
+		<span>${clog_show_title_only_label}</span>{if creatorId != clogCurrentUser.id}&nbsp;<a target="_blank" href="/direct/clog-rss/${creatorId}/authors.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>{/if}
    	</div>
 	{/if}
     <div id="postsWrapper">

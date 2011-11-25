@@ -64,14 +64,17 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		
 		if (authorId == null)
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the author id");
+		String currentUserId = developerHelperService.getCurrentUserId();
 		
 		QueryBean qb = new QueryBean();
-		qb.setSkipFilter(true);
+		if(currentUserId != null) {
+			qb.setSkipFilter(true);
+		}
 		qb.setCreator(authorId);
 		
 		String siteId = (String) params.get("siteId");
 		
-		if(siteId != null && siteId.length() > 0) {
+		if(siteId != null && siteId.length() > 0 && !"!gateway".equals(siteId)) {
 			qb.setSiteId(siteId);
 		}
 
