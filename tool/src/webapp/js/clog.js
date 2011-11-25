@@ -24,10 +24,6 @@ var clogInPDA = false;
 (function () {
 
 	var arg = SakaiUtils.getParameters();
-
-	if (arg.editor) {
-		wysiwygEditor = arg.editor;
-	}
 	
 	if(!arg || !arg.placementId || !arg.siteId) {
 		alert('The placement id and site id MUST be supplied as page parameters');
@@ -35,9 +31,27 @@ var clogInPDA = false;
 	}
 	
 	clogSiteId = arg.siteId;
+	
+	if('!gateway' === clogSiteId) {
+		clogOnGateway = true;
+	}
+	
+	if(clogSiteId.match(/^~/)) {
+		clogOnMyWorkspace = true;
+	}
+	
 	clogPlacementId = arg.placementId;
+	
+	if (arg.editor) {
+		wysiwygEditor = arg.editor;
+	}
 
-	if('true' === arg.publicAllowed) clogPublicAllowed = true;
+	// This comes from sakai.properties, via the ClogTool servlet 
+	if('true' === arg.publicAllowed) {
+		clogPublicAllowed = true;
+	}
+	
+	clogHomeState = 'viewAllPosts';
 
 	var href = document.location.href;
 
@@ -50,12 +64,15 @@ var clogInPDA = false;
         clogInPDA = false;
     }
 
-    // CLOG-70. To support the en_US_DEBUG locales we need to do this as jquery.localisation
-    // seems to drop variants from locale strings. Needs to be fixed in jquery.localisation; the
-    // author has been contacted.
-    if('en_US_DEBUG' === arg['language']) arg['language'] = 'db_DB';
-
-    if(arg['language']) {
+    if(arg.language) {
+    
+    	// CLOG-70. To support the en_US_DEBUG locales we need to do this as jquery.localisation
+    	// seems to drop variants from locale strings. Needs to be fixed in jquery.localisation; the
+    	// author has been contacted.
+    	if('en_US_DEBUG' === arg.language) {
+    		arg.language = 'db_DB';
+    	}
+    	
         $.localise('clog-translations',{language:arg['language'],loadBase: true});
     }
     else {
@@ -111,11 +128,7 @@ var clogInPDA = false;
 	$('#clog_search_button').click(function(e) {
 		ClogUtils.showSearchResults();
 	});
-	
 
-	clogHomeState = 'viewAllPosts';
-
-	if(clogSiteId.match(/^~/)) clogOnMyWorkspace = true;
 
 	// If we are on a My Workspace type site (characterised by a tilde as the
 	// first character in the site id), show the user's posts by default.
@@ -128,14 +141,7 @@ var clogInPDA = false;
 		if(clogPublicAllowed) $("#clog_my_public_posts_link").show();
 	}
 
-	if('!gateway' === clogSiteId) clogOnGateway = true;
-
 	clogCurrentUser = SakaiUtils.getCurrentUser();
-	
-	if(!clogCurrentUser) {
-		alert("No current user. Have you logged in?");
-		return;
-	}
 
 	if(!clogOnGateway) {
 		clogCurrentUserGlobalPreferences = ClogUtils.getGlobalPreferences();
@@ -172,11 +178,13 @@ var clogInPDA = false;
 function switchState(state,arg) {
 	
 	// Clear the autosave interval
-	if(autosave_id)
+	if(autosave_id) {
 		clearInterval(autosave_id);
+	}
 
 	clogCurrentState = state;
 
+	// Just in case we have a floating cluetip hanging about
 	$('#cluetip').hide();
 
 	if(!clogOnGateway && clogCurrentUserPermissions.postCreate)

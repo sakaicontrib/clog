@@ -67,7 +67,6 @@ public class ClogTool extends HttpServlet {
 		if (postId == null)
 			postId = "none";
 
-
 		String userId = sakaiProxy.getCurrentUserId();
 
 		if (userId == null) {
