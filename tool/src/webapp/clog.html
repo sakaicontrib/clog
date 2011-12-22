@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" />
     <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
     <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css" />
+    <script type="text/javascript" src="/clog-tool/lib/json2.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery-ui.js"></script>
     <script type="text/javascript" src="/library/editor/ckeditor/ckeditor.js"></script>
@@ -18,7 +19,6 @@
     <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.localisation.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
-    <script type="text/javascript" src="/clog-tool/lib/jquery.dimensions.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.cluetip.min.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.js"></script>
@@ -31,13 +31,8 @@
 
 <script>
     var arg = SakaiUtils.getParameters();
-    $.ajax({
-        url: '/library/skin/'+arg['skin']+'/tool.css',
-        dataType: 'text/css',
-        success: function(data, textStatus) {
-            $('head').append('<style type="text/css" rel="stylesheet">'+data+'</style>');
-        }
-    });
+    var url = '/library/skin/' + arg['skin'] + '/tool.css';
+    $('<link type="text/css" rel="stylesheet" href="' + url + '"/>').appendTo("head");
 </script>
 
 <div class="portletBody">
