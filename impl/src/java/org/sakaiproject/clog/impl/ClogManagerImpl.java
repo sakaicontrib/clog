@@ -36,9 +36,6 @@ public class ClogManagerImpl implements ClogManager {
 
 	private SakaiProxy sakaiProxy;
 
-	private boolean importBlog1Data = false;
-	private boolean importBlog2Data = false;
-
 	public void init() {
 		if (logger.isDebugEnabled())
 			logger.debug("init()");
@@ -65,12 +62,6 @@ public class ClogManagerImpl implements ClogManager {
 		sakaiProxy.registerEntityProducer(this);
 
 		persistenceManager = new PersistenceManager(sakaiProxy);
-
-		if (importBlog1Data)
-			persistenceManager.importBlog1Data();
-
-		if (importBlog2Data)
-			persistenceManager.importBlog2Data();
 
 		securityManager = new ClogSecurityManager(sakaiProxy);
 	}
@@ -432,30 +423,6 @@ public class ClogManagerImpl implements ClogManager {
 
 	public SakaiProxy getSakaiProxy() {
 		return sakaiProxy;
-	}
-
-	public void setImportBlog1Data(boolean importBlog1Data) {
-		this.importBlog1Data = importBlog1Data;
-	}
-
-	public boolean isImportBlog1Data() {
-		return importBlog1Data;
-	}
-
-	public void importBlog1Data() {
-		persistenceManager.importBlog1Data();
-	}
-
-	public void importBlog2Data() {
-		persistenceManager.importBlog2Data();
-	}
-
-	public void setImportBlog2Data(boolean importBlog2Data) {
-		this.importBlog2Data = importBlog2Data;
-	}
-
-	public boolean isImportBlog2Data() {
-		return importBlog2Data;
 	}
 
 	public boolean deleteAutosavedCopy(String postId) {

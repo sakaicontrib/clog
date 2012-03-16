@@ -10,7 +10,6 @@
         <property name="sakaiProxy">
             <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
         </property>
-        <property name="allowImportAction" value="true"/>
 	</bean>
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 

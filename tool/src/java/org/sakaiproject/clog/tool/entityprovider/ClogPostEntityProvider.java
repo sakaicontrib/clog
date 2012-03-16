@@ -51,8 +51,6 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 	protected final Logger LOG = Logger.getLogger(getClass());
 
-	private boolean allowImportAction = false;
-
 	public boolean entityExists(String id) {
 		if (LOG.isDebugEnabled())
 			LOG.debug("entityExists(" + id + ")");
@@ -286,20 +284,6 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			throw new EntityException("Failed to delete the autosaved copy.", postId);
 	}
 
-	@EntityCustomAction(action = "import1", viewKey = EntityView.VIEW_LIST)
-	public String handleImport1(EntityReference ref) {
-		if (allowImportAction)
-			clogManager.importBlog1Data();
-		return "SUCCESS";
-	}
-
-	@EntityCustomAction(action = "import2", viewKey = EntityView.VIEW_LIST)
-	public String handleImport2(EntityReference ref) {
-		if (allowImportAction)
-			clogManager.importBlog2Data();
-		return "SUCCESS";
-	}
-
 	/**
 	 * From Statisticable
 	 */
@@ -335,9 +319,5 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 	public void setSakaiProxy(SakaiProxy sakaiProxy) {
 		this.sakaiProxy = sakaiProxy;
-	}
-
-	public void setAllowImportAction(boolean allowImportAction) {
-		this.allowImportAction = allowImportAction;
 	}
 }

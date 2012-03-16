@@ -1,4 +1,4 @@
-package org.sakaiproject.clog.impl;
+package org.sakaiproject.clogadmin.tool;
 
 import java.io.StringReader;
 import java.sql.Connection;

@@ -42,10 +42,6 @@ public interface ClogManager extends EntityProducer {
     
 	public GlobalPreferences getGlobalPreferences(String userId);
 
-    public void importBlog1Data();
-
-    public void importBlog2Data();
-
     public boolean deleteAutosavedCopy(String postId);
 
 
