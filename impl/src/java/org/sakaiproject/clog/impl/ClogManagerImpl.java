@@ -76,6 +76,15 @@ public class ClogManagerImpl implements ClogManager {
 		else
 			throw new Exception("The current user does not have permissions to read this post.");
 	}
+	
+	public Post getPostHeader(String postId) throws Exception {
+		if (logger.isDebugEnabled())
+			logger.debug("getUnfilteredPost(" + postId + ")");
+
+		Post post = persistenceManager.getPost(postId);
+		post.setContent("");
+		return post;
+	}
 
 	public List<Post> getPosts(String placementId) throws Exception {
 		// Get all the posts for the supplied site and filter them through the

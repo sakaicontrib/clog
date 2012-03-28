@@ -19,6 +19,9 @@ public interface ClogManager extends EntityProducer {
     public static final String CLOG_POST_RESTORED = "clog.post.restored";
 
     public Post getPost(String postId) throws Exception;
+    
+    // Used by Dashboard integration
+    public Post getPostHeader(String postId) throws Exception;
 
     public List<Post> getPosts(String placementId) throws Exception;
 
