@@ -123,7 +123,7 @@ public class ClogSecurityManager {
 	}
 	
 	try {
-	    if(post.isVisibleToSite() && sakaiProxy.isCurrentUserMemberOfSite(post.getSiteId())) {
+	    if(post.isVisibleToSite() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
 		return true;
 	    }
 	}
