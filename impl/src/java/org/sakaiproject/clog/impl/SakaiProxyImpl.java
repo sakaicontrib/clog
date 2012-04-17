@@ -607,6 +607,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 		if (function.startsWith("clog"))
 		    filteredFunctions.add(function);
 	    }
+	    
+	    if(functions.contains("realm.upd")) {
+	    	filteredFunctions.add(ClogFunctions.CLOG_MODIFY_PERMISSIONS);
+	    }
 	}
 
 	return filteredFunctions;
@@ -658,7 +662,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	try {
 	    site = siteService.getSite(siteId);
 	} catch (IdUnusedException ide) {
-	    logger.warn(userId + " attempted to update YAFT permissions for unknown site " + siteId);
+	    logger.warn(userId + " attempted to update CLOG permissions for unknown site " + siteId);
 	    return false;
 	}
 
@@ -675,9 +679,11 @@ public class SakaiProxyImpl implements SakaiProxy {
 			AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
 			Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
 
-			if (!siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS) && !siteHelperRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS)) {
-				logger.warn(userId + " attempted to update CLOG permissions for site " + site.getTitle());
-				return false;
+			if (!siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS) && !siteRole.isAllowed("realm.upd")) {
+				if(siteHelperRole == null || !siteHelperRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS)) {
+					logger.warn(userId + " attempted to update CLOG permissions for site " + site.getTitle());
+					return false;
+				}
 			}
 		}
 
