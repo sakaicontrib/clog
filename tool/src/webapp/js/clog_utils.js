@@ -343,6 +343,7 @@ var ClogUtils;
 	 		url : "/direct/clog-post/" + postId + "/recycle",
 			dataType : 'text',
 			async : false,
+			cache: false,
 		   	success : function(result) {
 				switchState(clogCurrentState);
 			},
