@@ -154,6 +154,7 @@ var SakaiUtils;
 			height:height,
 			toolbar:toolbarSet,
 			customConfigurationsPath:"/library/editor/ckeditor/config.js",
+			skin: 'v2',
 			/* using FCK browser: see https://jira.sakaiproject.org/browse/SAK-17885 */
 			filebrowserBrowseUrl:fckBasePath + "editor/filemanager/browser/default/browser.html",
 			filebrowserImageBrowseUrl:fckBasePath + "editor/filemanager/browser/default/browser.html?Connector=/sakai-fck-connector/filemanager/connector&Type=Image&CurrentFolder=" + collectionId,
