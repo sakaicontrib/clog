@@ -144,8 +144,6 @@ var clogInPDA = false;
 	clogCurrentUser = SakaiUtils.getCurrentUser();
 
 	if(!clogOnGateway) {
-		clogCurrentUserGlobalPreferences = ClogUtils.getGlobalPreferences();
-		
 		clogCurrentUserPermissions = new ClogPermissions(ClogUtils.getCurrentUserPermissions());
 	
 		if(clogCurrentUserPermissions == null) return;
@@ -533,11 +531,9 @@ function toggleFullContent(v)
 		$('.clog_body').hide();
         // CLOG-59
         clogCurrentUserGlobalPreferences.showBody = 'false';
-        ClogUtils.saveGlobalPreferences();
     } else {
 		$('.clog_body').show();
         // CLOG-59
         clogCurrentUserGlobalPreferences.showBody = 'true';
-        ClogUtils.saveGlobalPreferences();
     }
 }

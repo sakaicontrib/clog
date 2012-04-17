@@ -415,17 +415,6 @@ public class ClogManagerImpl implements ClogManager {
 		return false;
 	}
 
-	public boolean saveGlobalPreferences(GlobalPreferences preferences) {
-		return persistenceManager.saveGlobalPreferences(preferences);
-	}
-
-	public GlobalPreferences getGlobalPreferences(String userId) {
-		if (userId == null)
-			userId = sakaiProxy.getCurrentUserId();
-
-		return persistenceManager.getGlobalPreferences(userId);
-	}
-
 	public void setSakaiProxy(SakaiProxy sakaiProxy) {
 		this.sakaiProxy = sakaiProxy;
 	}

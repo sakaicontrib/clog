@@ -80,10 +80,6 @@ public interface ISQLGenerator {
 
     public abstract List<PreparedStatement> getRestoreStatementsForPost(Post post, Connection connection) throws Exception;
 
-	public abstract String getSelectGlobalPreferencesStatement(String userId);
-
-	public abstract PreparedStatement getSaveGlobalPreferencesStatement(GlobalPreferences preferences, Connection connection) throws Exception;
-
     public abstract String getSelectAuthorStatement(String userId, String siteId);
 
     public abstract PreparedStatement getDeleteAutosavedCopyStatement(String postId, Connection connection) throws Exception;

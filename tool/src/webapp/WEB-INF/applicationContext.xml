@@ -36,10 +36,4 @@
         </property>
 	</bean>
 	
-	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider"
-		class="org.sakaiproject.clog.tool.entityprovider.ClogPreferencesEntityProvider">
-		<property name="clogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
-		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
-	</bean>
-	
 </beans>

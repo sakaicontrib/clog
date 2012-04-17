@@ -125,43 +125,6 @@ var ClogUtils;
 		});
 	}
 
-	ClogUtils.getGlobalPreferences = function() {
-		var prefs = null;
-		jQuery.ajax( {
-	 		url : "/direct/clog-preferences/" + clogSiteId + ".json",
-	   		dataType : "json",
-	   		async : false,
-	   		cache : false,
-		   	success : function(p) {
-				prefs = p;
-			},
-			error : function(xmlHttpRequest,stat,error) {
-				alert("Failed to get the current user global preferences. Status: " + stat + ". Error: " + error);
-			}
-	  	});
-
-		return prefs;
-	}
-	
-	ClogUtils.saveGlobalPreferences = function() {
-
-		jQuery.ajax( {
-	 		url : "/direct/clog-preferences/new",
-			type : 'POST',
-			data : clogCurrentUserGlobalPreferences,
-			timeout: 30000,
-			async : false,
-			dataType: 'text',
-		   	success : function(result) {
-			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to save global preferences. Status: " + status + '. Error: ' + error);
-			}
-	  	});
-
-		return false;
-	}
-
     ClogUtils.addFormattedDatesToPosts = function (posts) {
         for(var i=0,j=posts.length;i<j;i++) {
         	ClogUtils.addFormattedDateToPost(posts[i]);

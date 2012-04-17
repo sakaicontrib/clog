@@ -41,10 +41,6 @@ public interface ClogManager extends EntityProducer {
 
     public List<ClogMember> getAuthors(String siteId);
 
-	public boolean saveGlobalPreferences(GlobalPreferences preferences);
-    
-	public GlobalPreferences getGlobalPreferences(String userId);
-
     public boolean deleteAutosavedCopy(String postId);
 
 
