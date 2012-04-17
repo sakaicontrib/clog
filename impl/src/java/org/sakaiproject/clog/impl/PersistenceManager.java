@@ -549,8 +549,6 @@ public class PersistenceManager {
 			List<Post> posts = transformResultSetInPostCollection(rs, connection);
 
 			if (posts.size() == 0) {
-				if (logger.isInfoEnabled())
-					logger.info("getAutosavedPost: Unable to find post with id:" + postId);
 				return null;
 			}
 			if (posts.size() > 1) {
