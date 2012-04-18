@@ -131,6 +131,10 @@ var SakaiUtils;
 
 		oFCKeditor.Config['CustomConfigurationsPath'] = "/library/editor/FCKeditor/config.js";
 		oFCKeditor.ReplaceTextarea();
+
+        if(window.frameElement) {
+            setMainFrameHeight(window.frameElement.id);
+        }
 	}
 	
 	SakaiUtils.setupCKEditor = function(textarea_id,width,height,toolbarSet,siteId) {
@@ -164,7 +168,12 @@ var SakaiUtils;
 			filebrowserFlashUploadUrl:fckBasePath + "/sakai-fck-connector/filemanager/connector?Type=Flash&Command=QuickUpload&Type=Flash&CurrentFolder=" + collectionId,
 			filebrowserLinkUploadUrl:fckBasePath + "/sakai-fck-connector/filemanager/connector?Type=File&Command=QuickUpload&Type=Link&CurrentFolder=" + collectionId
 		});
-		
+
+		CKEDITOR.instances[textarea_id].on('instanceReady',function (e) {
+            if(window.frameElement) {
+                setMainFrameHeight(window.frameElement.id);
+            }
+        });
 	}
 	
 	SakaiUtils.setupWysiwygEditor = function(editorId,textarea_id,width,height,toolbarSet,siteId) {

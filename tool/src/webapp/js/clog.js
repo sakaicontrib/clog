@@ -390,7 +390,6 @@ function switchState(state,arg) {
 	 		    });
             }
 	 		
- 			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
 	 		
 			$('#clog_save_post_button').click(function () {
 				ClogUtils.savePostAsDraft(wysiwygEditor);
@@ -426,8 +425,7 @@ function switchState(state,arg) {
 					}
 				},10000);
 
-	 		if(window.frameElement)
-	 			setMainFrameHeight(window.frameElement.id);
+ 			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
 	 	});
 	}
 	else if('createComment' === state) {
@@ -455,15 +453,13 @@ function switchState(state,arg) {
 		SakaiUtils.renderTrimpathTemplate('clog_create_comment_template',comment,'clog_content');
 
 		$(document).ready(function() {
-			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
 			SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPost,'clog_post_' + arg.postId);
 
 			$('#clog_save_comment_button').click(function () {
 				ClogUtils.saveComment(wysiwygEditor);
 			});
 			
-			if(window.frameElement)
-				setMainFrameHeight(window.frameElement.id);
+			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
 		});
 	}
 	else if('permissions' === state) {

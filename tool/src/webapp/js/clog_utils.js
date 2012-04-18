@@ -214,7 +214,7 @@ var ClogUtils;
 		var post = {
 				'id':$('#clog_post_id_field').val(),
 				'visibility':visibility,
-				'commentable':$('#clog_commentable_checkbox').attr('checked'),
+				'commentable':$('#clog_commentable_checkbox').attr('checked') === 'checked',
 				'title':title,
 				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
 				'siteId':clogSiteId
