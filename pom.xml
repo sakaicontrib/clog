@@ -6,7 +6,7 @@
   	<name>CLOG</name>
   	<groupId>org.sakaiproject.clog</groupId>
   	<artifactId>clog</artifactId>
-  	<version>0.9.3-SNAPSHOT</version>
+  	<version>0.9.3</version>
   	<packaging>pom</packaging>
 
 	<parent>
@@ -114,9 +114,9 @@
     </pluginRepositories>
     
     <scm>
-    	<connection>scm:svn:https://source.sakaiproject.org/contrib/clog/trunk</connection>
-    	<developerConnection>scm:svn:https://source.sakaiproject.org/contrib/clog/trunk</developerConnection>
-    	<url>https://source.sakaiproject.org/contrib/clog/trunk</url>
+    	<connection>scm:svn:https://source.sakaiproject.org/contrib/clog/tags/clog-0.9.3</connection>
+    	<developerConnection>scm:svn:https://source.sakaiproject.org/contrib/clog/tags/clog-0.9.3</developerConnection>
+    	<url>https://source.sakaiproject.org/contrib/clog/tags/clog-0.9.3</url>
   	</scm>
   	
   	<issueManagement>
