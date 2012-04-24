@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.sakaiproject.clog.api.datamodel.Comment;
-import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.QueryBean;
 
