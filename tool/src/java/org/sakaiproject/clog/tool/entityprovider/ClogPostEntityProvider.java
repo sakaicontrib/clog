@@ -122,10 +122,35 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		post.setCommentable(commentable);
 
 		boolean isNew = "".equals(post.getId());
+		
+		boolean isWithdrawn = false;
+		
+		boolean isBeingPublished = false;
+		
+		if(!isNew) {
+			try {
+				Post oldPost = clogManager.getPostHeader(post.getId());
+				if(oldPost.isReady() && post.isPrivate()) {
+					isWithdrawn = true;
+				} else if(oldPost.isPrivate() && post.isReady()) {
+					isBeingPublished = true;
+				}
+			} catch(Exception e) {
+				LOG.warn("Failed to get post with id '" + post.getId() + "'",e);
+			}
+		}
 
 		if (clogManager.savePost(post)) {
 			if ((isNew || (mode != null && "publish".equals(mode))) && post.isReady() && !post.isAutoSave()) {
 				sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED, post.getReference(), post.getSiteId());
+			}
+			
+			if (isWithdrawn) {
+				sakaiProxy.postEvent(ClogManager.CLOG_POST_WITHDRAWN, post.getReference(), post.getSiteId());
+			}
+			
+			if (isBeingPublished) {
+				sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, post.getReference(), post.getSiteId());
 			}
 
 			return post.getId();

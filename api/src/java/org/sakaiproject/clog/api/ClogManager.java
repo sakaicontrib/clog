@@ -16,6 +16,7 @@ public interface ClogManager extends EntityProducer {
     public static final String CLOG_COMMENT_DELETED = "clog.comment.deleted";
     public static final String CLOG_POST_RECYCLED = "clog.post.recycled";
     public static final String CLOG_POST_RESTORED = "clog.post.restored";
+    public static final String CLOG_POST_WITHDRAWN = "clog.post.withdrawn";
 
     public Post getPost(String postId) throws Exception;
     
