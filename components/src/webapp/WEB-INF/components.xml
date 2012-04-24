@@ -28,7 +28,7 @@
       parent="org.sakaiproject.user.api.UserNotificationPreferencesRegistration"
       class="org.sakaiproject.clog.impl.ClogUserNotificationPreferencesRegistrationImpl"
       init-method="init" singleton="true">
-      <property name="bundleLocation"><value>Messages</value></property>
+      <property name="bundleLocation"><value>org.sakaiproject.clog.bundle.Messages</value></property>
       <property name="sectionTitleBundleKey"><value>prefs_title</value></property>
       <property name="sectionDescriptionBundleKey"><value>prefs_description</value></property>
       <property name="overrideSectionTitleBundleKey"><value>prefs_title_override</value></property>
