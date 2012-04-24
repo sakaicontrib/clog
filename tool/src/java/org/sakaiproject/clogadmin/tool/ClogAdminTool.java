@@ -11,6 +11,7 @@ import javax.servlet.http.*;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogManager;
+import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
@@ -110,6 +111,18 @@ public class ClogAdminTool extends HttpServlet {
 				String siteId = postRS.getString(ISQLGenerator.SITE_ID);
 
 				String title = postRS.getString(ISQLGenerator.TITLE);
+				
+				QueryBean query = new QueryBean();
+				query.setSiteId(siteId);
+				query.setTitle(title);
+				query.setKeyword("imported_from_blogger");
+				
+				List<Post> posts = clogManager.getPosts(query);
+				
+				if(posts.size() > 0) {
+					// Already imported. Skip it.
+					continue;
+				}
 
 				String postCreatorId = postRS.getString("IDCREATOR");
 
@@ -118,6 +131,7 @@ public class ClogAdminTool extends HttpServlet {
 				String xml = postRS.getString("XML");
 
 				Post post = new Post();
+				post.addKeyword("imported_from_blogger");
 				post.setSiteId(siteId);
 
 				saxParser.populatePost(xml, post);
@@ -233,6 +247,20 @@ public class ClogAdminTool extends HttpServlet {
 
 				String title = postRS.getString(ISQLGenerator.TITLE);
 				post.setTitle(title);
+				
+				QueryBean query = new QueryBean();
+				query.setSiteId(siteId);
+				query.setTitle(title);
+				query.setKeyword("imported_from_blog");
+				
+				List<Post> posts = clogManager.getPosts(query);
+				
+				if(posts.size() > 0) {
+					// Already imported. Skip it.
+					continue;
+				}
+				
+				post.addKeyword("imported_from_blog");
 
 				Date postCreatedDate = postRS.getTimestamp(ISQLGenerator.CREATED_DATE);
 				post.setCreatedDate(postCreatedDate.getTime());
@@ -243,8 +271,8 @@ public class ClogAdminTool extends HttpServlet {
 				String postCreatorId = postRS.getString(ISQLGenerator.CREATOR_ID);
 				post.setCreatorId(postCreatorId);
 
-				String keywords = postRS.getString(ISQLGenerator.KEYWORDS);
-				post.setKeywords(keywords);
+				String keywordsText = postRS.getString(ISQLGenerator.KEYWORDS);
+				post.setKeywordsText(keywordsText);
 
 				int allowComments = postRS.getInt(ISQLGenerator.ALLOW_COMMENTS);
 				post.setCommentable(allowComments == 1);
@@ -470,6 +498,20 @@ public class ClogAdminTool extends HttpServlet {
 					String siteId = location.substring(location.lastIndexOf("/") + 1);
 					post.setSiteId(siteId);
 				}
+				
+				QueryBean query = new QueryBean();
+				query.setSiteId(post.getSiteId());
+				query.setTitle(title);
+				query.setKeyword("imported_from_blogwow");
+				
+				List<Post> posts = clogManager.getPosts(query);
+				
+				if(posts.size() > 0) {
+					// Already imported. Skip it.
+					continue;
+				}
+				
+				post.addKeyword("imported_from_blogwow");
 				
 				post.setTitle(title);
 				post.setCreatedDate(created.getTime());

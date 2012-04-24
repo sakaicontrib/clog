@@ -26,6 +26,10 @@ public class QueryBean {
     private String _user;
 
     private String siteId;
+    
+    private String title;
+    
+    private String keyword;
 
     private String caller;
 
@@ -39,10 +43,12 @@ public class QueryBean {
 	_user = "";
 	siteId = "";
 	caller = "";
+	title = "";
+	keyword = "";
     }
 
     public boolean hasConditions() {
-	return _user.length() > 0 || siteId.length() > 0 || visibilities.size() > 0;
+	return _user.length() > 0 || siteId.length() > 0 || visibilities.size() > 0 || title.length() > 0 || keyword.length() > 0;
     }
 
     public boolean queryBySiteId() {
@@ -51,6 +57,12 @@ public class QueryBean {
 
     public boolean queryByVisibility() {
 	return visibilities.size() > 0;
+    }
+    public boolean queryByTitle() {
+    	return title.length() > 0;
+    }
+    public boolean queryByKeyword() {
+    	return keyword.length() > 0;
     }
 
     public void setVisibilities(String[] visibilities) {
@@ -79,6 +91,22 @@ public class QueryBean {
 
     public String getSiteId() {
 	return siteId;
+    }
+    
+    public void setTitle(String title) {
+    	this.title = title;
+    }
+    
+    public String getTitle() {
+    	return this.title;
+    }
+    
+    public void setKeyword(String keyword) {
+    	this.keyword = keyword;
+    }
+    
+    public String getKeyword() {
+    	return this.keyword;
     }
 
     public boolean queryByCreator() {

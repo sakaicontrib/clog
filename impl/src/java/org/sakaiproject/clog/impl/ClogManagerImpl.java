@@ -110,11 +110,6 @@ public class ClogManagerImpl implements ClogManager {
 
 	public boolean savePost(Post post) {
 		try {
-			// Post asPost = persistenceManager.getAutosavedPost(post.getId());
-
-			// if(asPost != null)
-			// post.setId("");
-
 			return persistenceManager.savePost(post);
 		} catch (Exception e) {
 			logger.error("Caught exception whilst creating post", e);

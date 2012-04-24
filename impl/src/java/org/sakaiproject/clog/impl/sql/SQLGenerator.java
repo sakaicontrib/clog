@@ -93,6 +93,12 @@ public class SQLGenerator implements ISQLGenerator {
 	    // we know that there are conditions. Build the statement
 	    if (query.queryBySiteId())
 		statement.append(SITE_ID).append(" = '").append(query.getSiteId()).append("' AND ");
+	    
+	    if (query.queryByTitle())
+		statement.append(TITLE).append(" = '").append(query.getTitle()).append("' AND ");
+	    
+	    if (query.queryByKeyword())
+		statement.append(KEYWORDS).append(" LIKE '%").append(query.getKeyword()).append("%' AND ");
 
 	    if (query.queryByCreator())
 		statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND");
@@ -360,7 +366,7 @@ public class SQLGenerator implements ISQLGenerator {
 
 	postST.setString(7, post.getCreatorId());
 
-	postST.setString(8, post.getKeywords());
+	postST.setString(8, post.getKeywordsText());
 
 	postST.setInt(9, (post.isCommentable()) ? 1 : 0);
 
@@ -413,7 +419,7 @@ public class SQLGenerator implements ISQLGenerator {
 
 		postST.setString(8, post.getVisibility());
 
-		postST.setString(9, post.getKeywords());
+		postST.setString(9, post.getKeywordsText());
 
 		postST.setInt(10, (post.isCommentable()) ? 1 : 0);
 
