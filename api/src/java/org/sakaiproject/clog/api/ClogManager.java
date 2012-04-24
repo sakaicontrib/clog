@@ -3,7 +3,6 @@ package org.sakaiproject.clog.api;
 import java.util.*;
 
 import org.sakaiproject.clog.api.datamodel.Comment;
-import org.sakaiproject.clog.api.datamodel.GlobalPreferences;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.EntityProducer;
