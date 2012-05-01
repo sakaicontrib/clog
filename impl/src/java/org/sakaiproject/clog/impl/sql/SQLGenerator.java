@@ -173,6 +173,7 @@ public class SQLGenerator implements ISQLGenerator {
 	statement.append("(");
 	statement.append(COMMENT_ID + " CHAR(36) NOT NULL,");
 	statement.append(POST_ID + " CHAR(36) NOT NULL,");
+	statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
 	statement.append(CREATOR_ID + " CHAR(36) NOT NULL,");
 	statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL,");
 	statement.append(MODIFIED_DATE + " " + TIMESTAMP + " NOT NULL,");
@@ -205,6 +206,10 @@ public class SQLGenerator implements ISQLGenerator {
      */
     public String getSelectComments(String postId) {
 	return "SELECT * FROM " + TABLE_COMMENT + " WHERE " + POST_ID + "='" + postId + "' ORDER BY " + CREATED_DATE + " ASC";
+    }
+    
+    public String getSelectComment(String commentId) {
+    	return "SELECT * FROM " + TABLE_COMMENT + " WHERE " + COMMENT_ID + "='" + commentId + "'";
     }
 
     /*
@@ -239,16 +244,17 @@ public class SQLGenerator implements ISQLGenerator {
 	    if ("".equals(comment.getId())) {
 		comment.setId(UUID.randomUUID().toString());
 
-		String sql = "INSERT INTO " + TABLE_COMMENT + " VALUES(?,?,?,?,?,?)";
+		String sql = "INSERT INTO " + TABLE_COMMENT + " VALUES(?,?,?,?,?,?,?)";
 
 		PreparedStatement statement = connection.prepareStatement(sql);
 
 		statement.setString(1, comment.getId());
 		statement.setString(2, comment.getPostId());
-		statement.setString(3, comment.getCreatorId());
-		statement.setTimestamp(4, new Timestamp(comment.getCreatedDate()));
-		statement.setTimestamp(5, new Timestamp(comment.getModifiedDate()));
-		statement.setString(6, comment.getContent());
+		statement.setString(3, comment.getSiteId());
+		statement.setString(4, comment.getCreatorId());
+		statement.setTimestamp(5, new Timestamp(comment.getCreatedDate()));
+		statement.setTimestamp(6, new Timestamp(comment.getModifiedDate()));
+		statement.setString(7, comment.getContent());
 
 		statements.add(statement);
 

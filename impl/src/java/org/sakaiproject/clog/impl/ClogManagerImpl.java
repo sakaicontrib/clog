@@ -76,6 +76,17 @@ public class ClogManagerImpl implements ClogManager {
 			throw new Exception("The current user does not have permissions to read this post.");
 	}
 	
+	public Comment getComment(String commentId) throws Exception {
+		if (logger.isDebugEnabled())
+			logger.debug("getComment(" + commentId + ")");
+
+		Comment comment = persistenceManager.getComment(commentId);
+		//if (securityManager.canCurrentUserReadPost(post))
+			return comment;
+		//else
+			//throw new Exception("The current user does not have permissions to read this post.");
+	}
+	
 	public Post getPostHeader(String postId) throws Exception {
 		if (logger.isDebugEnabled())
 			logger.debug("getUnfilteredPost(" + postId + ")");
@@ -273,10 +284,16 @@ public class ClogManagerImpl implements ClogManager {
 
 		try {
 			String reference = ref.getReference();
-
-			int lastIndex = reference.lastIndexOf(Entity.SEPARATOR);
-			String postId = reference.substring(lastIndex + 1);
-			rv = getPost(postId);
+			
+			String[] parts = reference.split(Entity.SEPARATOR);
+			
+			if(parts.length == 5) {
+				String postId = parts[4];
+				rv = getPost(postId);
+			} else if(parts.length == 7) {
+				String commentId = parts[6];
+				rv = getComment(commentId);
+			}
 		} catch (Exception e) {
 			logger.warn("getEntity(): " + e);
 		}

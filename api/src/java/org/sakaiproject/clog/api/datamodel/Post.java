@@ -1,7 +1,6 @@
 package org.sakaiproject.clog.api.datamodel;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;

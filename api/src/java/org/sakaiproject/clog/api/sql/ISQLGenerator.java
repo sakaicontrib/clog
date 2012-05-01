@@ -60,6 +60,8 @@ public interface ISQLGenerator {
     public abstract String getSelectAllPost(String siteId);
 
     public abstract String getSelectPost(String OID);
+    
+    public String getSelectComment(String commentId);
 
     public String getSelectComments(String postId);
 

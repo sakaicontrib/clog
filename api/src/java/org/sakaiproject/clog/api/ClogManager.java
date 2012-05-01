@@ -30,6 +30,8 @@ public interface ClogManager extends EntityProducer {
     public boolean savePost(Post post);
 
     public boolean deletePost(String postId);
+    
+	public Comment getComment(String commentId) throws Exception;
 
     public boolean saveComment(Comment comment);
 

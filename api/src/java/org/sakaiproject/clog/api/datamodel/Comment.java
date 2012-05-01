@@ -18,11 +18,18 @@
 package org.sakaiproject.clog.api.datamodel;
 
 import java.util.Date;
-import java.util.UUID;
+import java.util.Stack;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.sakaiproject.clog.api.ClogManager;
+import org.sakaiproject.clog.api.cover.SakaiProxy;
+import org.sakaiproject.entity.api.Entity;
+import org.sakaiproject.entity.api.ResourceProperties;
+import org.sakaiproject.util.BaseResourceProperties;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-public class Comment {
+public class Comment implements Entity{
     private String id = "";
     private String content = "";
     private long createdDate = -1L;
@@ -30,6 +37,7 @@ public class Comment {
     private String creatorId;
     private String creatorDisplayName;
     private String postId;
+    private String siteId;
 
     public Comment() {
 	this("");
@@ -103,6 +111,14 @@ public class Comment {
 	this.postId = postId;
     }
 
+    public String getSiteId() {
+	return siteId;
+    }
+    
+    public void setSiteId(String siteId) {
+	this.siteId = siteId;
+    }
+
     public String getPostId() {
 	return postId;
     }
@@ -114,4 +130,33 @@ public class Comment {
     public String getCreatorDisplayName() {
 	return creatorDisplayName;
     }
+
+	public ResourceProperties getProperties() {
+		ResourceProperties rp = new BaseResourceProperties();
+
+		rp.addProperty("id", getId());
+		return rp;
+	}
+
+	public String getReference() {
+		return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + siteId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
+	}
+
+	public String getReference(String arg0) {
+		return getReference();
+	}
+
+	public String getUrl() {
+    	String toolId = SakaiProxy.getClogToolId(siteId);
+		return SakaiProxy.getServerUrl() + "/portal/directtool/" + toolId + "?state=post&postId=" + getId();
+	}
+
+	public String getUrl(String arg0) {
+		return getUrl();
+	}
+
+	public Element toXml(Document arg0, Stack arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

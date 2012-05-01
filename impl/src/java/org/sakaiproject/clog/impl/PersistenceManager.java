@@ -628,27 +628,11 @@ public class PersistenceManager {
 
 				String sql = sqlGenerator.getSelectComments(postId);
 				commentRS = commentST.executeQuery(sql);
-
-				while (commentRS.next()) {
-					String commentId = commentRS.getString(ISQLGenerator.COMMENT_ID);
-					String commentCreatorId = commentRS.getString(ISQLGenerator.CREATOR_ID);
-					Date commentCreatedDate = commentRS.getTimestamp(ISQLGenerator.CREATED_DATE);
-					Date commentModifiedDate = commentRS.getTimestamp(ISQLGenerator.MODIFIED_DATE);
-					String commentContent = commentRS.getString(ISQLGenerator.CONTENT);
-
-					Comment comment = new Comment();
-					comment.setId(commentId);
-					comment.setPostId(post.getId());
-					comment.setCreatorId(commentCreatorId);
-					comment.setCreatedDate(commentCreatedDate.getTime());
-					comment.setContent(commentContent);
-					comment.setModifiedDate(commentModifiedDate.getTime());
-					comment.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
-
-					post.addComment(comment);
-				}
-
+				
+				List<Comment> comments = transformResultSetInCommentCollection(commentRS);
 				commentRS.close();
+				
+				post.setComments(comments);
 
 				post.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
 
@@ -671,6 +655,67 @@ public class PersistenceManager {
 		}
 
 		return result;
+	}
+	
+	private List<Comment> transformResultSetInCommentCollection(ResultSet rs) throws Exception {
+		List<Comment> result = new ArrayList<Comment>();
+
+		if (rs == null)
+			return result;
+		
+		while (rs.next()) {
+			Comment comment = new Comment();
+			comment.setId(rs.getString(ISQLGenerator.COMMENT_ID));
+			comment.setPostId(rs.getString(ISQLGenerator.POST_ID));
+			comment.setSiteId(rs.getString("SITE_ID"));
+			comment.setCreatorId(rs.getString(ISQLGenerator.CREATOR_ID));
+			comment.setCreatedDate(rs.getTimestamp(ISQLGenerator.CREATED_DATE).getTime());
+			comment.setContent(rs.getString(ISQLGenerator.CONTENT));
+			comment.setModifiedDate(rs.getTimestamp(ISQLGenerator.MODIFIED_DATE).getTime());
+			comment.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
+			
+			result.add(comment);
+		}
+		
+		return result;
+	}
+	
+	public Comment getComment(String commentId) throws Exception {
+		if (logger.isDebugEnabled())
+			logger.debug("getComment(" + commentId + ")");
+
+		Connection connection = null;
+		Statement st = null;
+		ResultSet rs = null;
+		try {
+			connection = sakaiProxy.borrowConnection();
+			st = connection.createStatement();
+			String sql = sqlGenerator.getSelectComment(commentId);
+			rs = st.executeQuery(sql);
+			List<Comment> comments = transformResultSetInCommentCollection(rs);
+			if(comments.size() < 1) {
+				logger.error("Failed to find comment with id '" + commentId + "'");
+				return null;
+			}
+
+			return comments.get(0);
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (Exception e) {
+				}
+			}
+
+			if (st != null) {
+				try {
+					st.close();
+				} catch (Exception e) {
+				}
+			}
+
+			sakaiProxy.returnConnection(connection);
+		}
 	}
 
 	public void setSakaiProxy(SakaiProxy sakaiProxy) {

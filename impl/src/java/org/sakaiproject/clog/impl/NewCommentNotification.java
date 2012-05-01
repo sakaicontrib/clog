@@ -2,9 +2,12 @@ package org.sakaiproject.clog.impl;
 
 import java.util.List;
 
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
+import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.component.cover.ServerConfigurationService;
+import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.cover.EntityManager;
 import org.sakaiproject.event.api.Event;
@@ -41,7 +44,7 @@ public class NewCommentNotification extends SiteEmailNotification{
         String from= getFrom(event);
         // get the message
         Reference ref = EntityManager.newReference(event.getResource());
-        Post msg = (Post) ref.getEntity();
+        Comment msg = (Comment) ref.getEntity();
         String userId=msg.getCreatorId();
 
         //checks if "from" email id has to be included? and whether the notification is a delayed notification?. SAK-13512
@@ -70,11 +73,14 @@ public class NewCommentNotification extends SiteEmailNotification{
 	
 	protected String plainTextContent(Event event) {
 		Reference ref = EntityManager.newReference(event.getResource());
+        Comment comment = (Comment) ref.getEntity();
+        
+		ref = EntityManager.newReference(ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + comment.getSiteId() + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + comment.getPostId());
         Post post = (Post) ref.getEntity();
         
 		String creatorName = "";
 		try {
-			creatorName = UserDirectoryService.getUser(post.getCreatorId()).getDisplayName();
+			creatorName = UserDirectoryService.getUser(comment.getCreatorId()).getDisplayName();
 		} catch (UserNotDefinedException e) {
 			e.printStackTrace();
 		}
@@ -84,11 +90,11 @@ public class NewCommentNotification extends SiteEmailNotification{
 	
 	protected String getSubject(Event event) {
 		Reference ref = EntityManager.newReference(event.getResource());
-        Post post = (Post) ref.getEntity();
+        Comment comment = (Comment) ref.getEntity();
         
         String siteTitle = "";
 		try {
-			siteTitle = SiteService.getSite(post.getSiteId()).getTitle();
+			siteTitle = SiteService.getSite(comment.getSiteId()).getTitle();
 		} catch (IdUnusedException e) {
 			e.printStackTrace();
 		}
