@@ -24,6 +24,7 @@ import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 
 public class PersistenceManager {
+
 	private Logger logger = Logger.getLogger(PersistenceManager.class);
 
 	private ISQLGenerator sqlGenerator;
@@ -628,10 +629,10 @@ public class PersistenceManager {
 
 				String sql = sqlGenerator.getSelectComments(postId);
 				commentRS = commentST.executeQuery(sql);
-				
+
 				List<Comment> comments = transformResultSetInCommentCollection(commentRS);
 				commentRS.close();
-				
+
 				post.setComments(comments);
 
 				post.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
@@ -656,13 +657,13 @@ public class PersistenceManager {
 
 		return result;
 	}
-	
+
 	private List<Comment> transformResultSetInCommentCollection(ResultSet rs) throws Exception {
 		List<Comment> result = new ArrayList<Comment>();
 
 		if (rs == null)
 			return result;
-		
+
 		while (rs.next()) {
 			Comment comment = new Comment();
 			comment.setId(rs.getString(ISQLGenerator.COMMENT_ID));
@@ -673,13 +674,13 @@ public class PersistenceManager {
 			comment.setContent(rs.getString(ISQLGenerator.CONTENT));
 			comment.setModifiedDate(rs.getTimestamp(ISQLGenerator.MODIFIED_DATE).getTime());
 			comment.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
-			
+
 			result.add(comment);
 		}
-		
+
 		return result;
 	}
-	
+
 	public Comment getComment(String commentId) throws Exception {
 		if (logger.isDebugEnabled())
 			logger.debug("getComment(" + commentId + ")");
@@ -693,7 +694,7 @@ public class PersistenceManager {
 			String sql = sqlGenerator.getSelectComment(commentId);
 			rs = st.executeQuery(sql);
 			List<Comment> comments = transformResultSetInCommentCollection(rs);
-			if(comments.size() < 1) {
+			if (comments.size() < 1) {
 				logger.error("Failed to find comment with id '" + commentId + "'");
 				return null;
 			}
@@ -839,7 +840,7 @@ public class PersistenceManager {
 				int totalComments = rs.getInt(ISQLGenerator.TOTAL_COMMENTS);
 				long lastPostDate = -1L;
 				Timestamp ts = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE);
-				if(ts != null) {
+				if (ts != null) {
 					lastPostDate = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE).getTime();
 				}
 				author.setNumberOfPosts(totalPosts);
@@ -849,7 +850,7 @@ public class PersistenceManager {
 
 			return true;
 		} catch (Exception e) {
-			logger.error("Failed to populate author data.",e);
+			logger.error("Failed to populate author data.", e);
 			return false;
 		} finally {
 			if (rs != null) {

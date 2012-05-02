@@ -21,117 +21,121 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QueryBean {
-    private List<String> visibilities;
 
-    private String _user;
+	private List<String> visibilities;
 
-    private String siteId;
-    
-    private String title;
-    
-    private String keyword;
+	private String _user;
 
-    private String caller;
+	private String siteId;
 
-    private boolean searchAutoSaved = false;
+	private String title;
+
+	private String keyword;
+
+	private String caller;
+
+	private boolean searchAutoSaved = false;
 
 	private boolean skipFilter;
 
-    public QueryBean() {
-	visibilities = new ArrayList<String>(); // this mean no filter by
-						// visibility
-	_user = "";
-	siteId = "";
-	caller = "";
-	title = "";
-	keyword = "";
-    }
-
-    public boolean hasConditions() {
-	return _user.length() > 0 || siteId.length() > 0 || visibilities.size() > 0 || title.length() > 0 || keyword.length() > 0;
-    }
-
-    public boolean queryBySiteId() {
-	return !siteId.equals("");
-    }
-
-    public boolean queryByVisibility() {
-	return visibilities.size() > 0;
-    }
-    public boolean queryByTitle() {
-    	return title.length() > 0;
-    }
-    public boolean queryByKeyword() {
-    	return keyword.length() > 0;
-    }
-
-    public void setVisibilities(String[] visibilities) {
-	this.visibilities.clear();
-
-	for (String v : visibilities) {
-	    this.visibilities.add(v);
+	public QueryBean() {
+		visibilities = new ArrayList<String>(); // this mean no filter by
+		// visibility
+		_user = "";
+		siteId = "";
+		caller = "";
+		title = "";
+		keyword = "";
 	}
-    }
 
-    public List<String> getVisibilities() {
-	return visibilities;
-    }
+	public boolean hasConditions() {
+		return _user.length() > 0 || siteId.length() > 0 || visibilities.size() > 0 || title.length() > 0 || keyword.length() > 0;
+	}
 
-    public void setCreator(String user) {
-	this._user = user;
-    }
+	public boolean queryBySiteId() {
+		return !siteId.equals("");
+	}
 
-    public String getCreator() {
-	return _user;
-    }
+	public boolean queryByVisibility() {
+		return visibilities.size() > 0;
+	}
 
-    public void setSiteId(String siteId) {
-	this.siteId = siteId;
-    }
+	public boolean queryByTitle() {
+		return title.length() > 0;
+	}
 
-    public String getSiteId() {
-	return siteId;
-    }
-    
-    public void setTitle(String title) {
-    	this.title = title;
-    }
-    
-    public String getTitle() {
-    	return this.title;
-    }
-    
-    public void setKeyword(String keyword) {
-    	this.keyword = keyword;
-    }
-    
-    public String getKeyword() {
-    	return this.keyword;
-    }
+	public boolean queryByKeyword() {
+		return keyword.length() > 0;
+	}
 
-    public boolean queryByCreator() {
-	return !_user.trim().equals("");
-    }
+	public void setVisibilities(String[] visibilities) {
+		this.visibilities.clear();
 
-    public void setCaller(String caller) {
-	this.caller = caller;
-    }
+		for (String v : visibilities) {
+			this.visibilities.add(v);
+		}
+	}
 
-    public String getCaller() {
-	return caller;
-    }
+	public List<String> getVisibilities() {
+		return visibilities;
+	}
 
-    public void setSearchAutoSaved(boolean searchAutoSaved) {
-	this.searchAutoSaved = searchAutoSaved;
-    }
+	public void setCreator(String user) {
+		this._user = user;
+	}
 
-    public boolean isSearchAutoSaved() {
-	return searchAutoSaved;
-    }
+	public String getCreator() {
+		return _user;
+	}
+
+	public void setSiteId(String siteId) {
+		this.siteId = siteId;
+	}
+
+	public String getSiteId() {
+		return siteId;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getTitle() {
+		return this.title;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	public String getKeyword() {
+		return this.keyword;
+	}
+
+	public boolean queryByCreator() {
+		return !_user.trim().equals("");
+	}
+
+	public void setCaller(String caller) {
+		this.caller = caller;
+	}
+
+	public String getCaller() {
+		return caller;
+	}
+
+	public void setSearchAutoSaved(boolean searchAutoSaved) {
+		this.searchAutoSaved = searchAutoSaved;
+	}
+
+	public boolean isSearchAutoSaved() {
+		return searchAutoSaved;
+	}
 
 	public void setSkipFilter(boolean skipFilter) {
 		this.skipFilter = skipFilter;
 	}
+
 	public boolean isSkipFilter() {
 		return skipFilter;
 	}

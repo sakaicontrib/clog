@@ -27,6 +27,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class ClogManagerImpl implements ClogManager {
+
 	private Logger logger = Logger.getLogger(ClogManagerImpl.class);
 
 	private PersistenceManager persistenceManager;
@@ -75,18 +76,19 @@ public class ClogManagerImpl implements ClogManager {
 		else
 			throw new Exception("The current user does not have permissions to read this post.");
 	}
-	
+
 	public Comment getComment(String commentId) throws Exception {
 		if (logger.isDebugEnabled())
 			logger.debug("getComment(" + commentId + ")");
 
 		Comment comment = persistenceManager.getComment(commentId);
-		//if (securityManager.canCurrentUserReadPost(post))
-			return comment;
-		//else
-			//throw new Exception("The current user does not have permissions to read this post.");
+		// if (securityManager.canCurrentUserReadPost(post))
+		return comment;
+		// else
+		// throw new
+		// Exception("The current user does not have permissions to read this post.");
 	}
-	
+
 	public Post getPostHeader(String postId) throws Exception {
 		if (logger.isDebugEnabled())
 			logger.debug("getUnfilteredPost(" + postId + ")");
@@ -284,13 +286,13 @@ public class ClogManagerImpl implements ClogManager {
 
 		try {
 			String reference = ref.getReference();
-			
+
 			String[] parts = reference.split(Entity.SEPARATOR);
-			
-			if(parts.length == 5) {
+
+			if (parts.length == 5) {
 				String postId = parts[4];
 				rv = getPost(postId);
-			} else if(parts.length == 7) {
+			} else if (parts.length == 7) {
 				String commentId = parts[6];
 				rv = getComment(commentId);
 			}

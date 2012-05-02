@@ -27,7 +27,7 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 public class ClogRSSEntityProvider extends AbstractEntityProvider implements AutoRegisterEntityProvider, Inputable, Outputable, Describeable, ActionsExecutable {
 
 	private ClogManager clogManager;
-	
+
 	private SimpleDateFormat rfc822DateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 
 	public void setClogManager(ClogManager clogManager) {
@@ -59,22 +59,22 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 	}
 
 	@EntityCustomAction(action = "authors", viewKey = EntityView.VIEW_SHOW)
-	public String handleAuthors(EntityReference ref,Map<String,Object> params) {
+	public String handleAuthors(EntityReference ref, Map<String, Object> params) {
 		String authorId = ref.getId();
-		
+
 		if (authorId == null)
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the author id");
 		String currentUserId = developerHelperService.getCurrentUserId();
-		
+
 		QueryBean qb = new QueryBean();
-		if(currentUserId != null) {
+		if (currentUserId != null) {
 			qb.setSkipFilter(true);
 		}
 		qb.setCreator(authorId);
-		
+
 		String siteId = (String) params.get("siteId");
-		
-		if(siteId != null && siteId.length() > 0 && !"!gateway".equals(siteId)) {
+
+		if (siteId != null && siteId.length() > 0 && !"!gateway".equals(siteId)) {
 			qb.setSiteId(siteId);
 		}
 
@@ -85,16 +85,15 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Invalid post id");
 		}
-		
+
 		String authorDisplayName = sakaiProxy.getDisplayNameForTheUser(authorId);
-		
-		
+
 		StringBuilder rssXml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<channel>\n");
 		rssXml.append("\n<title>").append(authorDisplayName).append("</title>");
 		rssXml.append("\n<link>").append(sakaiProxy.getServerUrl()).append("/direct/clog-rss/").append(authorId).append("/authors.xml?siteId%3D").append(siteId).append("</link>");
 		rssXml.append("\n<description>").append("Blog posts for " + authorDisplayName).append("</description>");
 		rssXml.append("\n<language>en</language>");
-		for(Post post : posts) {
+		for (Post post : posts) {
 			String encodedUrl = sakaiProxy.getPortalUrl() + "/tool/" + sakaiProxy.getClogToolId(siteId) + "/posts/" + post.getId();
 			rssXml.append("\n<item>");
 			rssXml.append("\n<title>").append(post.getTitle()).append("</title>");
@@ -108,17 +107,17 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 			rssXml.append("\n</item>");
 		}
 		rssXml.append("\n</channel>\n</rss>");
-		
+
 		return rssXml.toString();
 	}
-	
+
 	@EntityCustomAction(action = "allSite", viewKey = EntityView.VIEW_SHOW)
 	public String handleAllSite(EntityReference ref) {
 		String siteId = ref.getId();
-		
+
 		if (siteId == null)
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the site id");
-		
+
 		QueryBean qb = new QueryBean();
 		qb.setSkipFilter(true);
 		qb.setSiteId(siteId);
@@ -130,16 +129,15 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Invalid post id");
 		}
-		
+
 		String siteTitle = sakaiProxy.getSiteTitle(siteId);
-		
-		
+
 		StringBuilder rssXml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<channel>\n");
 		rssXml.append("\n<title>").append(siteTitle).append("</title>");
 		rssXml.append("\n<link>").append(sakaiProxy.getServerUrl()).append("/direct/clog-rss/").append(siteId).append("/allSite.xml").append(siteId).append("</link>");
 		rssXml.append("\n<description>").append("Blog posts for " + siteTitle).append("</description>");
 		rssXml.append("\n<language>en</language>");
-		for(Post post : posts) {
+		for (Post post : posts) {
 			String encodedUrl = sakaiProxy.getPortalUrl() + "/tool/" + sakaiProxy.getClogToolId(siteId) + "/posts/" + post.getId();
 			rssXml.append("\n<item>");
 			rssXml.append("\n<title>").append(post.getTitle()).append("</title>");
@@ -153,7 +151,7 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 			rssXml.append("\n</item>");
 		}
 		rssXml.append("\n</channel>\n</rss>");
-		
+
 		return rssXml.toString();
 	}
 

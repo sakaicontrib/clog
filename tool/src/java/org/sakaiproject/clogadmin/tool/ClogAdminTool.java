@@ -23,6 +23,7 @@ import org.sakaiproject.component.api.ComponentManager;
  * @author Adrian Fish (a.fish@lancaster.ac.uk)
  */
 public class ClogAdminTool extends HttpServlet {
+
 	private Logger logger = Logger.getLogger(getClass());
 
 	private SakaiProxy sakaiProxy;
@@ -40,49 +41,49 @@ public class ClogAdminTool extends HttpServlet {
 
 		if (sakaiProxy == null)
 			throw new ServletException("sakaiProxy MUST be initialised.");
-		
-		if(!sakaiProxy.isCurrentUserAdmin()) {
+
+		if (!sakaiProxy.isCurrentUserAdmin()) {
 			throw new ServletException("CLOG admin can only be used by Sakai super users.");
 		}
-		
+
 		request.setAttribute("skin", sakaiProxy.getSakaiSkin());
 		request.setAttribute("toolId", sakaiProxy.getCurrentToolId());
-		
+
 		response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/admin.jsp");
-        dispatcher.include(request,response);
+		response.setStatus(HttpServletResponse.SC_OK);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/admin.jsp");
+		dispatcher.include(request, response);
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String blogwow =  request.getParameter("blogwow");
-		String blogger =  request.getParameter("blogger");
-		String blog2 =  request.getParameter("blog2");
-		
+		String blogwow = request.getParameter("blogwow");
+		String blogger = request.getParameter("blogger");
+		String blog2 = request.getParameter("blog2");
+
 		int numberImported = 0;
-		
-		if(blogwow != null) {
+
+		if (blogwow != null) {
 			numberImported += importBlogWowData();
 		}
-		
-		if(blogger != null) {
+
+		if (blogger != null) {
 			numberImported += importBlog1Data();
 		}
-		
-		if(blog2 != null) {
+
+		if (blog2 != null) {
 			numberImported += importBlog2Data();
 		}
-		
+
 		request.setAttribute("skin", sakaiProxy.getSakaiSkin());
 		request.setAttribute("toolId", sakaiProxy.getCurrentToolId());
 		request.setAttribute("numberImported", numberImported);
-		
+
 		response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/result.jsp");
-        dispatcher.include(request,response);
+		response.setStatus(HttpServletResponse.SC_OK);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/result.jsp");
+		dispatcher.include(request, response);
 	}
-	
+
 	public int importBlog1Data() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Starting import of Blogger data ...");
@@ -111,15 +112,15 @@ public class ClogAdminTool extends HttpServlet {
 				String siteId = postRS.getString(ISQLGenerator.SITE_ID);
 
 				String title = postRS.getString(ISQLGenerator.TITLE);
-				
+
 				QueryBean query = new QueryBean();
 				query.setSiteId(siteId);
 				query.setTitle(title);
 				query.setKeyword("imported_from_blogger");
-				
+
 				List<Post> posts = clogManager.getPosts(query);
-				
-				if(posts.size() > 0) {
+
+				if (posts.size() > 0) {
 					// Already imported. Skip it.
 					continue;
 				}
@@ -195,7 +196,7 @@ public class ClogAdminTool extends HttpServlet {
 			}
 		}
 	}
-	
+
 	public int importBlog2Data() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Starting import of blog 2 data ...");
@@ -247,19 +248,19 @@ public class ClogAdminTool extends HttpServlet {
 
 				String title = postRS.getString(ISQLGenerator.TITLE);
 				post.setTitle(title);
-				
+
 				QueryBean query = new QueryBean();
 				query.setSiteId(siteId);
 				query.setTitle(title);
 				query.setKeyword("imported_from_blog");
-				
+
 				List<Post> posts = clogManager.getPosts(query);
-				
-				if(posts.size() > 0) {
+
+				if (posts.size() > 0) {
 					// Already imported. Skip it.
 					continue;
 				}
-				
+
 				post.addKeyword("imported_from_blog");
 
 				Date postCreatedDate = postRS.getTimestamp(ISQLGenerator.CREATED_DATE);
@@ -465,9 +466,9 @@ public class ClogAdminTool extends HttpServlet {
 			sakaiProxy.returnConnection(connection);
 		}
 	}
-	
+
 	private int importBlogWowData() {
-		
+
 		Connection connection = null;
 		Statement postST = null;
 		ResultSet postRS = null;
@@ -482,7 +483,7 @@ public class ClogAdminTool extends HttpServlet {
 			postST = connection.createStatement();
 			commentST = connection.createStatement();
 			postRS = postST.executeQuery("SELECT blogwow_entry.*,location FROM blogwow_entry,blogwow_blog where blogwow_entry.blog_id = blogwow_blog.id");
-			while(postRS.next()) {
+			while (postRS.next()) {
 				String id = postRS.getString("id");
 				String title = postRS.getString("title");
 				String text = postRS.getString("text");
@@ -491,51 +492,51 @@ public class ClogAdminTool extends HttpServlet {
 				String privacySetting = postRS.getString("privacySetting");
 				String ownerId = postRS.getString("ownerId");
 				String location = postRS.getString("location");
-				
+
 				Post post = new Post();
-				
-				if(location.startsWith("/site/")) {
+
+				if (location.startsWith("/site/")) {
 					String siteId = location.substring(location.lastIndexOf("/") + 1);
 					post.setSiteId(siteId);
 				}
-				
+
 				QueryBean query = new QueryBean();
 				query.setSiteId(post.getSiteId());
 				query.setTitle(title);
 				query.setKeyword("imported_from_blogwow");
-				
+
 				List<Post> posts = clogManager.getPosts(query);
-				
-				if(posts.size() > 0) {
+
+				if (posts.size() > 0) {
 					// Already imported. Skip it.
 					continue;
 				}
-				
+
 				post.addKeyword("imported_from_blogwow");
-				
+
 				post.setTitle(title);
 				post.setCreatedDate(created.getTime());
 				post.setModifiedDate(modified.getTime());
 				post.setCreatorId(ownerId);
 				post.setContent(text);
-				
-				if("private".equals(privacySetting)) {
+
+				if ("private".equals(privacySetting)) {
 					post.setVisibility(Visibilities.PRIVATE);
-				} else if("group".equals(privacySetting)) {
+				} else if ("group".equals(privacySetting)) {
 					post.setVisibility(Visibilities.SITE);
-				} else if("public".equals(privacySetting)) {
+				} else if ("public".equals(privacySetting)) {
 					post.setVisibility(Visibilities.PUBLIC);
 				}
-				
-				if(clogManager.savePost(post)) {
-				
+
+				if (clogManager.savePost(post)) {
+
 					commentRS = commentST.executeQuery("SELECT * FROM blogwow_comment WHERE entry_id = '" + id + "'");
-					while(commentRS.next()) {
+					while (commentRS.next()) {
 						String commentText = commentRS.getString("text");
 						Date commentCreated = commentRS.getTimestamp("dateCreated");
 						Date commentModified = commentRS.getTimestamp("dateModified");
 						String commentOwnerId = commentRS.getString("ownerId");
-					
+
 						Comment comment = new Comment();
 						comment.setCreatorId(commentOwnerId);
 						comment.setCreatedDate(commentCreated.getTime());
@@ -548,7 +549,7 @@ public class ClogAdminTool extends HttpServlet {
 					commentRS.close();
 					numberImported++;
 				}
-				
+
 			}
 		} catch (Exception e) {
 			logger.error("Exception thrown whilst importing blog wow data", e);
@@ -581,7 +582,7 @@ public class ClogAdminTool extends HttpServlet {
 
 			sakaiProxy.returnConnection(connection);
 		}
-		
+
 		return numberImported;
 	}
 }

@@ -19,98 +19,98 @@ import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.SiteEmailNotification;
 
-public class NewCommentNotification extends SiteEmailNotification{
-	
+public class NewCommentNotification extends SiteEmailNotification {
+
 	private static ResourceLoader rb = new ResourceLoader("newcomment");
-	
+
 	private SakaiProxy sakaiProxy = null;
-	
+
 	public NewCommentNotification() {
 	}
-	
-    public NewCommentNotification(String siteId) {
-        super(siteId);
-    }
-    
-    public void setSakaiProxy(SakaiProxy sakaiProxy) {
-    	this.sakaiProxy = sakaiProxy;
-    }
-    
-    protected String getFromAddress(Event event)
-    {
-        String userEmail = "no-reply@" + ServerConfigurationService.getServerName();
-        String userDisplay = ServerConfigurationService.getString("ui.service", "Sakai");
-        String no_reply= "From: \"" + userDisplay + "\" <" + userEmail + ">";
-        String from= getFrom(event);
-        // get the message
-        Reference ref = EntityManager.newReference(event.getResource());
-        Comment msg = (Comment) ref.getEntity();
-        String userId=msg.getCreatorId();
 
-        //checks if "from" email id has to be included? and whether the notification is a delayed notification?. SAK-13512
-        if ((ServerConfigurationService.getString("emailFromReplyable@org.sakaiproject.event.api.NotificationService").equals("true")) && from.equals(no_reply) && userId !=null){
+	public NewCommentNotification(String siteId) {
+		super(siteId);
+	}
 
-                try
-                {
-                    User u = UserDirectoryService.getUser(userId);
-                    userDisplay = u.getDisplayName();
-                    userEmail = u.getEmail();
-                    if ((userEmail != null) && (userEmail.trim().length()) == 0) userEmail = null;
+	public void setSakaiProxy(SakaiProxy sakaiProxy) {
+		this.sakaiProxy = sakaiProxy;
+	}
 
-                }
-                catch (UserNotDefinedException e)
-                {
-                }
+	protected String getFromAddress(Event event) {
+		String userEmail = "no-reply@" + ServerConfigurationService.getServerName();
+		String userDisplay = ServerConfigurationService.getString("ui.service", "Sakai");
+		String no_reply = "From: \"" + userDisplay + "\" <" + userEmail + ">";
+		String from = getFrom(event);
+		// get the message
+		Reference ref = EntityManager.newReference(event.getResource());
+		Comment msg = (Comment) ref.getEntity();
+		String userId = msg.getCreatorId();
 
-                // some fallback positions
-                if (userEmail == null) userEmail = "no-reply@" + ServerConfigurationService.getServerName();
-                if (userDisplay == null) userDisplay = ServerConfigurationService.getString("ui.service", "Sakai");
-                from="From: \"" + userDisplay + "\" <" + userEmail + ">";
-        }
+		// checks if "from" email id has to be included? and whether the
+		// notification is a delayed notification?. SAK-13512
+		if ((ServerConfigurationService.getString("emailFromReplyable@org.sakaiproject.event.api.NotificationService").equals("true")) && from.equals(no_reply) && userId != null) {
 
-        return from;
-    }
-	
+			try {
+				User u = UserDirectoryService.getUser(userId);
+				userDisplay = u.getDisplayName();
+				userEmail = u.getEmail();
+				if ((userEmail != null) && (userEmail.trim().length()) == 0)
+					userEmail = null;
+
+			} catch (UserNotDefinedException e) {
+			}
+
+			// some fallback positions
+			if (userEmail == null)
+				userEmail = "no-reply@" + ServerConfigurationService.getServerName();
+			if (userDisplay == null)
+				userDisplay = ServerConfigurationService.getString("ui.service", "Sakai");
+			from = "From: \"" + userDisplay + "\" <" + userEmail + ">";
+		}
+
+		return from;
+	}
+
 	protected String plainTextContent(Event event) {
 		Reference ref = EntityManager.newReference(event.getResource());
-        Comment comment = (Comment) ref.getEntity();
-        
+		Comment comment = (Comment) ref.getEntity();
+
 		ref = EntityManager.newReference(ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + comment.getSiteId() + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + comment.getPostId());
-        Post post = (Post) ref.getEntity();
-        
+		Post post = (Post) ref.getEntity();
+
 		String creatorName = "";
 		try {
 			creatorName = UserDirectoryService.getUser(comment.getCreatorId()).getDisplayName();
 		} catch (UserNotDefinedException e) {
 			e.printStackTrace();
 		}
-		
-		return rb.getFormattedMessage("noti.body", new Object[]{creatorName,post.getTitle(),post.getUrl()});
+
+		return rb.getFormattedMessage("noti.body", new Object[] { creatorName, post.getTitle(), post.getUrl() });
 	}
-	
+
 	protected String getSubject(Event event) {
 		Reference ref = EntityManager.newReference(event.getResource());
-        Comment comment = (Comment) ref.getEntity();
-        
-        String siteTitle = "";
+		Comment comment = (Comment) ref.getEntity();
+
+		String siteTitle = "";
 		try {
 			siteTitle = SiteService.getSite(comment.getSiteId()).getTitle();
 		} catch (IdUnusedException e) {
 			e.printStackTrace();
 		}
-        
-        return rb.getFormattedMessage("noti.subject", new Object[]{siteTitle});
+
+		return rb.getFormattedMessage("noti.subject", new Object[] { siteTitle });
 	}
-	
+
 	protected String getTag(String title, boolean shouldUseHtml) {
-		return rb.getFormattedMessage("noti.tag", new Object[]{ServerConfigurationService.getString("ui.service", "Sakai"), ServerConfigurationService.getPortalUrl(), title});
-    }
-	
+		return rb.getFormattedMessage("noti.tag", new Object[] { ServerConfigurationService.getString("ui.service", "Sakai"), ServerConfigurationService.getPortalUrl(), title });
+	}
+
 	protected List getHeaders(Event event) {
-        List rv = super.getHeaders(event);
-        rv.add("Subject: " + getSubject(event));
-        rv.add(getFromAddress(event));
-        rv.add(getTo(event));
-        return rv;
-    }
+		List rv = super.getHeaders(event);
+		rv.add("Subject: " + getSubject(event));
+		rv.add(getFromAddress(event));
+		rv.add(getTo(event));
+		return rv;
+	}
 }

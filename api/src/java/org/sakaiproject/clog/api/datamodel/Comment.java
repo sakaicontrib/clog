@@ -29,107 +29,108 @@ import org.sakaiproject.util.BaseResourceProperties;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Comment implements Entity{
-    private String id = "";
-    private String content = "";
-    private long createdDate = -1L;
-    private long modifiedDate = -1L;
-    private String creatorId;
-    private String creatorDisplayName;
-    private String postId;
-    private String siteId;
+public class Comment implements Entity {
 
-    public Comment() {
-	this("");
-    }
+	private String id = "";
+	private String content = "";
+	private long createdDate = -1L;
+	private long modifiedDate = -1L;
+	private String creatorId;
+	private String creatorDisplayName;
+	private String postId;
+	private String siteId;
 
-    public Comment(String text) {
-	this(text, new Date().getTime());
-    }
+	public Comment() {
+		this("");
+	}
 
-    public Comment(String text, long createdDate) {
-	setContent(text);
-	this.createdDate = createdDate;
-	modifiedDate = createdDate;
-    }
+	public Comment(String text) {
+		this(text, new Date().getTime());
+	}
 
-    /**
-     * If the supplied is different to the current, sets the modified date to
-     * the current date so ... be careful!
-     * 
-     * @param text
-     */
-    public void setContent(String text) {
-	setContent(text, true);
-    }
+	public Comment(String text, long createdDate) {
+		setContent(text);
+		this.createdDate = createdDate;
+		modifiedDate = createdDate;
+	}
 
-    public void setContent(String text, boolean modified) {
-	if (!this.content.equals(text) && modified)
-	    modifiedDate = new Date().getTime();
+	/**
+	 * If the supplied is different to the current, sets the modified date to
+	 * the current date so ... be careful!
+	 * 
+	 * @param text
+	 */
+	public void setContent(String text) {
+		setContent(text, true);
+	}
 
-	this.content = StringEscapeUtils.unescapeHtml(text.trim());
-    }
+	public void setContent(String text, boolean modified) {
+		if (!this.content.equals(text) && modified)
+			modifiedDate = new Date().getTime();
 
-    public String getContent() {
-	return content;
-    }
+		this.content = StringEscapeUtils.unescapeHtml(text.trim());
+	}
 
-    public String getCreatorId() {
-	return creatorId;
-    }
+	public String getContent() {
+		return content;
+	}
 
-    public void setCreatorId(String creatorId) {
-	this.creatorId = creatorId;
-    }
+	public String getCreatorId() {
+		return creatorId;
+	}
 
-    public void setCreatedDate(long createdDate) {
-	this.createdDate = createdDate;
-	this.modifiedDate = createdDate;
-    }
+	public void setCreatorId(String creatorId) {
+		this.creatorId = creatorId;
+	}
 
-    public long getCreatedDate() {
-	return createdDate;
-    }
+	public void setCreatedDate(long createdDate) {
+		this.createdDate = createdDate;
+		this.modifiedDate = createdDate;
+	}
 
-    public void setModifiedDate(long modifiedDate) {
-	this.modifiedDate = modifiedDate;
-    }
+	public long getCreatedDate() {
+		return createdDate;
+	}
 
-    public long getModifiedDate() {
-	return modifiedDate;
-    }
+	public void setModifiedDate(long modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public long getModifiedDate() {
+		return modifiedDate;
+	}
 
-    public String getId() {
-	return id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setPostId(String postId) {
-	this.postId = postId;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getSiteId() {
-	return siteId;
-    }
-    
-    public void setSiteId(String siteId) {
-	this.siteId = siteId;
-    }
+	public void setPostId(String postId) {
+		this.postId = postId;
+	}
 
-    public String getPostId() {
-	return postId;
-    }
+	public String getSiteId() {
+		return siteId;
+	}
 
-    public void setCreatorDisplayName(String creatorDisplayName) {
-	this.creatorDisplayName = creatorDisplayName;
-    }
+	public void setSiteId(String siteId) {
+		this.siteId = siteId;
+	}
 
-    public String getCreatorDisplayName() {
-	return creatorDisplayName;
-    }
+	public String getPostId() {
+		return postId;
+	}
+
+	public void setCreatorDisplayName(String creatorDisplayName) {
+		this.creatorDisplayName = creatorDisplayName;
+	}
+
+	public String getCreatorDisplayName() {
+		return creatorDisplayName;
+	}
 
 	public ResourceProperties getProperties() {
 		ResourceProperties rp = new BaseResourceProperties();
@@ -147,7 +148,7 @@ public class Comment implements Entity{
 	}
 
 	public String getUrl() {
-    	String toolId = SakaiProxy.getClogToolId(siteId);
+		String toolId = SakaiProxy.getClogToolId(siteId);
 		return SakaiProxy.getServerUrl() + "/portal/directtool/" + toolId + "?state=post&postId=" + getId();
 	}
 

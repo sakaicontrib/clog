@@ -18,17 +18,16 @@
 package org.sakaiproject.clog.api.datamodel;
 
 public class Visibilities {
-    public static final String PRIVATE = "PRIVATE";
 
-    //public static final String READY = "READY";
+	public static final String PRIVATE = "PRIVATE";
 
-    public static final String PUBLIC = "PUBLIC";
+	public static final String PUBLIC = "PUBLIC";
 
-    public static final String RECYCLED = "RECYCLED";
-    
-    public static final String MAINTAINER = "MAINTAINER";
-    
-    public static final String SITE = "SITE";
+	public static final String RECYCLED = "RECYCLED";
 
-    public static final String AUTOSAVE = "AUTOSAVE";
+	public static final String MAINTAINER = "MAINTAINER";
+
+	public static final String SITE = "SITE";
+
+	public static final String AUTOSAVE = "AUTOSAVE";
 }

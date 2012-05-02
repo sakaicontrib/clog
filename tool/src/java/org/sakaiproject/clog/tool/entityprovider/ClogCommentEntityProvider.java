@@ -20,6 +20,7 @@ import org.sakaiproject.util.ResourceLoader;
 public class ClogCommentEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, Deleteable {
 
 	private ClogManager clogManager;
+
 	public void setClogManager(ClogManager clogManager) {
 		this.clogManager = clogManager;
 	}
@@ -31,12 +32,13 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 	protected final Logger LOG = Logger.getLogger(getClass());
 
 	private SakaiProxy sakaiProxy = null;
+
 	public void setSakaiProxy(SakaiProxy sakaiProxy) {
 		this.sakaiProxy = sakaiProxy;
 	}
 
 	public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
-		
+
 		if (LOG.isDebugEnabled())
 			LOG.debug("createEntity");
 
@@ -66,7 +68,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 		} else
 			return "FAIL";
 	}
-	
+
 	public boolean entityExists(String id) {
 		if (LOG.isDebugEnabled())
 			LOG.debug("entityExists(" + id + ")");
@@ -85,7 +87,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 			return false;
 		}
 	}
-	
+
 	public Object getEntity(EntityReference ref) {
 
 		if (LOG.isDebugEnabled())
@@ -131,7 +133,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 	}
 
 	public void deleteEntity(EntityReference ref, Map<String, Object> params) {
-		
+
 		if (LOG.isDebugEnabled())
 			LOG.debug("deleteEntity");
 

@@ -35,6 +35,7 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.util.ResourceLoader;
 
 public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, Deleteable, CollectionResolvable, ActionsExecutable, Statisticable {
+
 	private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
 
 	private ClogManager clogManager;
@@ -122,21 +123,21 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		post.setCommentable(commentable);
 
 		boolean isNew = "".equals(post.getId());
-		
+
 		boolean isWithdrawn = false;
-		
+
 		boolean isBeingPublished = false;
-		
-		if(!isNew && !"AUTOSAVE".equals(post.getVisibility())) {
+
+		if (!isNew && !"AUTOSAVE".equals(post.getVisibility())) {
 			try {
 				Post oldPost = clogManager.getPostHeader(post.getId());
-				if(oldPost.isReady() && post.isPrivate()) {
+				if (oldPost.isReady() && post.isPrivate()) {
 					isWithdrawn = true;
-				} else if(oldPost.isPrivate() && post.isReady()) {
+				} else if (oldPost.isPrivate() && post.isReady()) {
 					isBeingPublished = true;
 				}
-			} catch(Exception e) {
-				LOG.info("Failed to get post with id '" + post.getId() + "'. This could happen if this is the first time a post has been saved or published.",e);
+			} catch (Exception e) {
+				LOG.info("Failed to get post with id '" + post.getId() + "'. This could happen if this is the first time a post has been saved or published.", e);
 			}
 		}
 
@@ -144,11 +145,11 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			if ((isNew || (mode != null && "publish".equals(mode))) && post.isReady() && !post.isAutoSave()) {
 				sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED, post.getReference(), post.getSiteId());
 			}
-			
+
 			if (isWithdrawn) {
 				sakaiProxy.postEvent(ClogManager.CLOG_POST_WITHDRAWN, post.getReference(), post.getSiteId());
 			}
-			
+
 			if (isBeingPublished) {
 				sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, post.getReference(), post.getSiteId());
 			}

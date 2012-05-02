@@ -19,40 +19,41 @@ package org.sakaiproject.clog.api.cover;
 import org.sakaiproject.component.cover.ComponentManager;
 
 public class SakaiProxy {
-    private static org.sakaiproject.clog.api.SakaiProxy m_instance = null;
 
-    private SakaiProxy() {
-    }
+	private static org.sakaiproject.clog.api.SakaiProxy m_instance = null;
 
-    /**
-     * Access the component instance: special cover only method.
-     * 
-     * @return the component instance.
-     */
-    public static org.sakaiproject.clog.api.SakaiProxy getInstance() {
-	if (ComponentManager.CACHE_COMPONENTS) {
-	    if (m_instance == null) {
-		m_instance = (org.sakaiproject.clog.api.SakaiProxy) ComponentManager.get(org.sakaiproject.clog.api.SakaiProxy.class);
-	    }
-
-	    return m_instance;
-	} else {
-	    return (org.sakaiproject.clog.api.SakaiProxy) ComponentManager.get(org.sakaiproject.clog.api.SakaiProxy.class);
+	private SakaiProxy() {
 	}
-    }
 
-    public static String getServerUrl() {
-	org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
-	return sp.getServerUrl();
-    }
+	/**
+	 * Access the component instance: special cover only method.
+	 * 
+	 * @return the component instance.
+	 */
+	public static org.sakaiproject.clog.api.SakaiProxy getInstance() {
+		if (ComponentManager.CACHE_COMPONENTS) {
+			if (m_instance == null) {
+				m_instance = (org.sakaiproject.clog.api.SakaiProxy) ComponentManager.get(org.sakaiproject.clog.api.SakaiProxy.class);
+			}
 
-    public static String getClogPageId(String siteId) {
-	org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
-	return sp.getClogPageId(siteId);
-    }
+			return m_instance;
+		} else {
+			return (org.sakaiproject.clog.api.SakaiProxy) ComponentManager.get(org.sakaiproject.clog.api.SakaiProxy.class);
+		}
+	}
 
-    public static String getClogToolId(String siteId) {
-	org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
-	return sp.getClogToolId(siteId);
-    }
+	public static String getServerUrl() {
+		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
+		return sp.getServerUrl();
+	}
+
+	public static String getClogPageId(String siteId) {
+		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
+		return sp.getClogPageId(siteId);
+	}
+
+	public static String getClogToolId(String siteId) {
+		org.sakaiproject.clog.api.SakaiProxy sp = getInstance();
+		return sp.getClogToolId(siteId);
+	}
 }

@@ -1,140 +1,141 @@
 package org.sakaiproject.clog.api.datamodel;
 
 public class ClogPermissions {
-    private String role;
-    private boolean postCreate;
 
-    private boolean postReadAny = false;
-    private boolean postReadOwn = false;
-    private boolean postUpdateAny = false;
-    private boolean postUpdateOwn = false;
-    private boolean postDeleteAny = false;
-    private boolean postDeleteOwn = false;
-    private boolean commentCreate = false;
-    private boolean commentReadAny = false;
-    private boolean commentReadOwn = false;
-    private boolean commentUpdateAny = false;
-    private boolean commentUpdateOwn = false;
-    private boolean commentDeleteAny = false;
-    private boolean commentDeleteOwn = false;
+	private String role;
+	private boolean postCreate;
 
-    public void setRole(String role) {
-	this.role = role;
-    }
+	private boolean postReadAny = false;
+	private boolean postReadOwn = false;
+	private boolean postUpdateAny = false;
+	private boolean postUpdateOwn = false;
+	private boolean postDeleteAny = false;
+	private boolean postDeleteOwn = false;
+	private boolean commentCreate = false;
+	private boolean commentReadAny = false;
+	private boolean commentReadOwn = false;
+	private boolean commentUpdateAny = false;
+	private boolean commentUpdateOwn = false;
+	private boolean commentDeleteAny = false;
+	private boolean commentDeleteOwn = false;
 
-    public String getRole() {
-	return role;
-    }
+	public void setRole(String role) {
+		this.role = role;
+	}
 
-    public void setPostCreate(boolean postCreate) {
-	this.postCreate = postCreate;
-    }
+	public String getRole() {
+		return role;
+	}
 
-    public boolean isPostCreate() {
-	return postCreate;
-    }
+	public void setPostCreate(boolean postCreate) {
+		this.postCreate = postCreate;
+	}
 
-    public void setPostReadAny(boolean postReadAny) {
-	this.postReadAny = postReadAny;
-    }
+	public boolean isPostCreate() {
+		return postCreate;
+	}
 
-    public boolean isPostReadAny() {
-	return postReadAny;
-    }
+	public void setPostReadAny(boolean postReadAny) {
+		this.postReadAny = postReadAny;
+	}
 
-    public void setPostUpdateAny(boolean postUpdateAny) {
-	this.postUpdateAny = postUpdateAny;
-    }
+	public boolean isPostReadAny() {
+		return postReadAny;
+	}
 
-    public boolean isPostUpdateAny() {
-	return postUpdateAny;
-    }
+	public void setPostUpdateAny(boolean postUpdateAny) {
+		this.postUpdateAny = postUpdateAny;
+	}
 
-    public void setPostUpdateOwn(boolean postUpdateOwn) {
-	this.postUpdateOwn = postUpdateOwn;
-    }
+	public boolean isPostUpdateAny() {
+		return postUpdateAny;
+	}
 
-    public boolean isPostUpdateOwn() {
-	return postUpdateOwn;
-    }
+	public void setPostUpdateOwn(boolean postUpdateOwn) {
+		this.postUpdateOwn = postUpdateOwn;
+	}
 
-    public void setPostDeleteAny(boolean postDeleteAny) {
-	this.postDeleteAny = postDeleteAny;
-    }
+	public boolean isPostUpdateOwn() {
+		return postUpdateOwn;
+	}
 
-    public boolean isPostDeleteAny() {
-	return postDeleteAny;
-    }
+	public void setPostDeleteAny(boolean postDeleteAny) {
+		this.postDeleteAny = postDeleteAny;
+	}
 
-    public void setPostDeleteOwn(boolean postDeleteOwn) {
-	this.postDeleteOwn = postDeleteOwn;
-    }
+	public boolean isPostDeleteAny() {
+		return postDeleteAny;
+	}
 
-    public boolean isPostDeleteOwn() {
-	return postDeleteOwn;
-    }
+	public void setPostDeleteOwn(boolean postDeleteOwn) {
+		this.postDeleteOwn = postDeleteOwn;
+	}
 
-    public void setCommentCreate(boolean commentCreate) {
-	this.commentCreate = commentCreate;
-    }
+	public boolean isPostDeleteOwn() {
+		return postDeleteOwn;
+	}
 
-    public boolean isCommentCreate() {
-	return commentCreate;
-    }
+	public void setCommentCreate(boolean commentCreate) {
+		this.commentCreate = commentCreate;
+	}
 
-    public void setCommentReadAny(boolean commentReadAny) {
-	this.commentReadAny = commentReadAny;
-    }
+	public boolean isCommentCreate() {
+		return commentCreate;
+	}
 
-    public boolean isCommentReadAny() {
-	return commentReadAny;
-    }
+	public void setCommentReadAny(boolean commentReadAny) {
+		this.commentReadAny = commentReadAny;
+	}
 
-    public void setCommentUpdateAny(boolean commentUpdateAny) {
-	this.commentUpdateAny = commentUpdateAny;
-    }
+	public boolean isCommentReadAny() {
+		return commentReadAny;
+	}
 
-    public boolean isCommentUpdateAny() {
-	return commentUpdateAny;
-    }
+	public void setCommentUpdateAny(boolean commentUpdateAny) {
+		this.commentUpdateAny = commentUpdateAny;
+	}
 
-    public void setCommentUpdateOwn(boolean commentUpdateOwn) {
-	this.commentUpdateOwn = commentUpdateOwn;
-    }
+	public boolean isCommentUpdateAny() {
+		return commentUpdateAny;
+	}
 
-    public boolean isCommentUpdateOwn() {
-	return commentUpdateOwn;
-    }
+	public void setCommentUpdateOwn(boolean commentUpdateOwn) {
+		this.commentUpdateOwn = commentUpdateOwn;
+	}
 
-    public void setCommentDeleteAny(boolean commentDeleteAny) {
-	this.commentDeleteAny = commentDeleteAny;
-    }
+	public boolean isCommentUpdateOwn() {
+		return commentUpdateOwn;
+	}
 
-    public boolean isCommentDeleteAny() {
-	return commentDeleteAny;
-    }
+	public void setCommentDeleteAny(boolean commentDeleteAny) {
+		this.commentDeleteAny = commentDeleteAny;
+	}
 
-    public void setCommentDeleteOwn(boolean commentDeleteOwn) {
-	this.commentDeleteOwn = commentDeleteOwn;
-    }
+	public boolean isCommentDeleteAny() {
+		return commentDeleteAny;
+	}
 
-    public boolean isCommentDeleteOwn() {
-	return commentDeleteOwn;
-    }
+	public void setCommentDeleteOwn(boolean commentDeleteOwn) {
+		this.commentDeleteOwn = commentDeleteOwn;
+	}
 
-    public void setPostReadOwn(boolean postReadOwn) {
-	this.postReadOwn = postReadOwn;
-    }
+	public boolean isCommentDeleteOwn() {
+		return commentDeleteOwn;
+	}
 
-    public boolean isPostReadOwn() {
-	return postReadOwn;
-    }
+	public void setPostReadOwn(boolean postReadOwn) {
+		this.postReadOwn = postReadOwn;
+	}
 
-    public void setCommentReadOwn(boolean commentReadOwn) {
-	this.commentReadOwn = commentReadOwn;
-    }
+	public boolean isPostReadOwn() {
+		return postReadOwn;
+	}
 
-    public boolean isCommentReadOwn() {
-	return commentReadOwn;
-    }
+	public void setCommentReadOwn(boolean commentReadOwn) {
+		this.commentReadOwn = commentReadOwn;
+	}
+
+	public boolean isCommentReadOwn() {
+		return commentReadOwn;
+	}
 }

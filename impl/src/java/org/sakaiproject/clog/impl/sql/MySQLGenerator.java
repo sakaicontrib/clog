@@ -19,9 +19,9 @@ package org.sakaiproject.clog.impl.sql;
 
 public class MySQLGenerator extends SQLGenerator {
 
-    public MySQLGenerator() {
-	BLOB = "LONGBLOB";
-	BIGINT = "BIGINT";
-	CLOB = "MEDIUMTEXT";
-    }
+	public MySQLGenerator() {
+		BLOB = "LONGBLOB";
+		BIGINT = "BIGINT";
+		CLOB = "MEDIUMTEXT";
+	}
 }
