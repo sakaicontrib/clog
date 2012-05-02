@@ -127,7 +127,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		boolean isBeingPublished = false;
 		
-		if(!isNew) {
+		if(!isNew && !"AUTOSAVE".equals(post.getVisibility())) {
 			try {
 				Post oldPost = clogManager.getPostHeader(post.getId());
 				if(oldPost.isReady() && post.isPrivate()) {
@@ -136,7 +136,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 					isBeingPublished = true;
 				}
 			} catch(Exception e) {
-				LOG.warn("Failed to get post with id '" + post.getId() + "'",e);
+				LOG.info("Failed to get post with id '" + post.getId() + "'. This could happen if this is the first time a post has been saved or published.",e);
 			}
 		}
 
