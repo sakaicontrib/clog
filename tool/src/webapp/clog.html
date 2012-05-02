@@ -246,7 +246,7 @@
 		<tr>
 			<td><img src="/direct/profile/${m.userId}/image" width="20" alt="User"/>&nbsp;<a href="javascript:;" onclick="switchState('userPosts',{userId:'${m.userId}'});" rel="/direct/profile/${m.userId}/formatted" class="icon profile">${m.userDisplayName}</a></td>
 			<td>${m.numberOfPosts}</td>
-			<td>{if m.dateOfLastPost > 0}${new Date(m.dateOfLastPost).toLocaleString()}{else}n/a{/if}</td>
+			<td>{if m.dateOfLastPost > 0}${m.formattedDateOfLastPost}{else}n/a{/if}</td>
 			<td>${m.numberOfComments}</td>
 			{if !clogOnGateway}<td><a target="_blank" href="/direct/clog-rss/${m.userId}/authors.xml?siteId=${clogSiteId}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>{/if}
 		</tr>

@@ -227,7 +227,16 @@ function switchState(state,arg) {
 	       	async : false,
 			cache: false,
 		   	success : function(data) {
-				SakaiUtils.renderTrimpathTemplate('clog_authors_content_template',{'authors':data['clog-author_collection']},'clog_content');
+
+				var authors = data['clog-author_collection'];
+
+                for(var i=0,j=authors.length;i<j;i++) {
+                    var d = new Date(authors[i].dateOfLastPost);
+                    var fd = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
+                    authors[i].formattedDateOfLastPost = fd;
+                }
+
+				SakaiUtils.renderTrimpathTemplate('clog_authors_content_template',{'authors':authors},'clog_content');
 
  				$(document).ready(function () {
  					ClogUtils.attachProfilePopup();
