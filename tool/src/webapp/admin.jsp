@@ -6,17 +6,20 @@
       lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" />
-		<link rel="stylesheet" type="text/css" href="/library/skin/${skin}/tool.css" />
-		<script type="text/javascript" src="/library/js/headscripts.js"></script>
+		<meta http-equiv="Content-Style-Type" content="text/css"/>
+		<link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" media="all"/>
+		<link rel="stylesheet" type="text/css" href="/library/skin/${skin}/tool.css" media="all"/>
+		<script type="text/javascript" language="JavaScript" src="/library/js/headscripts.js"></script>
 	</head>
-	<body onload="setMainFrameHeight('Main${toolId}');setFocus(focus_path);">
+	<body onload="setMainFrameHeight('Main${toolId}');">
 		<div class="portletBody">
 		<h1>CLOG ADMIN</h1>
 		<form method="POST">
 		<input type="checkbox" name="blogwow"/>Import data from BlogWoW
 		<br />
 		<input type="checkbox" name="blogger"/>Import data from Blogger
+		<br />
+		<input type="checkbox" name="blog2"/>Import data from Blog 2 (The Wicket version)
 		<br />
 		<br />
 		<input type="submit" value="Import"/>
