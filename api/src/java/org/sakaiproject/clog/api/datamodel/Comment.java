@@ -65,8 +65,9 @@ public class Comment implements Entity {
 	}
 
 	public void setContent(String text, boolean modified) {
-		if (!this.content.equals(text) && modified)
+		if (!this.content.equals(text) && modified) {
 			modifiedDate = new Date().getTime();
+		}
 
 		this.content = StringEscapeUtils.unescapeHtml(text.trim());
 	}
