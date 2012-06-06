@@ -766,13 +766,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return serverConfigurationService.getString("wysiwyg.editor");
 	}
 
-	// other resources
-	private ArrayList<String> emailTemplates;
-
-	public void setEmailTemplates(ArrayList<String> emailTemplates) {
-		this.emailTemplates = emailTemplates;
-	}
-
 	public String getSakaiSkin() {
 		String skin = serverConfigurationService.getString("skin.default");
 		String siteSkin = siteService.getSiteSkin(getCurrentSiteId());

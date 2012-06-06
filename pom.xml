@@ -16,10 +16,9 @@
 	</parent>
 
 	<properties>
-		<entitybroker.version>1.5-SNAPSHOT</entitybroker.version>
-		<sakai.ets.version>0.6-SNAPSHOT</sakai.ets.version>
-		<search.version>1.4-SNAPSHOT</search.version>
-		<profile-api.version>2.9-SNAPSHOT</profile-api.version>
+		<entitybroker.version>1.6-SNAPSHOT</entitybroker.version>
+		<search.version>1.5-SNAPSHOT</search.version>
+		<profile-api.version>2.10-SNAPSHOT</profile-api.version>
       	<log4j.version>1.2.8</log4j.version>
 	  	<servlet-api.version>2.4</servlet-api.version>
    		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -158,12 +157,6 @@
       			<artifactId>profile-api</artifactId>
 	  			<version>${profile-api.version}</version>
 	  			<scope>provided</scope>
-    		</dependency>
-    		<dependency>
-    			<groupId>org.sakaiproject.emailtemplateservice</groupId>
-    			<artifactId>emailtemplateservice-api</artifactId>
-    			<version>${sakai.ets.version}</version>
-	    		<scope>provided</scope>
     		</dependency>
     		<!-- entity broker -->
     		<dependency>
