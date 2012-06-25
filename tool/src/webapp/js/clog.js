@@ -156,6 +156,10 @@ var clogInPDA = false;
 			$("#clog_permissions_link").hide();
 			$("#clog_recycle_bin_link").hide();
 		}
+
+		if(clogCurrentUserPermissions.postReadAny) {
+			$("#clog_view_authors_link").show();
+        }
 	}
 	else {
 		$("#clog_permissions_link").hide();

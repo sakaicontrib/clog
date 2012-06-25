@@ -176,6 +176,9 @@ th.clogSortableTableHeaderSortDown {
 .authors {
 	background-image: url(/library/image/silk/group.png);
 }
+#clog_view_authors_link {
+	display: none;
+}
 .my-clog {
 	background-image: url(/library/image/silk/book.png);
 }

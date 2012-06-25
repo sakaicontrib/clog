@@ -2,8 +2,23 @@ function ClogPermissions(data) {
 
 	if(!data) return;
 
+	this.postReadAny = false;
+	this.postCreate = false;
+	this.postDeleteAny = false;
+	this.postDeleteOwn = false;
+	this.postUpdateAny = false;
+	this.postUpdateOwn = false;
+	this.commentCreate = false;
+	this.commentDeleteAny = false;
+	this.commentDeleteOwn = false;
+	this.commentUpdateAny = false;
+	this.commentUpdateOwn = false;
+	this.modifyPermissions = false;
+
 	for(var i=0,j=data.length;i<j;i++) {
-		if('clog.post.create' === data[i])
+		if('clog.post.read.any' === data[i])
+			this.postReadAny = true;
+		else if('clog.post.create' === data[i])
 			this.postCreate = true;
 		else if('clog.post.delete.any' === data[i])
 			this.postDeleteAny = true;
