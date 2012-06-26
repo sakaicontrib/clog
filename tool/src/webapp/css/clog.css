@@ -129,18 +129,6 @@ th.clogSortableTableHeaderSortDown {
 	font-size: smaller;
 }
 
-#clog_toolbar{
-    padding: 0px;
-}
-
-#clog_toolbar_items_wrapper {
-    overflow: hidden;
-}
-
-#clog_toolbar_items{
-	float: left;
-}
-
 #clog_search_bar{
 	float: right;
 }
@@ -165,37 +153,8 @@ th.clogSortableTableHeaderSortDown {
 }
 
 /** top nav icons **/
-
-#clog_toolbar_items a {
-	background-repeat: no-repeat;
-	padding-left: 18px;
-}
-.home {
-	background-image: url(/library/image/silk/house.png);
-}
-.authors {
-	background-image: url(/library/image/silk/group.png);
-}
 #clog_view_authors_link {
 	display: none;
-}
-.my-clog {
-	background-image: url(/library/image/silk/book.png);
-}
-.create-post {
-	background-image: url(/library/image/silk/page_white_edit.png);
-}
-.permissions {
-	background-image: url(/library/image/silk/application_view_detail.png);
-}
-.preferences {
-	background-image: url(/library/image/silk/cog.png);
-}
-.recycle {
-	background-image: url(/library/image/silk/bin_closed.png);
-}
-.public {
-	background-image: url(/library/image/silk/world.png);
 }
 
 .clog_author_image_div {

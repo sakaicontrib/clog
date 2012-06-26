@@ -90,33 +90,33 @@ var clogInPDA = false;
     } else {
 	    SakaiUtils.renderTrimpathTemplate('clog_toolbar_template',{},'clog_toolbar');
 
-	    $('#clog_home_link').click(function(e) {
+	    $('#clog_home_link>span>a').click(function(e) {
 		    return switchState('home');
 	    });
 
-	    $('#clog_view_authors_link').click(function(e) {
+	    $('#clog_view_authors_link>span>a').click(function(e) {
 		    return switchState('viewMembers');
 	    });
 
-	    $('#clog_my_clog_link').click(function(e) {
+	    $('#clog_my_clog_link>span>a').click(function(e) {
 		    return switchState('userPosts');
     	});
 
 	    if(clogPublicAllowed) {
-		    $('#clog_my_public_posts_link').click(function(e) {
+		    $('#clog_my_public_posts_link>span>a').click(function(e) {
 			    return switchState('myPublicPosts');
 		    });
 	    }
 
-	    $('#clog_create_post_link').click(function(e) {
+	    $('#clog_create_post_link>span>a').click(function(e) {
 		    return switchState('createPost');
 	    });
 
-	    $('#clog_permissions_link').click(function(e) {
+	    $('#clog_permissions_link>span>a').click(function(e) {
 		    return switchState('permissions');
 	    });
 
-	    $('#clog_recycle_bin_link').click(function(e) {
+	    $('#clog_recycle_bin_link>span>a').click(function(e) {
 		    return switchState('viewRecycled');
 	    });
     }
@@ -159,6 +159,7 @@ var clogInPDA = false;
 
 		if(clogCurrentUserPermissions.postReadAny) {
 			$("#clog_view_authors_link").show();
+			$("#clog_view_authors_link").css('display','inline');
         }
 	}
 	else {
@@ -195,6 +196,8 @@ function switchState(state,arg) {
 		$("#clog_create_post_link").hide();
 	
 	if('home' === state) {
+	    $('#clog_toolbar > li > span').removeClass('current');
+	    $('#clog_home_link > span').addClass('current');
 		switchState(clogHomeState,arg);
 	}
 	else if('viewAllPosts' === state) {
@@ -220,6 +223,8 @@ function switchState(state,arg) {
         });
 	}
 	else if('viewMembers' === state) {
+	    $('#clog_toolbar > li > span').removeClass('current');
+	    $('#clog_view_authors_link > span').addClass('current');
 		if(!clogOnGateway && clogCurrentUserPermissions.postCreate)
 			$("#clog_create_post_link").show();
 		else
@@ -272,6 +277,10 @@ function switchState(state,arg) {
 	   	});
 	}
 	else if('userPosts' === state) {
+
+	    $('#clog_toolbar > li > span').removeClass('current');
+	    $('#clog_my_clog_link > span').addClass('current');
+
 		// Default to using the current session user id ...
 		var userId = clogCurrentUser.id;
 		
@@ -318,6 +327,9 @@ function switchState(state,arg) {
 	   	});
 	}
 	else if('myPublicPosts' === state) {
+
+		$('#clog_toolbar > li > span').removeClass('current');
+		$('#clog_my_public_posts_link > span').addClass('current');
 		// Default to using the current session user id ...
 		var userId = clogCurrentUser.id;
 
@@ -379,6 +391,8 @@ function switchState(state,arg) {
 	 	});
 	}
 	else if('createPost' === state) {
+	    $('#clog_toolbar > li > span').removeClass('current');
+	    $('#clog_create_post_link > span').addClass('current');
 		clogCurrentPost = {id:'',title:'',content:'',commentable:true};
 
 		if(arg && arg.postId) {
@@ -476,6 +490,8 @@ function switchState(state,arg) {
 		});
 	}
 	else if('permissions' === state) {
+	    $('#clog_toolbar > li > span').removeClass('current');
+	    $('#clog_permissions_link > span').addClass('current');
 		var perms = ClogUtils.getSitePermissionMatrix();
 		SakaiUtils.renderTrimpathTemplate('clog_permissions_content_template',{'perms':perms},'clog_content');
 
@@ -487,6 +503,8 @@ function switchState(state,arg) {
 		});
 	}
 	else if('viewRecycled' === state) {
+	    $('#clog_toolbar >  li > span').removeClass('current');
+	    $('#clog_recycle_bin_link > span').addClass('current');
 		jQuery.ajax( {
 	       	url : "/direct/clog-post.json?siteId=" + clogSiteId + "&visibilities=RECYCLED",
 	       	dataType : "json",

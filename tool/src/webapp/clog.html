@@ -5,10 +5,10 @@
       xml:lang="en"  
       lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" />
-    <link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" media="all"/>
+    <link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" media="all"/>
     <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
-    <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css" />
+    <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
     <script type="text/javascript" src="/clog-tool/lib/json2.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery-ui.js"></script>
@@ -37,7 +37,7 @@
 
 <div class="portletBody">
 
-<div id="clog_toolbar"></div>
+<ul id="clog_toolbar" class="navIntraTool actionToolBar" role="menu"></ul>
 
 <div id="clogMainContainer">
 	<div id="clog_content"></div>
@@ -46,20 +46,13 @@
 <!--  Templates Start -->
 
 <div id="clog_toolbar_template" style="display: none;"><!--
-<div id="clog_toolbar_items_wrapper" class="navIntraTool">
-	<div id="clog_toolbar_items">
-		<a id="clog_home_link" title="${clog_home_tooltip}" href="javascript:;" class="icon home">${clog_home_label}</a>
-		<a id="clog_view_authors_link" title="${clog_view_members_tooltip}" href="javascript:;" class="icon authors">${clog_view_members_label}</a>
-		<a id="clog_my_clog_link" title="${clog_my_clog_tooltip}" href="javascript:;" class="icon my-clog">${clog_my_clog_label}</a>
-		<a style="display: none;" id="clog_create_post_link" title="${clog_create_post_tooltip}" href="javascript:;" class="icon create-post">${clog_create_post_label}</a>
-		<a id="clog_permissions_link" title="${clog_permissions_tooltip}" href="javascript:;" class="icon permissions">${clog_permissions_label}</a>
-		<a id="clog_recycle_bin_link" title="${clog_recycle_bin_tooltip}" href="javascript:;" class="icon recycle">${clog_recycle_bin_label}</a>
-		<a style="display: none;" id="clog_my_public_posts_link" title="${clog_my_public_posts_tooltip}" href="javascript:;" class="icon public">${clog_my_public_posts_label}</a>
-	</div>
-	<div id="clog_search_bar">
-		<input id="clog_search_field" type="text"/><input type="button" value="${search}"/>
-	</div>
-</div>
+    <li id="clog_home_link" class="firstToolBarItem" role="menuitem"><span class="current"><a title="${clog_home_tooltip}" href="javascript:;">${clog_home_label}</a></span></li>
+    <li id="clog_view_authors_link" role="menuitem"><span><a title="${clog_view_members_tooltip}" href="javascript:;">${clog_view_members_label}</a></span></li>
+    <li id="clog_my_clog_link" role="menuitem"><span><a title="${clog_my_clog_tooltip}" href="javascript:;">${clog_my_clog_label}</a></span></li>
+    <li id="clog_create_post_link" role="menuitem" style="display: none;"><span><a title="${clog_create_post_tooltip}" href="javascript:;">${clog_create_post_label}</a></span></li>
+    <li id="clog_permissions_link" role="menuitem"><span><a title="${clog_permissions_tooltip}" href="javascript:;">${clog_permissions_label}</a></span></li>
+    <li id="clog_recycle_bin_link" role="menuitem"><span><a title="${clog_recycle_bin_tooltip}" href="javascript:;">${clog_recycle_bin_label}</a></span></li>
+    <li id="clog_my_public_posts_link" role="menuitem" style="display: none;"><span><a title="${clog_my_public_posts_tooltip}" href="javascript:;">${clog_my_public_posts_label}</a></span></li>
 -->
 </div>
 
@@ -459,7 +452,7 @@
 
     <script type="text/javascript" src="/clog-tool/js/clog.js"></script>
 
-<link rel="stylesheet" type="text/css" href="/clog-tool/css/jquery.cluetip.css" />
+<!--link rel="stylesheet" type="text/css" href="/clog-tool/css/jquery.cluetip.css" /-->
 
 
 </body>
