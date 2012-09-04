@@ -767,9 +767,17 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
 
 	public String getSakaiSkin() {
-		String skin = serverConfigurationService.getString("skin.default");
-		String siteSkin = siteService.getSiteSkin(getCurrentSiteId());
-		return siteSkin != null ? siteSkin : (skin != null ? skin : "default");
-	}
+		// Shouldn't have to do any of this fudging. getSiteSkin should do it.
+        String defaultSkin = serverConfigurationService.getString("skin.default","default");
+        String siteSkin = siteService.getSiteSkin(getCurrentSiteId());
+        String templates = serverConfigurationService.getString("portal.templates", "neoskin");
+        if("neoskin".equals(templates))
+        {
+            String prefix = serverConfigurationService.getString("portal.neoprefix", "neo-");
+            defaultSkin = prefix + defaultSkin;
+            if(siteSkin != null) siteSkin = prefix + siteSkin;
+        }
 
+        return siteSkin != null ? siteSkin : defaultSkin;
+	}
 }
