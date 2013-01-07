@@ -16,9 +16,9 @@
 	</parent>
 
 	<properties>
-		<entitybroker.version>1.6-SNAPSHOT</entitybroker.version>
+		<entitybroker.version>1.5.0</entitybroker.version>
 		<search.version>1.4.0</search.version>
-		<profile-api.version>2.10-SNAPSHOT</profile-api.version>
+		<profile-api.version>2.9.0</profile-api.version>
       	<log4j.version>1.2.8</log4j.version>
 	  	<servlet-api.version>2.4</servlet-api.version>
    		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
