@@ -241,7 +241,7 @@
 			<td>${m.numberOfPosts}</td>
 			<td>{if m.dateOfLastPost > 0}${m.formattedDateOfLastPost}{else}n/a{/if}</td>
 			<td>${m.numberOfComments}</td>
-			{if !clogOnGateway}<td><a target="_blank" href="/direct/clog-rss/${m.userId}/authors.xml?siteId=${clogSiteId}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>{/if}
+			{if !clogOnGateway}<td><a target="_blank" href="/direct/clog-rss/user/${m.userId}.xml?siteId=${clogSiteId}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>{/if}
 		</tr>
 		{/for}
 		</tbody>
@@ -323,7 +323,7 @@
 
 <div id="clog_all_posts_template" style="display:none"><!--
 	{if ! clogOnGateway}
-	<h2>${clog_worksite_posts_label}&nbsp;<a target="_blank" href="/direct/clog-rss/${clogSiteId}/allSite.xml" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></h2>
+	<h2>${clog_worksite_posts_label}&nbsp;<a target="_blank" href="/direct/clog-rss/site/${clogSiteId}.xml" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></h2>
 	{/if}
 	{if posts.length <= 0}
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
@@ -363,7 +363,7 @@
    		<input type="checkbox"
                  {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
                  onclick="toggleFullContent(this);"/>
-		<span>${clog_show_title_only_label}</span>{if creatorId != clogCurrentUser.id && !clogOnGateway}&nbsp;<a target="_blank" href="/direct/clog-rss/${creatorId}/authors.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>{/if}
+		<span>${clog_show_title_only_label}</span>{if creatorId != clogCurrentUser.id && !clogOnGateway}&nbsp;<a target="_blank" href="/direct/clog-rss/user/${creatorId}.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>{/if}
    	</div>
 	{/if}
     <div id="postsWrapper">

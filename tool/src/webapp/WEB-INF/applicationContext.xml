@@ -6,19 +6,13 @@
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
 		class="org.sakaiproject.clog.tool.entityprovider.ClogPostEntityProvider">
 		<property name="clogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
-		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
-        <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
-        </property>
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.clog.api.SakaiProxy"/></property>
 	</bean>
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
 		class="org.sakaiproject.clog.tool.entityprovider.ClogRSSEntityProvider">
 		<property name="clogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
-		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
-        <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
-        </property>
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.clog.api.SakaiProxy"/></property>
 	</bean>
 	
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
@@ -30,10 +24,13 @@
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
 		class="org.sakaiproject.clog.tool.entityprovider.ClogCommentEntityProvider">
 		<property name="clogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
-		<property name="developerService"><ref bean="org.sakaiproject.entitybroker.DeveloperHelperService"/></property>
-        <property name="sakaiProxy">
-            <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
-        </property>
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.clog.api.SakaiProxy"/></property>
+	</bean>
+	
+	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
+		class="org.sakaiproject.clog.tool.entityprovider.ClogEntityProvider">
+		<property name="clogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
+        <property name="clogSecurityManager"><ref bean="org.sakaiproject.clog.api.ClogSecurityManager"/></property>
 	</bean>
 	
 </beans>

@@ -20,20 +20,31 @@ package org.sakaiproject.clog.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogFunctions;
+import org.sakaiproject.clog.api.ClogSecurityManager;
 import org.sakaiproject.clog.api.SakaiProxy;
+import org.sakaiproject.site.api.Site;
+import org.sakaiproject.site.api.SiteService;
+import org.sakaiproject.site.api.ToolConfiguration;
+import org.sakaiproject.tool.api.ToolManager;
 
-public class ClogSecurityManager {
+public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
-	private Logger logger = Logger.getLogger(ClogSecurityManager.class);
+	private Logger logger = Logger.getLogger(ClogSecurityManagerImpl.class);
 
+	@Setter
 	private SakaiProxy sakaiProxy;
-
-	public ClogSecurityManager(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
-	}
+	
+	@Getter @Setter
+	private SiteService siteService;
+	
+	@Getter @Setter
+	private ToolManager toolManager;
 
 	public boolean canCurrentUserCommentOnPost(Post post) {
 		if (logger.isDebugEnabled())
@@ -106,7 +117,7 @@ public class ClogSecurityManager {
 	public List<Post> filter(List<Post> posts) {
 		List<Post> filtered = new ArrayList<Post>();
 		for (Post post : posts) {
-			if (canCurrentUserReadPost(post)) {
+			if (canAccessSiteAndTool(post.getSiteId()) && canCurrentUserReadPost(post)) {
 				filtered.add(post);
 			}
 		}
@@ -115,8 +126,12 @@ public class ClogSecurityManager {
 	}
 
 	public boolean canCurrentUserReadPost(Post post) {
+		
+		String siteId = post.getSiteId();
+		
+		canAccessSiteAndTool(siteId);
 
-		boolean maintainer = sakaiProxy.isCurrentUserMaintainer(post.getSiteId());
+		boolean maintainer = sakaiProxy.isCurrentUserMaintainer(siteId);
 
 		// If the post is public, yes.
 		if (post.isPublic()) {
@@ -160,5 +175,31 @@ public class ClogSecurityManager {
 		}
 
 		return false;
+	}
+	
+	/**
+	 * Checks whether the current user can access this site and whether they can
+	 * see the forums tool.
+	 * 
+	 * @param siteId
+	 * @throws EntityException
+	 */
+	public boolean canAccessSiteAndTool(String siteId) {
+        
+		//check user can access this site
+		Site site;
+		try {
+			site = siteService.getSiteVisit(siteId);
+		} catch (Exception e) {
+			return false;
+		}
+
+		//check user can access the tool, it might be hidden
+		ToolConfiguration toolConfig = site.getToolForCommonId("sakai.clog");
+		if(!toolManager.isVisible(site, toolConfig)) {
+			return false;
+		}
+		
+		return true;
 	}
 }

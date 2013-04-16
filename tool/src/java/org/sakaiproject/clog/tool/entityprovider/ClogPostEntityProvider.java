@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
-import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.CoreEntityProvider;
@@ -38,14 +39,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 	private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
 
+	@Setter
 	private ClogManager clogManager;
 
-	public void setClogManager(ClogManager clogManager) {
-		this.clogManager = clogManager;
-	}
-
-	private DeveloperHelperService developerService = null;
-
+	@Setter
 	private SakaiProxy sakaiProxy = null;
 
 	public final static String ENTITY_PREFIX = "clog-post";
@@ -103,7 +100,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		if (LOG.isDebugEnabled())
 			LOG.debug("createEntity");
 
-		String userId = developerService.getCurrentUserId();
+		String userId = developerHelperService.getCurrentUserId();
 
 		String id = (String) params.get("id");
 		String visibility = (String) params.get("visibility");
@@ -337,13 +334,5 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			localeEventNames.put(EVENT_KEYS[i], msgs.getString(EVENT_KEYS[i]));
 		}
 		return localeEventNames;
-	}
-
-	public void setDeveloperService(DeveloperHelperService developerService) {
-		this.developerService = developerService;
-	}
-
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
 	}
 }

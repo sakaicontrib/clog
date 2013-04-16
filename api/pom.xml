@@ -48,11 +48,17 @@
     	<dependency>
       		<groupId>log4j</groupId>
       		<artifactId>log4j</artifactId>
-    	</dependency>
+        </dependency>
+
     	<dependency>
       		<groupId>commons-lang</groupId>
       		<artifactId>commons-lang</artifactId>
-    	</dependency>
+        </dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+        </dependency>
 	</dependencies>
 	<build>
 		<resources>

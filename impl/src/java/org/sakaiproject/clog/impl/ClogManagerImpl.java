@@ -7,10 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogMember;
+import org.sakaiproject.clog.api.ClogSecurityManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.XmlDefs;
@@ -32,13 +35,17 @@ public class ClogManagerImpl implements ClogManager {
 
 	private PersistenceManager persistenceManager;
 
-	private ClogSecurityManager securityManager;
+	@Setter
+	private ClogSecurityManager clogSecurityManager;
 
+	@Setter
 	private SakaiProxy sakaiProxy;
 
 	public void init() {
-		if (logger.isDebugEnabled())
+		
+		if (logger.isDebugEnabled()) {
 			logger.debug("init()");
+		}
 
 		logger.info("Registering Clog functions ...");
 
@@ -62,8 +69,6 @@ public class ClogManagerImpl implements ClogManager {
 		sakaiProxy.registerEntityProducer(this);
 
 		persistenceManager = new PersistenceManager(sakaiProxy);
-
-		securityManager = new ClogSecurityManager(sakaiProxy);
 	}
 
 	public Post getPost(String postId) throws Exception {
@@ -71,7 +76,7 @@ public class ClogManagerImpl implements ClogManager {
 			logger.debug("getPost(" + postId + ")");
 
 		Post post = persistenceManager.getPost(postId);
-		if (securityManager.canCurrentUserReadPost(post))
+		if (clogSecurityManager.canCurrentUserReadPost(post))
 			return post;
 		else
 			throw new Exception("The current user does not have permissions to read this post.");
@@ -103,7 +108,7 @@ public class ClogManagerImpl implements ClogManager {
 		// security manager
 		List<Post> filtered;
 		List<Post> unfiltered = persistenceManager.getAllPost(placementId);
-		filtered = securityManager.filter(unfiltered);
+		filtered = clogSecurityManager.filter(unfiltered);
 		return filtered;
 	}
 
@@ -115,7 +120,7 @@ public class ClogManagerImpl implements ClogManager {
 		if (query.isSkipFilter()) {
 			return unfiltered;
 		} else {
-			filtered = securityManager.filter(unfiltered);
+			filtered = clogSecurityManager.filter(unfiltered);
 			return filtered;
 		}
 	}
@@ -133,7 +138,7 @@ public class ClogManagerImpl implements ClogManager {
 	public boolean deletePost(String postId) {
 		try {
 			Post post = persistenceManager.getPost(postId);
-			if (securityManager.canCurrentUserDeletePost(post))
+			if (clogSecurityManager.canCurrentUserDeletePost(post))
 				return persistenceManager.deletePost(post);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -168,7 +173,7 @@ public class ClogManagerImpl implements ClogManager {
 		try {
 			Post post = persistenceManager.getPost(postId);
 
-			if (securityManager.canCurrentUserDeletePost(post)) {
+			if (clogSecurityManager.canCurrentUserDeletePost(post)) {
 				if (persistenceManager.recyclePost(post)) {
 					post.setVisibility(Visibilities.RECYCLED);
 					return true;
@@ -179,14 +184,6 @@ public class ClogManagerImpl implements ClogManager {
 		}
 
 		return false;
-	}
-
-	public ClogSecurityManager getSecurityManager() {
-		return securityManager;
-	}
-
-	public void setSecurityManager(ClogSecurityManager securityManager) {
-		this.securityManager = securityManager;
 	}
 
 	public void setPersistenceManager(PersistenceManager pm) {
@@ -426,14 +423,6 @@ public class ClogManagerImpl implements ClogManager {
 		}
 
 		return false;
-	}
-
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
-	}
-
-	public SakaiProxy getSakaiProxy() {
-		return sakaiProxy;
 	}
 
 	public boolean deleteAutosavedCopy(String postId) {

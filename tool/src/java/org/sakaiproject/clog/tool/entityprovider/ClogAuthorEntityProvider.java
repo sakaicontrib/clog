@@ -3,6 +3,8 @@ package org.sakaiproject.clog.tool.entityprovider;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Setter;
+
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogMember;
@@ -19,22 +21,22 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.user.api.UserDirectoryService;
 
 public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Outputable, Describeable, CollectionResolvable {
-
-	private ClogManager clogManager;
-
-	public void setClogManager(ClogManager clogManager) {
-		this.clogManager = clogManager;
-	}
-
-	private UserDirectoryService userDirectoryService = null;
-
+	
 	public final static String ENTITY_PREFIX = "clog-author";
-
+	
 	protected final Logger LOG = Logger.getLogger(getClass());
 
+	@Setter
+	private ClogManager clogManager;
+
+	@Setter
+	private UserDirectoryService userDirectoryService = null;
+
 	public boolean entityExists(String id) {
-		if (LOG.isDebugEnabled())
+		
+		if (LOG.isDebugEnabled()) {
 			LOG.debug("entityExists(" + id + ")");
+		}
 
 		if (id == null) {
 			return false;
@@ -95,13 +97,5 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 		}
 
 		return authors;
-	}
-
-	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
-		this.userDirectoryService = userDirectoryService;
-	}
-
-	public UserDirectoryService getUserDirectoryService() {
-		return userDirectoryService;
 	}
 }

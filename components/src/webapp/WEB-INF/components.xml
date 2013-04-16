@@ -46,15 +46,19 @@
      <property name="overrideBySite"><value>true</value></property>
      <property name="expandByDefault"><value>true</value></property>
    </bean>
+    
+	<bean id="org.sakaiproject.clog.api.ClogSecurityManager"
+    	class="org.sakaiproject.clog.impl.ClogSecurityManagerImpl">
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.clog.api.SakaiProxy"/></property>
+		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
+		<property name="toolManager"><ref bean="org.sakaiproject.tool.api.ToolManager"/></property>
+    </bean>
   	
 	<bean id="org.sakaiproject.clog.api.ClogManager"
     	class="org.sakaiproject.clog.impl.ClogManagerImpl"
     	init-method="init">
-
-          <property name="sakaiProxy">
-              <ref bean="org.sakaiproject.clog.api.SakaiProxy"/>
-          </property>
-
+      	<property name="sakaiProxy"><ref bean="org.sakaiproject.clog.api.SakaiProxy"/></property>
+      	<property name="clogSecurityManager"><ref bean="org.sakaiproject.clog.api.ClogSecurityManager"/></property>
     </bean>
 	
  	<bean id="org.sakaiproject.clog.impl.ClogContentProducer"

@@ -1,48 +1,37 @@
 package org.sakaiproject.clog.tool.entityprovider;
 
 import java.util.Map;
-import java.util.Locale;
+
+import lombok.Setter;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Comment;
-import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
-import org.sakaiproject.entitybroker.DeveloperHelperService;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.entityprovider.CoreEntityProvider;
-import org.sakaiproject.entitybroker.entityprovider.EntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.*;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
-import org.sakaiproject.util.ResourceLoader;
 
 public class ClogCommentEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, Deleteable {
-
-	private ClogManager clogManager;
-
-	public void setClogManager(ClogManager clogManager) {
-		this.clogManager = clogManager;
-	}
-
-	private DeveloperHelperService developerService = null;
-
+	
 	public final static String ENTITY_PREFIX = "clog-comment";
-
+	
 	protected final Logger LOG = Logger.getLogger(getClass());
 
-	private SakaiProxy sakaiProxy = null;
+	@Setter
+	private ClogManager clogManager;
 
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
-	}
+	@Setter
+	private SakaiProxy sakaiProxy = null;
 
 	public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
 
 		if (LOG.isDebugEnabled())
 			LOG.debug("createEntity");
 
-		String userId = developerService.getCurrentUserId();
+		String userId = developerHelperService.getCurrentUserId();
 
 		String id = (String) params.get("id");
 		String postId = (String) params.get("postId");
@@ -143,9 +132,5 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 			String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/gdfgdsfgdfg/comments/" + ref.getId();
 			sakaiProxy.postEvent(ClogManager.CLOG_COMMENT_DELETED, reference, siteId);
 		}
-	}
-
-	public void setDeveloperService(DeveloperHelperService developerService) {
-		this.developerService = developerService;
 	}
 }

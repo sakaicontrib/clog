@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.ClogManager;
@@ -23,31 +26,46 @@ public class Post implements Entity {
 	private static final String CDATA_SUFFIX = "]]>";
 	private static final String CDATA_PREFIX = "<![CDATA[";
 
+	@Getter @Setter
 	private String id = "";
 
+	@Getter @Setter
 	private String title = "";
 
+	@Getter @Setter
 	private String content = "";
 
+	@Getter @Setter
 	private long createdDate = -1L;
 
+	@Getter @Setter
 	private long modifiedDate = -1L;
 
 	private String visibility = Visibilities.PRIVATE;
 
+	@Getter @Setter
 	private boolean commentable = true;
 
+	@Getter @Setter
 	private String creatorId = null;
 
+	@Getter @Setter
 	private String creatorDisplayName = null;
 
+	@Getter
 	private List<String> keywords = new ArrayList<String>();
 
+	@Getter
 	private List<Comment> comments = new ArrayList<Comment>();
 
+	@Getter @Setter
 	private String siteId;
 
+	@Getter @Setter
 	private Post autosavedVersion = null;
+	
+	@Getter
+	private int numberOfComments = 0;
 
 	public Post() {
 		long now = new Date().getTime();
@@ -55,39 +73,8 @@ public class Post implements Entity {
 		modifiedDate = now;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public void addKeyword(String keyword) {
 		keywords.add(keyword);
-	}
-
-	/**
-	 * @see org.sakaiproject.entity.api.Entity#getId()
-	 */
-	public String getId() {
-		return id;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setCreatorId(String creatorId) {
-		this.creatorId = creatorId;
-	}
-
-	public String getCreatorId() {
-		return creatorId;
-	}
-
-	public List<String> getKeywords() {
-		return keywords;
 	}
 
 	public String getKeywordsText() {
@@ -118,26 +105,12 @@ public class Post implements Entity {
 
 	public void addComment(Comment comment) {
 		comments.add(comment);
+		numberOfComments += 1;
 	}
-
-	public List<Comment> getComments() {
-		return comments;
-	}
-
+	
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
-	}
-
-	public void setSiteId(String siteId) {
-		this.siteId = siteId;
-	}
-
-	public String getSiteId() {
-		return siteId;
-	}
-
-	public boolean isCommentable() {
-		return commentable;
+		numberOfComments = comments.size();
 	}
 
 	public void setVisibility(String visibility) {
@@ -146,10 +119,6 @@ public class Post implements Entity {
 
 	public String getVisibility() {
 		return visibility;
-	}
-
-	public void setCommentable(boolean commentable) {
-		this.commentable = commentable;
 	}
 
 	public boolean isPrivate() {
@@ -332,22 +301,6 @@ public class Post implements Entity {
 		}
 	}
 
-	public void setCreatedDate(long createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public long getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setModifiedDate(long modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-
-	public long getModifiedDate() {
-		return modifiedDate;
-	}
-
 	public boolean hasComments() {
 		return comments.size() > 0;
 	}
@@ -364,32 +317,8 @@ public class Post implements Entity {
 		return Visibilities.SITE.equals(visibility) || Visibilities.MAINTAINER.equals(visibility);
 	}
 
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setCreatorDisplayName(String creatorDisplayName) {
-		this.creatorDisplayName = creatorDisplayName;
-	}
-
-	public String getCreatorDisplayName() {
-		return creatorDisplayName;
-	}
-
 	public boolean isAutoSave() {
 		return Visibilities.AUTOSAVE.equals(visibility);
-	}
-
-	public void setAutosavedVersion(Post autosavedVersion) {
-		this.autosavedVersion = autosavedVersion;
-	}
-
-	public Post getAutosavedVersion() {
-		return autosavedVersion;
 	}
 
 	public boolean isVisibleToSite() {
@@ -398,5 +327,11 @@ public class Post implements Entity {
 
 	public boolean isVisibleToMaintainers() {
 		return Visibilities.MAINTAINER.equals(visibility);
+	}
+	
+	public void minimise() {
+		content = "";
+		numberOfComments = comments.size();
+		comments = new ArrayList<Comment>();
 	}
 }

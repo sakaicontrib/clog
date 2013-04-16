@@ -1,19 +1,17 @@
 package org.sakaiproject.clog.tool.entityprovider;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import lombok.Setter;
 
 import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
-import org.sakaiproject.entitybroker.DeveloperHelperService;
-import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutable;
@@ -25,22 +23,18 @@ import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 
 public class ClogRSSEntityProvider extends AbstractEntityProvider implements AutoRegisterEntityProvider, Inputable, Outputable, Describeable, ActionsExecutable {
+	
+	public final static String ENTITY_PREFIX = "clog-rss";
+	
+	protected final Logger LOG = Logger.getLogger(getClass());
 
+	@Setter
 	private ClogManager clogManager;
-
-	private SimpleDateFormat rfc822DateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-
-	public void setClogManager(ClogManager clogManager) {
-		this.clogManager = clogManager;
-	}
-
-	private DeveloperHelperService developerService = null;
-
+	
+	@Setter
 	private SakaiProxy sakaiProxy = null;
 
-	public final static String ENTITY_PREFIX = "clog-rss";
-
-	protected final Logger LOG = Logger.getLogger(getClass());
+	private SimpleDateFormat rfc822DateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 
 	public Object getSampleEntity() {
 		return new Post();
@@ -58,12 +52,15 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		return new String[] { Formats.HTML, Formats.FORM };
 	}
 
-	@EntityCustomAction(action = "authors", viewKey = EntityView.VIEW_SHOW)
-	public String handleAuthors(EntityReference ref, Map<String, Object> params) {
-		String authorId = ref.getId();
+	@EntityCustomAction(action = "user", viewKey = EntityView.VIEW_LIST)
+	public String getFeedForUser(EntityView view, Map<String, Object> params) {
+		
+        String authorId = view.getPathSegment(2);
 
-		if (authorId == null)
+		if (authorId == null) {
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the author id");
+		}
+		
 		String currentUserId = developerHelperService.getCurrentUserId();
 
 		QueryBean qb = new QueryBean();
@@ -111,12 +108,14 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		return rssXml.toString();
 	}
 
-	@EntityCustomAction(action = "allSite", viewKey = EntityView.VIEW_SHOW)
-	public String handleAllSite(EntityReference ref) {
-		String siteId = ref.getId();
-
-		if (siteId == null)
+	@EntityCustomAction(action = "site", viewKey = EntityView.VIEW_LIST)
+	public String getFeedForSite(EntityView view) {
+		
+        String siteId = view.getPathSegment(2);
+		
+		if (siteId == null) {
 			throw new IllegalArgumentException("Invalid path provided: expect to receive the site id");
+		}
 
 		QueryBean qb = new QueryBean();
 		qb.setSkipFilter(true);
@@ -153,13 +152,5 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		rssXml.append("\n</channel>\n</rss>");
 
 		return rssXml.toString();
-	}
-
-	public void setDeveloperService(DeveloperHelperService developerService) {
-		this.developerService = developerService;
-	}
-
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
 	}
 }
