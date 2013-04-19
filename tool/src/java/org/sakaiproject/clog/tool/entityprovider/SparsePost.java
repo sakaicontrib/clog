@@ -15,10 +15,10 @@ public class SparsePost {
 	private String id = "";
 	
 	@Getter
-	private long createdDate = -1L;
+	private long createdDateMillis = -1L;
 	
 	@Getter
-	private long modifiedDate = -1L;
+	private long modifiedDateMillis = -1L;
 	
 	@Getter
 	private String creatorDisplayName = "";
@@ -32,8 +32,8 @@ public class SparsePost {
 	public SparsePost(Post post) {
 		
 		this.id = post.getId();
-		this.createdDate = post.getCreatedDate() / 1000;
-		this.modifiedDate = post.getModifiedDate() / 1000;
+		this.createdDateMillis = post.getCreatedDate();
+		this.modifiedDateMillis = post.getModifiedDate();
 		this.creatorDisplayName = post.getCreatorDisplayName();
 		this.title = post.getTitle();
 		this.url = post.getUrl();
