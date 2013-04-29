@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import lombok.Setter;
 
 import org.apache.log4j.Logger;
@@ -35,7 +37,7 @@ import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.util.ResourceLoader;
 
-public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, Deleteable, CollectionResolvable, ActionsExecutable, Statisticable {
+public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, CollectionResolvable, ActionsExecutable, Statisticable {
 
 	private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
 
@@ -265,32 +267,80 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		}
 	}
 
-	@EntityCustomAction(action = "restore", viewKey = EntityView.VIEW_SHOW)
-	public String handleRestore(EntityReference ref) {
-		String postId = ref.getId();
-
-		if (postId == null) {
-			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
+	@EntityCustomAction(action = "restore", viewKey = EntityView.VIEW_LIST)
+	public String handleRestore(EntityView view, Map<String,Object> params) {
+		
+		String userId = developerHelperService.getCurrentUserId();
+		
+		if(userId == null) {
+			throw new EntityException("You must be logged in to restore posts","",HttpServletResponse.SC_UNAUTHORIZED);
 		}
-
-		Post post = null;
-
-		try {
-			post = clogManager.getPost(postId);
-		} catch (Exception e) {
+		
+		if(!params.containsKey("posts")) {
+			throw new EntityException("Bad request: a posts param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
 		}
+		
+		String postIdsString = (String) params.get("posts");
+		
+		String[] postIds = postIdsString.split(",");
+		
+		for(String postId : postIds) {
 
-		if (post == null)
-			throw new IllegalArgumentException("Invalid post id");
+			Post post = null;
 
-		if (clogManager.restorePost(postId)) {
-			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + ref.getId();
-			sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, reference, post.getSiteId());
+			try {
+				post = clogManager.getPost(postId);
+			} catch (Exception e) {
+				LOG.error("Failed to retrieve post with id '" + postId + "' during restore operation. Skipping restore ...",e);
+				continue;
+			}
 
-			return "SUCCESS";
-		} else {
-			return "FAIL";
+			if (post == null) {
+				LOG.info("Post id '" + postId + "' is invalid. Skipping restore ...");
+				continue;
+			}
+
+			if (clogManager.restorePost(postId)) {
+				String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + postId;
+				sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, reference, post.getSiteId());
+			}
 		}
+		
+		return "SUCCESS";
+	}
+	
+	@EntityCustomAction(action = "remove", viewKey = EntityView.VIEW_LIST)
+	public String handleRemove(EntityView view, Map<String,Object> params) {
+		
+		String userId = developerHelperService.getCurrentUserId();
+		
+		if(userId == null) {
+			throw new EntityException("You must be logged in to delete posts","",HttpServletResponse.SC_UNAUTHORIZED);
+		}
+		
+		if(!params.containsKey("posts")) {
+			throw new EntityException("Bad request: a posts param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
+		}
+		
+		String siteId = (String) params.get("site");
+		
+		if(siteId == null) {
+			throw new EntityException("Bad request: a site param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
+		}
+		
+		String postIdsString = (String) params.get("posts");
+		
+		String[] postIds = postIdsString.split(",");
+		
+		for(String postId : postIds) {
+
+			if (clogManager.deletePost(postId)) {
+				String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + postId;
+				sakaiProxy.postEvent(ClogManager.CLOG_POST_DELETED, reference, siteId);
+			}
+		}
+		
+		return "SUCCESS";
 	}
 
 	@EntityCustomAction(action = "deleteAutosavedCopy", viewKey = EntityView.VIEW_SHOW)

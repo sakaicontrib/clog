@@ -37,6 +37,7 @@ show="Show";
 search="Search";
 searchResults="Search Results";
 clog_delete_post_message="Are you sure you want to delete this post?";
+clog_really_delete_post_message="This will permanently delete the selected posts. Are you sure?";
 clog_delete_comment_message="Are you sure you want to delete this comment?";
 text="Text";
 title="Blog";

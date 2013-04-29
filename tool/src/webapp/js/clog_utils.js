@@ -319,24 +319,28 @@ var ClogUtils;
 	}
 
 	ClogUtils.deleteSelectedPosts = function() {
+	
+		if(!confirm(clog_really_delete_post_message)) {
+			return false;
+		}
+		
 		var selected = $('.clog_recycled_post_checkbox:checked');
 
         if(selected.length <= 0) {
             // No posts selected for deletion
             return;
         }
-
-		var commands = '';
+        
+		var postIds = '';
 
 		for(var i=0,j=selected.length;i<j;i++) {
-			commands += "/direct/clog-post/" + selected[i].id + "?siteId=" + clogSiteId;
-			if(i < (j - 1)) commands += ",";
+			postIds += selected[i].id;
+			if(i < (j - 1)) postIds += ",";
 		}
 
 		jQuery.ajax( {
-	 		url : "/direct/batch?_refs=" + commands,
+	 		url : "/direct/clog-post/remove?posts=" + postIds + "&site=" + clogSiteId,
 			dataType : 'text',
-			type:'DELETE',
 			async : false,
 		   	success : function(result) {
 				switchState('viewAllPosts');
@@ -358,15 +362,15 @@ var ClogUtils;
             return;
         }
 
-		var commands = '';
+		var postIds = '';
 
 		for(var i=0,j=selected.length;i<j;i++) {
-			commands += "/direct/clog-post/" + selected[i].id + "/restore";
-			if(i < (j - 1)) commands += ",";
+			postIds += selected[i].id;
+			if(i < (j - 1)) postIds += ",";
 		}
 
 		jQuery.ajax( {
-	 		url : "/direct/batch?_refs=" + commands,
+	 		url : "/direct/clog-post/restore?posts=" + postIds,
 			dataType : 'text',
 			async : false,
 		   	success : function(result) {
