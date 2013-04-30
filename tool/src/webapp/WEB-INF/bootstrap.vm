@@ -2,38 +2,43 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html  
       xmlns="http://www.w3.org/1999/xhtml"  
-      xml:lang="en"  
-      lang="en">
+      xml:lang="${isolanguage}"
+      lang="${isolanguage}">
 <head>
-    <link rel="stylesheet" type="text/css" href="/library/skin/tool_base.css" media="all"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+
+    var startupArgs = {
+    	userId:'$!{userId}',
+    	siteId:'$!{siteId}',
+    	placementId:'$!{placementId}',
+    	state:'$!{state}',
+    	editor:'$!{editor}',
+    	publicAllowed:'$!{publicAllowed}',
+    	postId:'$!{postId}',
+    	onPDAPortal:'$!{onPDAPortal}'
+    };
+    
+</script>
+${sakaiHtmlHead}
     <link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" media="all"/>
     <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
     <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
-    <script type="text/javascript" src="/clog-tool/lib/json2.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery-ui.js"></script>
-    <script type="text/javascript" src="/library/editor/ckeditor/ckeditor.js"></script>
-    <script type="text/javascript" src="/library/editor/FCKeditor/fckeditor.js"></script>
-    <script type="text/javascript" src="/library/js/headscripts.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/trimpath-template-latest.js"></script>
-    <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
-    <script type="text/javascript" src="/clog-tool/lib/jquery.localisation.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.cluetip.min.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
     <script type="text/javascript" src="/clog-tool/js/clog_utils.js"></script>
-    <script type="text/javascript" src="/clog-tool/clog-translations.js"></script>
+    <script type="text/javascript" src="/clog-tool/clog-translations-en_GB.js"></script>
+    <script type="text/javascript" src="/clog-tool/clog-translations-${isolanguage}.js"></script>
     <script type="text/javascript" src="/clog-tool/js/clog_permissions.js"></script>
     <script type="text/javascript" src="/profile2-tool/javascript/profile2-eb.js"></script>
 </head>
 <body>
-
-<script>
-    var arg = SakaiUtils.getParameters();
-    var url = '/library/skin/' + arg['skin'] + '/tool.css';
-    $('<link type="text/css" rel="stylesheet" href="' + url + '"/>').appendTo("head");
-</script>
 
 <div class="portletBody">
 
@@ -173,7 +178,7 @@
 	{/if} 
     <input id="clog_post_id_field" type="hidden" value="${id}"/>
     {if clogOnMyWorkspace}
-     	{if clogPublicAllowed}
+     	{if startupArgs.publicAllowed}
         <input id="clog_make_post_public_button" type="button" value="${clog_make_post_public_label}" title="${clog_make_post_public_tooltip}"/>
         {/if}
     {else}
@@ -241,7 +246,7 @@
 			<td>${m.numberOfPosts}</td>
 			<td>{if m.dateOfLastPost > 0}${m.formattedDateOfLastPost}{else}n/a{/if}</td>
 			<td>${m.numberOfComments}</td>
-			{if !clogOnGateway}<td><a target="_blank" href="/direct/clog-rss/user/${m.userId}.xml?siteId=${clogSiteId}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>{/if}
+			{if !clogOnGateway}<td><a target="_blank" href="/direct/clog-rss/user/${m.userId}.xml?siteId=${startupArgs.siteId}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></td>{/if}
 		</tr>
 		{/for}
 		</tbody>
@@ -266,10 +271,10 @@
 			{if clogCurrentUserPermissions.commentCreate && commentable}
 				<a href="#" title="${clog_comment_on_post_tooltip}" onClick="switchState('createComment',{postId: '${id}'});"><img src="/library/image/silk/comment_add.png" width="16" height="16" alt="Add Comment"/></a>&nbsp;
 			{/if}
-			{if clogCurrentUser.id == '!admin' || clogCurrentUserPermissions.postDeleteAny || (clogCurrentUserPermissions.postDeleteOwn && creatorId == clogCurrentUser.id)}
+			{if startupArgs.userId == '!admin' || clogCurrentUserPermissions.postDeleteAny || (clogCurrentUserPermissions.postDeleteOwn && creatorId == startupArgs.userId)}
 				<a href="#" title="${clog_delete_post_tooltip}" onclick="return ClogUtils.recyclePost('${id}');"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete"/></a>&nbsp;
 			{/if}
-			{if clogCurrentUserPermissions.postUpdateAny || (clogCurrentUserPermissions.postUpdateOwn && creatorId == clogCurrentUser.id)}
+			{if clogCurrentUserPermissions.postUpdateAny || (clogCurrentUserPermissions.postUpdateOwn && creatorId == startupArgs.userId)}
 				<a href="#" onClick="switchState('createPost',{postId:'${id}'});" title="${clog_edit_post_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit"/></a>&nbsp;
 			{/if}
 			{/if}
@@ -301,14 +306,14 @@
 					{for comment in comments}
 					<div class="clog_comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
-							<div class="clog_author_image_div"><img src="/direct/profile/${escape(comment.creatorId)}/image" width="50"/></div>
+							<div class="clog_author_image_div"><img src="/direct/profile/${D}{escape(comment.creatorId)}/image" width="50"/></div>
 							<div style="float:left;"><a class="profile" rel="/direct/profile/${comment.creatorId}/formatted">${comment.creatorDisplayName}</a><br/><span class="clog_comment_date">${clog_created_label} ${comment.formattedCreatedDate}</span>{if comment.modifiedDate > comment.createdDate}<br/><span class="clog_comment_date">${clog_modified_label} ${comment.formattedModifiedDate}</span>{/if}</div>
 						</div>
 						<div class="clog_comment_content">${comment.content}</div>
-						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == clogCurrentUser.id)}
+						{if clogCurrentUserPermissions.commentDeleteAny || (clogCurrentUserPermissions.commentDeleteOwn && comment.creatorId == startupArgs.userId)}
 							<a href="#" onclick="return ClogUtils.deleteComment('${comment.id}');" title="${clog_delete_comment_tooltip}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
 						{/if}
-						{if clogCurrentUserPermissions.commentUpdateAny || (clogCurrentUserPermissions.commentUpdateOwn && comment.creatorId == clogCurrentUser.id)}
+						{if clogCurrentUserPermissions.commentUpdateAny || (clogCurrentUserPermissions.commentUpdateOwn && comment.creatorId == startupArgs.userId)}
 							<a href="#" onClick="switchState('createComment',{postId:'${id}',commentId:'${comment.id}'});" title="${clog_edit_comment_tooltip}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
 						{/if}
 					</div>
@@ -323,7 +328,7 @@
 
 <div id="clog_all_posts_template" style="display:none"><!--
 	{if ! clogOnGateway}
-	<h2>${clog_worksite_posts_label}&nbsp;<a target="_blank" href="/direct/clog-rss/site/${clogSiteId}.xml" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></h2>
+	<h2>${clog_worksite_posts_label}&nbsp;<a target="_blank" href="/direct/clog-rss/site/${startupArgs.siteId}.xml" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a></h2>
 	{/if}
 	{if posts.length <= 0}
 	<div id="noPostsLabel"><span>${noPosts}</span></div>
@@ -363,7 +368,7 @@
    		<input type="checkbox"
                  {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
                  onclick="toggleFullContent(this);"/>
-		<span>${clog_show_title_only_label}</span>{if creatorId != clogCurrentUser.id && !clogOnGateway}&nbsp;<a target="_blank" href="/direct/clog-rss/user/${creatorId}.xml{if !clogOnGateway}?siteId=${clogSiteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>{/if}
+		<span>${clog_show_title_only_label}</span>{if creatorId != startupArgs.userId && !clogOnGateway}&nbsp;<a target="_blank" href="/direct/clog-rss/user/${creatorId}.xml{if !clogOnGateway}?siteId=${startupArgs.siteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>{/if}
    	</div>
 	{/if}
     <div id="postsWrapper">

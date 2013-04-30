@@ -1,16 +1,16 @@
 package org.sakaiproject.clog.tool;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +23,14 @@ import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.component.api.ComponentManager;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchResult;
+import org.sakaiproject.tool.api.Session;
+import org.sakaiproject.tool.api.Tool;
+import org.sakaiproject.util.RequestFilter;
 import org.sakaiproject.util.ResourceLoader;
+
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 /**
  * @author Adrian Fish (a.fish@lancaster.ac.uk)
@@ -33,28 +40,59 @@ public class ClogTool extends HttpServlet {
 	private Logger logger = Logger.getLogger(getClass());
 
 	private SakaiProxy sakaiProxy;
+	
+	private Template bootstrapTemplate = null;
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
-		if (logger.isDebugEnabled())
+		if (logger.isDebugEnabled()) {
 			logger.debug("init");
+		}
 
-		ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
-		sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
+		
+		try {
+			ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
+			sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
+			VelocityEngine ve = new VelocityEngine();
+            Properties props = new Properties();
+            props.setProperty("file.resource.loader.path",config.getServletContext().getRealPath("/WEB-INF"));
+            ve.init(props);
+            bootstrapTemplate = ve.getTemplate("bootstrap.vm");
+		} catch (Throwable t) {
+			throw new ServletException("Failed to initialise ClogTool servlet.", t);
+		}
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (logger.isDebugEnabled())
+		
+		if (logger.isDebugEnabled()) {
 			logger.debug("doGet()");
+		}
 
-		if (sakaiProxy == null)
+		if (sakaiProxy == null) {
 			throw new ServletException("sakaiProxy MUST be initialised.");
+		}
+		
+		String siteId = sakaiProxy.getCurrentSiteId();
+		
+		String userId = null;
+		Session session = (Session) request.getAttribute(RequestFilter.ATTR_SESSION);
+		if(session != null) {
+			userId = session.getUserId();
+		} else {
+			if (!"!gateway".equals(siteId)) {
+				// We are not logged in
+				throw new ServletException("Not logged in.");
+			}
+		}
+		
+		String placementId = (String) request.getAttribute(Tool.PLACEMENT_ID);
+		
+		String sakaiHtmlHead = (String) request.getAttribute("sakai.html.head");
 
 		String state = request.getParameter("state");
 		String postId = request.getParameter("postId");
-
-		String siteId = sakaiProxy.getCurrentSiteId();
 
 		if (state == null) {
 			// If we're on the gateway show the authors view by default
@@ -64,61 +102,56 @@ public class ClogTool extends HttpServlet {
 				state = "viewAllPosts";
 			}
 		}
-
-		if (postId == null)
-			postId = "none";
-
-		String userId = sakaiProxy.getCurrentUserId();
-
-		if (userId == null) {
-			// We are not logged in. Could be the gateway placement.
-			if (!"!gateway".equals(siteId)) {
-				// There should be an authenticated user at this point.
-				throw new ServletException("getCurrentUser returned null.");
-			}
-		}
-
-		String toolId = sakaiProxy.getCurrentToolId();
-
-		// We need to pass the language code to the JQuery code in the pages.
+		
 		Locale locale = (new ResourceLoader(userId)).getLocale();
-		String languageCode = locale.getLanguage() + "_" + locale.getCountry();
+		String isoLanguage = locale.getLanguage();
+		String country = locale.getCountry();
+		
+        if(country != null && !country.equals("")) {
+            isoLanguage += "_" + country;
+        }
+        
+        System.out.println("ISO LANGUAGE:" + isoLanguage);
+		
+		VelocityContext ctx = new VelocityContext();
+		
+		// This is needed so certain trimpath variables don't get parsed.
+		ctx.put("D", "$");
+       
+		ctx.put("sakaiHtmlHead",sakaiHtmlHead);
+		
+	    ctx.put("userId",userId);
+	    ctx.put("siteId",siteId);
+	    ctx.put("state",state);
+	    ctx.put("placementId",placementId);
+	    ctx.put("editor",sakaiProxy.getWysiwygEditor());
+	    ctx.put("isolanguage",isoLanguage);
+	    ctx.put("publicAllowed",sakaiProxy.isPublicAllowed() ? "true":"false");
 
-		String variant = locale.getVariant();
-
-		if (!"".equals(variant)) {
-			languageCode += "_" + variant;
-		}
-
-		// CLOG-44
-		if ("".equals(languageCode)) {
-			languageCode = "en";
+		if (postId != null) {
+			ctx.put("postId",postId);
 		}
 
 		String pathInfo = request.getPathInfo();
-
-		boolean publicAllowed = sakaiProxy.isPublicAllowed();
 
 		if (pathInfo == null || pathInfo.length() < 1) {
 			String uri = request.getRequestURI();
 
 			// There's no path info, so this is the initial state
 			if (uri.contains("/portal/pda/")) {
-				// The PDA portal is frameless for redirects don't work. It also
-				// means that we can't pass url parameters to the page.We can
-				// use a cookie and the JS will pull the initial state from that
-				// instead.
-				Cookie params = new Cookie("sakai-tool-params", "state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&language=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() + "&publicAllowed=" + publicAllowed);
-				response.addCookie(params);
-
-				RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/clog.html");
-				dispatcher.include(request, response);
-				return;
-			} else {
-				String url = "/clog-tool/clog.html?state=" + URLEncoder.encode(state, "UTF-8") + "&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&language=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() + "&publicAllowed=" + publicAllowed + "&editor=" + sakaiProxy.getWysiwygEditor();
-				response.sendRedirect(url);
-				return;
+				ctx.put("onPDAPortal","true");
 			}
+			
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        response.setContentType("text/html");
+	        Writer writer = new BufferedWriter(response.getWriter());
+	        try {
+	        	bootstrapTemplate.merge(ctx,writer);
+			} catch (Exception e) {
+				logger.error("Failed to merge template. Returning 500.",e);
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+	        writer.close();
 		} else {
 			String[] parts = pathInfo.substring(1).split("/");
 
@@ -131,13 +164,6 @@ public class ClogTool extends HttpServlet {
 
 				else if ("userPerms.json".equals(part1)) {
 					doUserPermsGet(response);
-				}
-
-				else if ("posts".equals(part1)) {
-					postId = parts[1];
-					String url = "/clog-tool/clog.html?state=post&siteId=" + siteId + "&placementId=" + toolId + "&postId=" + URLEncoder.encode(postId, "UTF-8") + "&language=" + languageCode + "&skin=" + sakaiProxy.getSakaiSkin() + "&publicAllowed=" + publicAllowed + "&editor=" + sakaiProxy.getWysiwygEditor();
-					response.sendRedirect(url);
-					return;
 				}
 			}
 		}

@@ -1,54 +1,37 @@
 /* Stuff that we always expect to be setup */
-var clogSiteId = null;
-var clogPlacementId = null;
 var clogCurrentUserPermissions = null;
 var clogCurrentUserGlobalPreferences = {'showBody':true};
 var clogCurrentPost = null;
 var clogCurrentPosts = null;
 var clogCurrentState = null;
-var clogCurrentUser = null;
 var clogHomeState = null;
 var clogOnMyWorkspace = false;
 var clogOnGateway = false;
-var clogPublicAllowed = false;
 var clogTitleChanged = false;
 var clogTextAreaChanged = false;
-var wysiwygEditor = 'fckEditor'; //default
 
 var autosave_id = null;
 
 var clogBaseDataUrl = "";
 
-var clogInPDA = false;
-
 (function () {
 
-	var arg = SakaiUtils.getParameters();
-	
-	if(!arg || !arg.placementId || !arg.siteId) {
+	if(!startupArgs || !startupArgs.placementId || !startupArgs.siteId) {
 		alert('The placement id and site id MUST be supplied as page parameters');
 		return;
 	}
 	
-	clogSiteId = arg.siteId;
-	
-	if('!gateway' === clogSiteId) {
+	if('!gateway' === startupArgs.siteId) {
 		clogOnGateway = true;
 	}
 	
-	if(clogSiteId.match(/^~/)) {
+	if(startupArgs.siteId.match(/^~/)) {
 		clogOnMyWorkspace = true;
-	}
-	
-	clogPlacementId = arg.placementId;
-	
-	if (arg.editor) {
-		wysiwygEditor = arg.editor;
 	}
 
 	// This comes from sakai.properties, via the ClogTool servlet 
-	if('true' === arg.publicAllowed) {
-		clogPublicAllowed = true;
+	if('true' === startupArgs.publicAllowed) {
+		startupArgs.publicAllowed = true;
 	}
 	
 	clogHomeState = 'viewAllPosts';
@@ -56,31 +39,13 @@ var clogInPDA = false;
 	var href = document.location.href;
 
     if(href.indexOf("portal/pda") != -1) {
-        clogBaseDataUrl = "/portal/pda/" + clogSiteId + "/tool/" + clogPlacementId + "/";
-        clogInPDA = true;
-        wysiwygEditor = 'none';
+        clogBaseDataUrl = "/portal/pda/" + startupArgs.siteId + "/tool/" + startupArgs.placementId + "/";
     } else {
-        clogBaseDataUrl = "/portal/tool/" + clogPlacementId + "/";
-        clogInPDA = false;
-    }
-
-    if(arg.language) {
-    
-    	// CLOG-70. To support the en_US_DEBUG locales we need to do this as jquery.localisation
-    	// seems to drop variants from locale strings. Needs to be fixed in jquery.localisation; the
-    	// author has been contacted.
-    	if('en_US_DEBUG' === arg.language) {
-    		arg.language = 'db_DB';
-    	}
-    	
-        $.localise('clog-translations',{language:arg['language'],loadBase: true});
-    }
-    else {
-        $.localise('clog-translations');
+        clogBaseDataUrl = "/portal/tool/" + startupArgs.placementId + "/";
     }
 
 	// We need the toolbar in a template so we can swap in the translations
-    if(clogInPDA && screen.width < 800) {
+    if(startupArgs.onPDAPortal && screen.width < 800) {
 	    SakaiUtils.renderTrimpathTemplate('clog_pda_toolbar_template',{},'clog_toolbar');
         $('#clog_toolbar_dropdown').change(function () {
             if(clog_menu_label != this.value) { 
@@ -102,7 +67,7 @@ var clogInPDA = false;
 		    return switchState('userPosts');
     	});
 
-	    if(clogPublicAllowed) {
+	    if(startupArgs.publicAllowed) {
 		    $('#clog_my_public_posts_link>span>a').click(function(e) {
 			    return switchState('myPublicPosts');
 		    });
@@ -133,15 +98,13 @@ var clogInPDA = false;
 	// If we are on a My Workspace type site (characterised by a tilde as the
 	// first character in the site id), show the user's posts by default.
 	if(clogOnMyWorkspace) {
-		arg.state = 'userPosts';
+		startupArgs.state = 'userPosts';
 		clogHomeState = 'userPosts';
 		$("#clog_view_authors_link").hide();
 		$("#clog_my_clog_link").hide();
 		
-		if(clogPublicAllowed) $("#clog_my_public_posts_link").show();
+		if(startupArgs.publicAllowed) $("#clog_my_public_posts_link").show();
 	}
-
-	clogCurrentUser = SakaiUtils.getCurrentUser();
 
 	if(!clogOnGateway) {
 		clogCurrentUserPermissions = new ClogPermissions(ClogUtils.getCurrentUserPermissions());
@@ -170,11 +133,12 @@ var clogInPDA = false;
 		clogCurrentUserPermissions = new ClogPermissions();
 	}
 
-	if(window.frameElement)
+	if(window.frameElement) {
 		window.frameElement.style.minHeight = '600px';
+    }
 	
 	// Now switch into the requested state
-	switchState(arg.state,arg);
+	switchState(startupArgs.state,startupArgs);
 
 })();
 
@@ -190,10 +154,11 @@ function switchState(state,arg) {
 	// Just in case we have a floating cluetip hanging about
 	$('#cluetip').hide();
 
-	if(!clogOnGateway && clogCurrentUserPermissions.postCreate)
+	if(!clogOnGateway && clogCurrentUserPermissions.postCreate) {
 		$("#clog_create_post_link").show();
-	else
+	} else {
 		$("#clog_create_post_link").hide();
+    }
 	
 	if('home' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
@@ -201,6 +166,9 @@ function switchState(state,arg) {
 		switchState(clogHomeState,arg);
 	}
 	else if('viewAllPosts' === state) {
+
+	    $('#clog_toolbar > li > span').removeClass('current');
+	    $('#clog_home_link > span').addClass('current');
 
         $('#clog_toolbar_dropdown').val(clog_home_label);
 
@@ -231,7 +199,7 @@ function switchState(state,arg) {
 			$("#clog_create_post_link").hide();
 
 		jQuery.ajax({
-	    	url : "/direct/clog-author.json?siteId=" + clogSiteId,
+	    	url : "/direct/clog-author.json?siteId=" + startupArgs.siteId,
 	      	dataType : "json",
 	       	async : false,
 			cache: false,
@@ -282,13 +250,13 @@ function switchState(state,arg) {
 	    $('#clog_my_clog_link > span').addClass('current');
 
 		// Default to using the current session user id ...
-		var userId = clogCurrentUser.id;
+		var userId = startupArgs.userId;
 		
 		// ... but override it with any supplied one
 		if(arg && arg.userId)
 			userId = arg.userId;
 
-		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&autosaved=true";
+		var url = "/direct/clog-post.json?siteId=" + startupArgs.siteId + "&creatorId=" + userId + "&autosaved=true";
 
 		jQuery.ajax( {
 	       	'url' : url,
@@ -331,9 +299,9 @@ function switchState(state,arg) {
 		$('#clog_toolbar > li > span').removeClass('current');
 		$('#clog_my_public_posts_link > span').addClass('current');
 		// Default to using the current session user id ...
-		var userId = clogCurrentUser.id;
+		var userId = startupArgs.userId;
 
-		var url = "/direct/clog-post.json?siteId=" + clogSiteId + "&creatorId=" + userId + "&visibilities=PUBLIC";
+		var url = "/direct/clog-post.json?siteId=" + startupArgs.siteId + "&creatorId=" + userId + "&visibilities=PUBLIC";
 
 		// TODO: Factor this into a method. Same as above ...
 		jQuery.ajax( {
@@ -411,7 +379,7 @@ function switchState(state,arg) {
 				clogTitleChanged = true;	 		
 	 		});
 
-            if(clogInPDA) {
+            if(startupArgs.onPDAPortal) {
 	 		    $('#clog_content_editor').bind('keypress',function (e) {
 				    clogTextAreaChanged = true;	 		
 	 		    });
@@ -419,15 +387,15 @@ function switchState(state,arg) {
 	 		
 	 		
 			$('#clog_save_post_button').click(function () {
-				ClogUtils.savePostAsDraft(wysiwygEditor);
+				ClogUtils.savePostAsDraft(startupArgs.editor);
 			});
 
 			$('#clog_make_post_public_button').click(function () {
-				ClogUtils.publicisePost(wysiwygEditor);
+				ClogUtils.publicisePost(startupArgs.editor);
 			});
 
 			$('#clog_publish_post_button').click(function() {
-				ClogUtils.publishPost(wysiwygEditor);
+				ClogUtils.publishPost(startupArgs.editor);
 			});
 
 			$('#clog_cancel_button').click(function(e) {
@@ -444,7 +412,7 @@ function switchState(state,arg) {
 			
 			// Start the auto saver
 			autosave_id = setInterval(function() {
-					if(ClogUtils.autosavePost(wysiwygEditor)) {
+					if(ClogUtils.autosavePost(startupArgs.editor)) {
 						$('#clog_autosaved_message').show();
 						setTimeout(function() {
 								$('#clog_autosaved_message').fadeOut(200);
@@ -452,7 +420,7 @@ function switchState(state,arg) {
 					}
 				},10000);
 
- 			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
+ 			SakaiUtils.setupWysiwygEditor(startupArgs.editor,'clog_content_editor',600,400);
 	 	});
 	}
 	else if('createComment' === state) {
@@ -483,10 +451,10 @@ function switchState(state,arg) {
 			SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPost,'clog_post_' + arg.postId);
 
 			$('#clog_save_comment_button').click(function () {
-				ClogUtils.saveComment(wysiwygEditor);
+				ClogUtils.saveComment(startupArgs.editor);
 			});
 			
-			SakaiUtils.setupWysiwygEditor(wysiwygEditor,'clog_content_editor',600,400,'Default',clogSiteId);
+			SakaiUtils.setupWysiwygEditor(startupArgs.editor,'clog_content_editor',600,400);
 		});
 	}
 	else if('permissions' === state) {
@@ -506,7 +474,7 @@ function switchState(state,arg) {
 	    $('#clog_toolbar >  li > span').removeClass('current');
 	    $('#clog_recycle_bin_link > span').addClass('current');
 		jQuery.ajax( {
-	       	url : "/direct/clog-post.json?siteId=" + clogSiteId + "&visibilities=RECYCLED",
+	       	url : "/direct/clog-post.json?siteId=" + startupArgs.siteId + "&visibilities=RECYCLED",
 	       	dataType : "json",
 	       	async : false,
 			cache: false,

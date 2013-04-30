@@ -33,7 +33,8 @@
 
      	<dependency>
        		<groupId>org.sakaiproject.kernel</groupId>
-       		<artifactId>sakai-kernel-util</artifactId>
+            <artifactId>sakai-kernel-util</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
      	</dependency>
 
    		<dependency>
@@ -82,6 +83,12 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+        	<groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
         </dependency>
 
 	</dependencies>

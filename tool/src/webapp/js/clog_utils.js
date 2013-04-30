@@ -14,7 +14,7 @@ var ClogUtils;
         }
 		
     	jQuery.ajax( {
-			url : "/portal/tool/" + clogPlacementId + "/search",
+			url : "/portal/tool/" + startupArgs.placementId + "/search",
 			type : 'POST',
         	dataType : "json",
         	async : false,
@@ -57,7 +57,7 @@ var ClogUtils;
 
         jQuery.ajax( {
 	 		url : clogBaseDataUrl + "perms.json",
-            //url : "/portal/tool/" + clogPlacementId + "/perms",
+            //url : "/portal/tool/" + startupArgs.placementId + "/perms",
             dataType : "json",
             async : false,
             cache: false,
@@ -93,7 +93,7 @@ var ClogUtils;
         }
 
         jQuery.ajax( {
-            url : "/portal/tool/" + clogPlacementId + "/setPerms",
+            url : "/portal/tool/" + startupArgs.placementId + "/setPerms",
             type : 'POST',
             data : myData,
             timeout: 30000,
@@ -158,7 +158,7 @@ var ClogUtils;
 	ClogUtils.setCurrentPosts = function() {
 
 		jQuery.ajax( {
-	       	url : "/direct/clog-post.json?siteId=" + clogSiteId + "&autosaved=true",
+	       	url : "/direct/clog-post.json?siteId=" + startupArgs.siteId + "&autosaved=true",
 	       	dataType : "json",
 	       	async : false,
 			cache: false,
@@ -217,7 +217,7 @@ var ClogUtils;
 				'commentable':$('#clog_commentable_checkbox').attr('checked') === 'checked',
 				'title':title,
 				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
-				'siteId':clogSiteId
+				'siteId':startupArgs.siteId
 				};
 				
 		if(isPublish) post['mode'] = 'publish';
@@ -256,7 +256,7 @@ var ClogUtils;
 				'id':$('#clog_comment_id_field').val(),
 				'postId':clogCurrentPost.id,
 				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
-				'siteId':clogSiteId
+				'siteId':startupArgs.siteId
 				};
 
 		jQuery.ajax( {
@@ -339,7 +339,7 @@ var ClogUtils;
 		}
 
 		jQuery.ajax( {
-	 		url : "/direct/clog-post/remove?posts=" + postIds + "&site=" + clogSiteId,
+	 		url : "/direct/clog-post/remove?posts=" + postIds + "&site=" + startupArgs.siteId,
 			dataType : 'text',
 			async : false,
 		   	success : function(result) {
@@ -416,7 +416,7 @@ var ClogUtils;
 			return false;
 		
 		jQuery.ajax( {
-	 		url : "/direct/clog-comment/" + commentId + "?siteId=" + clogSiteId,
+	 		url : "/direct/clog-comment/" + commentId + "?siteId=" + startupArgs.siteId,
 	   		async : false,
 			type:'DELETE',
 		   	success : function(text,status) {
