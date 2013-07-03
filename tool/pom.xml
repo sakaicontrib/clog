@@ -34,7 +34,6 @@
      	<dependency>
        		<groupId>org.sakaiproject.kernel</groupId>
             <artifactId>sakai-kernel-util</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
      	</dependency>
 
    		<dependency>
