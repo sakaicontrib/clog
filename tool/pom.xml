@@ -10,7 +10,7 @@
   	<parent>
     	<artifactId>clog</artifactId>
     	<groupId>org.sakaiproject.clog</groupId>
-    	<version>0.9.4</version>
+    	<version>0.9.5-SNAPSHOT</version>
   	</parent>
   	
   	<packaging>war</packaging>
