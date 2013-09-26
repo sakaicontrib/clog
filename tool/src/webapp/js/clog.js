@@ -181,9 +181,13 @@ function switchState(state,arg) {
             }
 	 	    $(document).ready(function () {
 		        ClogUtils.attachProfilePopup();
-		        if(window.frameElement) {
-	 			    setMainFrameHeight(window.frameElement.id);
-		        }
+                try {
+                    if(window.frameElement) {
+                        setMainFrameHeight(window.frameElement.id);
+                    }
+		        } catch (e) {
+                    return;
+                }
             });
             if (!clogCurrentUserGlobalPreferences.showBody) {
                 $('.clog_body').hide();
@@ -234,8 +238,13 @@ function switchState(state,arg) {
 
                     $('.pagedisplay').attr('disabled','true');
 	 						
- 					if(window.frameElement)
-	 					setMainFrameHeight(window.frameElement.id);
+                    try {
+ 					    if(window.frameElement) {
+	 					    setMainFrameHeight(window.frameElement.id);
+                        }
+		            } catch (e) {
+                        return;
+                    }
 	   			});
 
 			},
@@ -280,9 +289,13 @@ function switchState(state,arg) {
                     }
 
 	 			    $(document).ready(function() {
-	 			        if(window.frameElement) {
-	 					    setMainFrameHeight(window.frameElement.id);
-	 				    }
+                        try {
+                            if(window.frameElement) {
+                                setMainFrameHeight(window.frameElement.id);
+                            }
+                        } catch (e) {
+                            return;
+                        }
                         if (!clogCurrentUserGlobalPreferences.showBody) {
                             $('.clog_body').hide();
                         }
@@ -319,14 +332,19 @@ function switchState(state,arg) {
 	 			
 				SakaiUtils.renderTrimpathTemplate('clog_user_posts_template',{'creatorId':userId,'posts':clogCurrentPosts},'clog_content');
 				$('#clog_author_profile').html(profileMarkup);
-	 			for(var i=0,j=clogCurrentPosts.length;i<j;i++)
+	 			for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
 					SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
+                }
 
-	 			if(window.frameElement) {
-	 				$(document).ready(function() {
-	 					setMainFrameHeight(window.frameElement.id);
-	 				});
-				}
+                try {
+                    if(window.frameElement) {
+                        $(document).ready(function() {
+                            setMainFrameHeight(window.frameElement.id);
+                        });
+                    }
+                } catch (e) {
+                    return;
+                }
 			},
 			error : function(xmlHttpRequest,status,errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);
@@ -354,8 +372,13 @@ function switchState(state,arg) {
 
 			if(clogCurrentPost.comments.length > 0) $('.comments').show();
 
-	 		if(window.frameElement)
-	 			setMainFrameHeight(window.frameElement.id);
+            try { 
+                if(window.frameElement) {
+                    setMainFrameHeight(window.frameElement.id);
+                }
+            } catch (e) {
+                return;
+            }
 	 	});
 	}
 	else if('createPost' === state) {
@@ -466,8 +489,13 @@ function switchState(state,arg) {
 	 	$(document).ready(function() {
 			$('#clog_permissions_save_button').bind('click',ClogUtils.savePermissions);
 
-			if(window.frameElement)
-				setMainFrameHeight(window.frameElement.id);
+            try {
+                if(window.frameElement) {
+                    setMainFrameHeight(window.frameElement.id);
+                }
+            } catch (e) {
+                return;
+            }
 		});
 	}
 	else if('viewRecycled' === state) {
@@ -498,11 +526,15 @@ function switchState(state,arg) {
 					$('#clog_restore_button').attr('disabled','disabled');
 				}
 
-	 			if(window.frameElement) {
-	 				$(document).ready(function() {
-	 					setMainFrameHeight(window.frameElement.id);
-	 				});
-				}
+                try {
+                    if(window.frameElement) {
+                        $(document).ready(function() {
+                            setMainFrameHeight(window.frameElement.id);
+                        });
+                    }
+                } catch (e) {
+                    return;
+                }
 			},
 			error : function(xmlHttpRequest,status,errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);
@@ -514,12 +546,15 @@ function switchState(state,arg) {
 	}
 }
 
-function toggleFullContent(v)
-{
- 	if(window.frameElement) {
-		$(document).ready(function() {
- 			setMainFrameHeight(window.frameElement.id);
-		});
+function toggleFullContent(v) {
+    try {
+        if(window.frameElement) {
+            $(document).ready(function() {
+                setMainFrameHeight(window.frameElement.id);
+            });
+        }
+    } catch (e) {
+        return;
     }
 	
 	if(v.checked) {

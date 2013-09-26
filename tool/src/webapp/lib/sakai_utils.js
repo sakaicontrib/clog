@@ -57,8 +57,12 @@ var SakaiUtils;
 
         sakai.editor.launch(textarea_id,{},width,height);
         
-        if(window.frameElement) {
-            setMainFrameHeight(window.frameElement.id);
+        try {
+            if(window.frameElement) {
+                setMainFrameHeight(window.frameElement.id);
+            }
+        } catch (e) {
+            return;
         }
 	}
 	
@@ -71,8 +75,12 @@ var SakaiUtils;
         sakai.editor.launch(textarea_id,{},width,height);
         
         CKEDITOR.instances[textarea_id].on('instanceReady',function (e) {
-            if(window.frameElement) {
-                setMainFrameHeight(window.frameElement.id);
+            try {
+                if(window.frameElement) {
+                    setMainFrameHeight(window.frameElement.id);
+                }
+            } catch (e) {
+                return;
             }
         });
 	}
