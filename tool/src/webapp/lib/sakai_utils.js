@@ -130,5 +130,5 @@ var SakaiUtils;
 			return clogTextAreaChanged;
 		}
 	}
-		
+
 }) ();

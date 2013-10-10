@@ -73,6 +73,7 @@ clog_created_label="Created:";
 clog_modified_label="Modified:";
 clog_public_question="Are you sure you want to make this post public?";
 clog_short_title_warning="The post title must be at least four characters in length";
+clog_no_content_warning="You have not entered any content to save";
 clog_permissions_create="create";
 clog_permissions_read_any="read.any";
 clog_permissions_update_any="update.any";

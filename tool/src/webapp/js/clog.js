@@ -398,6 +398,7 @@ function switchState(state,arg) {
 		SakaiUtils.renderTrimpathTemplate('clog_create_post_template',clogCurrentPost,'clog_content');
 
 	 	$(document).ready(function () {
+
 	 		$('#clog_title_field').bind('keypress',function (e) {
 				clogTitleChanged = true;	 		
 	 		});

@@ -173,9 +173,9 @@ var ClogUtils;
 	}
 	
 	ClogUtils.autosavePost = function(wysiwygEditor) {
-		
+
 		if(!SakaiUtils.isEditorDirty(wysiwygEditor,'clog_content_editor') && !clogTitleChanged) {
-			return;
+			return 0;
 		}
 	
 		return ClogUtils.storePost('AUTOSAVE',null,wysiwygEditor);
@@ -190,8 +190,9 @@ var ClogUtils;
 	}
 
 	ClogUtils.publicisePost = function(wysiwygEditor) {
-		if(confirm(clog_public_question))
+		if(confirm(clog_public_question)) {
 			return ClogUtils.storePost('PUBLIC',null,wysiwygEditor);
+        }
 	}
 		
 	ClogUtils.storePost = function(visibility,isPublish,wysiwygEditor) {
@@ -211,12 +212,21 @@ var ClogUtils;
 			visibility = ($('#clog_visibility_maintainer').attr('checked')) ? 'MAINTAINER':'SITE';
 		}
 
+	    var content = SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor');
+
+		if('' == content) {
+            if('AUTOSAVE' !== visibility) {
+                alert(clog_no_content_warning);
+            }
+            return 0;
+        }
+
 		var post = {
 				'id':$('#clog_post_id_field').val(),
 				'visibility':visibility,
 				'commentable':$('#clog_commentable_checkbox').attr('checked') === 'checked',
 				'title':title,
-				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
+				'content':content,
 				'siteId':startupArgs.siteId
 				};
 				
