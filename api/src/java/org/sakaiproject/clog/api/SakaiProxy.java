@@ -103,6 +103,4 @@ public interface SakaiProxy {
 	public boolean isCurrentUserMemberOfSite(String siteId) throws Exception;
 
 	public String getWysiwygEditor();
-
-	public String getSakaiSkin();
 }

@@ -18,6 +18,7 @@ import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
 import org.sakaiproject.component.api.ComponentManager;
+import org.sakaiproject.component.api.ServerConfigurationService;
 
 /**
  * @author Adrian Fish (a.fish@lancaster.ac.uk)
@@ -28,6 +29,7 @@ public class ClogAdminTool extends HttpServlet {
 
 	private SakaiProxy sakaiProxy;
 	private ClogManager clogManager;
+	private ServerConfigurationService serverConfigurationService;
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -35,6 +37,7 @@ public class ClogAdminTool extends HttpServlet {
 		ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
 		sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
 		clogManager = (ClogManager) componentManager.get(ClogManager.class);
+		serverConfigurationService = (ServerConfigurationService) componentManager.get(ServerConfigurationService.class);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -46,7 +49,7 @@ public class ClogAdminTool extends HttpServlet {
 			throw new ServletException("CLOG admin can only be used by Sakai super users.");
 		}
 
-		request.setAttribute("skin", sakaiProxy.getSakaiSkin());
+		request.setAttribute("skin", serverConfigurationService.getString("skin.default","default"));
 		request.setAttribute("toolId", sakaiProxy.getCurrentToolId());
 
 		response.setContentType("text/html");
@@ -74,7 +77,7 @@ public class ClogAdminTool extends HttpServlet {
 			numberImported += importBlog2Data();
 		}
 
-		request.setAttribute("skin", sakaiProxy.getSakaiSkin());
+		request.setAttribute("skin", serverConfigurationService.getString("skin.default","default"));
 		request.setAttribute("toolId", sakaiProxy.getCurrentToolId());
 		request.setAttribute("numberImported", numberImported);
 
