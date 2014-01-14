@@ -1,6 +1,6 @@
 /* Stuff that we always expect to be setup */
 var clogCurrentUserPermissions = null;
-var clogCurrentUserGlobalPreferences = {'showBody':true};
+var clogSettings = {};
 var clogCurrentPost = null;
 var clogCurrentPosts = null;
 var clogCurrentState = null;
@@ -14,7 +14,13 @@ var autosave_id = null;
 
 var clogBaseDataUrl = "";
 
+var LOCAL_STORAGE_KEY = 'clog';
+
 (function () {
+
+    if(typeof localStorage !== 'undefined') {
+        clogSettings = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+    }
 
 	if(!startupArgs || !startupArgs.placementId || !startupArgs.siteId) {
 		alert('The placement id and site id MUST be supplied as page parameters');
@@ -177,6 +183,7 @@ function switchState(state,arg) {
 		SakaiUtils.renderTrimpathTemplate('clog_all_posts_template',{'posts':clogCurrentPosts},'clog_content');
 	 	$(document).ready(function () {
 		    for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
+			    console.log(clogCurrentPosts[i].id);
 			    SakaiUtils.renderTrimpathTemplate('clog_post_template',clogCurrentPosts[i],'post_' + clogCurrentPosts[i].id);
             }
 	 	    $(document).ready(function () {
@@ -189,7 +196,7 @@ function switchState(state,arg) {
                     return;
                 }
             });
-            if (!clogCurrentUserGlobalPreferences.showBody) {
+            if (!clogSettings.showBody) {
                 $('.clog_body').hide();
             }
         });
@@ -296,7 +303,7 @@ function switchState(state,arg) {
                         } catch (e) {
                             return;
                         }
-                        if (!clogCurrentUserGlobalPreferences.showBody) {
+                        if (!clogSettings.showBody) {
                             $('.clog_body').hide();
                         }
 				    });
@@ -547,6 +554,25 @@ function switchState(state,arg) {
 	}
 }
 
+function getLocalStorageSetting(key) {
+
+    if(typeof localStorage !== 'undefined') {
+        var settings = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+        return settings[key] || false;
+    }
+}
+
+function setLocalStorageSetting(key, value) {
+
+    clogSettings[key] = value;
+
+    if(typeof localStorage !== 'undefined') {
+        var settings = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+        settings[key] = value;
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settings));
+    }
+}
+
 function toggleFullContent(v) {
     try {
         if(window.frameElement) {
@@ -561,10 +587,10 @@ function toggleFullContent(v) {
 	if(v.checked) {
 		$('.clog_body').hide();
         // CLOG-59
-        clogCurrentUserGlobalPreferences.showBody = 'false';
+        setLocalStorageSetting('showBody', false);
     } else {
 		$('.clog_body').show();
         // CLOG-59
-        clogCurrentUserGlobalPreferences.showBody = 'true';
+        setLocalStorageSetting('showBody', true);
     }
 }

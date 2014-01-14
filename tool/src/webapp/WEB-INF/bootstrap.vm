@@ -335,7 +335,7 @@ ${sakaiHtmlHead}
 	{else}
 	<div style="clear: left; margin-top: 10px;" id="viewOptions">
    		<input type="checkbox"
-                 {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
+                 {if !clogSettings.showBody} checked {/if}
                  onclick="toggleFullContent(this);"/>
 		<span>${clog_show_title_only_label}</span>
    	</div>
@@ -366,7 +366,7 @@ ${sakaiHtmlHead}
 	{else}
 	<div style="clear: left; margin-top: 10px;" id="viewOptions">
    		<input type="checkbox"
-                 {if !clogCurrentUserGlobalPreferences.showBody} checked {/if}
+                 {if !clogSettings.showBody} checked {/if}
                  onclick="toggleFullContent(this);"/>
 		<span>${clog_show_title_only_label}</span>{if creatorId != startupArgs.userId && !clogOnGateway}&nbsp;<a target="_blank" href="/direct/clog-rss/user/${creatorId}.xml{if !clogOnGateway}?siteId=${startupArgs.siteId}{/if}" title="${clog_user_rss_tooltip}"><img src="/library/image/silk/feed.png"/></a>{/if}
    	</div>
