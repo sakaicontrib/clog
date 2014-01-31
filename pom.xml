@@ -9,18 +9,15 @@
   	<version>0.9.5-SNAPSHOT</version>
   	<packaging>pom</packaging>
 
-	<parent>
-		<groupId>org.sakaiproject.purepoms</groupId>
-		<artifactId>sakai-standard-tool</artifactId>
-        <version>2.8.6</version>
-	</parent>
+    <parent>
+        <groupId>org.sakaiproject</groupId>
+        <artifactId>master</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
 
 	<properties>
-		<entitybroker.version>1.5.0</entitybroker.version>
-		<search.version>1.4.0</search.version>
-		<profile-api.version>2.9.0</profile-api.version>
+		<profile-api.version>2.9.3</profile-api.version>
       	<log4j.version>1.2.8</log4j.version>
-	  	<servlet-api.version>2.4</servlet-api.version>
    		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
   	
@@ -29,6 +26,7 @@
     	<url>http://e-science.lancs.ac.uk</url>
   	</organization>
   	<inceptionYear>2005</inceptionYear>
+
   	<developers>
     	<developer>
       		<name>Adrian Fish</name>
@@ -40,45 +38,13 @@
     	</developer>
   	</developers>
 
-	<repositories>
-        <repository>
-            <id>sakai-maven</id>
-            <name>Sakai Maven Repo</name>
-            <layout>default</layout>
-            <url>http://source.sakaiproject.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sakai-maven2-snapshots</id>
-            <name>Sakai Maven Repo</name>
-            <layout>default</layout>
-            <url>http://source.sakaiproject.org/maven2-snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>default</id>
-            <name>Maven Repository Switchboard</name>
-            <layout>default</layout>
-            <url>http://repo1.maven.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-  	
+    <contributors>
+        <contributor>
+            <name>Anthony Whyte</name>
+            <email>arwhyte@umich.edu</email>
+        </contributor>
+    </contributors>
+
   	<modules>
     	<module>components</module>
     	<module>assembly</module>
@@ -88,34 +54,10 @@
     	<module>tool</module>
   	</modules>
 
- 	<pluginRepositories>
-        <pluginRepository>
-            <id>maven2-central-repo</id>
-            <name>Maven2 Central Repo</name>
-            <url>http://repo1.maven.org/maven2/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>Sakai Plugin Repo</id>
-            <url>http://source.sakaiproject.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-    
     <scm>
-    	<connection>scm:svn:https://source.sakaiproject.org/contrib/clog/trunk</connection>
-    	<developerConnection>scm:svn:https://source.sakaiproject.org/contrib/clog/trunk</developerConnection>
-    	<url>https://source.sakaiproject.org/contrib/clog/trunk</url>
+    	<connection>scm:git:git://github.com/adrianfish/clog.git</connection>
+    	<developerConnection>scm:git:git://github.com/adrianfish/clog.git</developerConnection>
+    	<url>https://github.com/adrianfish/clog</url>
   	</scm>
   	
   	<issueManagement>
@@ -142,35 +84,12 @@
 
 			<!--  sakai -->
             <dependency>
-                <groupId>org.sakaiproject.search</groupId>
-                <artifactId>search-api</artifactId>
-                <version>${search.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.sakaiproject.search</groupId>
-                <artifactId>search-util</artifactId>
-                <version>${search.version}</version>
-            </dependency>
-            <dependency>
       			<groupId>org.sakaiproject.profile</groupId>
       			<artifactId>profile-api</artifactId>
 	  			<version>${profile-api.version}</version>
 	  			<scope>provided</scope>
     		</dependency>
-    		<!-- entity broker -->
-    		<dependency>
-				<groupId>org.sakaiproject.entitybroker</groupId>
-				<artifactId>entitybroker-api</artifactId>
-				<version>${entitybroker.version}</version>
-				<scope>provided</scope>
-   			</dependency>
-    		<dependency>
-				<groupId>org.sakaiproject.entitybroker</groupId>
-				<artifactId>entitybroker-utils</artifactId>
-				<version>${entitybroker.version}</version>
-   			</dependency>
-    		
+
     		<!--  external -->
     		<dependency>
       			<groupId>log4j</groupId>
@@ -179,13 +98,12 @@
 	  			<scope>provided</scope>
             </dependency>
 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>0.11.6</version>
-		</dependency>
-    		
-    		
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>0.11.6</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     
@@ -196,7 +114,4 @@
             <url>scpexe://source.sakaiproject.org/var/www/html/release/clog/${project.version}</url>
         </site>
     </distributionManagement>
-    
-	
-
 </project>
