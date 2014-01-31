@@ -20,57 +20,50 @@
        		<groupId>org.sakaiproject.clog</groupId>
        		<artifactId>clog-api</artifactId>
      	</dependency>
-
      	<dependency>
        		<groupId>org.sakaiproject.kernel</groupId>
        		<artifactId>sakai-component-manager</artifactId>
      	</dependency>
-
      	<dependency>
        		<groupId>org.sakaiproject.kernel</groupId>
        		<artifactId>sakai-kernel-api</artifactId>
      	</dependency>
-
      	<dependency>
        		<groupId>org.sakaiproject.kernel</groupId>
             <artifactId>sakai-kernel-util</artifactId>
      	</dependency>
-
    		<dependency>
 			<groupId>org.sakaiproject.entitybroker</groupId>
 			<artifactId>entitybroker-utils</artifactId>
    		</dependency>
-
    		<dependency>
 			<groupId>org.sakaiproject.entitybroker</groupId>
 			<artifactId>entitybroker-api</artifactId>
    		</dependency>
-   		
 		<dependency>
 			<groupId>org.sakaiproject.search</groupId>
 			<artifactId>search-api</artifactId>
 		</dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring</artifactId>
+            <artifactId>spring-core</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
     	<dependency>
      		<groupId>javax.servlet</groupId>
      		<artifactId>servlet-api</artifactId>
     	</dependency>
-        		
     	<dependency>
      		<groupId>log4j</groupId>
      		<artifactId>log4j</artifactId>
     	</dependency>
-
     	<dependency>
      		<groupId>commons-lang</groupId>
      		<artifactId>commons-lang</artifactId>
     	</dependency>
-		
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
@@ -78,17 +71,14 @@
             <classifier>jdk15</classifier>
             <type>jar</type>
         </dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
         </dependency>
-
         <dependency>
         	<groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>1.7</version>
         </dependency>
-
 	</dependencies>
 </project>
