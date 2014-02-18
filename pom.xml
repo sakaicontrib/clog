@@ -17,7 +17,7 @@
     </parent>
 
 	<properties>
-		<profile-api.version>2.9.3</profile-api.version>
+		<!--profile-api.version>2.9.3</profile-api.version-->
       	<log4j.version>1.2.8</log4j.version>
    		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
@@ -48,7 +48,6 @@
 
   	<modules>
     	<module>components</module>
-    	<module>assembly</module>
     	<module>api</module>
     	<module>impl</module>
     	<module>help</module>
@@ -84,12 +83,12 @@
      		</dependency>
 
 			<!--  sakai -->
-            <dependency>
+            <!--dependency>
       			<groupId>org.sakaiproject.profile</groupId>
       			<artifactId>profile-api</artifactId>
 	  			<version>${profile-api.version}</version>
 	  			<scope>provided</scope>
-    		</dependency>
+    		</dependency-->
 
     		<!--  external -->
     		<dependency>

@@ -19,10 +19,10 @@
       		<groupId>org.sakaiproject.clog</groupId>
       		<artifactId>clog-api</artifactId>
     	</dependency>
-    	<dependency>
+    	<!--dependency>
       		<groupId>org.sakaiproject.profile</groupId>
       		<artifactId>profile-api</artifactId>
-    	</dependency>
+    	</dependency-->
     	<dependency>
       		<groupId>javax.servlet</groupId>
       		<artifactId>servlet-api</artifactId>

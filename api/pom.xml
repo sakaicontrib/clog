@@ -20,10 +20,10 @@
   	</properties>
 
   	<dependencies>
-    	<dependency>
+    	<!--dependency>
       		<groupId>org.sakaiproject.profile</groupId>
       		<artifactId>profile-api</artifactId>
-    	</dependency>
+    	</dependency-->
 		<dependency>
        		<groupId>org.sakaiproject.kernel</groupId>
            	<artifactId>sakai-kernel-api</artifactId>

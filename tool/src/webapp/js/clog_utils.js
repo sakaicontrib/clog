@@ -100,7 +100,7 @@ var ClogUtils;
             async : false,
             dataType: 'text',
             success : function(result) {
-                switchState('viewAllPosts');
+                location.reload();
             },
             error : function(xmlHttpRequest,status,error) {
                 alert("Failed to save permissions. Status: " + status + '. Error: ' + error);
