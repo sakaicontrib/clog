@@ -14,7 +14,7 @@ var ClogUtils;
         }
 		
     	jQuery.ajax( {
-			url : "/portal/tool/" + startupArgs.placementId + "/search",
+			url : "/portal/tool/" + clog.placementId + "/search",
 			type : 'POST',
         	dataType : "json",
         	async : false,
@@ -57,7 +57,7 @@ var ClogUtils;
 
         jQuery.ajax( {
 	 		url : clogBaseDataUrl + "perms.json",
-            //url : "/portal/tool/" + startupArgs.placementId + "/perms",
+            //url : "/portal/tool/" + clog.placementId + "/perms",
             dataType : "json",
             async : false,
             cache: false,
@@ -93,7 +93,7 @@ var ClogUtils;
         }
 
         jQuery.ajax( {
-            url : "/portal/tool/" + startupArgs.placementId + "/setPerms",
+            url : "/portal/tool/" + clog.placementId + "/setPerms",
             type : 'POST',
             data : myData,
             timeout: 30000,
@@ -158,7 +158,7 @@ var ClogUtils;
 	ClogUtils.setCurrentPosts = function() {
 
 		jQuery.ajax( {
-	       	url : "/direct/clog-post.json?siteId=" + startupArgs.siteId + "&autosaved=true",
+	       	url : "/direct/clog-post.json?siteId=" + clog.siteId + "&autosaved=true",
 	       	dataType : "json",
 	       	async : false,
 			cache: false,
@@ -227,7 +227,7 @@ var ClogUtils;
 				'commentable':$('#clog_commentable_checkbox').attr('checked') === 'checked',
 				'title':title,
 				'content':content,
-				'siteId':startupArgs.siteId
+				'siteId':clog.siteId
 				};
 				
 		if(isPublish) post['mode'] = 'publish';
@@ -266,7 +266,7 @@ var ClogUtils;
 				'id':$('#clog_comment_id_field').val(),
 				'postId':clogCurrentPost.id,
 				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
-				'siteId':startupArgs.siteId
+				'siteId':clog.siteId
 				};
 
 		jQuery.ajax( {
@@ -349,7 +349,7 @@ var ClogUtils;
 		}
 
 		jQuery.ajax( {
-	 		url : "/direct/clog-post/remove?posts=" + postIds + "&site=" + startupArgs.siteId,
+	 		url : "/direct/clog-post/remove?posts=" + postIds + "&site=" + clog.siteId,
 			dataType : 'text',
 			async : false,
 		   	success : function(result) {
@@ -426,7 +426,7 @@ var ClogUtils;
 			return false;
 		
 		jQuery.ajax( {
-	 		url : "/direct/clog-comment/" + commentId + "?siteId=" + startupArgs.siteId,
+	 		url : "/direct/clog-comment/" + commentId + "?siteId=" + clog.siteId,
 	   		async : false,
 			type:'DELETE',
 		   	success : function(text,status) {
@@ -439,4 +439,14 @@ var ClogUtils;
 	  	
 	  	return false;
 	}
+
+    ClogUtils.renderTemplate = function (name, data, output) {
+
+        var template = Handlebars.templates[name];
+        document.getElementById(output).innerHTML = template(data);
+    };
+
+    Handlebars.registerHelper('translate', function (key) {
+        return clog.i18n[key];
+    });
 }) ();

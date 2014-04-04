@@ -1,0 +1,68 @@
+<h2>{{translate 'permissions_label'}}</h2>
+<table id="clog_permissions_table">
+	<thead>
+		<tr>
+			<th></th>
+			<th width="5px"></th>
+			<th align="center" colspan="6">{{translate 'post_label'}}</th>
+		</tr>
+		<tr class="listHier">
+			<th align="left">{{translate 'permissions_role_label'}}:</th>
+			<th style="background: white;border: none;"></th>
+			<th style="text-align:center;">{{translate 'permissions_create'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_read_any'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_update_any'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_update_own'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_delete_any'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_delete_own'}}</th>
+		</tr>
+	</thead>
+<tbody>
+{{#each perms}}
+<tr>
+	<td align="left">{{role}}</td>
+	<td></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_post_create}}checked="checked"{{/if}}" id="{{role}}:clog.post.create"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_post_read_any}}checked="checked"{{/if}}" id="{{role}}:clog.post.read.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_post_update_any}}checked="checked"{{/if}}" id="{{role}}:clog.post.update.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_post_update_own}}checked="checked"{{/if}}" id="{{role}}:clog.post.update.own"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_post_delete_any}}checked="checked"{{/if}}" id="{{role}}:clog.post.delete.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_post_delete_own}}checked="checked"{{/if}}" id="{{role}}:clog.post.delete.own"/></td>
+</tr>
+{{/each}}
+</tbody>
+</table>
+<table id="clog_permissions_table">	
+<thead>
+		<tr>
+			<th></th>
+			<th width="5px"></th>
+			<th colspan="6">{{translate 'comment_label'}}</th>
+		</tr>
+		<tr class="listHier">
+			<th align="left">{{translate 'permissions_role_label'}}:</th>
+			<th style="background: white;border: none;"></th>
+			<th style="text-align:center;">{{translate 'permissions_create'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_read_any'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_update_any'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_update_own'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_delete_any'}}</th>
+			<th style="text-align:center;">{{translate 'permissions_delete_own'}}</th>
+		</tr>
+	</thead>
+{{#each perms}}
+<tr>
+	<td align="left">{{role}}</td>
+	<td></td>	
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_comment_create}}checked="checked"{{/if}}" id="{{role}}:clog.comment.create"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_comment_read_any}}checked="checked"{{/if}}" id="{{role}}:clog.comment.read.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_comment_update_any}}checked="checked"{{/if}}" id="{{role}}:clog.comment.update.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_comment_update_own}}checked="checked"{{/if}}" id="{{role}}:clog.comment.update.own"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_comment_delete_any}}checked="checked"{{/if}}" id="{{role}}:clog.comment.delete.any"/></td>
+	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_comment_delete_own}}checked="checked"{{/if}}" id="{{role}}:clog.comment.delete.own"/></td>
+</tr>
+{{/each}}
+</tbody>
+</table>
+<input id="clog_permissions_save_button" type="button" value="{{translate 'save'}}"/>
+<input type="button" value="${cancel}" onclick="return switchState('home');"/>

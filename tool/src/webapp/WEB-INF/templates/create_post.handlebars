@@ -1,0 +1,37 @@
+	<h2>{{translate 'post_editor_label'}}</h2>
+
+	<table cols="2">
+	<tbody>
+	<tr>
+	<td><span style="font-weight: bold;">{{translate 'title_label'}}</span></td>
+	<td><input type="text" id="clog_title_field" name="title" value="{{post.title}}"/></td>
+	</tr>
+	</tbody>
+	</table>
+   	<br />
+	<span style="font-weight: bold;">{{translate 'content_label'}}</span>
+	<br />
+	<textarea name="content" id="clog_content_editor" cols="45" rows="10">{{post.content}}</textarea>
+	<br />
+	<br />
+	{{#unless onMyWorkspace}}
+	<input type="checkbox" id="clog_commentable_checkbox" {{#if commentable}}checked="checked"{{/if}}/>{{translate 'allow_comments_label'}}
+	<br />
+	<br />
+	{{/unless}}
+    <input id="clog_post_id_field" type="hidden" value="{{post.id}}"/>
+    {{#if onMyWorkspace}}
+     	{{#if publicAllowed}}
+        <input id="clog_make_post_public_button" type="button" value="{{translate 'make_post_public_label'}}" title="{{translate 'make_post_public_tooltip'}}"/>
+        {{/if}}
+    {{else}}
+       <input id="clog_visibility_maintainer" type="radio" name="visibility"/>{{translate 'admin_visibility'}}
+       <br/>
+       <input id="clog_visibility_site" type="radio" name="visibility" checked="checked"/>{{translate 'site_visibility'}}
+       <br/>
+       <br/>
+    {{/if}}
+    <input id="clog_publish_post_button" type="button" value="{{translate 'publish_label'}}" title="{{translate 'publish_tooltip'}}"/>
+    <input id="clog_save_post_button" type="button" value="{{translate 'save_as_draft_label'}}" title="{{translate 'save_as_draft_tooltip'}}"/>
+    <input id="clog_cancel_button" type="button" value="{{translate 'cancel'}}"/>
+	<span id="clog_autosaved_message">{{translate 'autosaved_message_label'}}</span>

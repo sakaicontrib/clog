@@ -28,10 +28,6 @@ import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.util.RequestFilter;
 import org.sakaiproject.util.ResourceLoader;
 
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
 /**
  * @author Adrian Fish (a.fish@lancaster.ac.uk)
  */
@@ -41,24 +37,15 @@ public class ClogTool extends HttpServlet {
 
 	private SakaiProxy sakaiProxy;
 	
-	private Template bootstrapTemplate = null;
-
 	public void init(ServletConfig config) throws ServletException {
+
 		super.init(config);
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("init");
-		}
-
+		logger.debug("init");
 		
 		try {
 			ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
 			sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
-			VelocityEngine ve = new VelocityEngine();
-            Properties props = new Properties();
-            props.setProperty("file.resource.loader.path",config.getServletContext().getRealPath("/WEB-INF"));
-            ve.init(props);
-            bootstrapTemplate = ve.getTemplate("bootstrap.vm");
 		} catch (Throwable t) {
 			throw new ServletException("Failed to initialise ClogTool servlet.", t);
 		}
@@ -66,9 +53,7 @@ public class ClogTool extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		if (logger.isDebugEnabled()) {
-			logger.debug("doGet()");
-		}
+		logger.debug("doGet()");
 
 		if (sakaiProxy == null) {
 			throw new ServletException("sakaiProxy MUST be initialised.");
@@ -86,10 +71,6 @@ public class ClogTool extends HttpServlet {
 				throw new ServletException("Not logged in.");
 			}
 		}
-		
-		String placementId = (String) request.getAttribute(Tool.PLACEMENT_ID);
-		
-		String sakaiHtmlHead = (String) request.getAttribute("sakai.html.head");
 
 		String state = request.getParameter("state");
 		String postId = request.getParameter("postId");
@@ -102,8 +83,10 @@ public class ClogTool extends HttpServlet {
 				state = "viewAllPosts";
 			}
 		}
+
+		ResourceLoader rl = new ResourceLoader(userId, "org.sakaiproject.clog.tool.bundle.ui");
 		
-		Locale locale = (new ResourceLoader(userId)).getLocale();
+		Locale locale = rl.getLocale();
 		String isoLanguage = locale.getLanguage();
 		String country = locale.getCountry();
 		
@@ -111,25 +94,25 @@ public class ClogTool extends HttpServlet {
             isoLanguage += "_" + country;
         }
         
-        System.out.println("ISO LANGUAGE:" + isoLanguage);
-		
-		VelocityContext ctx = new VelocityContext();
-		
 		// This is needed so certain trimpath variables don't get parsed.
-		ctx.put("D", "$");
+		request.setAttribute("D", "$");
        
-		ctx.put("sakaiHtmlHead",sakaiHtmlHead);
+		String sakaiHtmlHead = (String) request.getAttribute("sakai.html.head");
+		request.setAttribute("sakaiHtmlHead", sakaiHtmlHead);
 		
-	    ctx.put("userId",userId);
-	    ctx.put("siteId",siteId);
-	    ctx.put("state",state);
-	    ctx.put("placementId",placementId);
-	    ctx.put("editor",sakaiProxy.getWysiwygEditor());
-	    ctx.put("isolanguage",isoLanguage);
-	    ctx.put("publicAllowed",sakaiProxy.isPublicAllowed() ? "true":"false");
+	    request.setAttribute("userId", userId);
+	    request.setAttribute("siteId", siteId);
+	    request.setAttribute("state", state);
+
+		String placementId = (String) request.getAttribute(Tool.PLACEMENT_ID);
+	    request.setAttribute("placementId", placementId);
+	    request.setAttribute("editor", sakaiProxy.getWysiwygEditor());
+	    request.setAttribute("isolanguage", isoLanguage);
+        request.setAttribute("i18n", rl);
+	    request.setAttribute("publicAllowed", sakaiProxy.isPublicAllowed() ? "true":"false");
 
 		if (postId != null) {
-			ctx.put("postId",postId);
+			request.setAttribute("postId",postId);
 		}
 
 		String pathInfo = request.getPathInfo();
@@ -139,19 +122,10 @@ public class ClogTool extends HttpServlet {
 
 			// There's no path info, so this is the initial state
 			if (uri.contains("/portal/pda/")) {
-				ctx.put("onPDAPortal","true");
+				request.setAttribute("onPDAPortal","true");
 			}
 			
-	        response.setStatus(HttpServletResponse.SC_OK);
-	        response.setContentType("text/html");
-	        Writer writer = new BufferedWriter(response.getWriter());
-	        try {
-	        	bootstrapTemplate.merge(ctx,writer);
-			} catch (Exception e) {
-				logger.error("Failed to merge template. Returning 500.",e);
-				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
-	        writer.close();
+	        request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);	
 		} else {
 			String[] parts = pathInfo.substring(1).split("/");
 
@@ -160,9 +134,7 @@ public class ClogTool extends HttpServlet {
 
 				if ("perms.json".equals(part1)) {
 					doPermsGet(response);
-				}
-
-				else if ("userPerms.json".equals(part1)) {
+				} else if ("userPerms.json".equals(part1)) {
 					doUserPermsGet(response);
 				}
 			}
@@ -170,6 +142,7 @@ public class ClogTool extends HttpServlet {
 	}
 
 	private void doUserPermsGet(HttpServletResponse response) throws ServletException, IOException {
+
 		Set<String> perms = sakaiProxy.getPermissionsForCurrentUserAndSite();
 		JSONArray data = JSONArray.fromObject(perms);
 		response.setStatus(HttpServletResponse.SC_OK);
@@ -181,6 +154,7 @@ public class ClogTool extends HttpServlet {
 	}
 
 	private void doPermsGet(HttpServletResponse response) throws ServletException, IOException {
+
 		Map<String, Set<String>> perms = sakaiProxy.getPermsForCurrentSite();
 		JSONObject data = JSONObject.fromObject(perms);
 		response.setStatus(HttpServletResponse.SC_OK);
@@ -191,6 +165,7 @@ public class ClogTool extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		logger.info("doPost()");
 
 		String pathInfo = request.getPathInfo();
@@ -211,6 +186,7 @@ public class ClogTool extends HttpServlet {
 	}
 
 	private void doPermsPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		if (sakaiProxy.setPermsForCurrentSite(request.getParameterMap())) {
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("text/plain");
@@ -224,6 +200,7 @@ public class ClogTool extends HttpServlet {
 	}
 
 	private void doSearchPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		String searchTerms = request.getParameter("searchTerms");
 
 		if (searchTerms == null || searchTerms.length() == 0)

@@ -76,9 +76,25 @@
 			<artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-        	<groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-            <version>1.7</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+            <scope>compile</scope>
         </dependency>
 	</dependencies>
+
+    <!--
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/bundle</directory>
+            </resource>
+        </resources>
+    </build>
+    -->
 </project>

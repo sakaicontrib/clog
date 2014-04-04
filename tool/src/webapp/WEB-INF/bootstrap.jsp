@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html  
@@ -8,15 +9,20 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script type="text/javascript">
 
-    var startupArgs = {
-    	userId:'$!{userId}',
-    	siteId:'$!{siteId}',
-    	placementId:'$!{placementId}',
-    	state:'$!{state}',
-    	editor:'$!{editor}',
-    	publicAllowed:'$!{publicAllowed}',
-    	postId:'$!{postId}',
-    	onPDAPortal:'$!{onPDAPortal}'
+    var clog = {
+    	userId:'${userId}',
+    	siteId:'${siteId}',
+    	placementId:'${placementId}',
+    	state:'${state}',
+    	editor:'${editor}',
+    	publicAllowed:'${publicAllowed}',
+        postId:'${postId}',
+        i18n: {
+            <c:forEach items="${i18n}" var="i" varStatus="is">
+            ${i.key}: "${i.value}"<c:if test="${!is.last}">,</c:if>
+            </c:forEach>
+        },
+    	onPDAPortal:'${onPDAPortal}'
     };
     
 </script>
@@ -26,6 +32,8 @@ ${sakaiHtmlHead}
     <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
     <script type="text/javascript" src="/clog-tool/lib/jquery.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery-ui.js"></script>
+    <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v1.3.0.js"></script>
+    <script type="text/javascript" src="/clog-tool/templates/all.handlebars"></script>
     <script type="text/javascript" src="/clog-tool/lib/trimpath-template-latest.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
     <script type="text/javascript" src="/clog-tool/lib/jquery.cluetip.min.js"></script>
@@ -49,151 +57,6 @@ ${sakaiHtmlHead}
 </div>
 
 <!--  Templates Start -->
-
-<div id="clog_toolbar_template" style="display: none;"><!--
-    <li id="clog_home_link" class="firstToolBarItem" role="menuitem"><span class="current"><a title="${clog_home_tooltip}" href="javascript:;">${clog_home_label}</a></span></li>
-    <li id="clog_view_authors_link" role="menuitem"><span><a title="${clog_view_members_tooltip}" href="javascript:;">${clog_view_members_label}</a></span></li>
-    <li id="clog_my_clog_link" role="menuitem"><span><a title="${clog_my_clog_tooltip}" href="javascript:;">${clog_my_clog_label}</a></span></li>
-    <li id="clog_create_post_link" role="menuitem" style="display: none;"><span><a title="${clog_create_post_tooltip}" href="javascript:;">${clog_create_post_label}</a></span></li>
-    <li id="clog_permissions_link" role="menuitem"><span><a title="${clog_permissions_tooltip}" href="javascript:;">${clog_permissions_label}</a></span></li>
-    <li id="clog_recycle_bin_link" role="menuitem"><span><a title="${clog_recycle_bin_tooltip}" href="javascript:;">${clog_recycle_bin_label}</a></span></li>
-    <li id="clog_my_public_posts_link" role="menuitem" style="display: none;"><span><a title="${clog_my_public_posts_tooltip}" href="javascript:;">${clog_my_public_posts_label}</a></span></li>
--->
-</div>
-
-<div id="clog_pda_toolbar_template" style="display: none;"><!--
-<div id="clog_toolbar_items_wrapper" class="navIntraTool actionToolBar">
-	<div id="clog_toolbar_items">
-        <select id="clog_toolbar_dropdown">
-         <option value="${clog_menu_label}">${clog_menu_label}</option>
-         <option value="home">${clog_home_label}</option>
-         <option value="viewMembers">${clog_view_members_label}</option>
-         <option value="userPosts">${clog_my_clog_label}</option>
-         <option value="createPost">${clog_create_post_label}</option>
-         <option value="permissions">${clog_permissions_label}</option>
-         <option value="preferences">${clog_preferences_label}</option>
-         <option value="viewRecycled">${clog_recycle_bin_label}</option>
-         </select>
-	</div>
-	<div id="clog_search_bar">
-		<input id="clog_search_field" type="text"/><input type="button" value="${search}"/>
-	</div>
-</div>
--->
-</div>
-
-<div id="clog_permissions_content_template" style="display:none"><!--
-<h2>${clog_permissions_label}</h2>
-<table id="clog_permissions_table">
-	<thead>
-		<tr>
-			<th></th>
-			<th width="5px"></th>
-			<th align="center" colspan="6">${clog_post_label}</th>
-		</tr>
-		<tr class="listHier">
-			<th align="left">${clog_permissions_role_label}:</th>
-			<th style="background: white;border: none;"></th>
-			<th style="text-align:center;">${clog_permissions_create}</th>
-			<th style="text-align:center;">${clog_permissions_read_any}</th>
-			<th style="text-align:center;">${clog_permissions_update_any}</th>
-			<th style="text-align:center;">${clog_permissions_update_own}</th>
-			<th style="text-align:center;">${clog_permissions_delete_any}</th>
-			<th style="text-align:center;">${clog_permissions_delete_own}</th>
-		</tr>
-	</thead>
-<tbody>
-{for p in perms}
-<tr>
-	<td align="left">${p.role}</td>
-	<td></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_create}checked="checked"{/if}" id="${p.role}:clog.post.create"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_read_any}checked="checked"{/if}" id="${p.role}:clog.post.read.any"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_update_any}checked="checked"{/if}" id="${p.role}:clog.post.update.any"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_update_own}checked="checked"{/if}" id="${p.role}:clog.post.update.own"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_delete_any}checked="checked"{/if}" id="${p.role}:clog.post.delete.any"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_post_delete_own}checked="checked"{/if}" id="${p.role}:clog.post.delete.own"/></td>
-</tr>
-{/for}
-</tbody>
-</table>
-<table id="clog_permissions_table">	
-<thead>
-		<tr>
-			<th></th>
-			<th width="5px"></th>
-			<th colspan="6">${clog_comment_label}</th>
-		</tr>
-		<tr class="listHier">
-			<th align="left">${clog_permissions_role_label}:</th>
-			<th style="background: white;border: none;"></th>
-			<th style="text-align:center;">${clog_permissions_create}</th>
-			<th style="text-align:center;">${clog_permissions_read_any}</th>
-			<th style="text-align:center;">${clog_permissions_update_any}</th>
-			<th style="text-align:center;">${clog_permissions_update_own}</th>
-			<th style="text-align:center;">${clog_permissions_delete_any}</th>
-			<th style="text-align:center;">${clog_permissions_delete_own}</th>
-		</tr>
-	</thead>
-{for p in perms}
-<tr>
-	<td align="left">${p.role}</td>
-	<td></td>	
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_create}checked="checked"{/if}" id="${p.role}:clog.comment.create"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_read_any}checked="checked"{/if}" id="${p.role}:clog.comment.read.any"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_update_any}checked="checked"{/if}" id="${p.role}:clog.comment.update.any"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_update_own}checked="checked"{/if}" id="${p.role}:clog.comment.update.own"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_delete_any}checked="checked"{/if}" id="${p.role}:clog.comment.delete.any"/></td>
-	<td align="center"><input type="checkbox" class="clog_permission_checkbox" {if p.clog_comment_delete_own}checked="checked"{/if}" id="${p.role}:clog.comment.delete.own"/></td>
-</tr>
-{/for}
-</tbody>
-</table>
-<input id="clog_permissions_save_button" type="button" value="${save}"/>
-<input type="button" value="${cancel}" onclick="return switchState('home');"/>
--->
-</div>
-
-<div id="clog_create_post_template" style="display:none"><!--
-	<h2>${clog_post_editor_label}</h2>
-
-	<table cols="2">
-	<tbody>
-	<tr>
-	<td><span style="font-weight: bold;">${clog_title_label}</span></td>
-	<td><input type="text" id="clog_title_field" name="title" value="${title}"/></td>
-	</tr>
-	</tbody>
-	</table>
-   	<br />
-	<span style="font-weight: bold;">${clog_content_label}</span>
-	<br />
-	<textarea name="content" id="clog_content_editor" cols="45" rows="10">${content}</textarea>
-	<br />
-	<br />
-	{if clogOnMyWorkspace == false}
-	<input type="checkbox" id="clog_commentable_checkbox" {if commentable}checked="checked"{/if}/>${clog_allow_comments_label}
-	<br />
-	<br />
-	{/if} 
-    <input id="clog_post_id_field" type="hidden" value="${id}"/>
-    {if clogOnMyWorkspace}
-     	{if startupArgs.publicAllowed}
-        <input id="clog_make_post_public_button" type="button" value="${clog_make_post_public_label}" title="${clog_make_post_public_tooltip}"/>
-        {/if}
-    {else}
-       <input id="clog_visibility_maintainer" type="radio" name="visibility"/>${clog_admin_visibility}
-       <br/>
-       <input id="clog_visibility_site" type="radio" name="visibility" checked="checked"/>${clog_site_visibility}
-       <br/>
-       <br/>
-    {/if}
-    <input id="clog_publish_post_button" type="button" value="${clog_publish_label}" title="${clog_publish_tooltip}"/>
-    <input id="clog_save_post_button" type="button" value="${clog_save_as_draft_label}" title="${clog_save_as_draft_tooltip}"/>
-    <input id="clog_cancel_button" type="button" value="${cancel}"/>
-	<span id="clog_autosaved_message">${clog_autosaved_message_label}</span>
--->
-</div>
 
 <div id="clog_create_comment_template" style="display:none"><!--
 	<div id="clog_post_${postId}" style="width:100%"></div>
