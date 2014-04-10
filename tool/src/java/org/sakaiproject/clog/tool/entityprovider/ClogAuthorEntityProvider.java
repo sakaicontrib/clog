@@ -42,8 +42,9 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 			return false;
 		}
 
-		if ("".equals(id))
+		if ("".equals(id)) {
 			return false;
+        }
 
 		try {
 			userDirectoryService.getUser(id);
@@ -59,8 +60,10 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 	 * CollectionsResolvable extends Resolvable
 	 */
 	public Object getEntity(EntityReference ref) {
-		if (LOG.isDebugEnabled())
+
+		if (LOG.isDebugEnabled()) {
 			LOG.debug("getEntity(" + ref.getId() + ")");
+        }
 
 		LOG.warn("getEntity is unimplemented. Returning null ...");
 

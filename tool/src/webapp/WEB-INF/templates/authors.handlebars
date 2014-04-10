@@ -1,0 +1,38 @@
+	<h2>{{translate 'authors_label'}}</h2>
+	<div id="clogAuthorPager">
+	<form>
+		<img class="first" src="/library/image/silk/control_start_blue.png"/>
+		<img class="prev" src="/library/image/silk/control_rewind_blue.png"/>
+		<input class="pagedisplay" type="text"/>
+		<img class="next" src="/library/image/silk/control_fastforward_blue.png"/>
+		<img class="last" src="/library/image/silk/control_end_blue.png"/>
+		<select class="pagesize">
+			<option selected="selected"  value="10">10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option  value="40">40</option>
+		</select>
+	</form>
+	</div>
+    <table id="clog_author_table" cols="4" class="listHier speciallistHier">
+		<thead>
+		<tr>
+			<th width="20%"><div>{{translate 'author_label'}}</div></th>
+			<th width="10%"><div>{{translate 'posts'}}</div></th>
+			<th width="20%"><div>{{translate 'dateOfLastPostHeader'}}</div></th>
+			<th width="45%"><div>{{translate 'number_of_comments_label'}}</div></th>
+			{{#unless onGateway}}<th width="5%"><div>RSS</div></th>{{/unless}}
+		</tr>
+		</thead>
+		<tbody>
+		{{#each authors}}
+		<tr>
+			<td><img src="/direct/profile/{{userId}}/image" width="20" alt="User"/>&nbsp;<a href="javascript:;" onclick="clog.switchState('userPosts',{userId: '{{userId}}'});" rel="/direct/profile/{{userId}}/formatted" class="icon profile">{{userDisplayName}}</a></td>
+			<td>{{numberOfPosts}}</td>
+			<td>{{#if dateOfLastPost}}{{formattedDateOfLastPost}}{{else}}n/a{{/if}}</td>
+			<td>{{numberOfComments}}</td>
+			{{#unless clogOnGateway}}<td><a target="_blank" href="/direct/clog-rss/user/{{userId}}.xml?siteId={{../../siteId}}" title="{{translate 'user_rss_tooltip'}}"><img src="/library/image/silk/feed.png"/></a></td>{{/unless}}
+		</tr>
+		{{/each}}
+		</tbody>
+	</table>

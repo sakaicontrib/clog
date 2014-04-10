@@ -25,6 +25,7 @@ import java.util.Set;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchResult;
+import org.sakaiproject.site.api.Site;
 
 public interface SakaiProxy {
 
@@ -88,11 +89,11 @@ public interface SakaiProxy {
 
 	public List<SearchResult> searchInCurrentSite(String searchTerms) throws InvalidSearchQueryException;
 
-	public Map<String, Set<String>> getPermsForCurrentSite();
+	public Set<String> getSitePermissionsForCurrentUser(String siteId);
 
-	public Set<String> getPermissionsForCurrentUserAndSite();
+	public Map<String, Set<String>> getSitePermissions(String siteId);
 
-	public boolean setPermsForCurrentSite(Map<String, String[]> parameterMap);
+	public boolean setPermissionsForSite(String siteId, Map<String, Object> params);
 
 	public boolean isPublicAllowed();
 

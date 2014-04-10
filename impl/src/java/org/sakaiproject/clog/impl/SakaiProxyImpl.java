@@ -202,6 +202,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
 
 	public boolean isMaintainer(String userId, String siteId) {
+
 		try {
 			if (userId == null || siteId == null) {
 				return false;
@@ -215,14 +216,11 @@ public class SakaiProxyImpl implements SakaiProxy {
 			AuthzGroup realm = authzGroupService.getAuthzGroup(site.getReference());
 			User sakaiUser = userDirectoryService.getUser(userId);
 			Role r = realm.getUserRole(sakaiUser.getId());
-			if (r.getId().equals(realm.getMaintainRole())) // This bit could be
-			// wrong
-			{
+			if (r.getId().equals(realm.getMaintainRole())) {
 				return true;
 			} else {
 				return false;
 			}
-
 		} catch (Exception e) {
 			logger.error("Exception thrown whilst checking for maintainer status", e);
 			return false;
@@ -570,7 +568,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return results;
 	}
 
-	public Set<String> getPermissionsForCurrentUserAndSite() {
+	public Set<String> getSitePermissionsForCurrentUser(String siteId) {
+
 		String userId = getCurrentUserId();
 
 		if (userId == null) {
@@ -587,7 +586,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 			AuthzGroup siteHelperRealm = null;
 
 			try {
-				site = siteService.getSite(getCurrentSiteId());
+				site = siteService.getSite(siteId);
 				siteHelperRealm = authzGroupService.getAuthzGroup("!site.helper");
 			} catch (Exception e) {
 				// This should probably be logged but not rethrown.
@@ -617,7 +616,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return filteredFunctions;
 	}
 
-	public Map<String, Set<String>> getPermsForCurrentSite() {
+	public Map<String, Set<String>> getSitePermissions(String siteId) {
+
 		Map<String, Set<String>> perms = new HashMap<String, Set<String>>();
 
 		String userId = getCurrentUserId();
@@ -626,11 +626,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 			throw new SecurityException("This action (perms) is not accessible to anon and there is no current user.");
 		}
 
-		String siteId = getCurrentSiteId();
-		Site site = null;
-
 		try {
-			site = siteService.getSite(siteId);
+			Site site = siteService.getSite(siteId);
 
 			Set<Role> roles = site.getRoles();
 			for (Role role : roles) {
@@ -650,15 +647,14 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return perms;
 	}
 
-	public boolean setPermsForCurrentSite(Map<String, String[]> params) {
+	public boolean setPermissionsForSite(String siteId, Map<String, Object> params) {
+
 		String userId = getCurrentUserId();
 
 		if (userId == null)
 			throw new SecurityException("This action (setPerms) is not accessible to anon and there is no current user.");
 
-		String siteId = getCurrentSiteId();
-
-		Site site = null;
+        Site site = null;
 
 		try {
 			site = siteService.getSite(siteId);
@@ -691,10 +687,11 @@ public class SakaiProxyImpl implements SakaiProxy {
 			boolean changed = false;
 
 			for (String name : params.keySet()) {
-				if (!name.contains(":"))
+				if (!name.contains(":")) {
 					continue;
+                }
 
-				String value = params.get(name)[0];
+				String value = (String) params.get(name);
 
 				String roleId = name.substring(0, name.indexOf(":"));
 
@@ -704,10 +701,11 @@ public class SakaiProxyImpl implements SakaiProxy {
 				}
 				String function = name.substring(name.indexOf(":") + 1);
 
-				if ("true".equals(value))
+				if ("true".equals(value)) {
 					role.allowFunction(function);
-				else
+                } else {
 					role.disallowFunction(function);
+                }
 
 				changed = true;
 			}

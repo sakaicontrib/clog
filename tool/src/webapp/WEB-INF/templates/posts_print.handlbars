@@ -1,0 +1,16 @@
+    <div id="postsWrapper">
+    	<br />
+  	 	<div id="posts">
+	  	    <table class="tableHeader">
+				<tbody>
+					{{#each posts}}
+					<tr>
+						<td>
+							<div id="post_{{id}}" style="width:100%"></div>
+						</td>
+					</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+	</div>

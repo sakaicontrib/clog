@@ -91,7 +91,7 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		rssXml.append("\n<description>").append("Blog posts for " + authorDisplayName).append("</description>");
 		rssXml.append("\n<language>en</language>");
 		for (Post post : posts) {
-			String encodedUrl = sakaiProxy.getPortalUrl() + "/tool/" + sakaiProxy.getClogToolId(siteId) + "/posts/" + post.getId();
+			String encodedUrl = developerHelperService.getServerURL() + "/direct/clog-post/" + post.getId() + ".html";
 			rssXml.append("\n<item>");
 			rssXml.append("\n<title>").append(post.getTitle()).append("</title>");
 			rssXml.append("\n<link>").append(encodedUrl).append("</link>");
@@ -137,7 +137,7 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		rssXml.append("\n<description>").append("Blog posts for " + siteTitle).append("</description>");
 		rssXml.append("\n<language>en</language>");
 		for (Post post : posts) {
-			String encodedUrl = sakaiProxy.getPortalUrl() + "/tool/" + sakaiProxy.getClogToolId(siteId) + "/posts/" + post.getId();
+			String encodedUrl = developerHelperService.getServerURL() + "/direct/clog-post/" + post.getId() + ".html";
 			rssXml.append("\n<item>");
 			rssXml.append("\n<title>").append(post.getTitle()).append("</title>");
 			rssXml.append("\n<link>").append(encodedUrl).append("</link>");

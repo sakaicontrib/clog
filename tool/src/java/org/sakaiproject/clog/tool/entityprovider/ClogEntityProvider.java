@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,6 +16,7 @@ import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogSecurityManager;
 import org.sakaiproject.clog.api.QueryBean;
+import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutable;
@@ -36,6 +38,9 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 	
 	@Setter
 	private ClogSecurityManager clogSecurityManager;
+
+	@Setter
+	private SakaiProxy sakaiProxy;
 
 	public Object getSampleEntity() {
 		return new Post();
@@ -167,5 +172,59 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 		}
 		
 		return filteredPosts;
+	}
+
+	@EntityCustomAction(action = "userPerms", viewKey = EntityView.VIEW_LIST)
+	public Set<String> handleUserPermsGet(EntityView view, Map<String, Object> params) {
+
+		String userId = developerHelperService.getCurrentUserId();
+		
+		if (userId == null) {
+			throw new EntityException("You must be logged in to retrieve perms","",HttpServletResponse.SC_UNAUTHORIZED);
+		}
+
+        String siteId = (String) params.get("siteId");
+
+        if (siteId == null || siteId.length() <= 0) {
+			throw new EntityException("No siteId supplied","",HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+		return sakaiProxy.getSitePermissionsForCurrentUser(siteId);
+	}
+
+	@EntityCustomAction(action = "perms", viewKey = EntityView.VIEW_LIST)
+	public Map<String, Set<String>> handlePermsGet(EntityView view, Map<String, Object> params) {
+
+		String userId = developerHelperService.getCurrentUserId();
+		
+		if (userId == null) {
+			throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
+		}
+
+        String siteId = (String) params.get("siteId");
+
+        if (siteId == null || siteId.length() <= 0) {
+			throw new EntityException("No siteId supplied", "", HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+		return sakaiProxy.getSitePermissions(siteId);
+	}
+
+	@EntityCustomAction(action = "savePerms", viewKey = EntityView.VIEW_NEW)
+	public String handleSavePermissions(EntityView view, Map<String, Object> params) {
+
+		String userId = developerHelperService.getCurrentUserId();
+		
+		if (userId == null) {
+			throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
+		}
+
+        String siteId = (String) params.get("siteId");
+
+		if (sakaiProxy.setPermissionsForSite(siteId, params)) {
+			return "success";
+		} else {
+			throw new EntityException("Failed to set perms", "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 	}
 }

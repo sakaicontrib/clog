@@ -1,116 +1,94 @@
-var ClogUtils;
+clog.utils = {
 
-(function()
-{
-	if(ClogUtils == null)
-		ClogUtils = new Object();
+    joinElementIds: function (jqObj) {
 
-	ClogUtils.showSearchResults = function() {
-	
-		var searchTerms = $('#clog_search_field').val();
+		var ids = '';
+        jqObj.each(function (i, el) {
 
-        if(searchTerms.length == 0) {
-            return;
-        }
-		
-    	jQuery.ajax( {
-			url : "/portal/tool/" + clog.placementId + "/search",
-			type : 'POST',
-        	dataType : "json",
-        	async : false,
-			cache: false,
-        	data : {'searchTerms':searchTerms},
-        	success : function(results) {
-        		var hits = results;
-				for(var i=0,j=hits.length;i<j;i++) {
-					var postId = hits[i].id;
-					hits[i].url = "javascript: switchState('post',{postId:'" + postId + "'});";
-				}
-        		switchState('searchResults',{'results':hits});
-        	},
-        	error : function(xhr,textStatus,errorThrown) {
-				alert(xhr.responseText);
-			}
-		});
-	}
-	
-	ClogUtils.getCurrentUserPermissions = function() {
+			ids += this.id;
+			if (i < (jqObj.length - 1)) ids += ",";
+        });
+        return ids;
+    },
+    getCurrentUserPermissions: function () {
+
 		var permissions = null;
+
 		jQuery.ajax( {
-	 		url : clogBaseDataUrl + "userPerms.json",
-	   		dataType : "json",
-	   		async : false,
-	   		cache : false,
-		   	success : function(perms) {
-				permissions = perms;
+	 		url: "/direct/clog/userPerms.json?siteId=" + clog.siteId,
+	   		dataType: "json",
+	   		async: false,
+	   		cache: false,
+		   	success: function (json) {
+				permissions = json.data;
 			},
-			error : function(xmlHttpRequest,stat,error) {
-				alert("Failed to get the current user permissions. Status: " + stat + ". Error: " + error);
+			error : function (xmlHttpRequest, textStatus, error) {
+				alert("Failed to get the current user permissions. Status: " + textStatus + ". Error: " + error);
 			}
 	  	});
 	  	
 	  	return permissions;
-	}
-	
-	ClogUtils.getSitePermissionMatrix = function() {
+	},
+    getSitePermissionMatrix: function () {
+
         var perms = [];
 
         jQuery.ajax( {
-	 		url : clogBaseDataUrl + "perms.json",
-            //url : "/portal/tool/" + clog.placementId + "/perms",
-            dataType : "json",
-            async : false,
+	 		url: "/direct/clog/perms.json?siteId=" + clog.siteId,
+            dataType: "json",
+            async: false,
             cache: false,
-            success : function(p) {
-                for(role in p) {
-                    var permSet = {'role':role};
+            success: function(json) {
 
-                    for(var i=0,j=p[role].length;i<j;i++) {
-                        var perm = p[role][i].replace(/\./g,"_");
-                        eval("permSet." + perm + " = true");
-                    }
+                var p = json.data;
+
+                for (role in p) {
+                    var permSet = {'role': role};
+
+                    p[role].forEach(function (p) {
+                        eval("permSet." + p.replace(/\./g,"_") + " = true");
+                    });
 
                     perms.push(permSet);
                 }
             },
-            error : function(xmlHttpRequest,stat,error) {
-                alert("Failed to get permissions. Status: " + stat + ". Error: " + error);
+            error: function(xmlHttpRequest, textStatus, error) {
+                alert("Failed to get permissions. Status: " + textStatus + ". Error: " + error);
             }
         });
 
         return perms;
-    }
-    
-    ClogUtils.savePermissions = function() {
-        var boxes = $('.clog_permission_checkbox');
-        var myData = {};
-        for(var i=0,j=boxes.length;i<j;i++) {
-            var box = boxes[i];
-            if(box.checked)
-                myData[box.id] = 'true';
-            else
-                myData[box.id] = 'false';
-        }
+    },
+    savePermissions: function () {
+
+        var myData = { siteId: clog.siteId };
+        $('.clog_permission_checkbox').each(function (b) {
+
+            if (this.checked) {
+                myData[this.id] = 'true';
+            } else {
+                myData[this.id] = 'false';
+            }
+        });
 
         jQuery.ajax( {
-            url : "/portal/tool/" + clog.placementId + "/setPerms",
-            type : 'POST',
-            data : myData,
+	 		url: "/direct/clog/savePerms",
+            type: 'POST',
+            data: myData,
             timeout: 30000,
-            async : false,
             dataType: 'text',
-            success : function(result) {
+            success: function (result) {
                 location.reload();
             },
-            error : function(xmlHttpRequest,status,error) {
-                alert("Failed to save permissions. Status: " + status + '. Error: ' + error);
+            error : function(xmlHttpRequest, textStatus, error) {
+                alert("Failed to save permissions. Status: " + textStatus + '. Error: ' + error);
             }
         });
 
         return false;
-    }
-	
-	ClogUtils.attachProfilePopup = function() {
+    },
+    attachProfilePopup: function () {
+
 		$('a.profile').cluetip({
 			width: '620px',
 			cluetipClass: 'clog',
@@ -123,84 +101,83 @@ var ClogUtils;
 			showTitle: false,
 			hoverIntent: true
 		});
-	}
+	},
+    formatDate: function (millis) {
 
-    ClogUtils.addFormattedDatesToPosts = function (posts) {
-        for(var i=0,j=posts.length;i<j;i++) {
-        	ClogUtils.addFormattedDateToPost(posts[i]);
+        if (millis == -1) {
+            return clog.i18n.none_yet;
+        } else {
+            var d = new Date(millis);
+            var hours = d.getHours();
+            if (hours < 10) hours = '0' + hours;
+            var minutes = d.getMinutes();
+            if (minutes < 10) minutes = '0' + minutes;
+            return d.getDate() + " " + clog.i18n.months[d.getMonth()] + " " + d.getFullYear() + " @ " + hours + ":" + minutes;
         }
-    }
-    
-    ClogUtils.addFormattedDateToPost = function(post) {
-            var d = new Date(post.createdDate);
-            var formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-            post.formattedCreatedDate = formattedCreatedDate;
+    },
+    addFormattedDatesToPosts: function (posts) {
 
-            d = new Date(post.modifiedDate);
-            var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-            post.formattedModifiedDate = formattedModifiedDate;
+        posts.forEach(function (p) {
+        	clog.utils.addFormattedDateToPost(p);
+        });
+    },
+    addFormattedDateToPost: function(post) {
 
-            for(var k=0,m=post.comments.length;k<m;k++) {
-                d = new Date(post.comments[k].createdDate);
-                formattedCreatedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-                post.comments[k].formattedCreatedDate = formattedCreatedDate;
+        post.formattedCreatedDate = this.formatDate(post.createdDate);
+        post.formattedModifiedDate = this.formatDate(post.modifiedDate);
 
-                d = new Date(post.comments[k].modifiedDate);
-                var formattedModifiedDate = d.getDate() + " " + clog_month_names[d.getMonth()] + " " + d.getFullYear() + " @ " + d.getHours() + ":" + d.getMinutes();
-                post.comments[k].formattedModifiedDate = formattedModifiedDate;
-            }
-        }
+        post.comments.forEach(function (c) {
 
-    ClogUtils.addFormattedDatesToCurrentPost = function () {
-    	ClogUtils.addFormattedDateToPost(clogCurrentPost);
-	}
-
-	ClogUtils.setCurrentPosts = function() {
+            c.formattedCreatedDate = this.formatDate(c.createdDate);
+            c.formattedModifiedDate = this.formatDate(c.modifiedDate);
+        });
+    },
+    addFormattedDatesToCurrentPost: function () {
+    	this.addFormattedDateToPost(clog.currentPost);
+	},
+    setCurrentPosts: function () {
 
 		jQuery.ajax( {
 	       	url : "/direct/clog-post.json?siteId=" + clog.siteId + "&autosaved=true",
-	       	dataType : "json",
-	       	async : false,
+	       	dataType: "json",
+	       	async: false,
 			cache: false,
-		   	success : function(data) {
-				clogCurrentPosts = data['clog-post_collection'];
-                ClogUtils.addFormattedDatesToPosts(clogCurrentPosts);
+		   	success: function (data) {
+
+				clog.currentPosts = data['clog-post_collection'];
+                clog.utils.addFormattedDatesToPosts(clog.currentPosts);
 			},
-			error : function(xmlHttpRequest,status,errorThrown) {
+			error : function (xmlHttpRequest, textStatus, errorThrown) {
 				alert("Failed to get posts. Reason: " + errorThrown);
 			}
 	   	});
-	}
-	
-	ClogUtils.autosavePost = function(wysiwygEditor) {
+	},
+    autosavePost: function (wysiwygEditor) {
 
-		if(!SakaiUtils.isEditorDirty(wysiwygEditor,'clog_content_editor') && !clogTitleChanged) {
+		if (!clog.sakai.isEditorDirty(wysiwygEditor, 'clog_content_editor') && !clog.titleChanged) {
 			return 0;
 		}
 	
-		return ClogUtils.storePost('AUTOSAVE',null,wysiwygEditor);
-	}
+		return clog.utils.storePost('AUTOSAVE',null,wysiwygEditor);
+	},
+    savePostAsDraft: function (wysiwygEditor) {
+		return this.storePost('PRIVATE',null,wysiwygEditor);
+	},
+    publishPost: function (wysiwygEditor) {
+		return this.storePost('READY',true,wysiwygEditor);
+	},
+    publicisePost: function (wysiwygEditor) {
 
-	ClogUtils.savePostAsDraft = function(wysiwygEditor) {
-		return ClogUtils.storePost('PRIVATE',null,wysiwygEditor);
-	}
-
-	ClogUtils.publishPost = function(wysiwygEditor) {
-		return ClogUtils.storePost('READY',true,wysiwygEditor);
-	}
-
-	ClogUtils.publicisePost = function(wysiwygEditor) {
-		if(confirm(clog_public_question)) {
-			return ClogUtils.storePost('PUBLIC',null,wysiwygEditor);
+		if (confirm(clog.i18n.public_question)) {
+			return this.storePost('PUBLIC',null,wysiwygEditor);
         }
-	}
-		
-	ClogUtils.storePost = function(visibility,isPublish,wysiwygEditor) {
+	},
+    storePost: function (visibility, isPublish, wysiwygEditor) {
 
 	    var title = $('#clog_title_field').val();
 
-		if(title.length < 4) {
-            if('AUTOSAVE' !== visibility) {
+		if (title.length < 4) {
+            if ('AUTOSAVE' !== visibility) {
                 alert(clog_short_title_warning);
             }
 			return 0;
@@ -208,183 +185,170 @@ var ClogUtils;
 
 		var success = false;
 		
-		if('READY' === visibility) {
+		if ('READY' === visibility) {
 			visibility = ($('#clog_visibility_maintainer').attr('checked')) ? 'MAINTAINER':'SITE';
 		}
 
-	    var content = SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor');
+	    var content = clog.sakai.getEditorData(wysiwygEditor, 'clog_content_editor');
 
-		if('' == content) {
-            if('AUTOSAVE' !== visibility) {
+		if ('' == content) {
+            if ('AUTOSAVE' !== visibility) {
                 alert(clog_no_content_warning);
             }
             return 0;
         }
 
 		var post = {
-				'id':$('#clog_post_id_field').val(),
-				'visibility':visibility,
-				'commentable':$('#clog_commentable_checkbox').attr('checked') === 'checked',
-				'title':title,
-				'content':content,
-				'siteId':clog.siteId
-				};
+            'id': $('#clog_post_id_field').val(),
+            'visibility': visibility,
+            'commentable': $('#clog_commentable_checkbox').attr('checked') === 'checked',
+            'title': title,
+            'content': content,
+            'siteId': clog.siteId,
+            'mode': isPublish
+        };
 				
-		if(isPublish) post['mode'] = 'publish';
-
 		jQuery.ajax( {
-	 		url : "/direct/clog-post/new",
-			type : 'POST',
-			data : post,
+	 		url: "/direct/clog-post/new",
+			type: 'POST',
+			data: post,
 			timeout: 30000,
-			async : false,
+			async: false,
 			dataType: 'text',
-		   	success : function(id) {
-		   		if('AUTOSAVE' !== visibility) {
-					switchState(clogHomeState);
-				}
-				else {
-					clogCurrentPost.id = id;
+		   	success: function (id) {
+
+		   		if ('AUTOSAVE' !== visibility) {
+					clog.switchState(clog.homeState);
+				} else {
+					clog.currentPost.id = id;
 					$('#clog_post_id_field').val(id);
 				}
 
 				success = true;
-				clogTitleChanged = false;
-                SakaiUtils.resetEditor(wysiwygEditor,'clog_content_editor');
+				clog.titleChanged = false;
+                clog.sakai.resetEditor(wysiwygEditor, 'clog_content_editor');
 			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to store post. Status: " + status + '. Error: ' + error);
+			error : function(xmlHttpRequest, textStatus, error) {
+				alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);
 			}
 	  	});
 
 		return success;
-	}
-	
-	ClogUtils.saveComment = function(wysiwygEditor) {
+	},
+    saveComment: function (wysiwygEditor) {
 		
 		var comment = {
-				'id':$('#clog_comment_id_field').val(),
-				'postId':clogCurrentPost.id,
-				'content':SakaiUtils.getEditorData(wysiwygEditor,'clog_content_editor'),
-				'siteId':clog.siteId
+				'id': $('#clog_comment_id_field').val(),
+				'postId': clog.currentPost.id,
+				'content': clog.sakai.getEditorData(wysiwygEditor,'clog_content_editor'),
+				'siteId': clog.siteId
 				};
 
 		jQuery.ajax( {
-	 		url : "/direct/clog-comment/new",
-			type : 'POST',
-			data : comment,
+	 		url: "/direct/clog-comment/new",
+			type: 'POST',
+			data: comment,
 			timeout: 30000,
-			async : false,
+			async: false,
 			dataType: 'text',
-		   	success : function(id) {
-				switchState('viewAllPosts');
+		   	success: function (id) {
+				clog.switchState('viewAllPosts');
 			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to save comment. Status: " + status + '. Error: ' + error);
+			error : function (xmlHttpRequest, textStatus, error) {
+				alert("Failed to save comment. Status: " + textStatus + '. Error: ' + error);
 			}
 	  	});
 
 		return false;
-	}
+	},
+    deleteAutosavedCopy: function(postId) {
 
-	ClogUtils.deleteAutosavedCopy = function(postId) {
-
-        if(postId === '') {
+        if (postId === '') {
             // CLOG-19 The post hasn't been autosaved yet. If it had been it would have an id
             return;
         }
 
 		jQuery.ajax( {
-	 		url : "/direct/clog-post/" + postId + "/deleteAutosavedCopy",
+	 		url: "/direct/clog-post/" + postId + "/deleteAutosavedCopy",
 			timeout: 30000,
-			async : false,
+			async: false,
 			dataType: 'text',
-		   	success : function(result) {
-				switchState('viewAllPosts');
+		   	success: function (result) {
+				clog.switchState('viewAllPosts');
 			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to delete autosaved copy. Status: " + status + '. Error: ' + error);
+			error : function(xmlHttpRequest, textStatus, error) {
+				alert("Failed to delete autosaved copy. Status: " + textStatus + '. Error: ' + error);
 			}
 	  	});
-	}
+	},
+    recyclePost: function (postId) {
 
-	ClogUtils.recyclePost = function(postId) {
-		if(!confirm(clog_delete_post_message))
+		if (!confirm(clog.i18n.delete_post_message)) {
 			return false;
+        }
 
 		jQuery.ajax( {
-	 		url : "/direct/clog-post/" + postId + "/recycle",
-			dataType : 'text',
-			async : false,
+	 		url: "/direct/clog-post/" + postId + "/recycle",
+			dataType: 'text',
+			async: false,
 			cache: false,
-		   	success : function(result) {
-				switchState(clogCurrentState);
+		   	success: function (result) {
+				clog.switchState(clog.currentState);
 			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to recycle post. Status: " + status + '. Error: ' + error);
+			error: function (xmlHttpRequest, textStatus, error) {
+				alert("Failed to recycle post. Status: " + textStatus + '. Error: ' + error);
 			}
 	  	});
 
 		return false;
-	}
-
-	ClogUtils.deleteSelectedPosts = function() {
+	},
+    deleteSelectedPosts: function () {
 	
-		if(!confirm(clog_really_delete_post_message)) {
+		if (!confirm(clog.i18n.really_delete_post_message)) {
 			return false;
 		}
 		
 		var selected = $('.clog_recycled_post_checkbox:checked');
 
-        if(selected.length <= 0) {
+        if (selected.length <= 0) {
             // No posts selected for deletion
             return;
         }
-        
-		var postIds = '';
 
-		for(var i=0,j=selected.length;i<j;i++) {
-			postIds += selected[i].id;
-			if(i < (j - 1)) postIds += ",";
-		}
+		var postIds = clog.utils.joinElementIds(selected);
 
 		jQuery.ajax( {
-	 		url : "/direct/clog-post/remove?posts=" + postIds + "&site=" + clog.siteId,
-			dataType : 'text',
-			async : false,
-		   	success : function(result) {
-				switchState('viewAllPosts');
+	 		url: "/direct/clog-post/remove?posts=" + postIds + "&site=" + clog.siteId,
+			dataType: 'text',
+			async: false,
+		   	success: function (result) {
+				clog.switchState('viewAllPosts');
 			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to delete selected posts. Status: " + status + '. Error: ' + error);
+			error : function (xmlHttpRequest, textStatus, error) {
+				alert("Failed to delete selected posts. Status: " + textStatus + '. Error: ' + error);
 			}
 	  	});
 
 		return false;
-	}
+	},
+    restoreSelectedPosts: function() {
 
-	ClogUtils.restoreSelectedPosts = function() {
 		var selected = $('.clog_recycled_post_checkbox:checked');
 
         // CLOG-29
-        if(selected.length <= 0) {
+        if (selected.length <= 0) {
             // No posts selected for restoration
             return;
         }
 
-		var postIds = '';
-
-		for(var i=0,j=selected.length;i<j;i++) {
-			postIds += selected[i].id;
-			if(i < (j - 1)) postIds += ",";
-		}
+		var postIds = clog.utils.joinElementIds(selected);
 
 		jQuery.ajax( {
 	 		url : "/direct/clog-post/restore?posts=" + postIds,
 			dataType : 'text',
 			async : false,
 		   	success : function(result) {
-				switchState('viewAllPosts');
+				clog.switchState('viewAllPosts');
 			},
 			error : function(xmlHttpRequest,status,error) {
 				alert("Failed to restore selected posts. Status: " + status + '. Error: ' + error);
@@ -392,61 +356,89 @@ var ClogUtils;
 	  	});
 
 		return false;
-	}
+	},
+    findPost: function (postId) {
 
-	ClogUtils.findPost = function(postId) {
 		var post = null;
 		
-		if(!clogCurrentPosts) {
+		if (!clog.currentPosts) {
 			jQuery.ajax( {
-	 			url : "/direct/clog-post/" + postId + ".json",
-	   			dataType : "json",
-	   			async : false,
-	   			cache : false,
-		   		success : function(p,status) {
+	 			url: "/direct/clog-post/" + postId + ".json",
+	   			dataType: "json",
+	   			async: false,
+	   			cache: false,
+		   		success: function (p, status) {
 					post = p;
 				},
-				error : function(xmlHttpRequest,stat,error) {
+				error : function (xmlHttpRequest,stat,error) {
 					alert("Failed to get the post. Status: " + stat + ". Error: " + error);
 				}
 	  		});
-	  	}
-		else {
-			for(var i=0,j=clogCurrentPosts.length;i<j;i++) {
-				if(clogCurrentPosts[i].id === postId)
-					post = clogCurrentPosts[i];
-			}
+	  	} else {
+			clog.currentPosts.forEach(function (p) {
+				if (p.id === postId) {
+					post = p;
+                }
+			});
 		}
 
 		return post;
-	}
-
-	ClogUtils.deleteComment = function(commentId) {
-		if(!confirm(clog_delete_comment_message))
+	},
+    deleteComment: function (commentId) {
+                        
+		if (!confirm(clog.i18n.delete_comment_message)) {
 			return false;
+        }
 		
 		jQuery.ajax( {
-	 		url : "/direct/clog-comment/" + commentId + "?siteId=" + clog.siteId,
-	   		async : false,
+	 		url: "/direct/clog-comment/" + commentId + "?siteId=" + clog.siteId,
+	   		async: false,
 			type:'DELETE',
-		   	success : function(text,status) {
-				switchState('viewAllPosts');
+		   	success: function (text, status) {
+				clog.switchState('viewAllPosts');
 			},
-			error : function(xmlHttpRequest,status,error) {
-				alert("Failed to delete comment. Status: " + status + ". Error: " + error);
+			error: function (xmlHttpRequest, textStatus, error) {
+				alert("Failed to delete comment. Status: " + textStatus + ". Error: " + error);
 			}
 	  	});
 	  	
 	  	return false;
-	}
+	},
+    decoratePost: function (p) {
 
-    ClogUtils.renderTemplate = function (name, data, output) {
+        p.isRecycled = 'RECYCLED' === p.visibility;
+        p.canComment = clog.currentUserPermissions.commentCreate && p.commentable;
+        p.canDelete = clog.userId === '!admin'
+                        || clog.currentUserPermissions.postDeleteAny
+                        || (clog.currentUserPermissions.postDeleteOwn
+                            && p.creatorId === clog.userId);
+        p.canEdit = clog.currentUserPermissions.postUpdateAny
+                        || (clog.currentUserPermissions.postUpdateOwn && p.creatorId === clog.userId);
+        p.isModified = p.modifiedDate > p.createdDate;
+
+        p.comments.forEach(function (c) {
+
+            c.modified = c.modifiedDate > c.createdDate;
+            c.canDelete = clog.currentUserPermissions.commentDeleteAny
+                            || (clog.currentUserPermissions.commentDeleteOwn
+                                && c.creatorId === clog.userId);
+            c.canEdit = clog.currentUserPermissions.commentUpdateAny
+                            || (clog.currentUserPermissions.commentUpdateOwn
+                                && c.creatorId === clog.userId);
+        });
+    },
+    renderTemplate: function (name, data, output) {
 
         var template = Handlebars.templates[name];
         document.getElementById(output).innerHTML = template(data);
-    };
+    },
+    renderPost: function (post, output) {
 
-    Handlebars.registerHelper('translate', function (key) {
-        return clog.i18n[key];
-    });
-}) ();
+        this.decoratePost(post);
+        this.renderTemplate('post', post, output);
+    }
+};
+
+Handlebars.registerHelper('translate', function (key) {
+    return clog.i18n[key];
+});

@@ -1,5 +1,196 @@
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['all_posts'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n	<h2>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "worksite_posts_label", options) : helperMissing.call(depth0, "translate", "worksite_posts_label", options)))
+    + "&nbsp;<a target=\"_blank\" href=\"/direct/clog-rss/site/";
+  if (helper = helpers.siteId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.siteId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + ".xml\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "user_rss_tooltip", options) : helperMissing.call(depth0, "translate", "user_rss_tooltip", options)))
+    + "\"><img src=\"/library/image/silk/feed.png\"/></a></h2>\n	";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", helper, options;
+  buffer += "\n	<div id=\"noPostsLabel\"><span>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "noPosts", options) : helperMissing.call(depth0, "translate", "noPosts", options)))
+    + "</span></div>\n	";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n	<div style=\"clear: left; margin-top: 10px;\" id=\"viewOptions\">\n   		<input type=\"checkbox\"\n                 ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.showBody), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                 onclick=\"clog.toggleFullContent(this);\"/>\n		<span>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "show_title_only_label", options) : helperMissing.call(depth0, "translate", "show_title_only_label", options)))
+    + "</span>\n   	</div>\n	";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  
+  return " checked ";
+  }
+
+function program8(depth0,data) {
+  
+  var buffer = "", stack1, helper;
+  buffer += "\n					<tr>\n						<td>\n							<div id=\"post_";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\"></div>\n						</td>\n					</tr>\n					";
+  return buffer;
+  }
+
+  buffer += "	";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.onGateway), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.posts)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    <div id=\"postsWrapper\">\n    	<br />\n  	 	<div id=\"posts\">\n	  	    <table class=\"tableHeader\">\n				<tbody>\n					";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.posts), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n				</tbody>\n			</table>\n		</div>\n	</div>\n";
+  return buffer;
+  });
+templates['authors'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helper, options, functionType="function", escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "<th width=\"5%\"><div>RSS</div></th>";
+  }
+
+function program3(depth0,data,depth1) {
+  
+  var buffer = "", stack1, helper;
+  buffer += "\n		<tr>\n			<td><img src=\"/direct/profile/";
+  if (helper = helpers.userId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.userId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "/image\" width=\"20\" alt=\"User\"/>&nbsp;<a href=\"javascript:;\" onclick=\"clog.switchState('userPosts',{userId: '";
+  if (helper = helpers.userId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.userId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "'});\" rel=\"/direct/profile/";
+  if (helper = helpers.userId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.userId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "/formatted\" class=\"icon profile\">";
+  if (helper = helpers.userDisplayName) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.userDisplayName); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</a></td>\n			<td>";
+  if (helper = helpers.numberOfPosts) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.numberOfPosts); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n			<td>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.dateOfLastPost), {hash:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</td>\n			<td>";
+  if (helper = helpers.numberOfComments) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.numberOfComments); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</td>\n			";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.clogOnGateway), {hash:{},inverse:self.noop,fn:self.programWithDepth(8, program8, data, depth1),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</tr>\n		";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  var stack1, helper;
+  if (helper = helpers.formattedDateOfLastPost) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.formattedDateOfLastPost); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  return escapeExpression(stack1);
+  }
+
+function program6(depth0,data) {
+  
+  
+  return "n/a";
+  }
+
+function program8(depth0,data,depth2) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "<td><a target=\"_blank\" href=\"/direct/clog-rss/user/";
+  if (helper = helpers.userId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.userId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + ".xml?siteId="
+    + escapeExpression(((stack1 = (depth2 && depth2.siteId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth2 && depth2.translate),options={hash:{},data:data},helper ? helper.call(depth0, "user_rss_tooltip", options) : helperMissing.call(depth0, "translate", "user_rss_tooltip", options)))
+    + "\"><img src=\"/library/image/silk/feed.png\"/></a></td>";
+  return buffer;
+  }
+
+  buffer += "	<h2>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "authors_label", options) : helperMissing.call(depth0, "translate", "authors_label", options)))
+    + "</h2>\n	<div id=\"clogAuthorPager\">\n	<form>\n		<img class=\"first\" src=\"/library/image/silk/control_start_blue.png\"/>\n		<img class=\"prev\" src=\"/library/image/silk/control_rewind_blue.png\"/>\n		<input class=\"pagedisplay\" type=\"text\"/>\n		<img class=\"next\" src=\"/library/image/silk/control_fastforward_blue.png\"/>\n		<img class=\"last\" src=\"/library/image/silk/control_end_blue.png\"/>\n		<select class=\"pagesize\">\n			<option selected=\"selected\"  value=\"10\">10</option>\n			<option value=\"20\">20</option>\n			<option value=\"30\">30</option>\n			<option  value=\"40\">40</option>\n		</select>\n	</form>\n	</div>\n    <table id=\"clog_author_table\" cols=\"4\" class=\"listHier speciallistHier\">\n		<thead>\n		<tr>\n			<th width=\"20%\"><div>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "author_label", options) : helperMissing.call(depth0, "translate", "author_label", options)))
+    + "</div></th>\n			<th width=\"10%\"><div>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "posts", options) : helperMissing.call(depth0, "translate", "posts", options)))
+    + "</div></th>\n			<th width=\"20%\"><div>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "dateOfLastPostHeader", options) : helperMissing.call(depth0, "translate", "dateOfLastPostHeader", options)))
+    + "</div></th>\n			<th width=\"45%\"><div>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "number_of_comments_label", options) : helperMissing.call(depth0, "translate", "number_of_comments_label", options)))
+    + "</div></th>\n			";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.onGateway), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</tr>\n		</thead>\n		<tbody>\n		";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.authors), {hash:{},inverse:self.noop,fn:self.programWithDepth(3, program3, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</tbody>\n	</table>\n";
+  return buffer;
+  });
+templates['create_comment'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helper, options, functionType="function", escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing;
+
+
+  buffer += "	<div id=\"clog_post_";
+  if (helper = helpers.postId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.postId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\" style=\"width:100%\"></div>\n\n	<h3>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "add_your_comment_label", options) : helperMissing.call(depth0, "translate", "add_your_comment_label", options)))
+    + ":</h3>\n\n	<div style=\"height: 20px;\"></div>\n\n	<textarea name=\"text\" id=\"clog_content_editor\" cols=\"45\" rows=\"10\">";
+  if (helper = helpers.content) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.content); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</textarea>\n	<br />\n	<br />\n    <input id=\"clog_comment_id_field\" type=\"hidden\" value=\"";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\"/>\n    <input id=\"clog_save_comment_button\" type=\"button\" value=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "save", options) : helperMissing.call(depth0, "translate", "save", options)))
+    + "\"/>\n    <input type=\"button\" value=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "cancel", options) : helperMissing.call(depth0, "translate", "cancel", options)))
+    + "\" onclick=\"clog.switchState('viewAllPosts');\"/>\n";
+  return buffer;
+  });
 templates['create_post'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
@@ -271,7 +462,290 @@ function program4(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</tbody>\n</table>\n<input id=\"clog_permissions_save_button\" type=\"button\" value=\""
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "save", options) : helperMissing.call(depth0, "translate", "save", options)))
-    + "\"/>\n<input type=\"button\" value=\"${cancel}\" onclick=\"return switchState('home');\"/>\n";
+    + "\"/>\n<input type=\"button\" value=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "cancel", options) : helperMissing.call(depth0, "translate", "cancel", options)))
+    + "\" onclick=\"return clog.switchState('home');\"/>\n";
+  return buffer;
+  });
+templates['post'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n			    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.canComment), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.canDelete), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.canEdit), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n				<a href=\"#\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "comment_on_post_tooltip", options) : helperMissing.call(depth0, "translate", "comment_on_post_tooltip", options)))
+    + "\" onClick=\"clog.switchState('createComment',{postId: '";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "'});\"><img src=\"/library/image/silk/comment_add.png\" width=\"16\" height=\"16\" alt=\"Add Comment\"/></a>&nbsp;\n			    ";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n				<a href=\"#\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "delete_post_tooltip", options) : helperMissing.call(depth0, "translate", "delete_post_tooltip", options)))
+    + "\" onclick=\"return clog.utils.recyclePost('";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "');\"><img src=\"/library/image/silk/cross.png\" width=\"16\" height=\"16\" alt=\"Delete\"/></a>&nbsp;\n			    ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n				<a href=\"javascript:;\" onClick=\"clog.switchState('createPost',{postId:'";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "'});\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "edit_post_tooltip", options) : helperMissing.call(depth0, "translate", "edit_post_tooltip", options)))
+    + "\"><img src=\"/library/image/silk/pencil.png\" width=\"16\" height=\"16\" alt=\"Edit\"/></a>&nbsp;\n			    ";
+  return buffer;
+  }
+
+function program8(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "<br/><span style=\"font-size: smaller;font-style: italic;\">"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "modified_label", options) : helperMissing.call(depth0, "translate", "modified_label", options)))
+    + "</span><span style=\"font-size: smaller;font-style: italic;\">";
+  if (helper = helpers.formattedModifiedDate) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.formattedModifiedDate); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</span>";
+  return buffer;
+  }
+
+function program10(depth0,data) {
+  
+  var buffer = "", helper, options;
+  buffer += "\n				<img src=\"/library/image/silk/key.png\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "private_post_tooltip", options) : helperMissing.call(depth0, "translate", "private_post_tooltip", options)))
+    + "\" width=\"16\" height=\"16\"/>\n				";
+  return buffer;
+  }
+
+function program12(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n					<div class=\"clog_comment\">\n						<div style=\"overflow:auto; margin-bottom: 10px;\">\n							<div class=\"clog_author_image_div\"><img src=\"/direct/profile/";
+  if (helper = helpers.creatorId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "/image\" width=\"50\"/></div>\n							<div style=\"float:left;\"><a class=\"profile\" rel=\"/direct/profile/";
+  if (helper = helpers.creatorId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "/formatted\">";
+  if (helper = helpers.creatorDisplayName) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorDisplayName); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</a><br/><span class=\"clog_comment_date\">"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "created_label", options) : helperMissing.call(depth0, "translate", "created_label", options)))
+    + " ";
+  if (helper = helpers.formattedCreatedDate) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.formattedCreatedDate); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</span>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.modified), {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n						</div>\n						<div class=\"clog_comment_content\">";
+  if (helper = helpers.content) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.content); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</div>\n						";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.canDelete), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n						";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.canEdit), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n					</div>\n					";
+  return buffer;
+  }
+function program13(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "<br/><span class=\"clog_comment_date\">"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "modified_label", options) : helperMissing.call(depth0, "translate", "modified_label", options)))
+    + " ";
+  if (helper = helpers.formattedModifiedDate) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.formattedModifiedDate); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</span>";
+  return buffer;
+  }
+
+function program15(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n							<a href=\"#\" onclick=\"return clog.utils.deleteComment('";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "');\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "delete_comment_tooltip", options) : helperMissing.call(depth0, "translate", "delete_comment_tooltip", options)))
+    + "\"><img src=\"/library/image/silk/cross.png\" width=\"16\" height=\"16\" alt=\"Delete Comment\"/></a>&nbsp;\n						";
+  return buffer;
+  }
+
+function program17(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n							<a href=\"javascript:;\" onClick=\"clog.switchState('createComment',{postId: '";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "',commentId:'";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "'});\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "edit_comment_tooltip", options) : helperMissing.call(depth0, "translate", "edit_comment_tooltip", options)))
+    + "\"><img src=\"/library/image/silk/pencil.png\" width=\"16\" height=\"16\" alt=\"Edit Comment\"/></a>\n						";
+  return buffer;
+  }
+
+  buffer += "	<div class=\"postOuterContainer\">\n		<div class=\"postInnerContainer\">\n			<span class=\"postOptionsPanel\">\n			";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.isRecycled), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</span>\n			<div class=\"author\">\n				<div class=\"clog_author_image_div\"><img src=\"/direct/profile/";
+  if (helper = helpers.creatorId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "/image\" width=\"50\"/></div>\n				<div style=\"float: right;\">\n				<a class=\"profile\" rel=\"/direct/profile/";
+  if (helper = helpers.creatorId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "/formatted\">";
+  if (helper = helpers.creatorDisplayName) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorDisplayName); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</a><br /><span style=\"font-size: smaller;font-style: italic;\">"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "created_label", options) : helperMissing.call(depth0, "translate", "created_label", options)))
+    + "</span><span style=\"font-size: smaller;font-style: italic;\">";
+  if (helper = helpers.formattedCreatedDate) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.formattedCreatedDate); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</span>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isModified), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n				</div>\n			</div>\n			<br/>\n			<br/>\n			<div class=\"title\">\n				<span>\n					<a href=\"javascript:;\" onclick=\"clog.switchState('post',{'postId':'";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "'});\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "view_post_tooltip", options) : helperMissing.call(depth0, "translate", "view_post_tooltip", options)))
+    + "\"><span>";
+  if (helper = helpers.title) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.title); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</span></a>\n				</span>\n				";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0['private']), {hash:{},inverse:self.noop,fn:self.program(10, program10, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</div>\n\n            <div class=\"clog_body\">\n\n			    <div class=\"content\">";
+  if (helper = helpers.content) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.content); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n\n			    <br />\n\n			    <span id=\"";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "_comments\" class=\"comments\">\n					";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.comments), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			    </span>\n		    </div>\n		</div>\n	</div>\n";
+  return buffer;
+  });
+templates['post_page'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function";
+
+
+  buffer += "	<a id=\"clog_user_posts_link\" href=\"javascript:;\">"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "author_posts", options) : helperMissing.call(depth0, "translate", "author_posts", options)))
+    + " ";
+  if (helper = helpers.creatorDisplayName) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorDisplayName); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</a>\n	<div id=\"post_";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\" style=\"width:100%\"></div>\n";
+  return buffer;
+  });
+templates['recycled_posts'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helper, options, functionType="function", escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n            <div id=\"posts\">\n  	            <table class=\"tableHeader\">\n		            <tbody>\n			            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.posts), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		            </tbody>\n		        </table>\n		    </div>\n            ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1, helper;
+  buffer += "\n			            <tr>\n				            <td valign=\"top\" width=\"20px\"><input type=\"checkbox\" id=\"";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"clog_recycled_post_checkbox\"/></td>\n				            <td><div id=\"post_";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\"></div></td>\n			            </tr>\n			            ";
+  return buffer;
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = "", helper, options;
+  buffer += "\n            <div id=\"noPostsLabel\"><span>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "noPosts", options) : helperMissing.call(depth0, "translate", "noPosts", options)))
+    + "</span></div>\n            ";
+  return buffer;
+  }
+
+  buffer += "	<h2>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "recycle_bin_label", options) : helperMissing.call(depth0, "translate", "recycle_bin_label", options)))
+    + "</h2>\n        <div id=\"postsWrapper\">\n            <input type=\"button\" id=\"clog_really_delete_button\" value=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "del", options) : helperMissing.call(depth0, "translate", "del", options)))
+    + "\"/>\n            <input type=\"button\" id=\"clog_restore_button\" value=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "restore", options) : helperMissing.call(depth0, "translate", "restore", options)))
+    + "\"/>\n            ";
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.posts)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	    </div>\n	</div>\n";
   return buffer;
   });
 templates['toolbar'] = template(function (Handlebars,depth0,helpers,partials,data) {
@@ -309,6 +783,85 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + "\" href=\"javascript:;\">"
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "my_public_posts_label", options) : helperMissing.call(depth0, "translate", "my_public_posts_label", options)))
     + "</a></span></li>\n";
+  return buffer;
+  });
+templates['user_posts'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function", self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", helper, options;
+  buffer += "\n	<div id=\"noPostsLabel\"><span>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "noPosts", options) : helperMissing.call(depth0, "translate", "noPosts", options)))
+    + "</span></div>\n	";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n	<div style=\"clear: left; margin-top: 10px;\" id=\"viewOptions\">\n   		<input type=\"checkbox\"\n                 ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.showBody), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                 onclick=\"clog.toggleFullContent(this);\"/>\n		<span>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "show_title_only_label", options) : helperMissing.call(depth0, "translate", "show_title_only_label", options)))
+    + "</span>";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.showRSS), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n   	</div>\n	";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  
+  return " checked ";
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "&nbsp;<a target=\"_blank\" href=\"/direct/clog-rss/user/";
+  if (helper = helpers.creatorId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.creatorId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + ".xml";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.onGateway), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" title=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "user_rss_tooltip", options) : helperMissing.call(depth0, "translate", "user_rss_tooltip", options)))
+    + "\"><img src=\"/library/image/silk/feed.png\"/></a>";
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = "", stack1, helper;
+  buffer += "?siteId=";
+  if (helper = helpers.siteId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.siteId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1);
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = "", stack1, helper;
+  buffer += "\n					<tr>\n						<td>\n							<div id=\"post_";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\"></div>\n						</td>\n					</tr>\n					";
+  return buffer;
+  }
+
+  buffer += "	<div id=\"clog_author_profile\"></div>\n	";
+  stack1 = helpers.unless.call(depth0, ((stack1 = (depth0 && depth0.posts)),stack1 == null || stack1 === false ? stack1 : stack1.length), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n    <div id=\"postsWrapper\">\n    	<br />\n  	 	<div id=\"posts\">\n	  	    <table class=\"tableHeader\">\n				<tbody>\n					";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.posts), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n				</tbody>\n			</table>\n		</div>\n	</div>\n";
   return buffer;
   });
 })();

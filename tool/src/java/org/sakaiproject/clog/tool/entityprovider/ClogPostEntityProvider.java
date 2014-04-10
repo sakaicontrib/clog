@@ -1,5 +1,6 @@
 package org.sakaiproject.clog.tool.entityprovider;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.CoreEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
+import org.sakaiproject.entitybroker.entityprovider.annotations.EntityURLRedirect;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.CollectionResolvable;
@@ -29,15 +31,17 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Deleteable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Describeable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Inputable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
+import org.sakaiproject.entitybroker.entityprovider.capabilities.Redirectable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Statisticable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.entityprovider.search.Restriction;
 import org.sakaiproject.entitybroker.entityprovider.search.Search;
 import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
+import org.sakaiproject.entitybroker.util.TemplateParseUtil;
 import org.sakaiproject.util.ResourceLoader;
 
-public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, CollectionResolvable, ActionsExecutable, Statisticable {
+public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, CollectionResolvable, ActionsExecutable, Redirectable, Statisticable {
 
 	private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
 
@@ -52,18 +56,21 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	protected final Logger LOG = Logger.getLogger(getClass());
 
 	public boolean entityExists(String id) {
-		if (LOG.isDebugEnabled())
+
+		if (LOG.isDebugEnabled()) {
 			LOG.debug("entityExists(" + id + ")");
+        }
 
 		if (id == null) {
 			return false;
 		}
 
-		if ("".equals(id))
+		if ("".equals(id)) {
 			return false;
+        }
 
 		try {
-			return (clogManager.getPost(id) != null);
+			return clogManager.getPost(id) != null;
 		} catch (Exception e) {
 			LOG.error("Caught exception whilst getting post.", e);
 			return false;
@@ -72,25 +79,26 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 	public Object getEntity(EntityReference ref) {
 
-		if (LOG.isDebugEnabled())
+		if (LOG.isDebugEnabled()) {
 			LOG.debug("getEntity(" + ref.getId() + ")");
+        }
 
-		String id = ref.getId();
+		String postId = ref.getId();
 
-		if (id == null || "".equals(id)) {
+		if (postId == null || "".equals(postId)) {
 			return new Post();
 		}
 
 		Post post = null;
 
 		try {
-			post = clogManager.getPost(id);
+			post = clogManager.getPost(postId);
 		} catch (Exception e) {
-			LOG.error("Caught exception whilst getting post.", e);
+			LOG.error("Caught exception whilst getting post with id '" + postId + "'", e);
 		}
 
 		if (post == null) {
-			throw new IllegalArgumentException("Post not found");
+			throw new EntityException("No post with id '" + postId + "'", ref.getReference(), HttpServletResponse.SC_BAD_REQUEST);
 		}
 
 		// TODO: Security !!!!
@@ -99,8 +107,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	}
 
 	public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
-		if (LOG.isDebugEnabled())
+
+		if (LOG.isDebugEnabled()) {
 			LOG.debug("createEntity");
+        }
 
 		String userId = developerHelperService.getCurrentUserId();
 
@@ -167,12 +177,41 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	}
 
 	public String[] getHandledOutputFormats() {
-		return new String[] { Formats.JSON };
+		return new String[] { Formats.JSON, Formats.HTML };
 	}
 
 	public String[] getHandledInputFormats() {
 		return new String[] { Formats.HTML, Formats.JSON, Formats.FORM };
 	}
+
+    @EntityURLRedirect(value = "/{prefix}/{postId}")
+    public String mapPostUrl(String incomingUrl, Map<String, String> tokens) {
+
+        String postId = tokens.get("postId");
+
+        if (postId == null) {
+            return null;
+        }
+
+        String extension = tokens.get(TemplateParseUtil.EXTENSION);
+
+        if (extension.equalsIgnoreCase("html")) {
+            try {
+                Post post = clogManager.getPost(postId);
+
+                if (post == null) {
+                    return null;
+                } else {
+                    return post.getUrl();
+                }
+            } catch (Exception e) {
+                LOG.error("Caught exception whilst getting post.", e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
 	public List<Post> getEntities(EntityReference ref, Search search) {
 		List<Post> posts = new ArrayList<Post>();

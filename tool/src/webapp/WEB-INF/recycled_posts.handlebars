@@ -1,0 +1,20 @@
+	<h2>{{translate 'recycle_bin_label'}}</h2>
+    {{#unless posts.length}}
+    <div id="noPostsLabel"><span>{{translate 'noPosts'}}</span></div>
+    {{/unless}}
+    <div id="postsWrapper">
+    	<input type="button" id="clog_really_delete_button" value="{{translate 'del'}}"/>
+    	<input type="button" id="clog_restore_button" value="{{translate 'restore'}}"/>
+  	 	<div id="posts">
+            <table class="tableHeader">
+                <tbody>
+                    {{#each posts}}
+                    <tr>
+                        <td valign="top" width="20px"><input type="checkbox" id="{{id}}" class="clog_recycled_post_checkbox"/></td>
+                        <td><div id="post_{{id}}"></div></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+	    </div> <!-- /posts -->
+    </div> <!-- postsWrapper -->

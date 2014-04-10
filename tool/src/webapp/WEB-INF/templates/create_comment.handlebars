@@ -1,0 +1,12 @@
+	<div id="clog_post_{{postId}}" style="width:100%"></div>
+
+	<h3>{{translate 'add_your_comment_label'}}:</h3>
+
+	<div style="height: 20px;"></div>
+
+	<textarea name="text" id="clog_content_editor" cols="45" rows="10">{{content}}</textarea>
+	<br />
+	<br />
+    <input id="clog_comment_id_field" type="hidden" value="{{id}}"/>
+    <input id="clog_save_comment_button" type="button" value="{{translate 'save'}}"/>
+    <input type="button" value="{{translate 'cancel'}}" onclick="clog.switchState('viewAllPosts');"/>
