@@ -135,11 +135,13 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
 		// If the post is public, yes.
 		if (post.isPublic()) {
+            System.out.println("isPublic = true");
 			return true;
 		}
 
 		try {
 			if (post.isVisibleToSite() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
+                System.out.println("isVisibleToSite = true");
 				return true;
 			}
 		} catch (Exception e) {
@@ -149,6 +151,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
 		try {
 			if (post.isVisibleToMaintainers() && maintainer) {
+                System.out.println("isVisibleToMaintainers = true");
 				return true;
 			}
 		} catch (Exception e) {
@@ -158,6 +161,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
 		// Only maintainers can view recycled posts
 		if (post.isRecycled() && maintainer) {
+                System.out.println("isRecycled = true");
 			return true;
 		}
 
@@ -171,6 +175,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
 		// If the current user is authenticated and the post author, yes.
 		if (currentUser != null && currentUser.equals(post.getCreatorId())) {
+                System.out.println("isMyPost = true");
 			return true;
 		}
 

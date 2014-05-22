@@ -64,9 +64,6 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		String currentUserId = developerHelperService.getCurrentUserId();
 
 		QueryBean qb = new QueryBean();
-		if (currentUserId != null) {
-			qb.setSkipFilter(true);
-		}
 		qb.setCreator(authorId);
 
 		String siteId = (String) params.get("siteId");
@@ -118,7 +115,6 @@ public class ClogRSSEntityProvider extends AbstractEntityProvider implements Aut
 		}
 
 		QueryBean qb = new QueryBean();
-		qb.setSkipFilter(true);
 		qb.setSiteId(siteId);
 
 		List<Post> posts = null;

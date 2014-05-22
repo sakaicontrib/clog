@@ -36,9 +36,8 @@ public class QueryBean {
 
 	private boolean searchAutoSaved = false;
 
-	private boolean skipFilter;
-
 	public QueryBean() {
+
 		visibilities = new ArrayList<String>(); // this mean no filter by
 		// visibility
 		_user = "";
@@ -130,13 +129,5 @@ public class QueryBean {
 
 	public boolean isSearchAutoSaved() {
 		return searchAutoSaved;
-	}
-
-	public void setSkipFilter(boolean skipFilter) {
-		this.skipFilter = skipFilter;
-	}
-
-	public boolean isSkipFilter() {
-		return skipFilter;
 	}
 }

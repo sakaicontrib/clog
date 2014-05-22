@@ -72,6 +72,7 @@ public class ClogManagerImpl implements ClogManager {
 	}
 
 	public Post getPost(String postId) throws Exception {
+
 		if (logger.isDebugEnabled())
 			logger.debug("getPost(" + postId + ")");
 
@@ -95,8 +96,10 @@ public class ClogManagerImpl implements ClogManager {
 	}
 
 	public Post getPostHeader(String postId) throws Exception {
-		if (logger.isDebugEnabled())
+
+		if (logger.isDebugEnabled()) {
 			logger.debug("getUnfilteredPost(" + postId + ")");
+        }
 
 		Post post = persistenceManager.getPost(postId);
 		post.setContent("");
@@ -104,25 +107,18 @@ public class ClogManagerImpl implements ClogManager {
 	}
 
 	public List<Post> getPosts(String placementId) throws Exception {
+
 		// Get all the posts for the supplied site and filter them through the
 		// security manager
-		List<Post> filtered;
 		List<Post> unfiltered = persistenceManager.getAllPost(placementId);
-		filtered = clogSecurityManager.filter(unfiltered);
-		return filtered;
+		return clogSecurityManager.filter(unfiltered);
 	}
 
 	public List<Post> getPosts(QueryBean query) throws Exception {
+
 		// Get all the posts for the supplied site and filter them through the
 		// security manager
-		List<Post> filtered;
-		List<Post> unfiltered = persistenceManager.getPosts(query);
-		if (query.isSkipFilter()) {
-			return unfiltered;
-		} else {
-			filtered = clogSecurityManager.filter(unfiltered);
-			return filtered;
-		}
+        return clogSecurityManager.filter(persistenceManager.getPosts(query));
 	}
 
 	public boolean savePost(Post post) {
