@@ -178,22 +178,36 @@ clog.utils = {
 
 		if (title.length < 4) {
             if ('AUTOSAVE' !== visibility) {
-                alert(clog_short_title_warning);
+                alert(short_title_warning);
             }
 			return 0;
 		}
 
 		var success = false;
+
+        var groups = '';
 		
 		if ('READY' === visibility) {
-			visibility = ($('#clog_visibility_maintainer').attr('checked')) ? 'MAINTAINER':'SITE';
+			if ($('#clog_visibility_maintainer').prop('checked')) {
+                visibility = 'MAINTAINER';
+            } else if ($('#clog_visibility_site').prop('checked')) {
+                visibility = 'SITE';
+            } else {
+                visibility = 'GROUP';
+                groups = $('#clog-group-selector').val();
+
+                if (groups == null || groups === '') {
+                    alert(clog.i18n.no_groups_selected_warning);
+                    return 0;
+                }
+            }
 		}
 
 	    var content = clog.sakai.getEditorData(wysiwygEditor, 'clog_content_editor');
 
 		if ('' == content) {
             if ('AUTOSAVE' !== visibility) {
-                alert(clog_no_content_warning);
+                alert(clog.i18n.no_content_warning);
             }
             return 0;
         }

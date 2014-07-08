@@ -19,6 +19,7 @@ package org.sakaiproject.clog.impl;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchList;
 import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.search.api.SearchService;
+import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
@@ -136,7 +138,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 	public String getCurrentSiteId() {
 		return toolManager.getCurrentPlacement().getContext(); // equivalent to
-		// PortalService.getCurrentSiteId();
 	}
 
 	public String getCurrentToolId() {
@@ -280,6 +281,24 @@ public class SakaiProxyImpl implements SakaiProxy {
 		String autoDDL = serverConfigurationService.getString("auto.ddl");
 		return autoDDL.equals("true");
 	}
+
+    public Map<String, String> getCurrentSiteGroups() {
+
+        Map<String, String> map = new HashMap<String, String>();
+
+        try {
+            Collection<Group> groups = siteService.getSite(getCurrentSiteId()).getGroups();
+
+            for (Group group : groups) {
+                map.put(group.getId(), group.getTitle());
+            }
+        } catch (IdUnusedException idue) {
+            // This should never happen. Really.
+            logger.error("getCurrentSiteId returned an invalid site id. No groups will be returned.");
+        }
+
+        return map;
+    }
 
 	/*
 	 * public List<String> getEidMaintainerSiteMembers() { // TODO

@@ -235,12 +235,40 @@ function program5(depth0,data) {
 
 function program7(depth0,data) {
   
-  var buffer = "", helper, options;
-  buffer += "\n       <input id=\"clog_visibility_maintainer\" type=\"radio\" name=\"visibility\"/>"
+  var buffer = "", stack1, helper, options;
+  buffer += "\n        <input id=\"clog_visibility_maintainer\" type=\"radio\" name=\"visibility\"/>"
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "admin_visibility", options) : helperMissing.call(depth0, "translate", "admin_visibility", options)))
-    + "\n       <br/>\n       <input id=\"clog_visibility_site\" type=\"radio\" name=\"visibility\" checked=\"checked\"/>"
+    + "\n        <br/>\n        <input id=\"clog_visibility_site\" type=\"radio\" name=\"visibility\" checked=\"checked\"/>"
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "site_visibility", options) : helperMissing.call(depth0, "translate", "site_visibility", options)))
-    + "\n       <br/>\n       <br/>\n    ";
+    + "\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.hasGroups), {hash:{},inverse:self.noop,fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        <br/>\n        <br/>\n    ";
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  var buffer = "", stack1, helper, options;
+  buffer += "\n        <br/>\n        <input id=\"clog-visibility-group\" type=\"radio\" name=\"visibility\"/>"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "group_visibility", options) : helperMissing.call(depth0, "translate", "group_visibility", options)))
+    + "\n        <br/>\n        <fieldset id=\"clog-group-fieldset\">\n            <legend>Groups or Sets</legend>\n            <select multiple id=\"clog-group-selector\">\n                ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.groups), {hash:{},inverse:self.noop,fn:self.program(9, program9, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n            </select>\n        </fieldset>\n        ";
+  return buffer;
+  }
+function program9(depth0,data) {
+  
+  var buffer = "", stack1, helper;
+  buffer += "\n                <option value=\"";
+  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\">";
+  if (helper = helpers.title) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.title); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "</option>\n                ";
   return buffer;
   }
 

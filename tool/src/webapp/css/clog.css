@@ -169,3 +169,7 @@ th.clogSortableTableHeaderSortDown {
 .clog_post_title {
     clear: both;
 }
+
+#clog-group-fieldset {
+    display: none;
+}

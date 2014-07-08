@@ -31,6 +31,12 @@ public interface SakaiProxy {
 
 	public String getCurrentSiteId();
 
+    /**
+     *  Returns a map of group title against group id for the groups
+     *  in the current site.
+     */
+    public Map<String, String> getCurrentSiteGroups();
+
 	public String getCurrentToolId();
 
 	public String getCurrentToolTitle();

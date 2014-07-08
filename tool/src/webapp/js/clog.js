@@ -259,13 +259,24 @@ clog.switchState = function (state,arg) {
 			}
 		}
 
-		clog.utils.renderTemplate('create_post', {post: clog.currentPost, onMyWorkspace: clog.onMyWorkspace}, 'clog_content');
+		clog.utils.renderTemplate('create_post', {post: clog.currentPost, onMyWorkspace: clog.onMyWorkspace, groups: clog.groups, hasGroups: clog.groups.length > 0}, 'clog_content');
 
 	 	$(document).ready(function () {
 
 	 		$('#clog_title_field').bind('keypress',function (e) {
 				clog.titleChanged = true;	 		
-	 		});
+	 		}
+            );
+
+            $('#clog_visibility_maintainer,#clog_visibility_site').click(function (e) {
+                $('#clog-group-fieldset').hide();
+                clog.fitFrame();
+            });
+            
+            $('#clog-visibility-group').click(function (e) {
+                $('#clog-group-fieldset').show();
+                clog.fitFrame();
+            });
 
 			$('#clog_save_post_button').click(function () {
 				clog.utils.savePostAsDraft(clog.editor);

@@ -25,11 +25,24 @@
         <input id="clog_make_post_public_button" type="button" value="{{translate 'make_post_public_label'}}" title="{{translate 'make_post_public_tooltip'}}"/>
         {{/if}}
     {{else}}
-       <input id="clog_visibility_maintainer" type="radio" name="visibility"/>{{translate 'admin_visibility'}}
-       <br/>
-       <input id="clog_visibility_site" type="radio" name="visibility" checked="checked"/>{{translate 'site_visibility'}}
-       <br/>
-       <br/>
+        <input id="clog_visibility_maintainer" type="radio" name="visibility"/>{{translate 'admin_visibility'}}
+        <br/>
+        <input id="clog_visibility_site" type="radio" name="visibility" checked="checked"/>{{translate 'site_visibility'}}
+        {{#if hasGroups}}
+        <br/>
+        <input id="clog-visibility-group" type="radio" name="visibility"/>{{translate 'group_visibility'}}
+        <br/>
+        <fieldset id="clog-group-fieldset">
+            <legend>Groups or Sets</legend>
+            <select multiple id="clog-group-selector">
+                {{#each groups}}
+                <option value="{{id}}">{{title}}</option>
+                {{/each}}
+            </select>
+        </fieldset>
+        {{/if}}
+        <br/>
+        <br/>
     {{/if}}
     <input id="clog_publish_post_button" type="button" value="{{translate 'publish_label'}}" title="{{translate 'publish_tooltip'}}"/>
     <input id="clog_save_post_button" type="button" value="{{translate 'save_as_draft_label'}}" title="{{translate 'save_as_draft_tooltip'}}"/>

@@ -21,7 +21,10 @@
                 i18n: {
                     <c:forEach items="${i18n}" var="i">${i.key}: "${i.value}",</c:forEach>
                     months: [<c:forEach items="${months}" var="m" varStatus="ms">'${m}'<c:if test="${not ms.last}">,</c:if></c:forEach>]
-                }
+                },
+                groups: [
+                    <c:forEach items="${groups}" var="i" varStatus="is">{id:'${i.key}', title:'${i.value}'}<c:if test="${not is.last}">,</c:if></c:forEach>
+                ]
             };
         
         </script>
