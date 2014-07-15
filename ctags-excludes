@@ -1,0 +1,5 @@
+bin
+*/target**
+*/m2-target/**
+tool/src/webapp/lib
+*.js
