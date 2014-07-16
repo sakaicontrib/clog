@@ -26,7 +26,7 @@
 					<a href="javascript:;" onclick="clog.switchState('post',{'postId':'{{id}}'});" title="{{translate 'view_post_tooltip'}}"><span>{{title}}</span></a>
 				</span>
 				{{#if private}}
-				<img src="/library/image/silk/key.png" title="{{translate 'private_post_tooltip'}}" width="16" height="16"/>
+				<a class="clog-draft-label" title="{{translate 'private_post_tooltip'}}">{{translate 'draft_label'}}</a>
 				{{/if}}
 			</div>
 
@@ -43,12 +43,12 @@
 							<div class="clog_author_image_div"><img src="/direct/profile/{{creatorId}}/image" width="50"/></div>
 							<div style="float:left;"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a><br/><span class="clog_comment_date">{{translate 'created_label'}} {{formattedCreatedDate}}</span>{{#if modified}}<br/><span class="clog_comment_date">{{translate 'modified_label'}} {{formattedModifiedDate}}</span>{{/if}}</div>
 						</div>
-						<div class="clog_comment_content">{{content}}</div>
+						<div class="clog_comment_content">{{{content}}}</div>
 						{{#if canDelete}}
 							<a href="#" onclick="return clog.utils.deleteComment('{{id}}');" title="{{translate 'delete_comment_tooltip'}}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
 						{{/if}}
 						{{#if canEdit}}
-							<a href="javascript:;" onClick="clog.switchState('createComment',{postId: '{{id}}',commentId:'{{id}}'});" title="{{translate 'edit_comment_tooltip'}}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
+							<a href="javascript:;" onClick="clog.switchState('createComment',{postId: '{{../../id}}',commentId:'{{id}}'});" title="{{translate 'edit_comment_tooltip'}}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
 						{{/if}}
 					</div>
 					{{/each}}

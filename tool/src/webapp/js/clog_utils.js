@@ -128,8 +128,8 @@ clog.utils = {
 
         post.comments.forEach(function (c) {
 
-            c.formattedCreatedDate = this.formatDate(c.createdDate);
-            c.formattedModifiedDate = this.formatDate(c.modifiedDate);
+            c.formattedCreatedDate = clog.utils.formatDate(c.createdDate);
+            c.formattedModifiedDate = clog.utils.formatDate(c.modifiedDate);
         });
     },
     addFormattedDatesToCurrentPost: function () {

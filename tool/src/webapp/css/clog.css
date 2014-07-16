@@ -169,3 +169,13 @@ th.clogSortableTableHeaderSortDown {
 .clog_post_title {
     clear: both;
 }
+
+.clog-draft-label {
+    margin-left: 5px;
+    color: red;
+    font-weight: bold;
+}
+
+a.clog-draft-label:hover {
+    text-decoration: none;
+}
