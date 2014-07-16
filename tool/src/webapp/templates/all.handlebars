@@ -15,7 +15,7 @@ function program1(depth0,data) {
   else { helper = (depth0 && depth0.siteId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + ".xml\" title=\""
-    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "user_rss_tooltip", options) : helperMissing.call(depth0, "translate", "user_rss_tooltip", options)))
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "site_rss_tooltip", options) : helperMissing.call(depth0, "translate", "site_rss_tooltip", options)))
     + "\"><img src=\"/library/image/silk/feed.png\"/></a></h2>\n	";
   return buffer;
   }
@@ -570,13 +570,15 @@ function program8(depth0,data) {
 function program10(depth0,data) {
   
   var buffer = "", helper, options;
-  buffer += "\n				<img src=\"/library/image/silk/key.png\" title=\""
+  buffer += "\n				<a class=\"clog-draft-label\" title=\""
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "private_post_tooltip", options) : helperMissing.call(depth0, "translate", "private_post_tooltip", options)))
-    + "\" width=\"16\" height=\"16\"/>\n				";
+    + "\">"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "draft_label", options) : helperMissing.call(depth0, "translate", "draft_label", options)))
+    + "</a>\n				";
   return buffer;
   }
 
-function program12(depth0,data) {
+function program12(depth0,data,depth1) {
   
   var buffer = "", stack1, helper, options;
   buffer += "\n					<div class=\"clog_comment\">\n						<div style=\"overflow:auto; margin-bottom: 10px;\">\n							<div class=\"clog_author_image_div\"><img src=\"/direct/profile/";
@@ -603,12 +605,12 @@ function program12(depth0,data) {
   buffer += "</div>\n						</div>\n						<div class=\"clog_comment_content\">";
   if (helper = helpers.content) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.content); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
-    + "</div>\n						";
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "</div>\n						";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.canDelete), {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n						";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.canEdit), {hash:{},inverse:self.noop,fn:self.program(17, program17, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.canEdit), {hash:{},inverse:self.noop,fn:self.programWithDepth(17, program17, data, depth1),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n					</div>\n					";
   return buffer;
@@ -639,13 +641,11 @@ function program15(depth0,data) {
   return buffer;
   }
 
-function program17(depth0,data) {
+function program17(depth0,data,depth2) {
   
   var buffer = "", stack1, helper, options;
-  buffer += "\n							<a href=\"javascript:;\" onClick=\"clog.switchState('createComment',{postId: '";
-  if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
+  buffer += "\n							<a href=\"javascript:;\" onClick=\"clog.switchState('createComment',{postId: '"
+    + escapeExpression(((stack1 = (depth2 && depth2.id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "',commentId:'";
   if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
@@ -702,7 +702,7 @@ function program17(depth0,data) {
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + "_comments\" class=\"comments\">\n					";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.comments), {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.comments), {hash:{},inverse:self.noop,fn:self.programWithDepth(12, program12, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n			    </span>\n		    </div>\n		</div>\n	</div>\n";
   return buffer;

@@ -173,3 +173,13 @@ th.clogSortableTableHeaderSortDown {
 #clog-group-fieldset {
     display: none;
 }
+
+.clog-draft-label {
+    margin-left: 5px;
+    color: red;
+    font-weight: bold;
+}
+
+a.clog-draft-label:hover {
+    text-decoration: none;
+}

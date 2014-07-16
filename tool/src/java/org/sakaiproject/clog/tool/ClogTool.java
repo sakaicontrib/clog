@@ -101,6 +101,7 @@ public class ClogTool extends HttpServlet {
 			request.setAttribute("postId", postId);
 		}
 
+		response.setContentType("text/html");
         request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);	
 	}
 }
