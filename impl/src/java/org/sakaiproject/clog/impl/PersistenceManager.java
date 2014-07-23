@@ -259,8 +259,8 @@ public class PersistenceManager {
 	}
 
 	public boolean savePost(Post post) {
-		if (logger.isDebugEnabled())
-			logger.debug("createPost()");
+
+        logger.debug("savePost()");
 
 		Connection connection = null;
 		List<PreparedStatement> statements = null;
@@ -271,13 +271,15 @@ public class PersistenceManager {
 			connection.setAutoCommit(false);
 
 			try {
-				if (post.isAutoSave())
+				if (post.isAutoSave()) {
 					statements = sqlGenerator.getInsertStatementsForAutoSavedPost(post, connection);
-				else
+                } else {
 					statements = sqlGenerator.getInsertStatementsForPost(post, connection);
+                }
 
-				for (PreparedStatement st : statements)
+				for (PreparedStatement st : statements) {
 					st.executeUpdate();
+                }
 
 				if (post.getSiteId().startsWith("~")) {
 
@@ -290,11 +292,13 @@ public class PersistenceManager {
 					while (m.find()) {
 						String contentId = m.group(1);
 						if (post.isPublic()) {
-							if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, true))
+							if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, true)) {
 								throw new Exception("Failed to make embedded resource public");
+                            }
 						} else {
-							if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, false))
+							if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, false)) {
 								throw new Exception("Failed to make embedded resource public");
+                            }
 
 						}
 					}

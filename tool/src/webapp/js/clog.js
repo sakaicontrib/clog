@@ -74,6 +74,52 @@ clog.switchState = function (state,arg) {
                 $('.clog_body').hide();
             }
         });
+	} else if ('groups' === state) {
+	    $('#clog_toolbar > li > span').removeClass('current');
+	    $('#clog_groups_link > span').addClass('current');
+
+		clog.utils.renderTemplate('groups', {groups: clog.groups, hasGroups: clog.groups.length > 0}, 'clog_content');
+        clog.fitFrame();
+	} else if ('groupPosts' === state) {
+        if (!arg || !arg.groupId) return;
+
+        var url = "/direct/clog-post.json?siteId=" + clog.siteId + "&groupId=" + arg.groupId;
+
+		jQuery.ajax( {
+	       	'url': url,
+	       	dataType: "json",
+			cache: false,
+		   	success: function (data) {
+
+				clog.currentPosts = data['clog-post_collection'];
+
+                clog.utils.addFormattedDatesToPosts(clog.currentPosts);
+	 			
+				clog.utils.renderTemplate('group_posts', { groupId: arg.groupId,
+                                                            posts: clog.currentPosts,
+                                                            siteId: clog.siteId,
+                                                            showBody: clog.settings.showBody }, 'clog_content');
+
+	 			$(document).ready(function () {
+
+	 			    clog.currentPosts.forEach(function (p) {
+					    clog.utils.renderPost(p, 'post_' + p.id);
+                    });
+
+	 			    $(document).ready(function () {
+
+                        if (!clog.settings.showBody) {
+                            $('.clog_body').hide();
+                        }
+
+                        clog.fitFrame();
+				    });
+                });
+			},
+			error: function (xmlHttpRequest, textStatus, errorThrown) {
+				alert("Failed to get group posts. Reason: " + errorThrown);
+			}
+	   	});
 	} else if ('viewMembers' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_view_authors_link > span').addClass('current');
@@ -477,6 +523,12 @@ clog.toggleFullContent = function (v) {
         });
     } else {
 	    clog.utils.renderTemplate('toolbar', {} ,'clog_toolbar');
+
+        if (clog.groups.length > 0) {
+            $("#clog_groups_link").show().click(function (e) {
+                return clog.switchState('groups');
+            });
+        }
 
 	    $('#clog_home_link>span>a').click(function (e) {
 		    return clog.switchState('home');

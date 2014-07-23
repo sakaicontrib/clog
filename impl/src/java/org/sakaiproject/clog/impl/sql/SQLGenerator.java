@@ -68,6 +68,7 @@ public class SQLGenerator implements ISQLGenerator {
 		result.add(doTableForAutoSavedPost());
 		result.add(doTableForComments());
 		result.add(doTableForAuthor());
+		result.add(doTableForPostGroup());
 		return result;
 	}
 
@@ -185,6 +186,7 @@ public class SQLGenerator implements ISQLGenerator {
 	}
 
 	protected String doTableForAuthor() {
+
 		StringBuilder statement = new StringBuilder();
 		statement.append("CREATE TABLE ").append(TABLE_AUTHOR);
 		statement.append("(");
@@ -194,6 +196,18 @@ public class SQLGenerator implements ISQLGenerator {
 		statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
 		statement.append(TOTAL_COMMENTS + " " + INT + " NOT NULL,");
 		statement.append("CONSTRAINT clog_author_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
+		statement.append(")");
+		return statement.toString();
+	}
+
+	protected String doTableForPostGroup() {
+
+		StringBuilder statement = new StringBuilder();
+		statement.append("CREATE TABLE ").append(TABLE_POST_GROUP);
+		statement.append("(");
+		statement.append(POST_ID + " CHAR(36) NOT NULL,");
+		statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
+		statement.append("CONSTRAINT clog_group_pk PRIMARY KEY (" + POST_ID + "," + GROUP_ID + ")");
 		statement.append(")");
 		return statement.toString();
 	}
@@ -384,14 +398,16 @@ public class SQLGenerator implements ISQLGenerator {
 	}
 
 	public List<PreparedStatement> getInsertStatementsForPost(Post post, Connection connection) throws Exception {
+
 		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
 
 		Statement testST = null;
 		ResultSet testRS = null;
 
 		// If no id has been assigned, assign one
-		if ("".equals(post.getId()))
+		if ("".equals(post.getId())) {
 			post.setId(UUID.randomUUID().toString());
+        }
 
 		// We always replace autosaved posts with the latest, so delete the old
 		// one.
@@ -403,8 +419,9 @@ public class SQLGenerator implements ISQLGenerator {
 			testST = connection.createStatement();
 			testRS = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + post.getId() + "'");
 
-			if (!testRS.next())
+			if (!testRS.next()) {
 				isNew = true;
+            }
 
 			if (isNew) {
 				String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + KEYWORDS + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -431,6 +448,8 @@ public class SQLGenerator implements ISQLGenerator {
 				postST.setInt(10, (post.isCommentable()) ? 1 : 0);
 
 				statements.add(postST);
+
+                statements.addAll(getGroupTableStatements(post, connection));
 
 				if (post.isReady() || post.isPublic()) {
 					statements.addAll(getAuthorTableStatements(post, true, connection));
@@ -554,6 +573,25 @@ public class SQLGenerator implements ISQLGenerator {
 
 		return statements;
 	}
+
+	private List<PreparedStatement> getGroupTableStatements(Post post, Connection connection) throws Exception {
+
+		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
+
+        String postId = post.getId();
+        PreparedStatement deleteCurrent = connection.prepareStatement("DELETE FROM " + TABLE_POST_GROUP + " WHERE " + POST_ID + " = ?");
+        deleteCurrent.setString(1, postId);
+        statements.add(deleteCurrent);
+
+        for (String group : post.getGroups()) {
+            PreparedStatement insert = connection.prepareStatement("INSERT INTO " + TABLE_POST_GROUP + " (" + POST_ID + "," + GROUP_ID + ") VALUES(?,?)");
+            insert.setString(1, postId);
+            insert.setString(2, group);
+            statements.add(insert);
+        }
+
+        return statements;
+    }
 
 	public String getSelectPublicBloggers() {
 		return "SELECT DISTINCT " + CREATOR_ID + " FROM " + TABLE_POST + " WHERE " + VISIBILITY + " = '" + Visibilities.PUBLIC + "'";

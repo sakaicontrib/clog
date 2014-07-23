@@ -16,20 +16,24 @@ public interface ISQLGenerator {
 	public static final String TABLE_AUTOSAVED_POST = DEFAULT_PREFIX + "AUTOSAVED_POST";
 	public static final String TABLE_COMMENT = DEFAULT_PREFIX + "COMMENT";
 	public static final String TABLE_AUTHOR = DEFAULT_PREFIX + "AUTHOR";
+	public static final String TABLE_POST_GROUP = DEFAULT_PREFIX + "POST_GROUP";
 	public static final String TABLE_GLOBAL_PREFERENCES = DEFAULT_PREFIX + "GLOBAL_PREFERENCES";
 
 	public static final String POST_ID = "POST_ID";
 
-	// From BLOGGER_POST
+	// From CLOG_POST_GROUP
+	public static final String GROUP_ID = "GROUP_ID";
+
+	// From CLOG_POST
 	public static final String TITLE = "TITLE";
 
 	public static final String CREATED_DATE = "CREATED_DATE";
 	public static final String MODIFIED_DATE = "MODIFIED_DATE";
 
-	// From BLOGGER_POST
+	// From CLOG_POST
 	public static final String VISIBILITY = "VISIBILITY";
 
-	// From BLOG_AUTHOR
+	// From CLOG_AUTHOR
 	public static final String TOTAL_POSTS = "TOTAL_POSTS";
 	public static final String TOTAL_COMMENTS = "TOTAL_COMMENTS";
 	public static final String LAST_POST_DATE = "LAST_POST_DATE";
@@ -39,19 +43,19 @@ public interface ISQLGenerator {
 
 	public static final String SHOW_BODY = "SHOW_BODY";
 
-	// From BLOGGER_POST
+	// From CLOG_POST
 	public static final String SITE_ID = "SITE_ID";
 
-	// From BLOGGER_POST
+	// From CLOG_POST
 	public static final String KEYWORDS = "KEYWORDS";
 
-	// From BLOGGER_POST
+	// From CLOG_POST
 	public static final String ALLOW_COMMENTS = "ALLOW_COMMENTS";
 
-	// From BLOGGER_COMMENT
+	// From CLOG_COMMENT
 	public static final String COMMENT_ID = "COMMENT_ID";
 
-	// From BLOGGER_COMMENT
+	// From CLOG_COMMENT
 	public static final String CONTENT = "CONTENT";
 
 	public abstract List<String> getCreateTablesStatements();

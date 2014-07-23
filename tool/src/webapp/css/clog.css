@@ -183,3 +183,7 @@ th.clogSortableTableHeaderSortDown {
 a.clog-draft-label:hover {
     text-decoration: none;
 }
+
+.clog-group-link {
+    margin-top: 5px;
+}

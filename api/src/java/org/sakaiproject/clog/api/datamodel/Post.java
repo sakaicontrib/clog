@@ -67,7 +67,11 @@ public class Post implements Entity {
 	@Getter
 	private int numberOfComments = 0;
 
+	@Getter @Setter
+    private List<String> groups = new ArrayList<String>();
+
 	public Post() {
+
 		long now = new Date().getTime();
 		createdDate = now;
 		modifiedDate = now;

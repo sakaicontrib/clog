@@ -1,0 +1,4 @@
+	<h2>{{translate 'group_blogs_label'}}</h2>
+    {{#each groups}}
+    <div class="clog-group-link"><a href="javascript:;" onclick="clog.switchState('groupPosts', {'groupId': '{{id}}'});">{{title}}</a></div>
+    {{/each}}

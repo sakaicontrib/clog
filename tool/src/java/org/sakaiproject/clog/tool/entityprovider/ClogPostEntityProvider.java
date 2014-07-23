@@ -108,9 +108,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 	public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
 
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("createEntity");
-        }
+        LOG.debug("createEntity");
 
 		String userId = developerHelperService.getCurrentUserId();
 
@@ -121,6 +119,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		String siteId = (String) params.get("siteId");
 		boolean commentable = Boolean.parseBoolean((String) params.get("commentable"));
 		String mode = (String) params.get("mode");
+		String groupsString = (String) params.get("groups");
 
 		Post post = new Post();
 		post.setId(id);
@@ -128,6 +127,11 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		post.setCreatorId(userId);
 		post.setSiteId(siteId);
 		post.setTitle(title);
+
+        if (groupsString != null) {
+            post.setGroups(Arrays.asList(groupsString.split(",")));
+        }
+
 		post.setContent(content);
 		post.setCommentable(commentable);
 

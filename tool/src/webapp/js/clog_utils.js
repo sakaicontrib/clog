@@ -194,11 +194,13 @@ clog.utils = {
                 visibility = 'SITE';
             } else {
                 visibility = 'GROUP';
-                groups = $('#clog-group-selector').val();
+                var groupsArray = $('#clog-group-selector').val();
 
-                if (groups == null || groups === '') {
+                if (groupsArray == null || groupsArray.length == 0) {
                     alert(clog.i18n.no_groups_selected_warning);
                     return 0;
+                } else {
+                    groups = groupsArray.join();
                 }
             }
 		}
@@ -218,6 +220,7 @@ clog.utils = {
             'commentable': $('#clog_commentable_checkbox').attr('checked') === 'checked',
             'title': title,
             'content': content,
+            'groups': groups,
             'siteId': clog.siteId,
             'mode': isPublish
         };
