@@ -218,22 +218,30 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
     }
 
 	public List<Post> getEntities(EntityReference ref, Search search) {
-		List<Post> posts = new ArrayList<Post>();
+
+		QueryBean query = new QueryBean();
+        query.setVisibilities(Arrays.asList(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE }));
 
 		Restriction creatorRes = search.getRestrictionByProperty("creatorId");
+		if (creatorRes != null) {
+			query.setCreator(creatorRes.getStringValue());
+        }
+
+		Restriction groupRes = search.getRestrictionByProperty("groupId");
+        if (groupRes != null) {
+            query.setGroup(groupRes.getStringValue());
+		    query.setVisibilities(Arrays.asList(new String[] { Visibilities.GROUP }));
+        }
 
 		Restriction locRes = search.getRestrictionByProperty(CollectionResolvable.SEARCH_LOCATION_REFERENCE);
 		Restriction visibilities = search.getRestrictionByProperty("visibilities");
 
 		Restriction autosaveRes = search.getRestrictionByProperty("autosaved");
 
-		QueryBean query = new QueryBean();
-		query.setVisibilities(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE });
-
 		if (visibilities != null) {
 			String visibilitiesValue = visibilities.getStringValue();
 			String[] values = visibilitiesValue.split(",");
-			query.setVisibilities(values);
+			query.setVisibilities(Arrays.asList(values));
 		}
 
 		if (locRes != null) {
@@ -243,7 +251,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			query.setSiteId(context);
 
 			if ("!gateway".equals(context)) {
-				query.setVisibilities(new String[] { Visibilities.PUBLIC });
+				query.setVisibilities(Arrays.asList(new String[] { Visibilities.PUBLIC }));
 				query.setSiteId("");
 			} else if (context.startsWith("~") && query.getVisibilities().equals(Arrays.asList(Visibilities.PUBLIC))) {
 				// We are on a MyWorkspace and PUBLIC has been requested. PUBLIC
@@ -256,19 +264,17 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			}
 		}
 
-		if (creatorRes != null)
-			query.setCreator(creatorRes.getStringValue());
-
-		if (autosaveRes != null)
+		if (autosaveRes != null) {
 			query.setSearchAutoSaved(true);
+        }
 
 		try {
-			posts = clogManager.getPosts(query);
+			return clogManager.getPosts(query);
 		} catch (Exception e) {
-			LOG.error("Caught exception whilst getting posts.", e);
+			LOG.error("Caught exception whilst getting posts. Returning an empty list ...", e);
 		}
 
-		return posts;
+        return new ArrayList<Post>();
 	}
 
 	public void deleteEntity(EntityReference ref, Map<String, Object> params) {

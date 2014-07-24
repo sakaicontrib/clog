@@ -133,6 +133,10 @@ public class Post implements Entity {
 		return Visibilities.PUBLIC.equals(visibility);
 	}
 
+	public boolean isGroup() {
+		return Visibilities.GROUP.equals(visibility);
+	}
+
 	/**
 	 * @see org.sakaiproject.entity.api.Entity#getProperties()
 	 */

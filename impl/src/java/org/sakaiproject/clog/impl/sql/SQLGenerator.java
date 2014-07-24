@@ -17,6 +17,7 @@
 
 package org.sakaiproject.clog.impl.sql;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
+
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
 import org.sakaiproject.clog.api.datamodel.Post;
@@ -34,6 +37,8 @@ import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.QueryBean;
 
 public class SQLGenerator implements ISQLGenerator {
+
+	private Logger logger = Logger.getLogger(getClass());
 
 	// by default, oracle values
 	public String BLOB = "BLOB";
@@ -62,8 +67,8 @@ public class SQLGenerator implements ISQLGenerator {
 	 * util.ISQLGenerator#getCreateStatementsForPost(java.lang.String)
 	 */
 	public List<String> getCreateTablesStatements() {
-		ArrayList result = new ArrayList();
 
+		ArrayList result = new ArrayList();
 		result.add(doTableForPost());
 		result.add(doTableForAutoSavedPost());
 		result.add(doTableForComments());
@@ -82,27 +87,40 @@ public class SQLGenerator implements ISQLGenerator {
 	 * java.lang.String)
 	 */
 	public List<String> getSelectStatementsForQuery(QueryBean query) {
+
 		List<String> statements = new ArrayList<String>();
 
 		StringBuilder statement = new StringBuilder();
 
 		statement.append("SELECT * FROM ").append(TABLE_POST);
 
+        if (query.queryByGroup()) {
+            statement.append(",").append(TABLE_POST_GROUP);
+        }
+
 		if (query.hasConditions()) {
 			statement.append(" WHERE ");
 
 			// we know that there are conditions. Build the statement
-			if (query.queryBySiteId())
+			if (query.queryBySiteId()) {
 				statement.append(SITE_ID).append(" = '").append(query.getSiteId()).append("' AND ");
+            }
 
-			if (query.queryByTitle())
+			if (query.queryByTitle()) {
 				statement.append(TITLE).append(" = '").append(query.getTitle()).append("' AND ");
+            }
 
-			if (query.queryByKeyword())
+			if (query.queryByKeyword()) {
 				statement.append(KEYWORDS).append(" LIKE '%").append(query.getKeyword()).append("%' AND ");
+            }
 
-			if (query.queryByCreator())
+			if (query.queryByCreator()) {
 				statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND");
+            }
+
+            if (query.queryByGroup()) {
+                statement.append(TABLE_POST).append(".").append(POST_ID).append(" = ").append(TABLE_POST_GROUP).append(".").append(POST_ID).append(" AND ").append(GROUP_ID).append(" = '").append(query.getGroup()).append("' AND");
+            }
 
 			if (query.queryByVisibility()) {
 				statement.append("(");
@@ -127,7 +145,10 @@ public class SQLGenerator implements ISQLGenerator {
 
 		statement.append(" ORDER BY ").append(CREATED_DATE).append(" DESC ");
 
-		statements.add(statement.toString());
+		String sql = statement.toString();
+		System.out.println(sql);
+        logger.debug(sql);
+		statements.add(sql);
 		return statements;
 	}
 

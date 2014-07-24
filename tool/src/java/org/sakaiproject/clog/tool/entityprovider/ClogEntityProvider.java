@@ -77,11 +77,11 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 		List<Post> posts = new ArrayList<Post>();
 
 		QueryBean query = new QueryBean();
-		query.setVisibilities(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE });
+		query.setVisibilities(Arrays.asList(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE }));
 		query.setSiteId(siteId);
 
 		if ("!gateway".equals(siteId)) {
-			query.setVisibilities(new String[] { Visibilities.PUBLIC });
+			query.setVisibilities(Arrays.asList(new String[] { Visibilities.PUBLIC }));
 			query.setSiteId("");
 		} else if (siteId.startsWith("~") && query.getVisibilities().equals(Arrays.asList(Visibilities.PUBLIC))) {
 			// We are on a MyWorkspace and PUBLIC has been requested. PUBLIC
@@ -146,7 +146,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 		
 		String callingUserId = developerHelperService.getCurrentUserId();
 		
-		if(callingUserId == null) {
+		if (callingUserId == null) {
 			throw new EntityException("You must be logged in to retrieve a post","",HttpServletResponse.SC_UNAUTHORIZED);
 		}
 		
@@ -155,7 +155,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
         List<Post> posts = new ArrayList<Post>();
 
 		QueryBean query = new QueryBean();
-		query.setVisibilities(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE });
+		query.setVisibilities(Arrays.asList(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE }));
 		query.setCreator(requestedUserId);
 
 		try {
@@ -167,7 +167,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 
 		List<Post> filteredPosts = clogSecurityManager.filter(posts);
 		
-		for(Post filteredPost : filteredPosts) {
+		for (Post filteredPost : filteredPosts) {
 			filteredPost.minimise();
 		}
 		

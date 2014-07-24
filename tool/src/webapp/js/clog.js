@@ -96,7 +96,9 @@ clog.switchState = function (state,arg) {
                 clog.utils.addFormattedDatesToPosts(clog.currentPosts);
 	 			
 				clog.utils.renderTemplate('group_posts', { groupId: arg.groupId,
+                                                            groupTitle: arg.groupTitle,
                                                             posts: clog.currentPosts,
+                                                            showRSS: true,
                                                             siteId: clog.siteId,
                                                             showBody: clog.settings.showBody }, 'clog_content');
 

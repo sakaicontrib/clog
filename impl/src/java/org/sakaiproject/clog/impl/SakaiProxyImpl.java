@@ -282,12 +282,15 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return autoDDL.equals("true");
 	}
 
-    public Map<String, String> getCurrentSiteGroups() {
+    public Map<String, String> getCurrentSiteGroupsForCurrentUser() {
 
         Map<String, String> map = new HashMap<String, String>();
 
         try {
-            Collection<Group> groups = siteService.getSite(getCurrentSiteId()).getGroups();
+            Collection<Group> groups
+                = siteService
+                    .getSite(getCurrentSiteId())
+                        .getGroupsWithMember(getCurrentUserId());
 
             for (Group group : groups) {
                 map.put(group.getId(), group.getTitle());

@@ -30,4 +30,6 @@ public class Visibilities {
 	public static final String SITE = "SITE";
 
 	public static final String AUTOSAVE = "AUTOSAVE";
+
+	public static final String GROUP = "GROUP";
 }

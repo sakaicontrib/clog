@@ -92,7 +92,7 @@ public class ClogTool extends HttpServlet {
 	    request.setAttribute("isolanguage", isoLanguage);
         request.setAttribute("i18n", rl);
         request.setAttribute("months", months);
-        request.setAttribute("groups", sakaiProxy.getCurrentSiteGroups());
+        request.setAttribute("groups", sakaiProxy.getCurrentSiteGroupsForCurrentUser());
 	    request.setAttribute("publicAllowed", sakaiProxy.isPublicAllowed() ? "true":"false");
 
 		String postId = request.getParameter("postId");

@@ -28,6 +28,7 @@ import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogSecurityManager;
 import org.sakaiproject.clog.api.SakaiProxy;
+import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
@@ -115,6 +116,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 	 * that post out of the resulting list
 	 */
 	public List<Post> filter(List<Post> posts) {
+
 		List<Post> filtered = new ArrayList<Post>();
 		for (Post post : posts) {
 			if (canAccessSiteAndTool(post.getSiteId()) && canCurrentUserReadPost(post)) {
@@ -135,33 +137,27 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
 		// If the post is public, yes.
 		if (post.isPublic()) {
-            System.out.println("isPublic = true");
 			return true;
 		}
 
 		try {
 			if (post.isVisibleToSite() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
-                System.out.println("isVisibleToSite = true");
 				return true;
 			}
 		} catch (Exception e) {
 			logger.error("Exception during security check.", e);
-			return false;
 		}
 
 		try {
 			if (post.isVisibleToMaintainers() && maintainer) {
-                System.out.println("isVisibleToMaintainers = true");
 				return true;
 			}
 		} catch (Exception e) {
 			logger.error("Exception during security check.", e);
-			return false;
 		}
 
 		// Only maintainers can view recycled posts
 		if (post.isRecycled() && maintainer) {
-                System.out.println("isRecycled = true");
 			return true;
 		}
 
@@ -175,8 +171,21 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
 		// If the current user is authenticated and the post author, yes.
 		if (currentUser != null && currentUser.equals(post.getCreatorId())) {
-                System.out.println("isMyPost = true");
 			return true;
+		}
+
+		try {
+			if (post.isGroup()) {
+			    Site site = siteService.getSiteVisit(siteId);
+                for (String groupId : post.getGroups()) {
+                    Group group = site.getGroup(groupId);
+                    if (group.getMember(currentUser) != null) {
+                        return true;
+                    }
+                }
+			}
+		} catch (Exception e) {
+			logger.error("Exception during security check.", e);
 		}
 
 		return false;

@@ -20,35 +20,25 @@ package org.sakaiproject.clog.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class QueryBean {
 
-	private List<String> visibilities;
-
-	private String _user;
-
-	private String siteId;
-
-	private String title;
-
-	private String keyword;
-
-	private String caller;
-
+	private List<String> visibilities = new ArrayList<String>();
+	private String creator = "";
+	private String siteId = "";
+	private String title = "";
+	private String keyword = "";
+    private String group = "";
+	private String caller = "";
 	private boolean searchAutoSaved = false;
 
-	public QueryBean() {
-
-		visibilities = new ArrayList<String>(); // this mean no filter by
-		// visibility
-		_user = "";
-		siteId = "";
-		caller = "";
-		title = "";
-		keyword = "";
-	}
-
 	public boolean hasConditions() {
-		return _user.length() > 0 || siteId.length() > 0 || visibilities.size() > 0 || title.length() > 0 || keyword.length() > 0;
+
+		return creator.length() > 0 || siteId.length() > 0 || visibilities.size() > 0
+                || title.length() > 0 || keyword.length() > 0 || group.length() > 0;
 	}
 
 	public boolean queryBySiteId() {
@@ -67,67 +57,11 @@ public class QueryBean {
 		return keyword.length() > 0;
 	}
 
-	public void setVisibilities(String[] visibilities) {
-		this.visibilities.clear();
-
-		for (String v : visibilities) {
-			this.visibilities.add(v);
-		}
-	}
-
-	public List<String> getVisibilities() {
-		return visibilities;
-	}
-
-	public void setCreator(String user) {
-		this._user = user;
-	}
-
-	public String getCreator() {
-		return _user;
-	}
-
-	public void setSiteId(String siteId) {
-		this.siteId = siteId;
-	}
-
-	public String getSiteId() {
-		return siteId;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getTitle() {
-		return this.title;
-	}
-
-	public void setKeyword(String keyword) {
-		this.keyword = keyword;
-	}
-
-	public String getKeyword() {
-		return this.keyword;
-	}
-
 	public boolean queryByCreator() {
-		return !_user.trim().equals("");
+		return !creator.trim().equals("");
 	}
 
-	public void setCaller(String caller) {
-		this.caller = caller;
-	}
-
-	public String getCaller() {
-		return caller;
-	}
-
-	public void setSearchAutoSaved(boolean searchAutoSaved) {
-		this.searchAutoSaved = searchAutoSaved;
-	}
-
-	public boolean isSearchAutoSaved() {
-		return searchAutoSaved;
-	}
+    public boolean queryByGroup() {
+		return !group.trim().equals("");
+    }
 }
