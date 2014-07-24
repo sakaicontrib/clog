@@ -1,4 +1,22 @@
 	<h2>{{translate 'group_blogs_label'}}</h2>
-    {{#each groups}}
-    <div class="clog-group-link"><a href="javascript:;" onclick="clog.switchState('groupPosts', {'groupId': '{{id}}', 'groupTitle': '{{title}}'});">{{title}}</a></div>
+    <table id="clog_group_table" cols="4" class="listHier speciallistHier">
+		<thead>
+		<tr>
+			<th width="20%"><div>{{translate 'group_label'}}</div></th>
+			<th width="10%"><div>{{translate 'posts'}}</div></th>
+			<th width="20%"><div>{{translate 'dateOfLastPostHeader'}}</div></th>
+			<th width="5%"><div>RSS</div></th>
+		</tr>
+		</thead>
+		<tbody>
+		{{#each groups}}
+		<tr>
+			<td><a href="javascript:;" onclick="clog.switchState('groupPosts', {'groupId': '{{id}}', 'groupTitle': '{{title}}'});">{{title}}</a></td>
+			<td>{{numberOfPosts}}</td>
+			<td>{{#if dateOfLastPost}}{{formattedDateOfLastPost}}{{else}}n/a{{/if}}</td>
+			<td><a target="_blank" href="/direct/clog-rss/group/{{id}}.xml?siteId={{../../siteId}}" title="{{translate 'group_rss_tooltip'}}"><img src="/library/image/silk/feed.png"/></a></td>
+		</tr>
+		{{/each}}
+		</tbody>
+	</table>
     {{/each}}

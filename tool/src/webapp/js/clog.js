@@ -296,7 +296,8 @@ clog.switchState = function (state,arg) {
 	} else if ('createPost' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_create_post_link > span').addClass('current');
-		clog.currentPost = {id:'',title:'',content:'',commentable:true};
+
+		clog.currentPost = {id: '', title: '', content: '', commentable: true, groups: []};
 
 		if (arg && arg.postId) {
 			clog.currentPost = clog.utils.findPost(arg.postId);
@@ -311,15 +312,24 @@ clog.switchState = function (state,arg) {
 
 	 	$(document).ready(function () {
 
-	 		$('#clog_title_field').bind('keypress',function (e) {
+	 		$('#clog_title_field').bind('keypress', function (e) {
 				clog.titleChanged = true;	 		
-	 		}
-            );
+	 		});
 
             $('#clog_visibility_maintainer,#clog_visibility_site').click(function (e) {
+
                 $('#clog-group-fieldset').hide();
                 clog.fitFrame();
             });
+
+            if (clog.currentPost.groups.length > 0) {
+                $('#clog-visibility-group').prop('checked', true);
+                $('#clog-group-fieldset').show();
+                clog.currentPost.groups.forEach(function (groupId) {
+                    console.log(groupId);
+                    $('#clog-group-' + groupId).prop('selected', true);
+                });
+            }
             
             $('#clog-visibility-group').click(function (e) {
                 $('#clog-group-fieldset').show();

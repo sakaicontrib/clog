@@ -36,7 +36,7 @@
             <legend>Groups or Sets</legend>
             <select multiple id="clog-group-selector">
                 {{#each groups}}
-                <option value="{{id}}">{{title}}</option>
+                <option id="clog-group-{{id}}" value="{{id}}">{{title}}</option>
                 {{/each}}
             </select>
         </fieldset>

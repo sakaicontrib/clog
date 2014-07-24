@@ -57,8 +57,8 @@ public class PersistenceManager {
 	}
 
 	public boolean setupTables() {
-		if (logger.isDebugEnabled())
-			logger.debug("setupTables()");
+
+        logger.debug("setupTables()");
 
 		Connection connection = null;
 		Statement statement = null;
@@ -73,8 +73,9 @@ public class PersistenceManager {
 			try {
 				List<String> statements = sqlGenerator.getCreateTablesStatements();
 
-				for (String sql : statements)
+				for (String sql : statements) {
 					statement.executeUpdate(sql);
+                }
 
 				connection.commit();
 
@@ -305,9 +306,6 @@ public class PersistenceManager {
 				}
 
 				connection.commit();
-
-				// post.setModifiedDate(new Date().getTime());
-
 				return true;
 			} catch (Exception e) {
 				logger.error("Caught exception whilst saving post. Rolling back ...", e);
@@ -334,8 +332,10 @@ public class PersistenceManager {
 	}
 
 	public boolean deletePost(Post post) {
-		if (logger.isDebugEnabled())
+
+		if (logger.isDebugEnabled()) {
 			logger.debug("deletePost(" + post.getId() + ")");
+        }
 
 		Connection connection = null;
 		List<PreparedStatement> statements = null;
@@ -584,16 +584,17 @@ public class PersistenceManager {
 	}
 
 	private List<Post> transformResultSetInPostCollection(ResultSet rs, Connection connection) throws Exception {
+
 		List<Post> result = new ArrayList<Post>();
 
-		if (rs == null)
+		if (rs == null) {
 			return result;
+        }
 
-		Statement commentST = null;
-		ResultSet commentRS = null;
+		Statement extrasST = null;
 
 		try {
-			commentST = connection.createStatement();
+			extrasST = connection.createStatement();
 
 			while (rs.next()) {
 				Post post = new Post();
@@ -604,8 +605,9 @@ public class PersistenceManager {
 				String visibility = rs.getString(ISQLGenerator.VISIBILITY);
 				post.setVisibility(visibility);
 
-				if (!post.isAutoSave())
+				if (!post.isAutoSave()) {
 					post.setAutosavedVersion(getAutosavedPost(postId));
+                }
 
 				String siteId = rs.getString(ISQLGenerator.SITE_ID);
 				post.setSiteId(siteId);
@@ -632,30 +634,25 @@ public class PersistenceManager {
 				post.setCommentable(allowComments == 1);
 
 				String sql = sqlGenerator.getSelectComments(postId);
-				commentRS = commentST.executeQuery(sql);
+				ResultSet extrasRS = extrasST.executeQuery(sql);
+				post.setComments(transformResultSetInCommentCollection(extrasRS));
+				extrasRS.close();
 
-				List<Comment> comments = transformResultSetInCommentCollection(commentRS);
-				commentRS.close();
-
-				post.setComments(comments);
+				String groupsSql = sqlGenerator.getSelectGroups(postId);
+				extrasRS  = extrasST.executeQuery(groupsSql);
+				post.setGroups(transformResultSetInGroupCollection(extrasRS));
+				extrasRS.close();
 
 				post.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
 
 				result.add(post);
 			}
 		} finally {
-			if (commentRS != null) {
-				try {
-					commentRS.close();
-				} catch (Exception e) {
-				}
-			}
 
-			if (commentST != null) {
+			if (extrasST != null) {
 				try {
-					commentST.close();
-				} catch (Exception e) {
-				}
+					extrasST.close();
+				} catch (Exception e) { }
 			}
 		}
 
@@ -663,10 +660,12 @@ public class PersistenceManager {
 	}
 
 	private List<Comment> transformResultSetInCommentCollection(ResultSet rs) throws Exception {
+
 		List<Comment> result = new ArrayList<Comment>();
 
-		if (rs == null)
+		if (rs == null) {
 			return result;
+        }
 
 		while (rs.next()) {
 			Comment comment = new Comment();
@@ -680,6 +679,21 @@ public class PersistenceManager {
 			comment.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
 
 			result.add(comment);
+		}
+
+		return result;
+	}
+
+	private List<String> transformResultSetInGroupCollection(ResultSet rs) throws Exception {
+
+		List<String> result = new ArrayList<String>();
+
+		if (rs == null) {
+			return result;
+        }
+
+		while (rs.next()) {
+			result.add(rs.getString(ISQLGenerator.GROUP_ID));
 		}
 
 		return result;

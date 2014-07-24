@@ -48,8 +48,8 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 	private ToolManager toolManager;
 
 	public boolean canCurrentUserCommentOnPost(Post post) {
-		if (logger.isDebugEnabled())
-			logger.debug("canCurrentUserCommentOnPost()");
+
+        logger.debug("canCurrentUserCommentOnPost()");
 
 		// if(sakaiProxy.isOnGateway() && post.isPublic() &&
 		// post.isCommentable())

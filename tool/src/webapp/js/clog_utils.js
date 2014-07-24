@@ -197,7 +197,6 @@ clog.utils = {
                 var groupsArray = $('#clog-group-selector').val();
 
                 if (groupsArray == null || groupsArray.length == 0) {
-                    alert(clog.i18n.no_groups_selected_warning);
                     return 0;
                 } else {
                     groups = groupsArray.join();
@@ -234,16 +233,19 @@ clog.utils = {
 			dataType: 'text',
 		   	success: function (id) {
 
-		   		if ('AUTOSAVE' !== visibility) {
-					clog.switchState(clog.homeState);
-				} else {
+                console.log(visibility);
+
+                if ('AUTOSAVE' === visibility) {
 					clog.currentPost.id = id;
 					$('#clog_post_id_field').val(id);
-				}
-
-				success = true;
-				clog.titleChanged = false;
-                clog.sakai.resetEditor(wysiwygEditor, 'clog_content_editor');
+                    success = true;
+                    clog.titleChanged = false;
+                    clog.sakai.resetEditor(wysiwygEditor, 'clog_content_editor');
+                } else if ('GROUP' === visibility) {
+					clog.switchState('groups');
+                } else {
+					clog.switchState(clog.homeState);
+                }
 			},
 			error : function(xmlHttpRequest, textStatus, error) {
 				alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);

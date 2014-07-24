@@ -128,7 +128,9 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		post.setSiteId(siteId);
 		post.setTitle(title);
 
-        if (groupsString != null) {
+        System.out.println(groupsString);
+
+        if (groupsString != null && groupsString.length() > 0) {
             post.setGroups(Arrays.asList(groupsString.split(",")));
         }
 

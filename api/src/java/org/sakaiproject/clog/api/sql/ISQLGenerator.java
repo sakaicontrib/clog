@@ -17,6 +17,7 @@ public interface ISQLGenerator {
 	public static final String TABLE_COMMENT = DEFAULT_PREFIX + "COMMENT";
 	public static final String TABLE_AUTHOR = DEFAULT_PREFIX + "AUTHOR";
 	public static final String TABLE_POST_GROUP = DEFAULT_PREFIX + "POST_GROUP";
+	public static final String TABLE_GROUP_DATA = DEFAULT_PREFIX + "GROUP_DATA";
 	public static final String TABLE_GLOBAL_PREFERENCES = DEFAULT_PREFIX + "GLOBAL_PREFERENCES";
 
 	public static final String POST_ID = "POST_ID";
@@ -69,6 +70,8 @@ public interface ISQLGenerator {
 	public String getSelectComment(String commentId);
 
 	public String getSelectComments(String postId);
+
+	public String getSelectGroups(String postId);
 
 	public abstract List<PreparedStatement> getInsertStatementsForPost(Post post, Connection connection) throws Exception;
 

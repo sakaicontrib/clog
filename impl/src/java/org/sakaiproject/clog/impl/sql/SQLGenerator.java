@@ -74,6 +74,7 @@ public class SQLGenerator implements ISQLGenerator {
 		result.add(doTableForComments());
 		result.add(doTableForAuthor());
 		result.add(doTableForPostGroup());
+		result.add(doTableForGroupData());
 		return result;
 	}
 
@@ -228,7 +229,20 @@ public class SQLGenerator implements ISQLGenerator {
 		statement.append("(");
 		statement.append(POST_ID + " CHAR(36) NOT NULL,");
 		statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
-		statement.append("CONSTRAINT clog_group_pk PRIMARY KEY (" + POST_ID + "," + GROUP_ID + ")");
+		statement.append("CONSTRAINT clog_post_group_pk PRIMARY KEY (" + POST_ID + "," + GROUP_ID + ")");
+		statement.append(")");
+		return statement.toString();
+	}
+
+	protected String doTableForGroupData() {
+
+		StringBuilder statement = new StringBuilder();
+		statement.append("CREATE TABLE ").append(TABLE_GROUP_DATA);
+		statement.append("(");
+		statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
+		statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
+		statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
+		statement.append("CONSTRAINT clog_group_data_pk PRIMARY KEY (" + GROUP_ID + ")");
 		statement.append(")");
 		return statement.toString();
 	}
@@ -246,6 +260,10 @@ public class SQLGenerator implements ISQLGenerator {
 
 	public String getSelectComment(String commentId) {
 		return "SELECT * FROM " + TABLE_COMMENT + " WHERE " + COMMENT_ID + "='" + commentId + "'";
+	}
+
+	public String getSelectGroups(String postId) {
+		return "SELECT " + GROUP_ID + " FROM " + TABLE_POST_GROUP + " WHERE " + POST_ID + "='" + postId + "'";
 	}
 
 	/*
@@ -470,7 +488,7 @@ public class SQLGenerator implements ISQLGenerator {
 
 				statements.add(postST);
 
-                statements.addAll(getGroupTableStatements(post, connection));
+                statements.addAll(getGroupTableStatements(post, true, connection));
 
 				if (post.isReady() || post.isPublic()) {
 					statements.addAll(getAuthorTableStatements(post, true, connection));
@@ -490,6 +508,8 @@ public class SQLGenerator implements ISQLGenerator {
 				postST.setString(6, post.getId());
 
 				statements.add(postST);
+
+                statements.addAll(getGroupTableStatements(post, false, connection));
 
 				if (post.isReady() || post.isPublic()) {
 					if (Visibilities.PRIVATE.equals(currentVisibility) || Visibilities.RECYCLED.equals(currentVisibility)) {
@@ -595,20 +615,48 @@ public class SQLGenerator implements ISQLGenerator {
 		return statements;
 	}
 
-	private List<PreparedStatement> getGroupTableStatements(Post post, Connection connection) throws Exception {
+	private List<PreparedStatement> getGroupTableStatements(Post post, boolean isNewPost, Connection connection) throws Exception {
 
-		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
+        List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
+        Statement testST = null;
 
-        String postId = post.getId();
-        PreparedStatement deleteCurrent = connection.prepareStatement("DELETE FROM " + TABLE_POST_GROUP + " WHERE " + POST_ID + " = ?");
-        deleteCurrent.setString(1, postId);
-        statements.add(deleteCurrent);
+        try {
+            testST = connection.createStatement();
 
-        for (String group : post.getGroups()) {
-            PreparedStatement insert = connection.prepareStatement("INSERT INTO " + TABLE_POST_GROUP + " (" + POST_ID + "," + GROUP_ID + ") VALUES(?,?)");
-            insert.setString(1, postId);
-            insert.setString(2, group);
-            statements.add(insert);
+
+            String postId = post.getId();
+            PreparedStatement deleteCurrent = connection.prepareStatement("DELETE FROM " + TABLE_POST_GROUP + " WHERE " + POST_ID + " = ?");
+            deleteCurrent.setString(1, postId);
+            statements.add(deleteCurrent);
+
+            for (String groupId : post.getGroups()) {
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO " + TABLE_POST_GROUP + " (" + POST_ID + "," + GROUP_ID + ") VALUES(?,?)");
+                insert.setString(1, postId);
+                insert.setString(2, groupId);
+                statements.add(insert);
+
+                if (isNewPost) {
+                    ResultSet testRS = testST.executeQuery("SELECT * FROM " + TABLE_GROUP_DATA + " WHERE " + GROUP_ID + " = '" + groupId + "'");
+
+                    if (testRS.next()) {
+                        PreparedStatement update = connection.prepareStatement("UPDATE " + TABLE_GROUP_DATA + " SET " + TOTAL_POSTS + " = " + TOTAL_POSTS + " + 1 WHERE " + GROUP_ID + " = ?");
+                        update.setString(1, groupId);
+                        statements.add(update);
+                    } else {
+                        PreparedStatement insertGD = connection.prepareStatement("INSERT INTO " + TABLE_GROUP_DATA + " (GROUP_ID, TOTAL_POSTS, LAST_POST_DATE) VALUES(?,?,?)");
+                        insertGD.setString(1, groupId);
+                        insertGD.setInt(2, 1);
+                        insertGD.setTimestamp(3, new Timestamp(post.getCreatedDate()));
+                        statements.add(insertGD);
+                    }
+                }
+            }
+        } finally {
+            if (testST != null) {
+                try {
+                    testST.close();
+                } catch (Exception e) {}
+            }
         }
 
         return statements;
