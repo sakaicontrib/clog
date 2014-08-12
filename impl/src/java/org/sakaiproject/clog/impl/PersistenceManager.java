@@ -275,7 +275,12 @@ public class PersistenceManager {
 				if (post.isAutoSave()) {
 					statements = sqlGenerator.getInsertStatementsForAutoSavedPost(post, connection);
                 } else {
-					statements = sqlGenerator.getInsertStatementsForPost(post, connection);
+					Post currentPost = null;
+                    try {
+                        currentPost = getPost(post.getId()); 
+                    } catch (Exception e1) {}
+
+                    statements = sqlGenerator.getInsertStatementsForPost(post, currentPost, connection);
                 }
 
 				for (PreparedStatement st : statements) {
@@ -501,8 +506,10 @@ public class PersistenceManager {
 	}
 
 	public Post getPost(String postId) throws Exception {
-		if (logger.isDebugEnabled())
+
+		if (logger.isDebugEnabled()) {
 			logger.debug("getPost(" + postId + ")");
+        }
 
 		Connection connection = null;
 		Statement st = null;

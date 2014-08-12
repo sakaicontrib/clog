@@ -73,7 +73,7 @@ public interface ISQLGenerator {
 
 	public String getSelectGroups(String postId);
 
-	public abstract List<PreparedStatement> getInsertStatementsForPost(Post post, Connection connection) throws Exception;
+	public abstract List<PreparedStatement> getInsertStatementsForPost(Post post, Post currentPost, Connection connection) throws Exception;
 
 	public abstract List<PreparedStatement> getSaveStatementsForComment(Comment comment, Connection connection) throws Exception;
 

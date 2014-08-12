@@ -229,6 +229,7 @@ public class SQLGenerator implements ISQLGenerator {
 		statement.append("(");
 		statement.append(POST_ID + " CHAR(36) NOT NULL,");
 		statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
+		statement.append(MODIFIED_DATE + " " + TIMESTAMP + " NOT NULL,");
 		statement.append("CONSTRAINT clog_post_group_pk PRIMARY KEY (" + POST_ID + "," + GROUP_ID + ")");
 		statement.append(")");
 		return statement.toString();
@@ -436,108 +437,82 @@ public class SQLGenerator implements ISQLGenerator {
 
 	}
 
-	public List<PreparedStatement> getInsertStatementsForPost(Post post, Connection connection) throws Exception {
+	public List<PreparedStatement> getInsertStatementsForPost(Post post, Post currentPost, Connection connection) throws Exception {
 
 		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
-
-		Statement testST = null;
-		ResultSet testRS = null;
 
 		// If no id has been assigned, assign one
 		if ("".equals(post.getId())) {
 			post.setId(UUID.randomUUID().toString());
         }
 
-		// We always replace autosaved posts with the latest, so delete the old
-		// one.
+		// We always replace autosaved posts with the latest, so delete the old one.
 		statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
-		try {
-			boolean isNew = false;
+        boolean isNew = currentPost == null;
 
-			testST = connection.createStatement();
-			testRS = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + post.getId() + "'");
+        if (isNew) {
+            String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + KEYWORDS + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
 
-			if (!testRS.next()) {
-				isNew = true;
+            PreparedStatement postST = connection.prepareStatement(sql);
+            postST.setString(1, post.getId());
+
+            postST.setString(2, post.getSiteId());
+
+            postST.setString(3, post.getTitle());
+
+            postST.setString(4, post.getContent());
+
+            postST.setTimestamp(5, new Timestamp(post.getCreatedDate()));
+
+            postST.setTimestamp(6, new Timestamp(post.getModifiedDate()));
+
+            postST.setString(7, post.getCreatorId());
+
+            postST.setString(8, post.getVisibility());
+
+            postST.setString(9, post.getKeywordsText());
+
+            postST.setInt(10, (post.isCommentable()) ? 1 : 0);
+
+            statements.add(postST);
+
+            statements.addAll(getGroupTableStatements(post, currentPost, true, connection));
+
+            if (post.isReady() || post.isPublic()) {
+                statements.addAll(getAuthorTableStatements(post, true, connection));
             }
+        } else {
+            //String currentVisibility = testRS.getString(VISIBILITY);
+            String currentVisibility = currentPost.getVisibility();
 
-			if (isNew) {
-				String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + KEYWORDS + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
+            String sql = "UPDATE " + TABLE_POST + " " + "SET " + TITLE + " = ?," + CONTENT + " = ?," + VISIBILITY + " = ?," + MODIFIED_DATE + " = ?," + ALLOW_COMMENTS + " = ? WHERE " + POST_ID + " = ?";
 
-				PreparedStatement postST = connection.prepareStatement(sql);
-				postST.setString(1, post.getId());
+            PreparedStatement postST = connection.prepareStatement(sql);
+            postST.setString(1, post.getTitle());
+            postST.setString(2, post.getContent());
+            postST.setString(3, post.getVisibility());
+            post.setModifiedDate(new Date().getTime());
+            postST.setTimestamp(4, new Timestamp(post.getModifiedDate()));
+            postST.setInt(5, (post.isCommentable()) ? 1 : 0);
+            postST.setString(6, post.getId());
 
-				postST.setString(2, post.getSiteId());
+            statements.add(postST);
 
-				postST.setString(3, post.getTitle());
+            statements.addAll(getGroupTableStatements(post, currentPost, false, connection));
 
-				postST.setString(4, post.getContent());
-
-				postST.setTimestamp(5, new Timestamp(post.getCreatedDate()));
-
-				postST.setTimestamp(6, new Timestamp(post.getModifiedDate()));
-
-				postST.setString(7, post.getCreatorId());
-
-				postST.setString(8, post.getVisibility());
-
-				postST.setString(9, post.getKeywordsText());
-
-				postST.setInt(10, (post.isCommentable()) ? 1 : 0);
-
-				statements.add(postST);
-
-                statements.addAll(getGroupTableStatements(post, true, connection));
-
-				if (post.isReady() || post.isPublic()) {
-					statements.addAll(getAuthorTableStatements(post, true, connection));
-				}
-			} else {
-				String currentVisibility = testRS.getString(VISIBILITY);
-
-				String sql = "UPDATE " + TABLE_POST + " " + "SET " + TITLE + " = ?," + CONTENT + " = ?," + VISIBILITY + " = ?," + MODIFIED_DATE + " = ?," + ALLOW_COMMENTS + " = ? WHERE " + POST_ID + " = ?";
-
-				PreparedStatement postST = connection.prepareStatement(sql);
-				postST.setString(1, post.getTitle());
-				postST.setString(2, post.getContent());
-				postST.setString(3, post.getVisibility());
-				post.setModifiedDate(new Date().getTime());
-				postST.setTimestamp(4, new Timestamp(post.getModifiedDate()));
-				postST.setInt(5, (post.isCommentable()) ? 1 : 0);
-				postST.setString(6, post.getId());
-
-				statements.add(postST);
-
-                statements.addAll(getGroupTableStatements(post, false, connection));
-
-				if (post.isReady() || post.isPublic()) {
-					if (Visibilities.PRIVATE.equals(currentVisibility) || Visibilities.RECYCLED.equals(currentVisibility)) {
-						// This post has been made visible
-						statements.addAll(getAuthorTableStatements(post, true, connection));
-					}
-				} else {
-					if (Visibilities.SITE.equals(currentVisibility) || Visibilities.MAINTAINER.equals(currentVisibility) || Visibilities.PUBLIC.equals(currentVisibility)) {
-						// This post has been hidden
-						statements.addAll(getAuthorTableStatements(post, false, connection));
-					}
-				}
-			}
-		} finally {
-			if (testRS != null) {
-				try {
-					testRS.close();
-				} catch (Exception e) {
-				}
-			}
-
-			if (testST != null) {
-				try {
-					testST.close();
-				} catch (Exception e) {
-				}
-			}
-		}
+            if (post.isReady() || post.isPublic()) {
+                if (Visibilities.PRIVATE.equals(currentVisibility) || Visibilities.RECYCLED.equals(currentVisibility)) {
+                    // This post has been made visible
+                    statements.addAll(getAuthorTableStatements(post, true, connection));
+                }
+            } else {
+                if (Visibilities.SITE.equals(currentVisibility) || Visibilities.MAINTAINER.equals(currentVisibility) || Visibilities.PUBLIC.equals(currentVisibility)) {
+                    // This post has been hidden
+                    statements.addAll(getAuthorTableStatements(post, false, connection));
+                }
+            }
+        }
 
 		return statements;
 	}
@@ -615,7 +590,7 @@ public class SQLGenerator implements ISQLGenerator {
 		return statements;
 	}
 
-	private List<PreparedStatement> getGroupTableStatements(Post post, boolean isNewPost, Connection connection) throws Exception {
+	private List<PreparedStatement> getGroupTableStatements(Post post, Post currentPost, boolean isNewPost, Connection connection) throws Exception {
 
         List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
         Statement testST = null;
@@ -623,33 +598,67 @@ public class SQLGenerator implements ISQLGenerator {
         try {
             testST = connection.createStatement();
 
-
             String postId = post.getId();
-            PreparedStatement deleteCurrent = connection.prepareStatement("DELETE FROM " + TABLE_POST_GROUP + " WHERE " + POST_ID + " = ?");
+            PreparedStatement deleteCurrent = connection.prepareStatement("DELETE FROM CLOG_POST_GROUP WHERE POST_ID = ?");
             deleteCurrent.setString(1, postId);
             statements.add(deleteCurrent);
 
-            for (String groupId : post.getGroups()) {
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO " + TABLE_POST_GROUP + " (" + POST_ID + "," + GROUP_ID + ") VALUES(?,?)");
-                insert.setString(1, postId);
-                insert.setString(2, groupId);
-                statements.add(insert);
+            List<String> groups = post.getGroups();
 
-                if (isNewPost) {
-                    ResultSet testRS = testST.executeQuery("SELECT * FROM " + TABLE_GROUP_DATA + " WHERE " + GROUP_ID + " = '" + groupId + "'");
+            if (currentPost != null) {
+                List<String> currentGroups = currentPost.getGroups();
 
-                    if (testRS.next()) {
-                        PreparedStatement update = connection.prepareStatement("UPDATE " + TABLE_GROUP_DATA + " SET " + TOTAL_POSTS + " = " + TOTAL_POSTS + " + 1 WHERE " + GROUP_ID + " = ?");
-                        update.setString(1, groupId);
-                        statements.add(update);
-                    } else {
-                        PreparedStatement insertGD = connection.prepareStatement("INSERT INTO " + TABLE_GROUP_DATA + " (GROUP_ID, TOTAL_POSTS, LAST_POST_DATE) VALUES(?,?,?)");
-                        insertGD.setString(1, groupId);
-                        insertGD.setInt(2, 1);
-                        insertGD.setTimestamp(3, new Timestamp(post.getCreatedDate()));
-                        statements.add(insertGD);
+                if (!isNewPost && !currentGroups.equals(groups)) {
+                    // This post's groups have changed. Take one off the post count
+                    // for each current group and reset the last post date columns.
+                    PreparedStatement lastDateQueryST = null;
+                    try {
+                        lastDateQueryST = connection.prepareStatement("SELECT MODIFIED_DATE FROM CLOG_POST_GROUP WHERE GROUP_ID = ? ORDER BY MODIFIED_DATE ASC");
+                        for (String currentGroupId : currentGroups) {
+                            PreparedStatement update = connection.prepareStatement("UPDATE CLOG_GROUP_DATA SET TOTAL_POSTS = TOTAL_POSTS - 1, LAST_POST_DATE = ? WHERE GROUP_ID = ?");
+                            lastDateQueryST.setString(1, currentGroupId);
+                            ResultSet lastDateRS = lastDateQueryST.executeQuery();
+                            if (lastDateRS.next()) {
+                                if (lastDateRS.isLast()) {
+                                    // This is is last post in this group. Null the last post date.
+                                    update.setNull(1, Types.TIMESTAMP);
+                                } else {
+                                    update.setTimestamp(1, lastDateRS.getTimestamp("MODIFIED_DATE"));
+                                }
+                            }
+                            lastDateRS.close();
+                            update.setString(2, currentGroupId);
+                            statements.add(update);
+
+                        }
+                    } finally {
+                        if (lastDateQueryST  != null) {
+                            try {
+                                lastDateQueryST.close();
+                            } catch (Exception e) {}
+                        }
                     }
                 }
+            }
+
+            for (String groupId : groups) {
+                PreparedStatement insert = connection.prepareStatement("INSERT INTO CLOG_POST_GROUP (POST_ID,GROUP_ID,MODIFIED_DATE) VALUES(?,?,?)");
+                insert.setString(1, postId);
+                insert.setString(2, groupId);
+                insert.setTimestamp(3, new Timestamp(post.getModifiedDate()));
+                statements.add(insert);
+
+                ResultSet testRS = testST.executeQuery("SELECT * FROM CLOG_GROUP_DATA WHERE GROUP_ID = '" + groupId + "'");
+
+                PreparedStatement update = null;
+                if (testRS.next()) {
+                    update = connection.prepareStatement("UPDATE CLOG_GROUP_DATA SET TOTAL_POSTS = TOTAL_POSTS + 1, LAST_POST_DATE = ? WHERE GROUP_ID = ?");
+                } else {
+                    update = connection.prepareStatement("INSERT INTO CLOG_GROUP_DATA (LAST_POST_DATE, GROUP_ID, TOTAL_POSTS) VALUES(?,?,1)");
+                }
+                update.setTimestamp(1, new Timestamp(post.getCreatedDate()));
+                update.setString(2, groupId);
+                statements.add(update);
             }
         } finally {
             if (testST != null) {
