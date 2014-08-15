@@ -87,7 +87,7 @@ public interface ISQLGenerator {
 
 	public abstract List<PreparedStatement> getRecycleStatementsForPost(Post post, Connection connection) throws Exception;
 
-	public abstract List<PreparedStatement> getRestoreStatementsForPost(Post post, Connection connection) throws Exception;
+	public abstract PreparedStatement getRestoreStatementForPost(Post post, Connection connection) throws Exception;
 
 	public abstract String getSelectAuthorStatement(String userId, String siteId);
 
@@ -96,4 +96,6 @@ public interface ISQLGenerator {
 	public abstract PreparedStatement getSelectAutosavedPost(String postId, Connection connection) throws Exception;
 
 	public abstract List<PreparedStatement> getInsertStatementsForAutoSavedPost(Post post, Connection connection) throws Exception;
+
+	public abstract PreparedStatement getSelectGroupDataStatement(String groupId, Connection connection) throws Exception;
 }

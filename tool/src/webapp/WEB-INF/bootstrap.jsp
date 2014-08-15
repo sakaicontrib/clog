@@ -23,7 +23,7 @@
                     months: [<c:forEach items="${months}" var="m" varStatus="ms">'${m}'<c:if test="${not ms.last}">,</c:if></c:forEach>]
                 },
                 groups: [
-                    <c:forEach items="${groups}" var="i" varStatus="is">{id:'${i.key}', title:'${i.value}'}<c:if test="${not is.last}">,</c:if></c:forEach>
+                            <c:forEach items="${groups}" var="i" varStatus="is">{id: '${i.id}', title: '${i.title}', totalPosts: ${i.totalPosts}, lastPostDate: ${i.lastPostDate}}<c:if test="${not is.last}">,</c:if></c:forEach>
                 ]
             };
         

@@ -17,6 +17,7 @@ import org.sakaiproject.clog.api.ClogSecurityManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.XmlDefs;
+import org.sakaiproject.clog.api.datamodel.ClogGroup;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
@@ -411,6 +412,7 @@ public class ClogManagerImpl implements ClogManager {
 	}
 
 	public boolean restorePost(String postId) {
+
 		try {
 			Post post = persistenceManager.getPost(postId);
 			return persistenceManager.restorePost(post);
@@ -424,4 +426,18 @@ public class ClogManagerImpl implements ClogManager {
 	public boolean deleteAutosavedCopy(String postId) {
 		return persistenceManager.deleteAutosavedCopy(postId);
 	}
+
+    public List<ClogGroup> getSiteGroupsForCurrentUser(String siteId) {
+
+        List<ClogGroup> groups = new ArrayList<ClogGroup>();
+
+        Map<String, String> siteGroups = sakaiProxy.getSiteGroupsForCurrentUser(siteId);
+        for (String groupId : siteGroups.keySet()) {
+            ClogGroup clogGroup = persistenceManager.getClogGroup(groupId);
+            clogGroup.setTitle(siteGroups.get(groupId));
+            groups.add(clogGroup);
+        }
+
+        return groups;
+    }
 }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.component.api.ComponentManager;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
@@ -27,6 +28,7 @@ public class ClogTool extends HttpServlet {
 	private Logger logger = Logger.getLogger(getClass());
 
 	private SakaiProxy sakaiProxy;
+	private ClogManager clogManager;
 	
 	public void init(ServletConfig config) throws ServletException {
 
@@ -37,6 +39,7 @@ public class ClogTool extends HttpServlet {
 		try {
 			ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
 			sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
+			clogManager = (ClogManager) componentManager.get(ClogManager.class);
 		} catch (Throwable t) {
 			throw new ServletException("Failed to initialise ClogTool servlet.", t);
 		}
@@ -92,7 +95,7 @@ public class ClogTool extends HttpServlet {
 	    request.setAttribute("isolanguage", isoLanguage);
         request.setAttribute("i18n", rl);
         request.setAttribute("months", months);
-        request.setAttribute("groups", sakaiProxy.getCurrentSiteGroupsForCurrentUser());
+        request.setAttribute("groups", clogManager.getSiteGroupsForCurrentUser(siteId));
 	    request.setAttribute("publicAllowed", sakaiProxy.isPublicAllowed() ? "true":"false");
 
 		String postId = request.getParameter("postId");

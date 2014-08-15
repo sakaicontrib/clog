@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.sakaiproject.clog.api.datamodel.ClogGroup;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
 import org.sakaiproject.clog.api.datamodel.Post;
@@ -427,46 +428,31 @@ public class PersistenceManager {
 	}
 
 	public boolean restorePost(Post post) {
-		if (logger.isDebugEnabled())
-			logger.debug("restore(" + post.getId() + ")");
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("restorePost(" + post.getId() + ")");
+        }
 
 		Connection connection = null;
-		List<PreparedStatement> statements = null;
+		PreparedStatement statement = null;
 
 		try {
 			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommit = connection.getAutoCommit();
-			connection.setAutoCommit(false);
-
-			try {
-				statements = sqlGenerator.getRestoreStatementsForPost(post, connection);
-				for (PreparedStatement st : statements)
-					st.executeUpdate();
-				connection.commit();
-				return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst recycling post. Rolling back ...", e);
-				connection.rollback();
-			} finally {
-				connection.setAutoCommit(oldAutoCommit);
-			}
+            statement = sqlGenerator.getRestoreStatementForPost(post, connection);
+            statement.executeUpdate();
+            return true;
 		} catch (Exception e) {
 			logger.error("Caught exception whilst recycling post.", e);
 			return false;
 		} finally {
-			if (statements != null) {
-				for (PreparedStatement st : statements) {
-					try {
-						st.close();
-					} catch (SQLException e) {
-					}
-				}
+			if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {}
 			}
 
 			sakaiProxy.returnConnection(connection);
 		}
-
-		return false;
 	}
 
 	public List<Post> getPosts(QueryBean query) throws Exception {
@@ -897,6 +883,7 @@ public class PersistenceManager {
 	}
 
 	public boolean deleteAutosavedCopy(String postId) {
+
 		Connection connection = null;
 		PreparedStatement st = null;
 
@@ -920,4 +907,40 @@ public class PersistenceManager {
 
 		return false;
 	}
+
+    public ClogGroup getClogGroup(String groupId) {
+
+        ClogGroup clogGroup = new ClogGroup();
+        clogGroup.setId(groupId);
+
+		Connection connection = null;
+		PreparedStatement st = null;
+
+		try {
+			connection = sakaiProxy.borrowConnection();
+			st = sqlGenerator.getSelectGroupDataStatement(groupId, connection);
+			ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                clogGroup.setTotalPosts(rs.getInt("TOTAL_POSTS"));
+                Timestamp lastPostDate = rs.getTimestamp("LAST_POST_DATE");
+                if (lastPostDate != null) {
+                    clogGroup.setLastPostDate(lastPostDate.getTime());
+                }
+            }
+            rs.close();
+		} catch (Exception e) {
+			logger.error("Caught exception whilst getting clog group. Returning a ClogGroup with just the id set ...", e);
+		} finally {
+			if (st != null) {
+				try {
+					st.close();
+				} catch (Exception e) {
+				}
+			}
+
+			sakaiProxy.returnConnection(connection);
+		}
+
+        return clogGroup;
+    }
 }

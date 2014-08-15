@@ -104,8 +104,8 @@ clog.utils = {
 	},
     formatDate: function (millis) {
 
-        if (millis == -1) {
-            return clog.i18n.none_yet;
+        if (millis <= 0) {
+            return clog.i18n.none;
         } else {
             var d = new Date(millis);
             var hours = d.getHours();
@@ -114,6 +114,12 @@ clog.utils = {
             if (minutes < 10) minutes = '0' + minutes;
             return d.getDate() + " " + clog.i18n.months[d.getMonth()] + " " + d.getFullYear() + " @ " + hours + ":" + minutes;
         }
+    },
+    addFormattedLastPostDatesToGroups: function (groups) {
+
+        groups.forEach(function (group) {
+            group.formattedLastPostDate = clog.utils.formatDate(group.lastPostDate);
+        });
     },
     addFormattedDatesToPosts: function (posts) {
 
@@ -225,26 +231,27 @@ clog.utils = {
         };
 				
 		jQuery.ajax( {
-	 		url: "/direct/clog-post/new",
+	 		url: '/direct/clog-post/store.json',
 			type: 'POST',
 			data: post,
 			timeout: 30000,
-			async: false,
 			dataType: 'text',
-		   	success: function (id) {
-
-                console.log(visibility);
+		   	success: function (data) {
 
                 if ('AUTOSAVE' === visibility) {
-					clog.currentPost.id = id;
-					$('#clog_post_id_field').val(id);
+					clog.currentPost.id = data;
+					$('#clog_post_id_field').val(data);
                     success = true;
                     clog.titleChanged = false;
                     clog.sakai.resetEditor(wysiwygEditor, 'clog_content_editor');
-                } else if ('GROUP' === visibility) {
-					clog.switchState('groups');
                 } else {
-					clog.switchState(clog.homeState);
+                    clog.groups = jQuery.parseJSON(data)['clog-post_collection'];
+                    clog.utils.addFormattedLastPostDatesToGroups(clog.groups);
+                    if ('GROUP' === visibility) {
+                        clog.switchState('groups');
+                    } else {
+					    clog.switchState(clog.homeState);
+                    }
                 }
 			},
 			error : function(xmlHttpRequest, textStatus, error) {
@@ -312,7 +319,12 @@ clog.utils = {
 			async: false,
 			cache: false,
 		   	success: function (result) {
-				clog.switchState(clog.currentState);
+
+                if (clog.states.GROUP_POSTS === clog.currentState) {
+				    clog.switchState(clog.currentState, { groupId: clog.currentGroupId, groupTitle: clog.currentGroupTitle });
+                } else {
+				    clog.switchState(clog.currentState);
+                }
 			},
 			error: function (xmlHttpRequest, textStatus, error) {
 				alert("Failed to recycle post. Status: " + textStatus + '. Error: ' + error);
@@ -365,8 +377,8 @@ clog.utils = {
 		jQuery.ajax( {
 	 		url : "/direct/clog-post/restore?posts=" + postIds,
 			dataType : 'text',
-			async : false,
-		   	success : function(result) {
+            cache: false,
+		   	success : function (result) {
 				clog.switchState('viewAllPosts');
 			},
 			error : function(xmlHttpRequest,status,error) {

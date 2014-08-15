@@ -41,7 +41,7 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.entitybroker.util.TemplateParseUtil;
 import org.sakaiproject.util.ResourceLoader;
 
-public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, CollectionResolvable, ActionsExecutable, Redirectable, Statisticable {
+public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, /*Createable,*/ Describeable, CollectionResolvable, ActionsExecutable, Redirectable, Statisticable {
 
 	private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
 
@@ -106,9 +106,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		return post;
 	}
 
-	public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
+	@EntityCustomAction(action = "store", viewKey = EntityView.VIEW_NEW)
+	public Object handleStore(EntityView view, Map<String, Object> params) {
 
-        LOG.debug("createEntity");
+        LOG.debug("handleStore");
 
 		String userId = developerHelperService.getCurrentUserId();
 
@@ -127,8 +128,6 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		post.setCreatorId(userId);
 		post.setSiteId(siteId);
 		post.setTitle(title);
-
-        System.out.println(groupsString);
 
         if (groupsString != null && groupsString.length() > 0) {
             post.setGroups(Arrays.asList(groupsString.split(",")));
@@ -169,9 +168,14 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 				sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, post.getReference(), post.getSiteId());
 			}
 
-			return post.getId();
-		} else
+            if (!visibility.equals(Visibilities.AUTOSAVE)) {
+                return clogManager.getSiteGroupsForCurrentUser(siteId);
+            } else {
+			    return post.getId();
+            }
+		} else {
 			return "FAIL";
+        }
 	}
 
 	public Object getSampleEntity() {
@@ -320,14 +324,14 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 	@EntityCustomAction(action = "restore", viewKey = EntityView.VIEW_LIST)
 	public String handleRestore(EntityView view, Map<String,Object> params) {
-		
+
 		String userId = developerHelperService.getCurrentUserId();
 		
-		if(userId == null) {
+		if (userId == null) {
 			throw new EntityException("You must be logged in to restore posts","",HttpServletResponse.SC_UNAUTHORIZED);
 		}
 		
-		if(!params.containsKey("posts")) {
+		if (!params.containsKey("posts")) {
 			throw new EntityException("Bad request: a posts param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
 		}
 		
@@ -335,8 +339,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 		
 		String[] postIds = postIdsString.split(",");
 		
-		for(String postId : postIds) {
-
+		for (String postId : postIds) {
 			Post post = null;
 
 			try {

@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -147,7 +148,6 @@ public class SQLGenerator implements ISQLGenerator {
 		statement.append(" ORDER BY ").append(CREATED_DATE).append(" DESC ");
 
 		String sql = statement.toString();
-		System.out.println(sql);
         logger.debug(sql);
 		statements.add(sql);
 		return statements;
@@ -362,46 +362,92 @@ public class SQLGenerator implements ISQLGenerator {
 	 * java.lang.String)
 	 */
 	public List<PreparedStatement> getDeleteStatementsForPost(Post post, Connection connection) throws Exception {
-		List<PreparedStatement> result = new ArrayList<PreparedStatement>();
+
+		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
 
 		PreparedStatement commentST = connection.prepareStatement("DELETE FROM " + TABLE_COMMENT + " WHERE " + POST_ID + " = ?");
 		commentST.setString(1, post.getId());
-		result.add(commentST);
+		statements.add(commentST);
 
 		PreparedStatement postST = connection.prepareStatement("DELETE FROM " + TABLE_POST + " WHERE " + POST_ID + " = ?");
 		postST.setString(1, post.getId());
-		result.add(postST);
+		statements.add(postST);
 
-		return result;
+		return statements;
 	}
 
+    private List<PreparedStatement> getDeleteFromGroupAndDecrementGroupPostCountStatements(Post post, Connection connection) throws Exception {
+
+        List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
+
+		PreparedStatement groupST = connection.prepareStatement("DELETE FROM CLOG_POST_GROUP WHERE POST_ID = ?");
+		groupST.setString(1, post.getId());
+		statements.add(groupST);
+
+        PreparedStatement lastDateQueryST = null;
+        try {
+            lastDateQueryST = connection.prepareStatement("SELECT MODIFIED_DATE FROM CLOG_POST_GROUP WHERE GROUP_ID = ? ORDER BY MODIFIED_DATE ASC");
+
+            for (String groupId : post.getGroups()) {
+                PreparedStatement update = connection.prepareStatement("UPDATE CLOG_GROUP_DATA SET TOTAL_POSTS = TOTAL_POSTS - 1, LAST_POST_DATE = ? WHERE GROUP_ID = ?");
+                lastDateQueryST.setString(1, groupId);
+                ResultSet lastDateRS = lastDateQueryST.executeQuery();
+                if (lastDateRS.next()) {
+                    if (lastDateRS.isLast()) {
+                        // This is is last post in this group. Null the last post date.
+                        update.setNull(1, Types.TIMESTAMP);
+                    } else {
+                        update.setTimestamp(1, lastDateRS.getTimestamp("MODIFIED_DATE"));
+                    }
+                }
+                lastDateRS.close();
+                update.setString(2, groupId);
+                statements.add(update);
+            }
+        } finally {
+            if (lastDateQueryST  != null) {
+                try {
+                    lastDateQueryST.close();
+                } catch (Exception e) {}
+            }
+        }
+
+        return statements;
+    }
+
 	public List<PreparedStatement> getRecycleStatementsForPost(Post post, Connection connection) throws Exception {
+
 		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
-		PreparedStatement st = connection.prepareStatement("UPDATE " + TABLE_POST + " SET " + VISIBILITY + " = '" + Visibilities.RECYCLED + "' WHERE " + POST_ID + " = ?");
-		st.setString(1, post.getId());
+
+		PreparedStatement st = connection.prepareStatement("UPDATE CLOG_POST SET VISIBILITY = ? WHERE POST_ID = ?");
+		st.setString(1, Visibilities.RECYCLED);
+		st.setString(2, post.getId());
 		statements.add(st);
+
 		if (!post.isPrivate()) {
 			statements.addAll(getAuthorTableStatements(post, false, connection));
 		}
+
+        statements.addAll(getDeleteFromGroupAndDecrementGroupPostCountStatements(post, connection));
+
 		return statements;
 
 	}
 
-	public List<PreparedStatement> getRestoreStatementsForPost(Post post, Connection connection) throws Exception {
+	public PreparedStatement getRestoreStatementForPost(Post post, Connection connection) throws Exception {
 
-		// Posts are restored as PRIVATE and they don't show up in the author
-		// count,
-		// that's why we don't touch the author table in this method
+        // Posts are restored as PRIVATE and they don't show up in the author
+        // count, that's why we don't touch the author table in this method.
 
-		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
-		PreparedStatement st = connection.prepareStatement("UPDATE " + TABLE_POST + " SET " + VISIBILITY + " = '" + Visibilities.PRIVATE + "' WHERE " + POST_ID + " = ?");
-		st.setString(1, post.getId());
-		statements.add(st);
-		return statements;
+		PreparedStatement st = connection.prepareStatement("UPDATE CLOG_POST SET VISIBILITY = ? WHERE POST_ID = ?");
+		st.setString(1, Visibilities.PRIVATE);
+		st.setString(2, post.getId());
 
+		return st;
 	}
 
 	public List<PreparedStatement> getInsertStatementsForAutoSavedPost(Post post, Connection connection) throws Exception {
+
 		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
 
 		if ("".equals(post.getId()))
@@ -611,33 +657,7 @@ public class SQLGenerator implements ISQLGenerator {
                 if (!isNewPost && !currentGroups.equals(groups)) {
                     // This post's groups have changed. Take one off the post count
                     // for each current group and reset the last post date columns.
-                    PreparedStatement lastDateQueryST = null;
-                    try {
-                        lastDateQueryST = connection.prepareStatement("SELECT MODIFIED_DATE FROM CLOG_POST_GROUP WHERE GROUP_ID = ? ORDER BY MODIFIED_DATE ASC");
-                        for (String currentGroupId : currentGroups) {
-                            PreparedStatement update = connection.prepareStatement("UPDATE CLOG_GROUP_DATA SET TOTAL_POSTS = TOTAL_POSTS - 1, LAST_POST_DATE = ? WHERE GROUP_ID = ?");
-                            lastDateQueryST.setString(1, currentGroupId);
-                            ResultSet lastDateRS = lastDateQueryST.executeQuery();
-                            if (lastDateRS.next()) {
-                                if (lastDateRS.isLast()) {
-                                    // This is is last post in this group. Null the last post date.
-                                    update.setNull(1, Types.TIMESTAMP);
-                                } else {
-                                    update.setTimestamp(1, lastDateRS.getTimestamp("MODIFIED_DATE"));
-                                }
-                            }
-                            lastDateRS.close();
-                            update.setString(2, currentGroupId);
-                            statements.add(update);
-
-                        }
-                    } finally {
-                        if (lastDateQueryST  != null) {
-                            try {
-                                lastDateQueryST.close();
-                            } catch (Exception e) {}
-                        }
-                    }
+                    statements.addAll(getDeleteFromGroupAndDecrementGroupPostCountStatements(currentPost, connection));
                 }
             }
 
@@ -725,9 +745,16 @@ public class SQLGenerator implements ISQLGenerator {
 	}
 
 	public PreparedStatement getSelectAutosavedPost(String postId, Connection connection) throws Exception {
+
 		PreparedStatement st = connection.prepareStatement("SELECT * FROM " + TABLE_AUTOSAVED_POST + " WHERE " + POST_ID + " = ?");
 		st.setString(1, postId);
 		return st;
 	}
 
+	public PreparedStatement getSelectGroupDataStatement(String groupId, Connection connection) throws Exception {
+
+		PreparedStatement st = connection.prepareStatement("SELECT * FROM CLOG_GROUP_DATA WHERE GROUP_ID = ?");
+		st.setString(1, groupId);
+		return st;
+    }
 }

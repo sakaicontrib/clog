@@ -2,6 +2,7 @@ package org.sakaiproject.clog.api;
 
 import java.util.*;
 
+import org.sakaiproject.clog.api.datamodel.ClogGroup;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.entity.api.Entity;
@@ -46,4 +47,5 @@ public interface ClogManager extends EntityProducer {
 
 	public boolean deleteAutosavedCopy(String postId);
 
+    public List<ClogGroup> getSiteGroupsForCurrentUser(String siteId);
 }

@@ -13,6 +13,11 @@ clog.autosave_id = null;
 
 clog.LOCAL_STORAGE_KEY = 'clog';
 
+clog.states = {
+    GROUPS: 'groups',
+    GROUP_POSTS: 'groupPosts'
+};
+
 clog.fitFrame = function () {
 
     try {
@@ -74,14 +79,32 @@ clog.switchState = function (state,arg) {
                 $('.clog_body').hide();
             }
         });
-	} else if ('groups' === state) {
+	} else if (clog.states.GROUPS === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_groups_link > span').addClass('current');
 
 		clog.utils.renderTemplate('groups', {groups: clog.groups, hasGroups: clog.groups.length > 0}, 'clog_content');
-        clog.fitFrame();
-	} else if ('groupPosts' === state) {
+
+        $(document).ready(function () {
+
+            $("#clog_group_table").tablesorter({
+                widgets: ['zebra'],
+                cssHeader:'clogSortableTableHeader',
+                cssAsc:'clogSortableTableHeaderSortUp',
+                cssDesc:'clogSortableTableHeaderSortDown',
+                textExtraction: 'complex',	
+                sortList: [[0,0]],
+                headers: {
+                    2: { sorter: "clogDate" }
+                } });
+
+            clog.fitFrame();
+        });
+	} else if (clog.states.GROUP_POSTS === state) {
         if (!arg || !arg.groupId) return;
+
+        clog.currentGroupId = arg.groupId;
+        clog.currentGroupTitle = arg.groupTitle;
 
         var url = "/direct/clog-post.json?siteId=" + clog.siteId + "&groupId=" + arg.groupId;
 
@@ -326,7 +349,6 @@ clog.switchState = function (state,arg) {
                 $('#clog-visibility-group').prop('checked', true);
                 $('#clog-group-fieldset').show();
                 clog.currentPost.groups.forEach(function (groupId) {
-                    console.log(groupId);
                     $('#clog-group-' + groupId).prop('selected', true);
                 });
             }
@@ -622,9 +644,11 @@ clog.toggleFullContent = function (v) {
         },
         format: function (s) {
 
-            if (s === clog.i18n.none_yet) {
+            if (s === clog.i18n.none) {
                 return 0;
             }
+
+            console.log(s);
 
             var matches = s.match(/^([\d]{1,2}) (\w+) ([\d]{4}) \@ ([\d]{2}):([\d]{2}).*$/);
             var d = new Date(matches[3], clog.monthMappings[matches[2]], matches[1], matches[4], matches[5], 0);
@@ -632,6 +656,8 @@ clog.toggleFullContent = function (v) {
         },
         type: 'numeric'
     });
+
+    clog.utils.addFormattedLastPostDatesToGroups(clog.groups);
 
     try {
         if (window.frameElement) {

@@ -282,14 +282,14 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return autoDDL.equals("true");
 	}
 
-    public Map<String, String> getCurrentSiteGroupsForCurrentUser() {
+    public Map<String, String> getSiteGroupsForCurrentUser(String siteId) {
 
         Map<String, String> map = new HashMap<String, String>();
 
         try {
             Collection<Group> groups
                 = siteService
-                    .getSite(getCurrentSiteId())
+                    .getSite(siteId)
                         .getGroupsWithMember(getCurrentUserId());
 
             for (Group group : groups) {
@@ -297,7 +297,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             }
         } catch (IdUnusedException idue) {
             // This should never happen. Really.
-            logger.error("getCurrentSiteId returned an invalid site id. No groups will be returned.");
+            logger.error("Invalid site id. No groups will be returned.");
         }
 
         return map;

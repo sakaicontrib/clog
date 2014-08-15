@@ -5,16 +5,14 @@
 			<th width="20%"><div>{{translate 'group_label'}}</div></th>
 			<th width="10%"><div>{{translate 'posts'}}</div></th>
 			<th width="20%"><div>{{translate 'dateOfLastPostHeader'}}</div></th>
-			<th width="5%"><div>RSS</div></th>
 		</tr>
 		</thead>
 		<tbody>
 		{{#each groups}}
 		<tr>
 			<td><a href="javascript:;" onclick="clog.switchState('groupPosts', {'groupId': '{{id}}', 'groupTitle': '{{title}}'});">{{title}}</a></td>
-			<td>{{numberOfPosts}}</td>
-			<td>{{#if dateOfLastPost}}{{formattedDateOfLastPost}}{{else}}n/a{{/if}}</td>
-			<td><a target="_blank" href="/direct/clog-rss/group/{{id}}.xml?siteId={{../../siteId}}" title="{{translate 'group_rss_tooltip'}}"><img src="/library/image/silk/feed.png"/></a></td>
+			<td>{{totalPosts}}</td>
+			<td>{{formattedLastPostDate}}</td>
 		</tr>
 		{{/each}}
 		</tbody>
