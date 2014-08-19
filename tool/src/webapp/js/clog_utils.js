@@ -279,7 +279,6 @@ clog.utils = {
 			type: 'POST',
 			data: comment,
 			timeout: 30000,
-			async: false,
 			dataType: 'text',
 		   	success: function (id) {
 				clog.switchState('viewAllPosts');
@@ -301,7 +300,6 @@ clog.utils = {
 		jQuery.ajax( {
 	 		url: "/direct/clog-post/" + postId + "/deleteAutosavedCopy",
 			timeout: 30000,
-			async: false,
 			dataType: 'text',
 		   	success: function (result) {
 				clog.switchState('viewAllPosts');
@@ -320,7 +318,6 @@ clog.utils = {
 		jQuery.ajax( {
 	 		url: "/direct/clog-post/" + postId + "/recycle",
 			dataType: 'text',
-			async: false,
 			cache: false,
 		   	success: function (result) {
 
@@ -355,7 +352,6 @@ clog.utils = {
 		jQuery.ajax( {
 	 		url: "/direct/clog-post/remove?posts=" + postIds + "&site=" + clog.siteId,
 			dataType: 'text',
-			async: false,
 		   	success: function (result) {
 				clog.switchState('viewAllPosts');
 			},
@@ -427,7 +423,6 @@ clog.utils = {
 		
 		jQuery.ajax( {
 	 		url: "/direct/clog-comment/" + commentId + "?siteId=" + clog.siteId,
-	   		async: false,
 			type:'DELETE',
 		   	success: function (text, status) {
 				clog.switchState('viewAllPosts');

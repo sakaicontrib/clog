@@ -212,7 +212,6 @@ clog.switchState = function (state,arg) {
 		jQuery.ajax( {
 	       	'url': url,
 	       	dataType: "json",
-	       	async: false,
 			cache: false,
 		   	success: function (data) {
 
@@ -265,7 +264,6 @@ clog.switchState = function (state,arg) {
 		jQuery.ajax( {
 	       	'url': url,
 	       	dataType: "json",
-	       	async: false,
 			cache: false,
 		   	success: function (data) {
 
@@ -377,6 +375,7 @@ clog.switchState = function (state,arg) {
 					clog.utils.deleteAutosavedCopy(clog.currentPost.id);
 				}
 				clog.switchState('home');
+                return false;
 			});
 
             if ("MAINTAINER" === clog.currentPost.visibility) {
@@ -419,6 +418,7 @@ clog.switchState = function (state,arg) {
 
 			$('#clog_save_comment_button').click(function () {
 				clog.utils.saveComment(clog.editor);
+                return false;
 			});
 			
 			clog.sakai.setupWysiwygEditor(clog.editor,'clog_content_editor',600,400);
@@ -441,7 +441,6 @@ clog.switchState = function (state,arg) {
 		jQuery.ajax( {
 	       	url: "/direct/clog-post.json?siteId=" + clog.siteId + "&visibilities=RECYCLED",
 	       	dataType: "json",
-	       	async: false,
 			cache: false,
 		   	success: function (data) {
 
