@@ -244,8 +244,12 @@ clog.utils = {
                     success = true;
                     clog.titleChanged = false;
                     clog.sakai.resetEditor(wysiwygEditor, 'clog_content_editor');
+                    $('#clog_autosaved_message').show();
+                    setTimeout(function () {
+                            $('#clog_autosaved_message').fadeOut(200);
+                        }, 2000);
                 } else {
-                    clog.groups = jQuery.parseJSON(data)['clog-post_collection'];
+                    clog.groups = jQuery.parseJSON(data);
                     clog.utils.addFormattedLastPostDatesToGroups(clog.groups);
                     if ('GROUP' === visibility) {
                         clog.switchState('groups');
