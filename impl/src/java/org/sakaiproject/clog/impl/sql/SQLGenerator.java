@@ -495,9 +495,7 @@ public class SQLGenerator implements ISQLGenerator {
 		// We always replace autosaved posts with the latest, so delete the old one.
 		statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
-        boolean isNew = currentPost == null;
-
-        if (isNew) {
+        if (currentPost == null) {
             String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + KEYWORDS + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
 
             PreparedStatement postST = connection.prepareStatement(sql);
@@ -523,7 +521,7 @@ public class SQLGenerator implements ISQLGenerator {
 
             statements.add(postST);
 
-            statements.addAll(getGroupTableStatements(post, currentPost, true, connection));
+            statements.addAll(getGroupTableStatements(post, currentPost, connection));
 
             if (post.isReady() || post.isPublic()) {
                 statements.addAll(getAuthorTableStatements(post, true, connection));
@@ -545,10 +543,10 @@ public class SQLGenerator implements ISQLGenerator {
 
             statements.add(postST);
 
-            statements.addAll(getGroupTableStatements(post, currentPost, false, connection));
+            statements.addAll(getGroupTableStatements(post, currentPost, connection));
 
             if (post.isReady() || post.isPublic()) {
-                if (Visibilities.PRIVATE.equals(currentVisibility) || Visibilities.RECYCLED.equals(currentVisibility)) {
+                if (Visibilities.PRIVATE.equals(currentVisibility) || Visibilities.RECYCLED.equals(currentVisibility) || Visibilities.GROUP.equals(currentVisibility)) {
                     // This post has been made visible
                     statements.addAll(getAuthorTableStatements(post, true, connection));
                 }
@@ -636,49 +634,56 @@ public class SQLGenerator implements ISQLGenerator {
 		return statements;
 	}
 
-	private List<PreparedStatement> getGroupTableStatements(Post post, Post currentPost, boolean isNewPost, Connection connection) throws Exception {
+	private List<PreparedStatement> getGroupTableStatements(Post post, Post currentPost, Connection connection) throws Exception {
 
         List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
         Statement testST = null;
 
         try {
-            testST = connection.createStatement();
-
-            String postId = post.getId();
-            PreparedStatement deleteCurrent = connection.prepareStatement("DELETE FROM CLOG_POST_GROUP WHERE POST_ID = ?");
-            deleteCurrent.setString(1, postId);
-            statements.add(deleteCurrent);
+            boolean groupsChanged = true;
 
             List<String> groups = post.getGroups();
 
             if (currentPost != null) {
                 List<String> currentGroups = currentPost.getGroups();
 
-                if (!isNewPost && !currentGroups.equals(groups)) {
+                if (!currentGroups.equals(groups)) {
                     // This post's groups have changed. Take one off the post count
                     // for each current group and reset the last post date columns.
                     statements.addAll(getDeleteFromGroupAndDecrementGroupPostCountStatements(currentPost, connection));
+                } else {
+                    groupsChanged = false;
                 }
             }
 
-            for (String groupId : groups) {
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO CLOG_POST_GROUP (POST_ID,GROUP_ID,MODIFIED_DATE) VALUES(?,?,?)");
-                insert.setString(1, postId);
-                insert.setString(2, groupId);
-                insert.setTimestamp(3, new Timestamp(post.getModifiedDate()));
-                statements.add(insert);
+            if (groupsChanged) {
+                String postId = post.getId();
 
-                ResultSet testRS = testST.executeQuery("SELECT * FROM CLOG_GROUP_DATA WHERE GROUP_ID = '" + groupId + "'");
+                PreparedStatement deleteCurrent = connection.prepareStatement("DELETE FROM CLOG_POST_GROUP WHERE POST_ID = ?");
+                deleteCurrent.setString(1, postId);
+                statements.add(deleteCurrent);
 
-                PreparedStatement update = null;
-                if (testRS.next()) {
-                    update = connection.prepareStatement("UPDATE CLOG_GROUP_DATA SET TOTAL_POSTS = TOTAL_POSTS + 1, LAST_POST_DATE = ? WHERE GROUP_ID = ?");
-                } else {
-                    update = connection.prepareStatement("INSERT INTO CLOG_GROUP_DATA (LAST_POST_DATE, GROUP_ID, TOTAL_POSTS) VALUES(?,?,1)");
+                testST = connection.createStatement();
+
+                for (String groupId : groups) {
+                    PreparedStatement insert = connection.prepareStatement("INSERT INTO CLOG_POST_GROUP (POST_ID,GROUP_ID,MODIFIED_DATE) VALUES(?,?,?)");
+                    insert.setString(1, postId);
+                    insert.setString(2, groupId);
+                    insert.setTimestamp(3, new Timestamp(post.getModifiedDate()));
+                    statements.add(insert);
+
+                    ResultSet testRS = testST.executeQuery("SELECT * FROM CLOG_GROUP_DATA WHERE GROUP_ID = '" + groupId + "'");
+
+                    PreparedStatement update = null;
+                    if (testRS.next()) {
+                        update = connection.prepareStatement("UPDATE CLOG_GROUP_DATA SET TOTAL_POSTS = TOTAL_POSTS + 1, LAST_POST_DATE = ? WHERE GROUP_ID = ?");
+                    } else {
+                        update = connection.prepareStatement("INSERT INTO CLOG_GROUP_DATA (LAST_POST_DATE, GROUP_ID, TOTAL_POSTS) VALUES(?,?,1)");
+                    }
+                    update.setTimestamp(1, new Timestamp(post.getCreatedDate()));
+                    update.setString(2, groupId);
+                    statements.add(update);
                 }
-                update.setTimestamp(1, new Timestamp(post.getCreatedDate()));
-                update.setString(2, groupId);
-                statements.add(update);
             }
         } finally {
             if (testST != null) {
