@@ -33,6 +33,7 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Inputable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Redirectable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Statisticable;
+import org.sakaiproject.entitybroker.entityprovider.extension.ActionReturn;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.entityprovider.search.Restriction;
 import org.sakaiproject.entitybroker.entityprovider.search.Search;
@@ -107,7 +108,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	}
 
 	@EntityCustomAction(action = "store", viewKey = EntityView.VIEW_NEW)
-	public Object handleStore(EntityView view, Map<String, Object> params) {
+	public ActionReturn handleStore(Map<String, Object> params) {
 
         LOG.debug("handleStore");
 
@@ -169,12 +170,12 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 			}
 
             if (!visibility.equals(Visibilities.AUTOSAVE)) {
-                return clogManager.getSiteGroupsForCurrentUser(siteId);
+                return new ActionReturn(clogManager.getSiteGroupsForCurrentUser(siteId));
             } else {
-			    return post.getId();
+			    return new ActionReturn(post.getId());
             }
 		} else {
-			return "FAIL";
+			return new ActionReturn("FAIL");
         }
 	}
 
@@ -284,8 +285,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	}
 
 	public void deleteEntity(EntityReference ref, Map<String, Object> params) {
-		if (LOG.isDebugEnabled())
-			LOG.debug("deleteEntity");
+
+		LOG.debug("deleteEntity");
 
 		String siteId = (String) params.get("siteId");
 
@@ -297,6 +298,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 	@EntityCustomAction(action = "recycle", viewKey = EntityView.VIEW_SHOW)
 	public String handleRecycle(EntityReference ref) {
+
 		String postId = ref.getId();
 
 		if (postId == null)
@@ -323,7 +325,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	}
 
 	@EntityCustomAction(action = "restore", viewKey = EntityView.VIEW_LIST)
-	public String handleRestore(EntityView view, Map<String,Object> params) {
+	public String handleRestore(Map<String,Object> params) {
 
 		String userId = developerHelperService.getCurrentUserId();
 		
@@ -364,7 +366,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	}
 	
 	@EntityCustomAction(action = "remove", viewKey = EntityView.VIEW_LIST)
-	public String handleRemove(EntityView view, Map<String,Object> params) {
+	public String handleRemove(Map<String,Object> params) {
 		
 		String userId = developerHelperService.getCurrentUserId();
 		

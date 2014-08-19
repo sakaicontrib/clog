@@ -385,13 +385,7 @@ clog.switchState = function (state,arg) {
 			
 			// Start the auto saver
 			clog.autosave_id = setInterval(function () {
-
-					if (clog.utils.autosavePost(clog.editor)) {
-						$('#clog_autosaved_message').show();
-						setTimeout(function () {
-								$('#clog_autosaved_message').fadeOut(200);
-							},2000);
-					}
+					clog.utils.autosavePost(clog.editor);
 				}, 10000);
 
  			clog.sakai.setupWysiwygEditor(clog.editor,'clog_content_editor',600,400);
@@ -647,8 +641,6 @@ clog.toggleFullContent = function (v) {
             if (s === clog.i18n.none) {
                 return 0;
             }
-
-            console.log(s);
 
             var matches = s.match(/^([\d]{1,2}) (\w+) ([\d]{4}) \@ ([\d]{2}):([\d]{2}).*$/);
             var d = new Date(matches[3], clog.monthMappings[matches[2]], matches[1], matches[4], matches[5], 0);
