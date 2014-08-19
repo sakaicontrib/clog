@@ -195,7 +195,7 @@ function program1(depth0,data) {
   
   var buffer = "", stack1, helper, options;
   buffer += "\n	<input type=\"checkbox\" id=\"clog_commentable_checkbox\" ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.commentable), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.post)),stack1 == null || stack1 === false ? stack1 : stack1.commentable), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "/>"
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "allow_comments_label", options) : helperMissing.call(depth0, "translate", "allow_comments_label", options)))
