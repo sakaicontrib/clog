@@ -69,21 +69,42 @@ public class ClogTool extends HttpServlet {
         // If we're on the gateway show the authors view by default
 	    String state = ("!gateway".equals(siteId)) ? "viewMembers" : "viewAllPosts";
 
-		ResourceLoader rl = new ResourceLoader(userId, "org.sakaiproject.clog.tool.bundle.ui");
-		
-		Locale locale = rl.getLocale();
-		String isoLanguage = locale.getLanguage();
-		String country = locale.getCountry();
-		
-        if(country != null && !country.equals("")) {
-            isoLanguage += "_" + country;
+        String siteLanguage = sakaiProxy.getCurrentSiteLocale();
+
+        Locale locale = null;
+        ResourceLoader rl = null;
+
+        if (siteLanguage != null) {
+            String[] parts = siteLanguage.split("_");
+            if (parts.length == 1) {
+                locale = new Locale(parts[0]);
+            } else if (parts.length == 2) {
+                locale = new Locale(parts[0], parts[1]);
+            } else if (parts.length == 3) {
+                locale = new Locale(parts[0], parts[1], parts[2]);
+            }
+            rl = new ResourceLoader("org.sakaiproject.clog.tool.bundle.ui");
+            rl.setContextLocale(locale);
+        } else {
+            rl = new ResourceLoader(userId, "org.sakaiproject.clog.tool.bundle.ui");
+            locale = rl.getLocale();
+        }
+
+        if (locale == null || rl == null) {
+            logger.error("Failed to load the site or user i18n bundle");
+        }
+
+        String language = locale.getLanguage();
+        String country = locale.getCountry();
+
+        if (country != null && !country.equals("")) {
+            language += "_" + country;
         }
 
         // These go in a separate variable
         String[] months = rl.getString("months").split(",");
        
-		String sakaiHtmlHead = (String) request.getAttribute("sakai.html.head");
-		request.setAttribute("sakaiHtmlHead", sakaiHtmlHead);
+		request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
 		
 	    request.setAttribute("userId", userId);
 	    request.setAttribute("siteId", siteId);
@@ -92,7 +113,7 @@ public class ClogTool extends HttpServlet {
 		String placementId = (String) request.getAttribute(Tool.PLACEMENT_ID);
 	    request.setAttribute("placementId", placementId);
 	    request.setAttribute("editor", sakaiProxy.getWysiwygEditor());
-	    request.setAttribute("isolanguage", isoLanguage);
+	    request.setAttribute("isolanguage", language);
         request.setAttribute("i18n", rl);
         request.setAttribute("months", months);
         request.setAttribute("groups", clogManager.getSiteGroupsForCurrentUser(siteId));

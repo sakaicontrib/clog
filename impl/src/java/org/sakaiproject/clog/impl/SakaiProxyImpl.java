@@ -140,6 +140,38 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return toolManager.getCurrentPlacement().getContext(); // equivalent to
 	}
 
+    private Site getSiteOrNull(String siteId) {
+
+        Site site = null;
+
+        try {
+            site = siteService.getSite(siteId);
+        } catch (IdUnusedException idue) {
+            logger.warn("No site with id '" + siteId + "'");
+        }
+
+        return site;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getCurrentSiteLocale() {
+
+        String siteId = toolManager.getCurrentPlacement().getContext();
+
+        Site currentSite = getSiteOrNull(siteId);
+
+        if (currentSite != null) {
+            String locale = currentSite.getProperties().getProperty("locale_string");
+            if (locale != null) {
+                return locale;
+            }
+        }
+
+        return null;
+    }
+
 	public String getCurrentToolId() {
 		return toolManager.getCurrentPlacement().getId();
 	}
@@ -202,7 +234,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
 	}
 
-	public boolean isMaintainer(String userId, String siteId) {
+	private boolean isMaintainer(String userId, String siteId) {
 
 		try {
 			if (userId == null || siteId == null) {
@@ -213,11 +245,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 				return true;
 			}
 
-			Site site = siteService.getSite(siteId);
-			AuthzGroup realm = authzGroupService.getAuthzGroup(site.getReference());
-			User sakaiUser = userDirectoryService.getUser(userId);
-			Role r = realm.getUserRole(sakaiUser.getId());
-			if (r.getId().equals(realm.getMaintainRole())) {
+			AuthzGroup realm = authzGroupService.getAuthzGroup("/site/" + siteId);
+			Role r = realm.getUserRole(userId);
+			if (r != null && r.getId().equals(realm.getMaintainRole())) {
 				return true;
 			} else {
 				return false;

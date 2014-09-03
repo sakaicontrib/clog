@@ -32,6 +32,13 @@ public interface SakaiProxy {
 	public String getCurrentSiteId();
 
     /**
+     * Returns the locale_string property of the current site.
+     *
+     * @return the locale_string property of the current site.
+     */
+    public String getCurrentSiteLocale();
+
+    /**
      *  Returns a map of group title against group id for the groups
      *  in the current site.
      */
@@ -52,8 +59,6 @@ public interface SakaiProxy {
 	public String getVendor();
 
 	public String getDisplayNameForTheUser(String userId);
-
-	public boolean isMaintainer(String userId, String siteId);
 
 	public boolean isCurrentUserMaintainer(String siteId);
 
