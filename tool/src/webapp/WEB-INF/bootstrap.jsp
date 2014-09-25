@@ -33,8 +33,8 @@
         <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
         <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
         <script type="text/javascript" src="/clog-tool/lib/es5-shim.min.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery-ui.js"></script>
+        <script type="text/javascript" src="/library/js/jquery/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="/library/js/jquery/ui/1.8.4/jquery-ui-1.8.4.full.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v1.3.0.js"></script>
         <script type="text/javascript" src="/clog-tool/templates/all.handlebars"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
