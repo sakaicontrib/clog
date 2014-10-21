@@ -34,13 +34,13 @@
         <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
         <script type="text/javascript" src="/clog-tool/lib/es5-shim.min.js"></script>
         <script type="text/javascript" src="/library/js/jquery/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="/library/js/jquery/ui/1.8.4/jquery-ui-1.8.4.full.min.js"></script>
+        <script type="text/javascript" src="/library/js/jquery/ui/1.10.3/jquery-ui.1.10.3.full.min.js"></script>
+        <script type="text/javascript" src="/library/js/jquery/hoverIntent/r7/jquery.hoverIntent.minified.js"></script>
+        <script type="text/javascript" src="/library/js/jquery/cluetip/1.2.10/jquery.cluetip.min.js"></script>
+        <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
+        <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v2.0.0.js"></script>
         <script type="text/javascript" src="/clog-tool/templates/all.handlebars"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery.cluetip.min.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
         <script type="text/javascript" src="/clog-tool/js/clog_utils.js"></script>
         <script type="text/javascript" src="/clog-tool/js/clog_permissions.js"></script>
