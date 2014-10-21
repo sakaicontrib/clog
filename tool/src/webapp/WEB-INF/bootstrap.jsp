@@ -35,7 +35,7 @@
         <script type="text/javascript" src="/clog-tool/lib/es5-shim.min.js"></script>
         <script type="text/javascript" src="/library/js/jquery/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="/library/js/jquery/ui/1.8.4/jquery-ui-1.8.4.full.min.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v1.3.0.js"></script>
+        <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v2.0.0.js"></script>
         <script type="text/javascript" src="/clog-tool/templates/all.handlebars"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.hoverIntent.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.cluetip.min.js"></script>
