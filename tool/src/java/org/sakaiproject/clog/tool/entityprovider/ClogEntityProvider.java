@@ -17,17 +17,19 @@ import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogSecurityManager;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
+import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Describeable;
 import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
+import org.sakaiproject.entitybroker.entityprovider.capabilities.ReferenceParseable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 
-public class ClogEntityProvider extends AbstractEntityProvider implements AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable {
+public class ClogEntityProvider extends AbstractEntityProvider implements AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable, ReferenceParseable {
 	
 	public final static String ENTITY_PREFIX = "clog";
 
@@ -49,6 +51,10 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 	public String getEntityPrefix() {
 		return ENTITY_PREFIX;
 	}
+
+    public EntityReference getParsedExemplar() {
+       return new EntityReference("sakai:clog");
+    }
 
 	public String[] getHandledOutputFormats() {
 		return new String[] { Formats.JSON,Formats.XML };

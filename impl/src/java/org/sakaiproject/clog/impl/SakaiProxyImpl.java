@@ -418,7 +418,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
 
 	public void registerEntityProducer(EntityProducer entityProducer) {
-		entityManager.registerEntityProducer(entityProducer, "clog");
+		entityManager.registerEntityProducer(entityProducer, "/clog");
 	}
 
 	public void setEntityManager(EntityManager entityManager) {
