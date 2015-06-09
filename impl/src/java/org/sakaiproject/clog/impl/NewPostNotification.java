@@ -97,7 +97,12 @@ public class NewPostNotification extends SiteEmailNotification {
 	}
 
 	protected String getTag(String title, boolean shouldUseHtml) {
-		return rb.getFormattedMessage("noti.tag", new Object[] { ServerConfigurationService.getString("ui.service", "Sakai"), ServerConfigurationService.getPortalUrl(), title });
+
+        final String tpl = (shouldUseHtml) ? "noti.tag.html" : "noti.tag";
+		return rb.getFormattedMessage(tpl, new Object[] {
+                                ServerConfigurationService.getString("ui.service", "Sakai"),
+                                ServerConfigurationService.getPortalUrl(),
+                                title });
 	}
 
 	protected List getHeaders(Event event) {
