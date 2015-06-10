@@ -424,7 +424,7 @@ public class SQLGenerator implements ISQLGenerator {
 		st.setString(2, post.getId());
 		statements.add(st);
 
-		if (!post.isPrivate()) {
+		if (!post.isPrivate() && !post.isGroup()) {
 			statements.addAll(getAuthorTableStatements(post, false, connection));
 		}
 

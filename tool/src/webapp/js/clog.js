@@ -2,15 +2,16 @@
 clog.currentUserPermissions = null;
 clog.settings = {};
 clog.currentPost = null;
-clog.currentPosts = null;
+clog.currentPosts = [];
 clog.currentState = null;
 clog.homeState = null;
 clog.onMyWorkspace = false;
 clog.onGateway = false;
 clog.titleChanged = false;
-
 clog.autosave_id = null;
-
+clog.page = 0;
+clog.postsTotal = 0;
+clog.postsRendered = 0;
 clog.LOCAL_STORAGE_KEY = 'clog';
 
 clog.states = {
@@ -50,35 +51,26 @@ clog.switchState = function (state,arg) {
 	    $('#clog_home_link > span').addClass('current');
 		clog.switchState(clog.homeState, arg);
 	} else if ('viewAllPosts' === state) {
-
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_home_link > span').addClass('current');
 
         $('#clog_toolbar_dropdown').val(clog.i18n.home_label);
 
-		clog.utils.setCurrentPosts();
-	 			
-		clog.utils.renderTemplate('all_posts', { posts: clog.currentPosts,
-                                                    onGateway: clog.onGateway,
-                                                    siteId: clog.siteId,
-                                                    showBody: clog.settings.showBody }, 'clog_content');
+        var templateData = {
+                onGateway: clog.onGateway,
+                siteId: clog.siteId,
+                showBody: clog.settings.showBody
+            };
 
-	 	$(document).ready(function () {
+        clog.utils.renderTemplate('all_posts', templateData, 'clog_content');
 
-		    clog.currentPosts.forEach(function (p) {
-			    clog.utils.renderPost(p, 'post_' + p.id);
-            });
+        // renderPageOfPosts uses this. Set it to the start page
+        clog.page = 0;
+        clog.postsRendered = 0;
 
-	 	    $(document).ready(function () {
+        clog.currentPosts = [];
 
-		        clog.utils.attachProfilePopup();
-                clog.fitFrame();
-            });
-
-            if (!clog.settings.showBody) {
-                $('.clog_body').hide();
-            }
-        });
+        clog.utils.renderPageOfPosts();
 	} else if (clog.states.GROUPS === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_groups_link > span').addClass('current');
@@ -106,45 +98,23 @@ clog.switchState = function (state,arg) {
         clog.currentGroupId = arg.groupId;
         clog.currentGroupTitle = arg.groupTitle;
 
-        var url = "/direct/clog-post.json?siteId=" + clog.siteId + "&groupId=" + arg.groupId;
+        var templateData = {
+                groupId: arg.groupId,
+                groupTitle: arg.groupTitle,
+                showRSS: true,
+                siteId: clog.siteId,
+                showBody: clog.settings.showBody
+            };
 
-		jQuery.ajax( {
-	       	'url': url,
-	       	dataType: "json",
-			cache: false,
-		   	success: function (data) {
+        clog.utils.renderTemplate('group_posts', templateData, 'clog_content');
 
-				clog.currentPosts = data['clog-post_collection'];
+        // renderPageOfPosts uses this. Set it to the start page
+        clog.page = 0;
+        clog.postsRendered = 0;
 
-                clog.utils.addFormattedDatesToPosts(clog.currentPosts);
-	 			
-				clog.utils.renderTemplate('group_posts', { groupId: arg.groupId,
-                                                            groupTitle: arg.groupTitle,
-                                                            posts: clog.currentPosts,
-                                                            showRSS: true,
-                                                            siteId: clog.siteId,
-                                                            showBody: clog.settings.showBody }, 'clog_content');
+        clog.currentPosts = [];
 
-	 			$(document).ready(function () {
-
-	 			    clog.currentPosts.forEach(function (p) {
-					    clog.utils.renderPost(p, 'post_' + p.id);
-                    });
-
-	 			    $(document).ready(function () {
-
-                        if (!clog.settings.showBody) {
-                            $('.clog_body').hide();
-                        }
-
-                        clog.fitFrame();
-				    });
-                });
-			},
-			error: function (xmlHttpRequest, textStatus, errorThrown) {
-				alert("Failed to get group posts. Reason: " + errorThrown);
-			}
-	   	});
+        clog.utils.renderPageOfPosts({groupId: arg.groupId});
 	} else if ('viewMembers' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_view_authors_link > span').addClass('current');
@@ -207,50 +177,29 @@ clog.switchState = function (state,arg) {
 			userId = arg.userId;
         }
 
-		var url = "/direct/clog-post.json?siteId=" + clog.siteId + "&creatorId=" + userId + "&autosaved=true";
+        var templateData = {
+                creatorId: userId,
+                showRSS: (userId !== clog.userId && !clog.onGateway),
+                onGateway: clog.onGateway,
+                siteId: clog.siteId,
+                showBody: clog.settings.showBody
+            };
 
-		jQuery.ajax( {
-	       	'url': url,
-	       	dataType: "json",
-			cache: false,
-		   	success: function (data) {
+        clog.utils.renderTemplate('all_user_posts', templateData, 'clog_content');
 
-				var profileMarkup = clog.sakai.getProfileMarkup(userId);
+        $(document).ready(function () {
 
-				clog.currentPosts = data['clog-post_collection'];
+            var profileMarkup = clog.sakai.getProfileMarkup(userId);
+            $('#clog-author-profile').html(profileMarkup);
+        });
 
-                clog.utils.addFormattedDatesToPosts(clog.currentPosts);
-	 			
-		        var showRSS = userId !== clog.userId && !clog.onGateway;
-				clog.utils.renderTemplate('user_posts', { creatorId: userId,
-                                                            posts: clog.currentPosts,
-                                                            showRSS: showRSS,
-                                                            onGateway: clog.onGateway,
-                                                            siteId: clog.siteId,
-                                                            showBody: clog.settings.showBody }, 'clog_content');
+        // renderPageOfPosts uses this. Set it to the start page
+        clog.page = 0;
+        clog.postsRendered = 0;
 
-	 			$(document).ready(function () {
+        clog.currentPosts = [];
 
-				    $('#clog_author_profile').html(profileMarkup);
-
-	 			    clog.currentPosts.forEach(function (p) {
-					    clog.utils.renderPost(p, 'post_' + p.id);
-                    });
-
-	 			    $(document).ready(function () {
-
-                        if (!clog.settings.showBody) {
-                            $('.clog_body').hide();
-                        }
-
-                        clog.fitFrame();
-				    });
-                });
-			},
-			error: function (xmlHttpRequest, textStatus, errorThrown) {
-				alert("Failed to get posts. Reason: " + errorThrown);
-			}
-	   	});
+        clog.utils.renderPageOfPosts({userId: userId});
 	} else if ('myPublicPosts' === state) {
 
 		$('#clog_toolbar > li > span').removeClass('current');
@@ -258,33 +207,21 @@ clog.switchState = function (state,arg) {
 		// Default to using the current session user id ...
 		var userId = clog.userId;
 
-		var url = "/direct/clog-post.json?siteId=" + clog.siteId + "&creatorId=" + userId + "&visibilities=PUBLIC";
+        clog.utils.renderTemplate('all_user_posts', {'creatorId': userId}, 'clog_content');
 
-		// TODO: Factor this into a method. Same as above ...
-		jQuery.ajax( {
-	       	'url': url,
-	       	dataType: "json",
-			cache: false,
-		   	success: function (data) {
+        $(document).ready(function () {
 
-				var profileMarkup = clog.sakai.getProfileMarkup(userId);
+            var profileMarkup = clog.sakai.getProfileMarkup(userId);
+            $('#clog-author-profile').html(profileMarkup);
+        });
 
-				clog.currentPosts = data['clog-post_collection'];
+        // renderPageOfPosts uses this. Set it to the start page
+        clog.page = 0;
+        clog.postsRendered = 0;
 
-                clog.utils.addFormattedDatesToPosts(clog.currentPosts);
-	 			
-				clog.utils.renderTemplate('user_posts', {'creatorId': userId,'posts': clog.currentPosts}, 'clog_content');
-				$('#clog_author_profile').html(profileMarkup);
-                clog.currentPosts.forEach(function (p) {
-                    clog.utils.renderPost(p, 'post_' + p.id);
-                });
+        clog.currentPosts = [];
 
-                clog.fitFrame();
-			},
-			error : function (xmlHttpRequest,status,errorThrown) {
-				alert("Failed to get posts. Reason: " + errorThrown);
-			}
-	   	});
+        clog.utils.renderPageOfPosts({userId: userId, isPublic: true});
 	} else if ('post' === state) {
 		if (arg && arg.postId) {
 			clog.currentPost = clog.utils.findPost(arg.postId);
@@ -329,7 +266,15 @@ clog.switchState = function (state,arg) {
 			}
 		}
 
-		clog.utils.renderTemplate('create_post', {post: clog.currentPost, onMyWorkspace: clog.onMyWorkspace, groups: clog.groups, hasGroups: clog.groups.length > 0}, 'clog_content');
+		var templateData = {
+                post: clog.currentPost,
+                onMyWorkspace: clog.onMyWorkspace,
+                publicAllowed: clog.publicAllowed,
+                groups: clog.groups,
+                hasGroups: clog.groups.length > 0
+            };
+
+		clog.utils.renderTemplate('create_post', templateData, 'clog_content');
 
 	 	$(document).ready(function () {
 
@@ -439,12 +384,12 @@ clog.switchState = function (state,arg) {
 	    $('#clog_toolbar >  li > span').removeClass('current');
 	    $('#clog_recycle_bin_link > span').addClass('current');
 		jQuery.ajax( {
-	       	url: "/direct/clog-post.json?siteId=" + clog.siteId + "&visibilities=RECYCLED",
+	       	url: "/direct/clog-post/posts.json?siteId=" + clog.siteId + "&visibilities=RECYCLED",
 	       	dataType: "json",
 			cache: false,
 		   	success: function (data) {
 
-				var posts = data['clog-post_collection'];
+				var posts = data.posts;
 
 				clogRecycledPosts = posts;
                 clog.utils.addFormattedDatesToPosts(clogRecycledPosts);
@@ -532,6 +477,8 @@ clog.toggleFullContent = function (v) {
 		clog.onMyWorkspace = true;
 	}
 
+    console.log("PUBLIC: " + clog.publicAllowed);
+
 	// This comes from sakai.properties, via the ClogTool servlet 
 	if ('true' === clog.publicAllowed) {
 		clog.publicAllowed = true;
@@ -540,13 +487,13 @@ clog.toggleFullContent = function (v) {
 	clog.homeState = 'viewAllPosts';
 
 	// We need the toolbar in a template so we can swap in the translations
-    if (screen.width < 800) {
+    if ($(document).width() < 800) {
 	    clog.utils.renderTemplate('pda_toolbar',{},'clog_toolbar');
-        $('#clog_toolbar_dropdown').change(function () {
+        $(document).ready(function () {
 
-            if (clog_menu_label != this.value) { 
+            $('#clog-toolbar-dropdown').change(function () {
                 clog.switchState(this.value);
-            }
+            });
         });
     } else {
 	    clog.utils.renderTemplate('toolbar', {} ,'clog_toolbar');

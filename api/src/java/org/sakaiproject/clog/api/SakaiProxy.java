@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.sakaiproject.entity.api.EntityProducer;
+import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.site.api.Site;
@@ -117,4 +118,6 @@ public interface SakaiProxy {
 	public boolean isCurrentUserMemberOfSite(String siteId) throws Exception;
 
 	public String getWysiwygEditor();
+
+    public Cache getCache(String cache);
 }

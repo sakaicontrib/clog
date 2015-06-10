@@ -20,6 +20,9 @@ public interface ClogManager extends EntityProducer {
 	public static final String CLOG_POST_RESTORED = "clog.post.restored";
 	public static final String CLOG_POST_WITHDRAWN = "clog.post.withdrawn";
 
+    public static final String CACHE = "org.sakaiproject.clog.sortedPostCache";
+    public static final String ALL = "all";
+
 	public Post getPost(String postId) throws Exception;
 
 	// Used by Dashboard integration
@@ -37,7 +40,7 @@ public interface ClogManager extends EntityProducer {
 
 	public boolean saveComment(Comment comment);
 
-	public boolean deleteComment(String commentId);
+	public boolean deleteComment(String siteId, String commentId);
 
 	public boolean recyclePost(String postId);
 

@@ -128,7 +128,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
 
 		String siteId = (String) params.get("siteId");
 
-		if (clogManager.deleteComment(ref.getId())) {
+		if (clogManager.deleteComment(siteId, ref.getId())) {
 			String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/gdfgdsfgdfg/comments/" + ref.getId();
 			sakaiProxy.postEvent(ClogManager.CLOG_COMMENT_DELETED, reference, siteId);
 		}

@@ -1,18 +1,14 @@
-    <h2>{{translate 'group_posts_title_prefix'}} '{{groupTitle}}'</h2>
-	{{#unless posts.length}}
+	<div id="clog-author-profile"></div>
 	<div id="clog-posts-total-wrapper"><span id="clog-posts-total"></span><span>{{translate 'posts_in_total'}}</span></div>
-	{{else}}
 	<div id="clog-body-toggle">
    		<input type="checkbox"
                  {{#unless showBody}} checked {{/unless}}
                  onclick="clog.toggleFullContent(this);"/>
-		<span>{{translate 'show_title_only_label'}}</span>
+		<span>{{translate 'show_title_only_label'}}</span>{{#if showRSS}}&nbsp;<a target="_blank" href="/direct/clog-rss/user/{{creatorId}}.xml{{#unless onGateway}}?siteId={{siteId}}{{/unless}}" title="{{translate 'user_rss_tooltip'}}"><img src="/library/image/silk/feed.png"/></a>{{/if}}
    	</div>
-	{{/unless}}
     <div id="clog-posts-wrapper">
     	<br />
-  	 	<div id="clog-posts">
-		</div>
+  	 	<div id="clog-posts"></div>
 	</div>
     <div id="clog-loading-image">
         <img src="/clog-tool/images/ajax-loader.gif" />

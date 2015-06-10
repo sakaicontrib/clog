@@ -141,23 +141,6 @@ clog.utils = {
     addFormattedDatesToCurrentPost: function () {
     	this.addFormattedDateToPost(clog.currentPost);
 	},
-    setCurrentPosts: function () {
-
-		jQuery.ajax( {
-	       	url : "/direct/clog-post.json?siteId=" + clog.siteId + "&autosaved=true",
-	       	dataType: "json",
-	       	async: false,
-			cache: false,
-		   	success: function (data) {
-
-				clog.currentPosts = data['clog-post_collection'];
-                clog.utils.addFormattedDatesToPosts(clog.currentPosts);
-			},
-			error : function (xmlHttpRequest, textStatus, errorThrown) {
-				alert("Failed to get posts. Reason: " + errorThrown);
-			}
-	   	});
-	},
     autosavePost: function (wysiwygEditor) {
 
 		if (!clog.sakai.isEditorDirty(wysiwygEditor, 'clog_content_editor') && !clog.titleChanged) {
@@ -466,6 +449,111 @@ clog.utils = {
 
         this.decoratePost(post);
         this.renderTemplate('post', post, output);
+    },
+    renderPageOfPosts: function (args) {
+
+        var loadImage = $('#clog-loading-image')
+        loadImage.show();
+
+        var url = "/direct/clog-post/posts.json?siteId=" + clog.siteId + "&page=" + clog.page;
+
+        if (args && args.userId) {
+            url += '&creatorId=' + args.userId;
+        }
+
+        if (args && args.groupId) {
+            url += '&groupId=' + args.groupId;
+        }
+
+        if (args && args.isPublic) {
+            url += '&visibilities=PUBLIC';
+        }
+
+		$.ajax( {
+	       	url : url,
+	       	dataType: "json",
+			cache: false,
+		   	success: function (data) {
+
+                if (data.status === 'END') {
+                    $(window).off('scroll.clog');
+                    loadImage.hide();
+                } else {
+                    $(window).off('scroll.clog').on('scroll.clog', clog.utils.getScrollFunction(args));
+                }
+
+                clog.postsTotal = data.postsTotal;
+                var posts = data.posts;
+
+                clog.currentPosts = clog.currentPosts.concat(posts);
+
+                if (clog.page == 0) {
+                    $('#clog-posts-total').html(data.postsTotal);
+                    if (data.postsTotal > 0) {
+                        $('#clog-body-toggle').show();
+                    }
+                }
+
+                clog.postsRendered += posts.length;
+
+                clog.utils.addFormattedDatesToPosts(posts);
+                var t = Handlebars.templates['posts'];
+                $('#clog-posts').append(t({ posts: posts }));
+
+                $(document).ready(function () {
+
+                    posts.forEach(function (p) {
+                        clog.utils.renderPost(p, 'post_' + p.id);
+                    });
+
+                    $(document).ready(function () {
+
+                        clog.utils.attachProfilePopup();
+                        clog.fitFrame();
+                    });
+
+                    if (!clog.settings.showBody) {
+                        $('.clog_body').hide();
+                    }
+
+                    loadImage.hide();
+                });
+                clog.page += 1;
+			},
+			error : function (xmlHttpRequest, textStatus, errorThrown) {
+				alert("Failed to get posts. Reason: " + errorThrown);
+			}
+	   	});
+    },
+    checkScroll: function () {
+
+        // Check if there is no scroll rendered and there are more pages
+
+        // Check if body height is lower than window height (scrollbar missed, maybe you need to get more pages automatically)
+        if ($("body").height() <= $(window).height()) {
+            setTimeout(function () {
+
+                if (clog.postsTotal > clog.postsRendered && clog.postsRendered > 0 && clog.postsRendered % 10 === 0) {
+                    $("body").data("scroll-clog", true);
+                    $(window).trigger('scroll.clog');
+                }
+            }, 100);
+        }
+    },
+    getScrollFunction: function (args) {
+
+        var scroller = function () {
+            
+            var wintop = $(window).scrollTop(), docheight = $(document).height(), winheight = $(window).height();
+
+            if  ((wintop/(docheight-winheight)) > 0.95 || $("body").data("scroll-clog") === true) {
+                $("body").data("scroll-clog", false);
+                $(window).off('scroll.clog');
+                clog.utils.renderPageOfPosts(args);
+            }
+        };
+
+        return scroller;
     }
 };
 

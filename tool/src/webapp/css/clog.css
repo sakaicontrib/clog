@@ -12,9 +12,9 @@
     padding-bottom: 5px;
 }
 
-#postsWrapper{
+#clog-posts-wrapper{
 	clear: both;
-	margin-top: 10px;
+	margin-top: 7px;
 	margin-left: 0px;
 }
 
@@ -190,4 +190,25 @@ a.clog-draft-label:hover {
 
 .clog-group-link {
     margin-top: 5px;
+}
+
+.clog-post {
+    margin-bottom: 5px;
+}
+
+#clog-posts-total-wrapper {
+    margin-top: 5px;
+    font-size: larger;
+}
+
+#clog-posts-total {
+    margin-right: 5px;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+#clog-body-toggle {
+    display: none;
+	clear: left;
+    margin-top: 10px;
 }

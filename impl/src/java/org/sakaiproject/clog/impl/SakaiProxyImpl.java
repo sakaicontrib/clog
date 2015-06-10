@@ -57,6 +57,9 @@ import org.sakaiproject.event.api.NotificationEdit;
 import org.sakaiproject.event.api.NotificationService;
 import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
+import org.sakaiproject.memory.api.Cache;
+import org.sakaiproject.memory.api.MemoryService;
+import org.sakaiproject.memory.api.SimpleConfiguration;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchList;
 import org.sakaiproject.search.api.SearchResult;
@@ -99,6 +102,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 	private ContentHostingService contentHostingService;
 
 	private EntityManager entityManager;
+
+	private MemoryService memoryService;
 
 	private SqlService sqlService;
 
@@ -463,6 +468,10 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return sqlService;
 	}
 
+	public void setMemoryService(MemoryService memoryService) {
+		this.memoryService = memoryService;
+	}
+
 	public void registerFunction(String function) {
 		List functions = functionManager.getRegisteredFunctions("clog.");
 
@@ -817,7 +826,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 	}
 
 	public boolean isPublicAllowed() {
-		return "true".equals(serverConfigurationService.getString("clog.allowPublic", "false"));
+		return serverConfigurationService.getBoolean("clog.allowPublic", false);
 	}
 
 	public boolean setResourcePublic(String contentId, boolean isPublic) {
@@ -841,4 +850,18 @@ public class SakaiProxyImpl implements SakaiProxy {
 	public String getWysiwygEditor() {
 		return serverConfigurationService.getString("wysiwyg.editor");
 	}
+
+    public Cache getCache(String cache) {
+
+        try {
+            Cache c = memoryService.getCache(cache);
+            if (c == null) {
+                c = memoryService.createCache(cache, new SimpleConfiguration(0));
+            }
+            return c;
+        } catch (Exception e) {
+            logger.error("Exception whilst retrieving '" + cache + "' cache. Returning null ...", e);
+            return null;
+        }
+    }
 }

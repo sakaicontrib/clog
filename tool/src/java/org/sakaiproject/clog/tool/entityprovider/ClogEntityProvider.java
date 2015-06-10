@@ -83,7 +83,6 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 		List<Post> posts = new ArrayList<Post>();
 
 		QueryBean query = new QueryBean();
-		query.setVisibilities(Arrays.asList(new String[] { Visibilities.SITE, Visibilities.TUTOR, Visibilities.PRIVATE }));
 		query.setSiteId(siteId);
 
 		if ("!gateway".equals(siteId)) {
@@ -161,7 +160,6 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
         List<Post> posts = new ArrayList<Post>();
 
 		QueryBean query = new QueryBean();
-		query.setVisibilities(Arrays.asList(new String[] { Visibilities.SITE, Visibilities.TUTOR, Visibilities.PRIVATE }));
 		query.setCreator(requestedUserId);
 
 		try {
