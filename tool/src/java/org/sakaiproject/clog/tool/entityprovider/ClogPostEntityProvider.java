@@ -143,7 +143,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
 		boolean isBeingPublished = false;
 
-		if (!isNew && !"AUTOSAVE".equals(post.getVisibility())) {
+		if (!isNew && !post.isAutoSave()) {
 			try {
 				Post oldPost = clogManager.getPostHeader(post.getId());
 				if (oldPost.isReady() && post.isPrivate()) {
@@ -169,7 +169,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 				sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, post.getReference(), post.getSiteId());
 			}
 
-            if (!visibility.equals(Visibilities.AUTOSAVE)) {
+            if (!post.isAutoSave()) {
                 return new ActionReturn(clogManager.getSiteGroupsForCurrentUser(siteId));
             } else {
 			    return new ActionReturn(post.getId());
@@ -227,7 +227,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 	public List<Post> getEntities(EntityReference ref, Search search) {
 
 		QueryBean query = new QueryBean();
-        query.setVisibilities(Arrays.asList(new String[] { Visibilities.SITE, Visibilities.MAINTAINER, Visibilities.PRIVATE }));
+        query.setVisibilities(Arrays.asList(new String[] { Visibilities.SITE, Visibilities.TUTOR, Visibilities.PRIVATE }));
 
 		Restriction creatorRes = search.getRestrictionByProperty("creatorId");
 		if (creatorRes != null) {

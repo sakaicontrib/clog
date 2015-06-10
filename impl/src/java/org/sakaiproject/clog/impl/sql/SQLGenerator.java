@@ -551,7 +551,7 @@ public class SQLGenerator implements ISQLGenerator {
                     statements.addAll(getAuthorTableStatements(post, true, connection));
                 }
             } else {
-                if (Visibilities.SITE.equals(currentVisibility) || Visibilities.MAINTAINER.equals(currentVisibility) || Visibilities.PUBLIC.equals(currentVisibility)) {
+                if (Visibilities.SITE.equals(currentVisibility) || Visibilities.TUTOR.equals(currentVisibility) || Visibilities.PUBLIC.equals(currentVisibility)) {
                     // This post has been hidden
                     statements.addAll(getAuthorTableStatements(post, false, connection));
                 }

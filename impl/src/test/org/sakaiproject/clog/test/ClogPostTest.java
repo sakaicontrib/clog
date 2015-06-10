@@ -94,8 +94,8 @@ public class ClogPostTest extends TestCase {
 		post.setVisibility(Visibilities.RECYCLED);
 		assertTrue(post.isRecycled());
 		
-		post.setVisibility(Visibilities.MAINTAINER);
-		assertTrue(post.isVisibleToMaintainers());
+		post.setVisibility(Visibilities.TUTOR);
+		assertTrue(post.isVisibleToTutors());
 		
 		post.setVisibility(Visibilities.SITE);
 		assertTrue(post.isVisibleToSite());

@@ -17,4 +17,5 @@ public class ClogFunctions {
 	public static final String CLOG_COMMENT_DELETE_ANY = "clog.comment.delete.any";
 	public static final String CLOG_COMMENT_DELETE_OWN = "clog.comment.delete.own";
 	public static final String CLOG_MODIFY_PERMISSIONS = "clog.modify.permissions";
+	public static final String CLOG_TUTOR = "clog.tutor";
 }

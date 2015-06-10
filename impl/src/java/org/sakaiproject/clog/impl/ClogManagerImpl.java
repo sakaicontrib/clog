@@ -64,6 +64,7 @@ public class ClogManagerImpl implements ClogManager {
 		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_DELETE_ANY);
 		sakaiProxy.registerFunction(ClogFunctions.CLOG_COMMENT_DELETE_OWN);
 		sakaiProxy.registerFunction(ClogFunctions.CLOG_MODIFY_PERMISSIONS);
+		sakaiProxy.registerFunction(ClogFunctions.CLOG_TUTOR);
 
 		logger.info("Registered Clog functions ...");
 

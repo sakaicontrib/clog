@@ -322,7 +322,7 @@ public class Post implements Entity {
 	}
 
 	public boolean isReady() {
-		return Visibilities.SITE.equals(visibility) || Visibilities.MAINTAINER.equals(visibility);
+		return Visibilities.SITE.equals(visibility) || Visibilities.TUTOR.equals(visibility);
 	}
 
 	public boolean isAutoSave() {
@@ -333,8 +333,8 @@ public class Post implements Entity {
 		return Visibilities.SITE.equals(visibility);
 	}
 
-	public boolean isVisibleToMaintainers() {
-		return Visibilities.MAINTAINER.equals(visibility);
+	public boolean isVisibleToTutors() {
+		return Visibilities.TUTOR.equals(visibility);
 	}
 	
 	public void minimise() {

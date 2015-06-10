@@ -119,7 +119,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
 		List<Post> filtered = new ArrayList<Post>();
 		for (Post post : posts) {
-			if (canAccessSiteAndTool(post.getSiteId()) && canCurrentUserReadPost(post)) {
+			if (canCurrentUserReadPost(post)) {
 				filtered.add(post);
 			}
 		}
@@ -133,7 +133,9 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 		
 		canAccessSiteAndTool(siteId);
 
-		boolean maintainer = sakaiProxy.isCurrentUserMaintainer(siteId);
+		final boolean maintainer = sakaiProxy.isCurrentUserMaintainer(siteId);
+
+		final boolean tutor = sakaiProxy.isCurrentUserTutor(siteId);
 
 		// If the post is public, yes.
 		if (post.isPublic()) {
@@ -149,7 +151,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 		}
 
 		try {
-			if (post.isVisibleToMaintainers() && maintainer) {
+			if (post.isVisibleToTutors() && tutor) {
 				return true;
 			}
 		} catch (Exception e) {
