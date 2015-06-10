@@ -25,7 +25,7 @@ public class Visibilities {
 
 	public static final String RECYCLED = "RECYCLED";
 
-	public static final String MAINTAINER = "MAINTAINER";
+	public static final String TUTOR = "TUTOR";
 
 	public static final String SITE = "SITE";
 

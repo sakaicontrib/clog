@@ -262,6 +262,32 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return isMaintainer(getCurrentUserId(), siteId);
 	}
 
+    public boolean isCurrentUserTutor(String siteId) {
+
+		final String userId = getCurrentUserId();
+
+		try {
+			if (userId == null || siteId == null) {
+				return false;
+			}
+
+			if (isCurrentUserAdmin()) {
+				return true;
+			}
+
+			AuthzGroup realm = authzGroupService.getAuthzGroup("/site/" + siteId);
+			Role r = realm.getUserRole(userId);
+			if (r != null && r.isAllowed(ClogFunctions.CLOG_TUTOR)) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error("Exception thrown whilst checking for tutor status", e);
+			return false;
+		}
+	}
+
 	public boolean isCurrentUserAdmin() {
 		return securityService.isSuperUser();
 	}

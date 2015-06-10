@@ -194,8 +194,8 @@ clog.utils = {
         var groups = '';
 		
 		if ('READY' === visibility) {
-			if ($('#clog_visibility_maintainer').prop('checked')) {
-                visibility = 'MAINTAINER';
+			if ($('#clog_visibility_tutor').prop('checked')) {
+                visibility = 'TUTOR';
             } else if ($('#clog_visibility_site').prop('checked')) {
                 visibility = 'SITE';
             } else {

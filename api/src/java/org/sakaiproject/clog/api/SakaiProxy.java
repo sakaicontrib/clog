@@ -62,6 +62,8 @@ public interface SakaiProxy {
 
 	public boolean isCurrentUserMaintainer(String siteId);
 
+	public boolean isCurrentUserTutor(String siteId);
+
 	public boolean isCurrentUserAdmin();
 
 	public String getSakaiProperty(String string);

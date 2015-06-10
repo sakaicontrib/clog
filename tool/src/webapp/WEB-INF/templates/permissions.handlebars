@@ -64,5 +64,28 @@
 {{/each}}
 </tbody>
 </table>
+<table id="clog_permissions_table">
+	<thead>
+		<tr>
+			<th></th>
+			<th width="5px"></th>
+			<th align="center" colspan="6">{{translate 'other_label'}}</th>
+		</tr>
+		<tr class="listHier">
+			<th align="left">{{translate 'permissions_role_label'}}:</th>
+			<th style="background: white;border: none;"></th>
+			<th style="background-color: green;">{{translate 'permissions_tutor'}}</th>
+		</tr>
+	</thead>
+	<tbody>
+        {{#each perms}}
+        <tr>
+	        <td align="left">{{role}}</td>
+	        <td></td>
+	        <td align="center"><input type="checkbox" class="clog_permission_checkbox" {{#if clog_tutor}}checked="checked"{{/if}}" id="{{role}}:clog.tutor"/></td>
+        </tr>
+        {{/each}}
+	</tbody>
+</table>
 <input id="clog_permissions_save_button" type="button" value="{{translate 'save'}}"/>
 <input type="button" value="{{translate 'cancel'}}" onclick="return clog.switchState('home');"/>
