@@ -33,7 +33,7 @@
         <script type="text/javascript" src="/library/js/jquery/ui/1.10.3/jquery-ui.1.10.3.full.min.js"></script>
         <script type="text/javascript" src="/library/js/jquery/hoverIntent/r7/jquery.hoverIntent.minified.js"></script>
         <script type="text/javascript" src="/library/js/jquery/cluetip/1.2.10/jquery.cluetip.min.js"></script>
-        <script type="text/javascript" src="/library/js/jquery/i18n-properties/1.0.9/jquery.i18n.properties-1.0.9.js"></script>
+        <script type="text/javascript" src="/clog-tool/lib/jquery.i18n.properties.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v2.0.0.js"></script>
