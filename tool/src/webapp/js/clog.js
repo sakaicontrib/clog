@@ -40,7 +40,7 @@ clog.switchState = function (state,arg) {
 	// Just in case we have a floating cluetip hanging about
 	$('#cluetip').hide();
 
-	if (!clog.onGateway && clog.currentUserPermissions.postCreate) {
+	if (clog.currentUserPermissions.postCreate) {
 		$("#clog_create_post_link").show();
 	} else {
 		$("#clog_create_post_link").hide();
@@ -118,7 +118,7 @@ clog.switchState = function (state,arg) {
 	} else if ('viewMembers' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_view_authors_link > span').addClass('current');
-		if (!clog.onGateway && clog.currentUserPermissions.postCreate) {
+		if (clog.currentUserPermissions.postCreate) {
 			$("#clog_create_post_link").show();
         } else {
 			$("#clog_create_post_link").hide();
@@ -223,163 +223,185 @@ clog.switchState = function (state,arg) {
 
         clog.utils.renderPageOfPosts({userId: userId, isPublic: true});
 	} else if ('post' === state) {
-		if (arg && arg.postId) {
-			clog.currentPost = clog.utils.findPost(arg.postId);
-        }
 
-		if (!clog.currentPost) {
-			return false;
-        }
+		var postCallback = function (post) {
+
+                clog.currentPost = post;
+
+                if (!clog.currentPost) {
+			        return false;
+                }
 			
-		clog.utils.addFormattedDatesToCurrentPost();
+                clog.utils.addFormattedDatesToCurrentPost();
 
-        var cp = clog.currentPost;
-	 			
-		clog.utils.renderTemplate('post_page', cp, 'clog_content');
+                var cp = clog.currentPost;
+                        
+                clog.utils.renderTemplate('post_page', cp, 'clog_content');
 
-		clog.utils.renderPost(cp, 'post_' + clog.currentPost.id);
+                clog.utils.renderPost(cp, 'post_' + clog.currentPost.id);
 
-	 	$(document).ready(function () {
+                $(document).ready(function () {
 
-			$('#clog_user_posts_link').click(function (e) {
-				clog.switchState('userPosts',{'userId' : clog.currentPost.creatorId});
-			});
+                    $('#clog_user_posts_link').click(function (e) {
+                        clog.switchState('userPosts',{'userId' : clog.currentPost.creatorId});
+                    });
 
-			$('.content').show();
+                    $('.content').show();
 
-			if (clog.currentPost.comments.length > 0) $('.comments').show();
+                    if (clog.currentPost.comments.length > 0) $('.comments').show();
 
-            clog.fitFrame();
-	 	});
+                    clog.fitFrame();
+                });
+            };
+
+		if (arg && arg.postId) {
+			clog.utils.findPost(arg.postId, postCallback);
+        }
 	} else if ('createPost' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_create_post_link > span').addClass('current');
 
 		clog.currentPost = {id: '', title: '', content: '', commentable: true, groups: []};
 
-		if (arg && arg.postId) {
-			clog.currentPost = clog.utils.findPost(arg.postId);
-			if (clog.currentPost.autosavedVersion) {
-				if (confirm(clog.i18n.autosaved_copy_question)) {
-					clog.currentPost = clog.currentPost.autosavedVersion;
-				}
-			}
-		}
+        var postCallback = function (post) {
 
-		var templateData = {
-                post: clog.currentPost,
-                onMyWorkspace: clog.onMyWorkspace,
-                publicAllowed: clog.publicAllowed,
-                groups: clog.groups,
-                hasGroups: clog.groups.length > 0
+                clog.currentPost = post;
+                if (clog.currentPost.autosavedVersion) {
+                    if (confirm(clog.i18n.autosaved_copy_question)) {
+                        clog.currentPost = clog.currentPost.autosavedVersion;
+                    }
+                }
+
+                var templateData = {
+                        post: clog.currentPost,
+                        onMyWorkspace: clog.onMyWorkspace,
+                        publicAllowed: clog.publicAllowed,
+                        groups: clog.groups,
+                        hasGroups: clog.groups.length > 0
+                    };
+
+                clog.utils.renderTemplate('create_post', templateData, 'clog_content');
+
+                $(document).ready(function () {
+
+                    $('#clog_title_field').bind('keypress', function (e) {
+                        clog.titleChanged = true;	 		
+                    });
+
+                    $('#clog_visibility_maintainer,#clog_visibility_site').click(function (e) {
+
+                        $('#clog-group-fieldset').hide();
+                        clog.fitFrame();
+                    });
+
+                    if (clog.currentPost.groups.length > 0) {
+                        $('#clog-visibility-group').prop('checked', true);
+                        $('#clog-group-fieldset').show();
+                        clog.currentPost.groups.forEach(function (groupId) {
+                            $('#clog-group-' + groupId).prop('selected', true);
+                        });
+                    }
+                    
+                    $('#clog-visibility-group').click(function (e) {
+                        $('#clog-group-fieldset').show();
+                        clog.fitFrame();
+                    });
+
+                    $('#clog_save_post_button').click(function () {
+                        clog.utils.savePostAsDraft(clog.editor);
+                    });
+
+                    $('#clog_make_post_public_button').click(function () {
+                        clog.utils.publicisePost(clog.editor);
+                    });
+
+                    $('#clog_publish_post_button').click(function () {
+                        clog.utils.publishPost(clog.editor);
+                    });
+
+                    $('#clog_cancel_button').click(function (e) {
+
+                        // If the current post has neither been saved or published, delete the autosaved copy
+                        if (!clog.currentPost.visibility) {
+                            clog.utils.deleteAutosavedCopy(clog.currentPost.id);
+                        }
+                        clog.switchState('home');
+                        return false;
+                    });
+
+                    if ("MAINTAINER" === clog.currentPost.visibility) {
+                        $('#clog_visibility_maintainer').attr("checked","true");
+                    }
+                    
+                    // Start the auto saver
+                    clog.autosave_id = setInterval(function () {
+                            clog.utils.autosavePost(clog.editor);
+                        }, 10000);
+
+                    clog.sakai.setupWysiwygEditor(clog.editor,'clog_content_editor',600,400);
+                });
             };
 
-		clog.utils.renderTemplate('create_post', templateData, 'clog_content');
-
-	 	$(document).ready(function () {
-
-	 		$('#clog_title_field').bind('keypress', function (e) {
-				clog.titleChanged = true;	 		
-	 		});
-
-            $('#clog_visibility_maintainer,#clog_visibility_site').click(function (e) {
-
-                $('#clog-group-fieldset').hide();
-                clog.fitFrame();
-            });
-
-            if (clog.currentPost.groups.length > 0) {
-                $('#clog-visibility-group').prop('checked', true);
-                $('#clog-group-fieldset').show();
-                clog.currentPost.groups.forEach(function (groupId) {
-                    $('#clog-group-' + groupId).prop('selected', true);
-                });
-            }
-            
-            $('#clog-visibility-group').click(function (e) {
-                $('#clog-group-fieldset').show();
-                clog.fitFrame();
-            });
-
-			$('#clog_save_post_button').click(function () {
-				clog.utils.savePostAsDraft(clog.editor);
-			});
-
-			$('#clog_make_post_public_button').click(function () {
-				clog.utils.publicisePost(clog.editor);
-			});
-
-			$('#clog_publish_post_button').click(function () {
-				clog.utils.publishPost(clog.editor);
-			});
-
-			$('#clog_cancel_button').click(function (e) {
-
-				// If the current post has neither been saved or published, delete the autosaved copy
-				if (!clog.currentPost.visibility) {
-					clog.utils.deleteAutosavedCopy(clog.currentPost.id);
-				}
-				clog.switchState('home');
-                return false;
-			});
-
-            if ("MAINTAINER" === clog.currentPost.visibility) {
-                $('#clog_visibility_maintainer').attr("checked","true");
-            }
-			
-			// Start the auto saver
-			clog.autosave_id = setInterval(function () {
-					clog.utils.autosavePost(clog.editor);
-				}, 10000);
-
- 			clog.sakai.setupWysiwygEditor(clog.editor,'clog_content_editor',600,400);
-	 	});
-	} else if ('createComment' === state) {
-		if (!arg || !arg.postId)
-			return;
-
-		clog.currentPost = clog.utils.findPost(arg.postId);
-
-		var comment = {id: '',postId: arg.postId,content: ''};
-
-		var currentIndex = -1;
-
-		if (arg.commentId) {
-			var comments = clog.currentPost.comments;
-
-			comments.forEach(function (c) {
-
-				if (c.id == arg.commentId) {
-					comment = c;
-				}
-			});
+		if (arg && arg.postId) {
+			clog.utils.findPost(arg.postId, postCallback);
 		}
+	} else if ('createComment' === state) {
+		if (!arg || !arg.postId) {
+			return;
+        }
 
-		clog.utils.renderTemplate('create_comment', comment, 'clog_content');
+        var postCallback = function (post) {
 
-		$(document).ready(function () {
+		        clog.currentPost = post;
 
-			clog.utils.renderPost(clog.currentPost, 'clog_post_' + arg.postId);
+                var comment = {id: '',postId: arg.postId,content: ''};
 
-			$('#clog_save_comment_button').click(function () {
-				clog.utils.saveComment(clog.editor);
-                return false;
-			});
-			
-			clog.sakai.setupWysiwygEditor(clog.editor,'clog_content_editor',600,400);
-		});
+                var currentIndex = -1;
+
+                if (arg.commentId) {
+                    var comments = clog.currentPost.comments;
+
+                    comments.forEach(function (c) {
+
+                        if (c.id == arg.commentId) {
+                            comment = c;
+                        }
+                    });
+                }
+
+                clog.utils.renderTemplate('create_comment', comment, 'clog_content');
+
+                $(document).ready(function () {
+
+                    clog.utils.renderPost(clog.currentPost, 'clog_post_' + arg.postId);
+
+                    $('#clog_save_comment_button').click(function () {
+                        clog.utils.saveComment(clog.editor);
+                        return false;
+                    });
+                    
+                    clog.sakai.setupWysiwygEditor(clog.editor,'clog_content_editor',600,400);
+                });
+            };
+
+        clog.utils.findPost(arg.postId, postCallback);
 	} else if ('permissions' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_permissions_link > span').addClass('current');
-		var perms = clog.utils.getSitePermissionMatrix();
-		clog.utils.renderTemplate('permissions',{'perms': perms},'clog_content');
 
-	 	$(document).ready(function () {
+        var permissionsCallback = function (perms) {
 
-            clog.fitFrame();
+                clog.utils.renderTemplate('permissions', {'perms': perms}, 'clog_content');
 
-			$('#clog_permissions_save_button').bind('click',clog.utils.savePermissions);
-		});
+                $(document).ready(function () {
+
+                    clog.fitFrame();
+
+                    $('#clog_permissions_save_button').bind('click', clog.utils.savePermissions);
+                });
+            };
+
+		clog.utils.getSitePermissionMatrix(permissionsCallback);
 	} else if ('viewRecycled' === state) {
 	    $('#clog_toolbar >  li > span').removeClass('current');
 	    $('#clog_recycle_bin_link > span').addClass('current');
@@ -547,36 +569,7 @@ clog.toggleFullContent = function (v) {
             $("#clog_my_public_posts_link").show();
         }
 	}
-
-	if (!clog.onGateway) {
-		clog.currentUserPermissions = new ClogPermissions(clog.utils.getCurrentUserPermissions());
-	
-		if (clog.currentUserPermissions == null) return;
-	
-		if (clog.currentUserPermissions.modifyPermissions) {
-			$("#clog_permissions_link").show();
-		} else {
-			$("#clog_permissions_link").hide();
-        }
-
-		if (clog.currentUserPermissions.postDeleteAny) {
-			$("#clog_recycle_bin_link").show();
-		} else {
-			$("#clog_recycle_bin_link").hide();
-		}
-
-		if (clog.currentUserPermissions.postReadAny) {
-			$("#clog_view_authors_link").show();
-			$("#clog_view_authors_link").css('display','inline');
-        }
-	} else {
-		$("#clog_permissions_link").hide();
-		$("#clog_my_clog_link").hide();
-		$("#clog_home_link").hide();
-		$('#clog_recycle_bin_link').hide();
-		clog.currentUserPermissions = new ClogPermissions();
-	}
-
+    
     $.tablesorter.addParser({
         id: 'clogDate',
         is: function (s) {
@@ -602,9 +595,48 @@ clog.toggleFullContent = function (v) {
             window.frameElement.style.minHeight = '600px';
         }
     } catch (err) { }
-	
-	// Now switch into the requested state
-	clog.switchState(clog.state, clog);
 
+	if (!clog.onGateway) {
+
+        var permissionsCallback = function (permissions) {
+
+		        clog.currentUserPermissions = new ClogPermissions(permissions);
+
+                if (clog.currentUserPermissions == null) {
+                    return;
+                }
+            
+                if (clog.currentUserPermissions.modifyPermissions) {
+                    $("#clog_permissions_link").show();
+                } else {
+                    $("#clog_permissions_link").hide();
+                }
+
+                if (clog.currentUserPermissions.postDeleteAny) {
+                    $("#clog_recycle_bin_link").show();
+                } else {
+                    $("#clog_recycle_bin_link").hide();
+                }
+
+                if (clog.currentUserPermissions.postReadAny) {
+                    $("#clog_view_authors_link").show();
+                    $("#clog_view_authors_link").css('display','inline');
+                }
+
+                // Now switch into the requested state
+                clog.switchState(clog.state, clog);
+            };
+
+		clog.utils.getCurrentUserPermissions(permissionsCallback);
+	} else {
+		$("#clog_permissions_link").hide();
+		$("#clog_my_clog_link").hide();
+		$("#clog_home_link").hide();
+		$('#clog_recycle_bin_link').hide();
+		clog.currentUserPermissions = new ClogPermissions();
+
+	    // Now switch into the requested state
+	    clog.switchState(clog.state, clog);
+	}
 })(jQuery);
 

@@ -10,37 +10,31 @@ clog.utils = {
         });
         return ids;
     },
-    getCurrentUserPermissions: function () {
-
-		var permissions = null;
+    getCurrentUserPermissions: function (callback) {
 
 		jQuery.ajax( {
 	 		url: "/direct/clog/userPerms.json?siteId=" + clog.siteId,
 	   		dataType: "json",
-	   		async: false,
 	   		cache: false,
 		   	success: function (json) {
-				permissions = json.data;
+                callback(json.data);
 			},
 			error : function (xmlHttpRequest, textStatus, error) {
 				alert("Failed to get the current user permissions. Status: " + textStatus + ". Error: " + error);
 			}
 	  	});
-	  	
-	  	return permissions;
 	},
-    getSitePermissionMatrix: function () {
-
-        var perms = [];
+    getSitePermissionMatrix: function (callback) {
 
         jQuery.ajax( {
 	 		url: "/direct/clog/perms.json?siteId=" + clog.siteId,
             dataType: "json",
-            async: false,
             cache: false,
             success: function(json) {
 
                 var p = json.data;
+
+                var perms = [];
 
                 for (role in p) {
                     var permSet = {'role': role};
@@ -51,13 +45,13 @@ clog.utils = {
 
                     perms.push(permSet);
                 }
+
+                callback(perms);
             },
             error: function(xmlHttpRequest, textStatus, error) {
                 alert("Failed to get permissions. Status: " + textStatus + ". Error: " + error);
             }
         });
-
-        return perms;
     },
     savePermissions: function () {
 
@@ -371,18 +365,15 @@ clog.utils = {
 
 		return false;
 	},
-    findPost: function (postId) {
-
-		var post = null;
+    findPost: function (postId, callback) {
 		
 		if (!clog.currentPosts) {
 			jQuery.ajax( {
 	 			url: "/direct/clog-post/" + postId + ".json",
 	   			dataType: "json",
-	   			async: false,
 	   			cache: false,
 		   		success: function (p, status) {
-					post = p;
+                    callback(p);
 				},
 				error : function (xmlHttpRequest,stat,error) {
 					alert("Failed to get the post. Status: " + stat + ". Error: " + error);
@@ -391,12 +382,10 @@ clog.utils = {
 	  	} else {
 			clog.currentPosts.forEach(function (p) {
 				if (p.id === postId) {
-					post = p;
+                    callback(p);
                 }
 			});
 		}
-
-		return post;
 	},
     deleteComment: function (commentId) {
                         
