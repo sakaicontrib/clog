@@ -83,10 +83,10 @@ public class ClogTool extends HttpServlet {
             } else if (parts.length == 3) {
                 locale = new Locale(parts[0], parts[1], parts[2]);
             }
-            rl = new ResourceLoader("org.sakaiproject.clog.tool.bundle.ui");
+            rl = new ResourceLoader("org.sakaiproject.clog");
             rl.setContextLocale(locale);
         } else {
-            rl = new ResourceLoader(userId, "org.sakaiproject.clog.tool.bundle.ui");
+            rl = new ResourceLoader(userId, "org.sakaiproject.clog");
             locale = rl.getLocale();
         }
 
@@ -101,9 +101,6 @@ public class ClogTool extends HttpServlet {
             language += "_" + country;
         }
 
-        // These go in a separate variable
-        String[] months = rl.getString("months").split(",");
-       
 		request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
 		
 	    request.setAttribute("userId", userId);
@@ -114,8 +111,6 @@ public class ClogTool extends HttpServlet {
 	    request.setAttribute("placementId", placementId);
 	    request.setAttribute("editor", sakaiProxy.getWysiwygEditor());
 	    request.setAttribute("isolanguage", language);
-        request.setAttribute("i18n", rl);
-        request.setAttribute("months", months);
         request.setAttribute("groups", clogManager.getSiteGroupsForCurrentUser(siteId));
 	    request.setAttribute("publicAllowed", sakaiProxy.isPublicAllowed() ? "true":"false");
 

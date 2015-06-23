@@ -486,6 +486,17 @@ clog.toggleFullContent = function (v) {
 		return;
 	}
 
+    $.i18n.properties({
+        name:'ui',
+        path:'/clog-tool/i18n/',
+        mode: 'both',
+        language: sakai.locale.userLocale
+    });
+
+    clog.i18n = $.i18n.map;
+
+    clog.i18n.months = clog.i18n.months.split(',');
+
     clog.monthMappings = {};
     clog.i18n.months.forEach(function (m, i) {
         clog.monthMappings[m] = i + 1;
@@ -498,8 +509,6 @@ clog.toggleFullContent = function (v) {
 	if (clog.siteId.match(/^~/)) {
 		clog.onMyWorkspace = true;
 	}
-
-    console.log("PUBLIC: " + clog.publicAllowed);
 
 	// This comes from sakai.properties, via the ClogTool servlet 
 	if ('true' === clog.publicAllowed) {

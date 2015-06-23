@@ -18,10 +18,7 @@
                 publicAllowed:'${publicAllowed}',
                 postId:'${postId}',
                 onPDAPortal:'${onPDAPortal}',
-                i18n: {
-                    <c:forEach items="${i18n}" var="i">${i.key}: "${i.value}",</c:forEach>
-                    months: [<c:forEach items="${months}" var="m" varStatus="ms">'${m}'<c:if test="${not ms.last}">,</c:if></c:forEach>]
-                },
+                i18n: {},
                 groups: [
                             <c:forEach items="${groups}" var="i" varStatus="is">{id: '${i.id}', title: '${i.title}', totalPosts: ${i.totalPosts}, lastPostDate: ${i.lastPostDate}}<c:if test="${not is.last}">,</c:if></c:forEach>
                 ]
@@ -36,6 +33,7 @@
         <script type="text/javascript" src="/library/js/jquery/ui/1.10.3/jquery-ui.1.10.3.full.min.js"></script>
         <script type="text/javascript" src="/library/js/jquery/hoverIntent/r7/jquery.hoverIntent.minified.js"></script>
         <script type="text/javascript" src="/library/js/jquery/cluetip/1.2.10/jquery.cluetip.min.js"></script>
+        <script type="text/javascript" src="/library/js/jquery/i18n-properties/1.0.9/jquery.i18n.properties-1.0.9.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v2.0.0.js"></script>
