@@ -20,17 +20,15 @@ import org.sakaiproject.entitybroker.entityprovider.search.Search;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.user.api.UserDirectoryService;
 
+@Setter
 public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Outputable, Describeable, CollectionResolvable {
 	
 	public final static String ENTITY_PREFIX = "clog-author";
 	
 	protected final Logger LOG = Logger.getLogger(getClass());
 
-	@Setter
 	private ClogManager clogManager;
-
-	@Setter
-	private UserDirectoryService userDirectoryService = null;
+	private UserDirectoryService userDirectoryService;
 
 	public boolean entityExists(String id) {
 		

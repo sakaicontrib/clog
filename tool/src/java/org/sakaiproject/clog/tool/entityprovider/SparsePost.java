@@ -9,26 +9,16 @@ import org.sakaiproject.clog.api.datamodel.Post;
  * 
  * @author Adrian Fish <adrian.r.fish@gmail.com>
  */
+@Getter
 public class SparsePost {
 	
-	@Getter
 	private String id = "";
-	
-	@Getter
 	private long createdDateMillis = -1L;
-	
-	@Getter
 	private long modifiedDateMillis = -1L;
-	
-	@Getter
 	private String creatorDisplayName = "";
-	
-	@Getter
 	private String title = "";
-	
-	@Getter
 	private String url = "";
-	
+
 	public SparsePost(Post post) {
 		
 		this.id = post.getId();

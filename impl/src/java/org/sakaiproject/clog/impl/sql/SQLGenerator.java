@@ -39,7 +39,7 @@ import org.sakaiproject.clog.api.QueryBean;
 
 public class SQLGenerator implements ISQLGenerator {
 
-	private Logger logger = Logger.getLogger(getClass());
+	private static final Logger logger = Logger.getLogger(SQLGenerator.class);
 
 	// by default, oracle values
 	public String BLOB = "BLOB";

@@ -79,9 +79,12 @@ import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.BaseResourceProperties;
 import org.sakaiproject.util.FormattedText;
 
+import lombok.Setter;
+
+@Setter
 public class SakaiProxyImpl implements SakaiProxy {
 
-	private Logger logger = Logger.getLogger(SakaiProxyImpl.class);
+	private final Logger logger = Logger.getLogger(SakaiProxyImpl.class);
 
 	private ToolManager toolManager;
 
@@ -314,30 +317,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 	}
 
-	public void setToolManager(ToolManager toolManager) {
-		this.toolManager = toolManager;
-	}
-
-	public ToolManager getToolManager() {
-		return toolManager;
-	}
-
-	public void setSessionManager(SessionManager sessionManager) {
-		this.sessionManager = sessionManager;
-	}
-
-	public SessionManager getSessionManager() {
-		return sessionManager;
-	}
-
-	public void setAuthzGroupService(AuthzGroupService authzGroupService) {
-		this.authzGroupService = authzGroupService;
-	}
-
-	public AuthzGroupService getAuthzGroupService() {
-		return authzGroupService;
-	}
-
 	public boolean isAutoDDL() {
 		String autoDDL = serverConfigurationService.getString("auto.ddl");
 		return autoDDL.equals("true");
@@ -408,68 +387,8 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return serverConfigurationService.getAccessUrl();
 	}
 
-	public void setContentHostingService(ContentHostingService contentHostingService) {
-		this.contentHostingService = contentHostingService;
-	}
-
-	public ContentHostingService getContentHostingService() {
-		return contentHostingService;
-	}
-
-	public void setSiteService(SiteService siteService) {
-		this.siteService = siteService;
-	}
-
-	public SiteService getSiteService() {
-		return siteService;
-	}
-
-	public void setServerConfigurationService(ServerConfigurationService serverConfigurationService) {
-		this.serverConfigurationService = serverConfigurationService;
-	}
-
-	public ServerConfigurationService getServerConfigurationService() {
-		return serverConfigurationService;
-	}
-
-	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
-
-	public AuthenticationManager getAuthenticationManager() {
-		return authenticationManager;
-	}
-
-	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
-		this.userDirectoryService = userDirectoryService;
-	}
-
-	public UserDirectoryService getUserDirectoryService() {
-		return userDirectoryService;
-	}
-
 	public void registerEntityProducer(EntityProducer entityProducer) {
 		entityManager.registerEntityProducer(entityProducer, "/clog");
-	}
-
-	public void setEntityManager(EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
-
-	public EntityManager getEntityManager() {
-		return entityManager;
-	}
-
-	public void setSqlService(SqlService sqlService) {
-		this.sqlService = sqlService;
-	}
-
-	public SqlService getSqlService() {
-		return sqlService;
-	}
-
-	public void setMemoryService(MemoryService memoryService) {
-		this.memoryService = memoryService;
 	}
 
 	public void registerFunction(String function) {
@@ -478,14 +397,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 		if (!functions.contains(function)) {
 			functionManager.registerFunction(function);
 		}
-	}
-
-	public void setFunctionManager(FunctionManager functionManager) {
-		this.functionManager = functionManager;
-	}
-
-	public FunctionManager getFunctionManager() {
-		return functionManager;
 	}
 
 	public boolean isAllowedFunction(String function, String siteId) {
@@ -508,28 +419,12 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return false;
 	}
 
-	public void setEventTrackingService(EventTrackingService eventTrackingService) {
-		this.eventTrackingService = eventTrackingService;
-	}
-
-	public EventTrackingService getEventTrackingService() {
-		return eventTrackingService;
-	}
-
 	private void enableSecurityAdvisor(SecurityAdvisor securityAdvisor) {
 		securityService.pushAdvisor(securityAdvisor);
 	}
 
 	private void disableSecurityAdvisor(SecurityAdvisor securityAdvisor) {
 		securityService.popAdvisor(securityAdvisor);
-	}
-
-	public void setSecurityService(SecurityService securityService) {
-		this.securityService = securityService;
-	}
-
-	public SecurityService getSecurityService() {
-		return securityService;
 	}
 
 	public void postEvent(String event, String reference, String siteId) {
@@ -545,14 +440,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 
 		return null;
-	}
-
-	public void setDigestService(DigestService digestService) {
-		this.digestService = digestService;
-	}
-
-	public DigestService getDigestService() {
-		return digestService;
 	}
 
 	public String getSiteTitle(String siteId) {
@@ -811,14 +698,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 		}
 
 		return false;
-	}
-
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
-	}
-
-	public SearchService getSearchService() {
-		return searchService;
 	}
 
 	private String getFromAddress() {

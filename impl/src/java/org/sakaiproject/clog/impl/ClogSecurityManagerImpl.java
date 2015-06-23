@@ -34,17 +34,13 @@ import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.ToolManager;
 
+@Setter
 public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
-	private Logger logger = Logger.getLogger(ClogSecurityManagerImpl.class);
+	private static final Logger logger = Logger.getLogger(ClogSecurityManagerImpl.class);
 
-	@Setter
-	private SakaiProxy sakaiProxy;
-	
-	@Getter @Setter
+	private SakaiProxy  sakaiProxy;
 	private SiteService siteService;
-	
-	@Getter @Setter
 	private ToolManager toolManager;
 
 	public boolean canCurrentUserCommentOnPost(Post post) {

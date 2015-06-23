@@ -19,21 +19,20 @@ import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.SiteEmailNotification;
 
+import lombok.Setter;
+
 public class NewCommentNotification extends SiteEmailNotification {
 
-	private static ResourceLoader rb = new ResourceLoader("newcomment");
+	private final static ResourceLoader rb = new ResourceLoader("newcomment");
 
-	private SakaiProxy sakaiProxy = null;
+    @Setter
+	private SakaiProxy sakaiProxy;
 
 	public NewCommentNotification() {
 	}
 
 	public NewCommentNotification(String siteId) {
 		super(siteId);
-	}
-
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
 	}
 
 	protected String getFromAddress(Event event) {

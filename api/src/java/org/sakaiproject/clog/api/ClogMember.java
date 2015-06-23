@@ -1,10 +1,11 @@
 package org.sakaiproject.clog.api;
 
-import java.net.URLEncoder;
-
 import org.sakaiproject.user.api.User;
-import org.sakaiproject.util.FormattedText;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class ClogMember {
 
 	private int numberOfPosts = 0;
@@ -36,45 +37,5 @@ public class ClogMember {
 
 	public String getUserDisplayName() {
 		return sakaiUser.getLastName() + ", " + sakaiUser.getFirstName();
-	}
-
-	public void setNumberOfPosts(int numberOfPosts) {
-		this.numberOfPosts = numberOfPosts;
-	}
-
-	public int getNumberOfPosts() {
-		return numberOfPosts;
-	}
-
-	public void setDateOfLastPost(long last) {
-		this.dateOfLastPost = last;
-	}
-
-	public long getDateOfLastPost() {
-		return dateOfLastPost;
-	}
-
-	public void setDateOfLastComment(long dateOfLastComment) {
-		this.dateOfLastComment = dateOfLastComment;
-	}
-
-	public long getDateOfLastComment() {
-		return dateOfLastComment;
-	}
-
-	public void setLastCommentCreator(String lastCommentCreator) {
-		this.lastCommentCreator = lastCommentCreator;
-	}
-
-	public String getLastCommentCreator() {
-		return lastCommentCreator;
-	}
-
-	public void setNumberOfComments(int numberOfComments) {
-		this.numberOfComments = numberOfComments;
-	}
-
-	public int getNumberOfComments() {
-		return numberOfComments;
 	}
 }

@@ -22,19 +22,17 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 
+@Setter
 public class ClogRSSEntityProvider extends AbstractEntityProvider implements AutoRegisterEntityProvider, Inputable, Outputable, Describeable, ActionsExecutable {
 	
 	public final static String ENTITY_PREFIX = "clog-rss";
 	
 	protected final Logger LOG = Logger.getLogger(getClass());
 
-	@Setter
 	private ClogManager clogManager;
-	
-	@Setter
-	private SakaiProxy sakaiProxy = null;
+	private SakaiProxy  sakaiProxy;
 
-	private SimpleDateFormat rfc822DateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+	private final SimpleDateFormat rfc822DateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 
 	public Object getSampleEntity() {
 		return new Post();

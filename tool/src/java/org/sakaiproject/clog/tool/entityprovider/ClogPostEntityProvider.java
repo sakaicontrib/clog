@@ -43,15 +43,13 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.entitybroker.util.TemplateParseUtil;
 import org.sakaiproject.util.ResourceLoader;
 
+@Setter
 public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, /*Createable,*/ Describeable, /*CollectionResolvable,*/ ActionsExecutable, Redirectable, Statisticable {
 
 	private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
 
-	@Setter
 	private ClogManager clogManager;
-
-	@Setter
-	private SakaiProxy sakaiProxy = null;
+	private SakaiProxy  sakaiProxy;
 
 	public final static String ENTITY_PREFIX = "clog-post";
 
