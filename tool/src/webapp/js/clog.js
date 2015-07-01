@@ -12,6 +12,22 @@ clog.autosave_id = null;
 clog.page = 0;
 clog.postsTotal = 0;
 clog.postsRendered = 0;
+
+// Sorting keys start
+clog.SORT_NAME_UP = 'sortnameup';
+clog.SORT_NAME_DOWN = 'sortnamedown';
+clog.sortByName = clog.SORT_NAME_DOWN;
+clog.SORT_POSTS_UP = 'sortpostsup';
+clog.SORT_POSTS_DOWN = 'sortpostsdown';
+clog.sortByPosts = clog.SORT_POSTS_DOWN;
+clog.SORT_LAST_POST_UP = 'sortlastpostup';
+clog.SORT_LAST_POST_DOWN = 'sortlastpostdown';
+clog.sortByLastPost = clog.SORT_LAST_POST_DOWN;
+clog.SORT_COMMENTS_UP = 'sortcommentsup';
+clog.SORT_COMMENTS_DOWN = 'sortcommentsdown';
+clog.sortByComments = clog.SORT_COMMENTS_DOWN;
+// Sorting keys end
+//
 clog.LOCAL_STORAGE_KEY = 'clog';
 
 clog.states = {
@@ -124,46 +140,64 @@ clog.switchState = function (state,arg) {
 			$("#clog_create_post_link").hide();
         }
 
-		jQuery.ajax({
-	    	url: "/direct/clog-author.json?siteId=" + clog.siteId,
-	      	dataType: "json",
-			cache: false,
-		   	success: function (data) {
+        clog.utils.renderTemplate('authors_wrapper', {onGateway: clog.onGateway, siteId: clog.siteId}, 'clog_content');
 
-				var authors = data['clog-author_collection'];
+        $(document).ready(function () {
 
-                authors.forEach(function (a) {
-                    a.formattedDateOfLastPost = clog.utils.formatDate(a.dateOfLastPost);
-                });
+            $('#clog-sortbyname').click(function (e) {
 
-				clog.utils.renderTemplate('authors', {'authors': authors, onGateway: clog.onGateway, siteId: clog.siteId}, 'clog_content');
+                if (clog.sortByName === clog.SORT_NAME_DOWN) {
+                    clog.sortByName = clog.SORT_NAME_UP;
+                } else {
+                    clog.sortByName = clog.SORT_NAME_DOWN;
+                }
 
- 				$(document).ready(function () {
+                clog.page = 0;
+                clog.postsRendered = 0;
+                clog.utils.renderPageOfMembers({ sort: clog.sortByName });
+            });
+            $('#clog-sortbynumberposts').click(function (e) {
+                if (clog.sortByPosts === clog.SORT_POSTS_DOWN) {
+                    clog.sortByPosts = clog.SORT_POSTS_UP;
+                } else {
+                    clog.sortByPosts = clog.SORT_POSTS_DOWN;
+                }
 
- 					clog.utils.attachProfilePopup();
+                clog.page = 0;
+                clog.postsRendered = 0;
+                clog.utils.renderPageOfMembers({ sort: clog.sortByPosts });
+            });
+            $('#clog-sortbylastpost').click(function (e) {
+                if (clog.sortByLastPost === clog.SORT_LAST_POST_DOWN) {
+                    clog.sortByLastPost = clog.SORT_LAST_POST_UP;
+                } else {
+                    clog.sortByLastPost = clog.SORT_LAST_POST_DOWN;
+                }
 
-  					$("#clog_author_table").tablesorter({
-							widgets: ['zebra'],
-	 						cssHeader:'clogSortableTableHeader',
-	 						cssAsc:'clogSortableTableHeaderSortUp',
-	 						cssDesc:'clogSortableTableHeaderSortDown',
-							textExtraction: 'complex',	
-							sortList: [[0,0]],
-	 						headers: {
-	 							2: { sorter: "clogDate" },
-                                4: { sorter: false }
-	 						} }).tablesorterPager({ container: $("#clogAuthorPager"), positionFixed: false });
+                clog.page = 0;
+                clog.postsRendered = 0;
+                clog.utils.renderPageOfMembers({ sort: clog.sortByLastPost });
+            });
+            $('#clog-sortbynumbercomments').click(function (e) {
+                if (clog.sortByComments === clog.SORT_COMMENTS_DOWN) {
+                    clog.sortByComments = clog.SORT_COMMENTS_UP;
+                } else {
+                    clog.sortByComments = clog.SORT_COMMENTS_DOWN;
+                }
 
-                    $('.pagedisplay').prop('disabled', true);
+                clog.page = 0;
+                clog.postsRendered = 0;
+                clog.utils.renderPageOfMembers({ sort: clog.sortByComments });
+            });
+        });
 
-                    clog.fitFrame();
-	   			});
+        // renderPageOfMembers uses this. Set it to the start page
+        clog.page = 0;
+        clog.postsRendered = 0;
 
-			},
-			error : function (xmlHttpRequest, status, errorThrown) {
-				alert("Failed to get authors. Reason: " + errorThrown);
-			}
-	   	});
+        clog.currentPosts = [];
+
+        clog.utils.renderPageOfMembers();
 	} else if ('userPosts' === state) {
 
 	    $('#clog_toolbar > li > span').removeClass('current');
@@ -261,9 +295,7 @@ clog.switchState = function (state,arg) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_create_post_link > span').addClass('current');
 
-		clog.currentPost = {id: '', title: '', content: '', commentable: true, groups: []};
-
-        var postCallback = function (post) {
+        var createPostCallback = function (post) {
 
                 clog.currentPost = post;
                 if (clog.currentPost.autosavedVersion) {
@@ -283,6 +315,7 @@ clog.switchState = function (state,arg) {
                 clog.utils.renderTemplate('create_post', templateData, 'clog_content');
 
                 $(document).ready(function () {
+
 
                     $('#clog_title_field').bind('keypress', function (e) {
                         clog.titleChanged = true;	 		
@@ -343,14 +376,16 @@ clog.switchState = function (state,arg) {
             };
 
 		if (arg && arg.postId) {
-			clog.utils.findPost(arg.postId, postCallback);
-		}
+			clog.utils.findPost(arg.postId, createPostCallback);
+		} else {
+			createPostCallback({ id: '', title: '', content: '', commentable: true, groups: [] });
+        }
 	} else if ('createComment' === state) {
 		if (!arg || !arg.postId) {
 			return;
         }
 
-        var postCallback = function (post) {
+        var commentCallback = function (post) {
 
 		        clog.currentPost = post;
 
@@ -384,7 +419,7 @@ clog.switchState = function (state,arg) {
                 });
             };
 
-        clog.utils.findPost(arg.postId, postCallback);
+        clog.utils.findPost(arg.postId, commentCallback);
 	} else if ('permissions' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_permissions_link > span').addClass('current');

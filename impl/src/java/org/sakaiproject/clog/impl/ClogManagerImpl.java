@@ -1,8 +1,10 @@
 package org.sakaiproject.clog.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,7 +122,7 @@ public class ClogManagerImpl implements ClogManager {
 
 	public List<Post> getPosts(QueryBean query) throws Exception {
 
-        Cache cache = sakaiProxy.getCache(CACHE);
+        Cache cache = sakaiProxy.getCache(POST_CACHE);
         if (query.byPublic()) {
             if (!cache.containsKey(Visibilities.PUBLIC)) {
                 cache.put(Visibilities.PUBLIC, persistenceManager.getPosts(query));
@@ -170,9 +172,7 @@ public class ClogManagerImpl implements ClogManager {
 	public boolean savePost(Post post) {
 		try {
 			if (persistenceManager.savePost(post)) {
-                // Invalidate all caches for this site
-                Cache cache = sakaiProxy.getCache(CACHE);
-                cache.remove(post.getSiteId());
+                removeSiteFromCaches(post.getSiteId());
                 return true;
             } else {
 			    logger.error("Failed to save post");
@@ -190,8 +190,7 @@ public class ClogManagerImpl implements ClogManager {
 			if (clogSecurityManager.canCurrentUserDeletePost(post))
 				if (persistenceManager.deletePost(post)) {
                     // Invalidate all caches for this site
-                    Cache cache = sakaiProxy.getCache(CACHE);
-                    cache.remove(post.getSiteId());
+                    removeSiteFromCaches(post.getSiteId());
                     return true;
                 }
 		} catch (Exception e) {
@@ -204,9 +203,7 @@ public class ClogManagerImpl implements ClogManager {
 	public boolean saveComment(Comment comment) {
 		try {
 			if (persistenceManager.saveComment(comment)) {
-                // Invalidate all caches for this site
-                Cache cache = sakaiProxy.getCache(CACHE);
-                cache.remove(comment.getSiteId());
+                removeSiteFromCaches(comment.getSiteId());
                 return true;
             }
 		} catch (Exception e) {
@@ -219,9 +216,7 @@ public class ClogManagerImpl implements ClogManager {
 	public boolean deleteComment(String siteId, String commentId) {
 		try {
 			if (persistenceManager.deleteComment(commentId)) {
-                // Invalidate all caches for this site
-                Cache cache = sakaiProxy.getCache(CACHE);
-                cache.remove(siteId);
+                removeSiteFromCaches(siteId);
 				return true;
 			}
 		} catch (Exception e) {
@@ -238,9 +233,7 @@ public class ClogManagerImpl implements ClogManager {
 			if (clogSecurityManager.canCurrentUserDeletePost(post)) {
 				if (persistenceManager.recyclePost(post)) {
 					post.setVisibility(Visibilities.RECYCLED);
-                    // Invalidate all caches for this site
-                    Cache cache = sakaiProxy.getCache(CACHE);
-                    cache.remove(post.getSiteId());
+                    removeSiteFromCaches(post.getSiteId());
 					return true;
 				}
 			}
@@ -465,18 +458,77 @@ public class ClogManagerImpl implements ClogManager {
 		return false;
 	}
 
-	public List<ClogMember> getAuthors(String siteId) {
-		List<ClogMember> authors = new ArrayList<ClogMember>();
+	public List<ClogMember> getAuthors(String siteId, String sortedBy) {
+
+        Cache cache = sakaiProxy.getCache(AUTHOR_CACHE);
 
 		if ("!gateway".equals(siteId)) {
-			authors = persistenceManager.getPublicBloggers();
-		} else {
-			authors = sakaiProxy.getSiteMembers(siteId);
-			for (ClogMember author : authors)
-				persistenceManager.populateAuthorData(author, siteId);
-		}
+            if (!cache.containsKey("public")) {
+                logger.debug("Cache miss on \"public\". Caching empty map ...");
+                cache.put("public", new HashMap<String, List<ClogMember>>());
+            }
 
-		return authors;
+            Map<String, List<ClogMember>> publicMap = (Map<String, List<ClogMember>>) cache.get("public");
+            return getOrCacheAuthors(publicMap, sortedBy, siteId); 
+		} else {
+            if (!cache.containsKey(siteId)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cache miss on \"" + siteId + "\". Caching empty map ...");
+                }
+                cache.put(siteId, new HashMap<String, List<ClogMember>>());
+            }
+
+            Map<String, List<ClogMember>> siteMap = (Map<String, List<ClogMember>>) cache.get(siteId);
+            return getOrCacheAuthors(siteMap, sortedBy, siteId); 
+		}
+    }
+
+    private List<ClogMember> getOrCacheAuthors(Map<String, List<ClogMember>> map, String sortedBy, String siteId) {
+
+        List<ClogMember> authors = new ArrayList<ClogMember>();
+
+        String sort = (sortedBy == null) ? SORT_NAME_DOWN : sortedBy;
+
+        if (map.containsKey(sort)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache hit on \"" + sort + "\".");
+            }
+            authors = map.get(sort);
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache miss on \"" + sort + "\".");
+            }
+            authors = (siteId == null) ? persistenceManager.getPublicBloggers() : sakaiProxy.getSiteMembers(siteId);
+            for (ClogMember author : authors) {
+                persistenceManager.populateAuthorData(author, siteId);
+            }
+
+            if (sort.equals(SORT_NAME_DOWN)) {
+                Collections.sort(authors, new UserDisplayNameComparator());
+            } else if (sort.equals(SORT_NAME_UP)) {
+                Collections.sort(authors, new UserDisplayNameComparator());
+                Collections.reverse(authors);
+            } else if (sort.equals(SORT_POSTS_DOWN)) {
+                Collections.sort(authors, new NumberOfPostsComparator());
+            } else if (sort.equals(SORT_POSTS_UP)) {
+                Collections.sort(authors, new NumberOfPostsComparator());
+                Collections.reverse(authors);
+            } else if (sort.equals(SORT_LAST_POST_DOWN)) {
+                Collections.sort(authors, new DateOfLastPostComparator());
+            } else if (sort.equals(SORT_LAST_POST_UP)) {
+                Collections.sort(authors, new DateOfLastPostComparator());
+                Collections.reverse(authors);
+            } else if (sort.equals(SORT_COMMENTS_DOWN)) {
+                Collections.sort(authors, new NumberOfCommentsComparator());
+            } else if (sort.equals(SORT_COMMENTS_UP)) {
+                Collections.sort(authors, new NumberOfCommentsComparator());
+                Collections.reverse(authors);
+            }
+
+            map.put(sort, authors);
+        }
+
+        return authors;
 	}
 
 	public boolean restorePost(String postId) {
@@ -484,9 +536,7 @@ public class ClogManagerImpl implements ClogManager {
 		try {
 			Post post = persistenceManager.getPost(postId);
 			if (persistenceManager.restorePost(post)) {
-                // Invalidate all caches for this site
-                Cache cache = sakaiProxy.getCache(CACHE);
-                cache.remove(post.getSiteId());
+                removeSiteFromCaches(post.getSiteId());
                 return true;
             } else {
                 return false;
@@ -514,5 +564,68 @@ public class ClogManagerImpl implements ClogManager {
         }
 
         return groups;
+    }
+
+    private class UserDisplayNameComparator implements Comparator<ClogMember> {
+
+        public int compare(ClogMember o1, ClogMember o2) {
+            return o1.getUserDisplayName().compareTo(o2.getUserDisplayName());
+        }
+    }
+
+    private class NumberOfPostsComparator implements Comparator<ClogMember> {
+
+        public int compare(ClogMember o1, ClogMember o2) {
+
+            int n1 = o1.getNumberOfPosts();
+            int n2 = o2.getNumberOfPosts();
+            if (n1 < n2) return -1;
+            else if (n1 == n2) return 0;
+            else return 1;
+        }
+    }
+
+    private class NumberOfCommentsComparator implements Comparator<ClogMember> {
+
+        public int compare(ClogMember o1, ClogMember o2) {
+
+            int n1 = o1.getNumberOfComments();
+            int n2 = o2.getNumberOfComments();
+            if (n1 < n2) return -1;
+            else if (n1 == n2) return 0;
+            else return 1;
+        }
+    }
+
+    private class DateOfLastPostComparator implements Comparator<ClogMember> {
+
+        public int compare(ClogMember o1, ClogMember o2) {
+
+            long n1 = o1.getDateOfLastPost();
+            long n2 = o2.getDateOfLastPost();
+            if (n1 < n2) return -1;
+            else if (n1 == n2) return 0;
+            else return 1;
+        }
+    }
+
+    private class DateOfLastCommentComparator implements Comparator<ClogMember> {
+
+        public int compare(ClogMember o1, ClogMember o2) {
+
+            long n1 = o1.getDateOfLastComment();
+            long n2 = o2.getDateOfLastComment();
+            if (n1 < n2) return -1;
+            else if (n1 == n2) return 0;
+            else return 1;
+        }
+    }
+
+    private void removeSiteFromCaches(String siteId) {
+
+        Cache postCache = sakaiProxy.getCache(POST_CACHE);
+        postCache.remove(siteId);
+        Cache authorCache = sakaiProxy.getCache(AUTHOR_CACHE);
+        authorCache.remove(siteId);
     }
 }
