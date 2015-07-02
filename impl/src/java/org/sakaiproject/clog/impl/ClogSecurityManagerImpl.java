@@ -37,181 +37,181 @@ import org.sakaiproject.tool.api.ToolManager;
 @Setter
 public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
-	private static final Logger logger = Logger.getLogger(ClogSecurityManagerImpl.class);
+    private static final Logger logger = Logger.getLogger(ClogSecurityManagerImpl.class);
 
-	private SakaiProxy  sakaiProxy;
-	private SiteService siteService;
-	private ToolManager toolManager;
+    private SakaiProxy  sakaiProxy;
+    private SiteService siteService;
+    private ToolManager toolManager;
 
-	public boolean canCurrentUserCommentOnPost(Post post) {
+    public boolean canCurrentUserCommentOnPost(Post post) {
 
         logger.debug("canCurrentUserCommentOnPost()");
 
-		// if(sakaiProxy.isOnGateway() && post.isPublic() &&
-		// post.isCommentable())
-		// return true;
+        // if(sakaiProxy.isOnGateway() && post.isPublic() &&
+        // post.isCommentable())
+        // return true;
 
-		// If the post is comment-able and the current user has
-		// blog.comment.create
-		if (post.isCommentable() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_COMMENT_CREATE, post.getSiteId())) {
-			return true;
-		}
+        // If the post is comment-able and the current user has
+        // blog.comment.create
+        if (post.isCommentable() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_COMMENT_CREATE, post.getSiteId())) {
+            return true;
+        }
 
-		// An author can always comment on their own posts
-		if (post.getCreatorId().equals(sakaiProxy.getCurrentUserId())) {
-			return true;
-		}
+        // An author can always comment on their own posts
+        if (post.getCreatorId().equals(sakaiProxy.getCurrentUserId())) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean canCurrentUserDeletePost(Post post) throws SecurityException {
-		if (sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_DELETE_ANY, post.getSiteId())) {
-			return true;
-		}
+    public boolean canCurrentUserDeletePost(Post post) throws SecurityException {
+        if (sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_DELETE_ANY, post.getSiteId())) {
+            return true;
+        }
 
-		String currentUser = sakaiProxy.getCurrentUserId();
+        String currentUser = sakaiProxy.getCurrentUserId();
 
-		// If the current user is the author and has blog.post.delete.own
-		if (currentUser != null && currentUser.equals(post.getCreatorId()) && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_DELETE_OWN, post.getSiteId())) {
-			return true;
-		}
+        // If the current user is the author and has blog.post.delete.own
+        if (currentUser != null && currentUser.equals(post.getCreatorId()) && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_DELETE_OWN, post.getSiteId())) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean canCurrentUserEditPost(Post post) {
-		// This acts as an override
-		if (sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_UPDATE_ANY, post.getSiteId())) {
-			return true;
-		}
+    public boolean canCurrentUserEditPost(Post post) {
+        // This acts as an override
+        if (sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_UPDATE_ANY, post.getSiteId())) {
+            return true;
+        }
 
-		// If it's public and not marked read only, yes.
-		if (post.isPublic()) {
-			return true;
-		}
+        // If it's public and not marked read only, yes.
+        if (post.isPublic()) {
+            return true;
+        }
 
-		String currentUser = sakaiProxy.getCurrentUserId();
+        String currentUser = sakaiProxy.getCurrentUserId();
 
-		// If the current user is authenticated and the post author, yes.
-		if (currentUser != null && currentUser.equals(post.getCreatorId()) && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_UPDATE_OWN, post.getSiteId())) {
-			return true;
-		}
+        // If the current user is authenticated and the post author, yes.
+        if (currentUser != null && currentUser.equals(post.getCreatorId()) && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_UPDATE_OWN, post.getSiteId())) {
+            return true;
+        }
 
-		// If the user is authenticated and the post is not marked read only,
-		// yes
-		if (currentUser != null) {
-			return true;
-		}
+        // If the user is authenticated and the post is not marked read only,
+        // yes
+        if (currentUser != null) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Tests whether the current user can read each Post and if not, filters
-	 * that post out of the resulting list
-	 */
-	public List<Post> filter(List<Post> posts) {
+    /**
+     * Tests whether the current user can read each Post and if not, filters
+     * that post out of the resulting list
+     */
+    public List<Post> filter(List<Post> posts) {
 
-		List<Post> filtered = new ArrayList<Post>();
-		for (Post post : posts) {
-			if (canCurrentUserReadPost(post)) {
-				filtered.add(post);
-			}
-		}
+        List<Post> filtered = new ArrayList<Post>();
+        for (Post post : posts) {
+            if (canCurrentUserReadPost(post)) {
+                filtered.add(post);
+            }
+        }
 
-		return filtered;
-	}
+        return filtered;
+    }
 
-	public boolean canCurrentUserReadPost(Post post) {
-		
-		String siteId = post.getSiteId();
-		
-		canAccessSiteAndTool(siteId);
+    public boolean canCurrentUserReadPost(Post post) {
+        
+        String siteId = post.getSiteId();
+        
+        canAccessSiteAndTool(siteId);
 
-		final boolean maintainer = sakaiProxy.isCurrentUserMaintainer(siteId);
+        final boolean maintainer = sakaiProxy.isCurrentUserMaintainer(siteId);
 
-		final boolean tutor = sakaiProxy.isCurrentUserTutor(siteId);
+        final boolean tutor = sakaiProxy.isCurrentUserTutor(siteId);
 
-		// If the post is public, yes.
-		if (post.isPublic()) {
-			return true;
-		}
+        // If the post is public, yes.
+        if (post.isPublic()) {
+            return true;
+        }
 
-		try {
-			if (post.isVisibleToSite() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
-				return true;
-			}
-		} catch (Exception e) {
-			logger.error("Exception during security check.", e);
-		}
+        try {
+            if (post.isVisibleToSite() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
 
-		try {
-			if (post.isVisibleToTutors() && tutor) {
-				return true;
-			}
-		} catch (Exception e) {
-			logger.error("Exception during security check.", e);
-		}
+        try {
+            if (post.isVisibleToTutors() && tutor) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
 
-		// Only maintainers can view recycled posts
-		if (post.isRecycled() && maintainer) {
-			return true;
-		}
+        // Only maintainers can view recycled posts
+        if (post.isRecycled() && maintainer) {
+            return true;
+        }
 
-		// Allow search to index posts
-		String threadName = Thread.currentThread().getName();
-		if (!post.isPrivate() && "IndexManager".equals(threadName)) {
-			return true;
-		}
+        // Allow search to index posts
+        String threadName = Thread.currentThread().getName();
+        if (!post.isPrivate() && "IndexManager".equals(threadName)) {
+            return true;
+        }
 
-		String currentUser = sakaiProxy.getCurrentUserId();
+        String currentUser = sakaiProxy.getCurrentUserId();
 
-		// If the current user is authenticated and the post author, yes.
-		if (currentUser != null && currentUser.equals(post.getCreatorId())) {
-			return true;
-		}
+        // If the current user is authenticated and the post author, yes.
+        if (currentUser != null && currentUser.equals(post.getCreatorId())) {
+            return true;
+        }
 
-		try {
-			if (post.isGroup()) {
-			    Site site = siteService.getSiteVisit(siteId);
+        try {
+            if (post.isGroup()) {
+                Site site = siteService.getSiteVisit(siteId);
                 for (String groupId : post.getGroups()) {
                     Group group = site.getGroup(groupId);
                     if (group.getMember(currentUser) != null) {
                         return true;
                     }
                 }
-			}
-		} catch (Exception e) {
-			logger.error("Exception during security check.", e);
-		}
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
 
-		return false;
-	}
-	
-	/**
-	 * Checks whether the current user can access this site and whether they can
-	 * see the forums tool.
-	 * 
-	 * @param siteId
-	 * @throws EntityException
-	 */
-	public boolean canAccessSiteAndTool(String siteId) {
+        return false;
+    }
+    
+    /**
+     * Checks whether the current user can access this site and whether they can
+     * see the forums tool.
+     * 
+     * @param siteId
+     * @throws EntityException
+     */
+    public boolean canAccessSiteAndTool(String siteId) {
         
-		//check user can access this site
-		Site site;
-		try {
-			site = siteService.getSiteVisit(siteId);
-		} catch (Exception e) {
-			return false;
-		}
+        //check user can access this site
+        Site site;
+        try {
+            site = siteService.getSiteVisit(siteId);
+        } catch (Exception e) {
+            return false;
+        }
 
-		//check user can access the tool, it might be hidden
-		ToolConfiguration toolConfig = site.getToolForCommonId("sakai.clog");
-		if(!toolManager.isVisible(site, toolConfig)) {
-			return false;
-		}
-		
-		return true;
-	}
+        //check user can access the tool, it might be hidden
+        ToolConfiguration toolConfig = site.getToolForCommonId("sakai.clog");
+        if(!toolManager.isVisible(site, toolConfig)) {
+            return false;
+        }
+        
+        return true;
+    }
 }

@@ -1,69 +1,69 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     
-  	<modelVersion>4.0.0</modelVersion>
-  	
-  	<name>CLOG API</name>
-  	<artifactId>clog-api</artifactId>
-  	<groupId>org.sakaiproject.clog</groupId>
-  	
-  	<parent>
-    	<artifactId>clog</artifactId>
-    	<groupId>org.sakaiproject.clog</groupId>
-    	<version>11-SNAPSHOT</version>
-  	</parent>
-  	
-  	<packaging>jar</packaging>
-  	
-  	<properties>
-    	<deploy.target>shared</deploy.target>
-  	</properties>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <name>CLOG API</name>
+    <artifactId>clog-api</artifactId>
+    <groupId>org.sakaiproject.clog</groupId>
+    
+    <parent>
+        <artifactId>clog</artifactId>
+        <groupId>org.sakaiproject.clog</groupId>
+        <version>11-SNAPSHOT</version>
+    </parent>
+    
+    <packaging>jar</packaging>
+    
+    <properties>
+        <deploy.target>shared</deploy.target>
+    </properties>
 
-  	<dependencies>
-    	<!--dependency>
-      		<groupId>org.sakaiproject.profile</groupId>
-      		<artifactId>profile-api</artifactId>
-    	</dependency-->
-		<dependency>
-       		<groupId>org.sakaiproject.kernel</groupId>
-           	<artifactId>sakai-kernel-api</artifactId>
+    <dependencies>
+        <!--dependency>
+            <groupId>org.sakaiproject.profile</groupId>
+            <artifactId>profile-api</artifactId>
+        </dependency-->
+        <dependency>
+            <groupId>org.sakaiproject.kernel</groupId>
+            <artifactId>sakai-kernel-api</artifactId>
         </dependency>
         <dependency>
-        	<groupId>org.sakaiproject.kernel</groupId>
-          	<artifactId>sakai-component-manager</artifactId>
-      	</dependency>
+            <groupId>org.sakaiproject.kernel</groupId>
+            <artifactId>sakai-component-manager</artifactId>
+        </dependency>
         <dependency>
-        	<groupId>org.sakaiproject.kernel</groupId>
-           	<artifactId>sakai-kernel-util</artifactId>
+            <groupId>org.sakaiproject.kernel</groupId>
+            <artifactId>sakai-kernel-util</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.sakaiproject.search</groupId>
-			<artifactId>search-api</artifactId>
-		</dependency>
-    	<dependency>
-      		<groupId>log4j</groupId>
-      		<artifactId>log4j</artifactId>
+        <dependency>
+            <groupId>org.sakaiproject.search</groupId>
+            <artifactId>search-api</artifactId>
         </dependency>
-    	<dependency>
-      		<groupId>commons-lang</groupId>
-      		<artifactId>commons-lang</artifactId>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<resources>
-      		<resource>
-        		<directory>${basedir}/src/bundle</directory>
-        		<includes>
-          			<include>**/*.properties</include>
-        		</includes>
-      		</resource>
-   			<!-- include email templates -->
-      		<resource>
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/bundle</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <!-- include email templates -->
+            <resource>
                 <directory>${basedir}/src/java</directory>
                 <includes>
                     <include>**/*.xml</include>
@@ -71,5 +71,5 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
-	</build>
+    </build>
 </project>

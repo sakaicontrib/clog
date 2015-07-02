@@ -8,34 +8,34 @@ import lombok.Setter;
 @Getter @Setter
 public class ClogMember {
 
-	private int numberOfPosts = 0;
+    private int numberOfPosts = 0;
 
-	private int numberOfComments = 0;
+    private int numberOfComments = 0;
 
-	private long dateOfLastPost = -1L;
+    private long dateOfLastPost = -1L;
 
-	private long dateOfLastComment = -1L;
+    private long dateOfLastComment = -1L;
 
-	private String lastCommentCreator = "";
+    private String lastCommentCreator = "";
 
-	private transient User sakaiUser = null;
+    private transient User sakaiUser = null;
 
-	public ClogMember() {
-	}
+    public ClogMember() {
+    }
 
-	public ClogMember(User user) {
-		this.sakaiUser = user;
-	}
+    public ClogMember(User user) {
+        this.sakaiUser = user;
+    }
 
-	public String getUserId() {
-		return sakaiUser.getId();
-	}
+    public String getUserId() {
+        return sakaiUser.getId();
+    }
 
-	public String getUserEid() {
-		return sakaiUser.getEid();
-	}
+    public String getUserEid() {
+        return sakaiUser.getEid();
+    }
 
-	public String getUserDisplayName() {
-		return sakaiUser.getLastName() + ", " + sakaiUser.getFirstName();
-	}
+    public String getUserDisplayName() {
+        return sakaiUser.getLastName() + ", " + sakaiUser.getFirstName();
+    }
 }

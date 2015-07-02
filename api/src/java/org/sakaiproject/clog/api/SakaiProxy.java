@@ -30,7 +30,7 @@ import org.sakaiproject.site.api.Site;
 
 public interface SakaiProxy {
 
-	public String getCurrentSiteId();
+    public String getCurrentSiteId();
 
     /**
      * Returns the locale_string property of the current site.
@@ -45,79 +45,79 @@ public interface SakaiProxy {
      */
     public Map<String, String> getSiteGroupsForCurrentUser(String siteId);
 
-	public String getCurrentToolId();
+    public String getCurrentToolId();
 
-	public String getCurrentToolTitle();
+    public String getCurrentToolTitle();
 
-	public String getCurrentUserId();
+    public String getCurrentUserId();
 
-	public Connection borrowConnection() throws SQLException;
+    public Connection borrowConnection() throws SQLException;
 
-	public void returnConnection(Connection connection);
+    public void returnConnection(Connection connection);
 
-	public String getCurrentUserDisplayName();
+    public String getCurrentUserDisplayName();
 
-	public String getVendor();
+    public String getVendor();
 
-	public String getDisplayNameForTheUser(String userId);
+    public String getDisplayNameForTheUser(String userId);
 
-	public boolean isCurrentUserMaintainer(String siteId);
+    public boolean isCurrentUserMaintainer(String siteId);
 
-	public boolean isCurrentUserTutor(String siteId);
+    public boolean isCurrentUserTutor(String siteId);
 
-	public boolean isCurrentUserAdmin();
+    public boolean isCurrentUserAdmin();
 
-	public String getSakaiProperty(String string);
+    public String getSakaiProperty(String string);
 
-	public ClogMember getMember(String memberId);
+    public ClogMember getMember(String memberId);
 
-	public boolean isAutoDDL();
+    public boolean isAutoDDL();
 
-	public List<ClogMember> getSiteMembers(String siteId);
+    public List<ClogMember> getSiteMembers(String siteId);
 
-	public String getServerUrl();
+    public String getServerUrl();
 
-	public String getServiceName();
+    public String getServiceName();
 
-	public String getPortalUrl();
+    public String getPortalUrl();
 
-	public String getAccessUrl();
+    public String getAccessUrl();
 
-	public void registerEntityProducer(EntityProducer entityProducer);
+    public void registerEntityProducer(EntityProducer entityProducer);
 
-	public void registerFunction(String function);
+    public void registerFunction(String function);
 
-	public boolean isAllowedFunction(String function, String siteId);
+    public boolean isAllowedFunction(String function, String siteId);
 
-	public void postEvent(String event, String entityId, String siteId);
+    public void postEvent(String event, String entityId, String siteId);
 
-	public Set<String> getSiteUsers(String siteId);
+    public Set<String> getSiteUsers(String siteId);
 
-	public String getSiteTitle(String siteId);
+    public String getSiteTitle(String siteId);
 
-	public String getClogPageId(String siteId);
+    public String getClogPageId(String siteId);
 
-	public String getClogToolId(String siteId);
+    public String getClogToolId(String siteId);
 
-	public String storeResource(byte[] blob, String displayName, String siteId, String creatorId);
+    public String storeResource(byte[] blob, String displayName, String siteId, String creatorId);
 
-	public List<SearchResult> searchInCurrentSite(String searchTerms) throws InvalidSearchQueryException;
+    public List<SearchResult> searchInCurrentSite(String searchTerms) throws InvalidSearchQueryException;
 
-	public Set<String> getSitePermissionsForCurrentUser(String siteId);
+    public Set<String> getSitePermissionsForCurrentUser(String siteId);
 
-	public Map<String, Set<String>> getSitePermissions(String siteId);
+    public Map<String, Set<String>> getSitePermissions(String siteId);
 
-	public boolean setPermissionsForSite(String siteId, Map<String, Object> params);
+    public boolean setPermissionsForSite(String siteId, Map<String, Object> params);
 
-	public boolean isPublicAllowed();
+    public boolean isPublicAllowed();
 
-	public String getCurrentUserEid();
+    public String getCurrentUserEid();
 
-	public boolean setResourcePublic(String contentId, boolean isPublic);
+    public boolean setResourcePublic(String contentId, boolean isPublic);
 
-	public boolean isCurrentUserMemberOfSite(String siteId) throws Exception;
+    public boolean isCurrentUserMemberOfSite(String siteId) throws Exception;
 
-	public String getWysiwygEditor();
+    public String getWysiwygEditor();
 
     public Cache getCache(String cache);
 }

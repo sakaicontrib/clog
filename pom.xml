@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     
-  	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
   
-  	<name>CLOG</name>
-  	<groupId>org.sakaiproject.clog</groupId>
-  	<artifactId>clog</artifactId>
-  	<version>11-SNAPSHOT</version>
-  	<packaging>pom</packaging>
+    <name>CLOG</name>
+    <groupId>org.sakaiproject.clog</groupId>
+    <artifactId>clog</artifactId>
+    <version>11-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <parent>
         <groupId>org.sakaiproject</groupId>
@@ -16,28 +16,28 @@
         <relativePath>../master/pom.xml</relativePath>
     </parent>
 
-	<properties>
-		<!--profile-api.version>2.9.3</profile-api.version-->
-      	<log4j.version>1.2.8</log4j.version>
-   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <properties>
+        <!--profile-api.version>2.9.3</profile-api.version-->
+        <log4j.version>1.2.8</log4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
-  	
-  	<organization>
-    	<name>Lancaster Centre for e-Science</name>
-    	<url>http://e-science.lancs.ac.uk</url>
-  	</organization>
-  	<inceptionYear>2005</inceptionYear>
+    
+    <organization>
+        <name>Lancaster Centre for e-Science</name>
+        <url>http://e-science.lancs.ac.uk</url>
+    </organization>
+    <inceptionYear>2005</inceptionYear>
 
-  	<developers>
-    	<developer>
-      		<name>Adrian Fish</name>
-      		<email>a.fish@lancaster.ac.uk</email>
-    	</developer>
-    	<developer>
-      		<name>Steve Swinsburg</name>
-      		<email>steve.swinsburg@gmail.com</email>
-    	</developer>
-  	</developers>
+    <developers>
+        <developer>
+            <name>Adrian Fish</name>
+            <email>a.fish@lancaster.ac.uk</email>
+        </developer>
+        <developer>
+            <name>Steve Swinsburg</name>
+            <email>steve.swinsburg@gmail.com</email>
+        </developer>
+    </developers>
 
     <contributors>
         <contributor>
@@ -46,21 +46,21 @@
         </contributor>
     </contributors>
 
-  	<modules>
-    	<module>components</module>
-    	<module>api</module>
-    	<module>impl</module>
-    	<module>help</module>
-    	<module>tool</module>
-  	</modules>
+    <modules>
+        <module>components</module>
+        <module>api</module>
+        <module>impl</module>
+        <module>help</module>
+        <module>tool</module>
+    </modules>
 
     <scm>
-    	<connection>scm:git:git://github.com/adrianfish/clog.git</connection>
-    	<developerConnection>scm:git:git://github.com/adrianfish/clog.git</developerConnection>
-    	<url>https://github.com/adrianfish/clog</url>
-  	</scm>
-  	
-  	<issueManagement>
+        <connection>scm:git:git://github.com/adrianfish/clog.git</connection>
+        <developerConnection>scm:git:git://github.com/adrianfish/clog.git</developerConnection>
+        <url>https://github.com/adrianfish/clog</url>
+    </scm>
+    
+    <issueManagement>
         <system>JIRA</system>
         <url>http://jira.sakaiproject.org/browse/CLOG</url>
     </issueManagement>
@@ -68,34 +68,34 @@
     <dependencyManagement>
         <dependencies>
 
-			<!--  internal -->
-			<dependency>
-       			<groupId>org.sakaiproject.clog</groupId>
-       			<artifactId>clog-api</artifactId>
-     			<version>${project.version}</version>
-	  			<scope>provided</scope>
-     		</dependency>
-     		<dependency>
-       			<groupId>org.sakaiproject.clog</groupId>
-       			<artifactId>clog-impl</artifactId>
-       			<version>${project.version}</version>
-	  			<scope>runtime</scope>
-     		</dependency>
+            <!--  internal -->
+            <dependency>
+                <groupId>org.sakaiproject.clog</groupId>
+                <artifactId>clog-api</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.sakaiproject.clog</groupId>
+                <artifactId>clog-impl</artifactId>
+                <version>${project.version}</version>
+                <scope>runtime</scope>
+            </dependency>
 
-			<!--  sakai -->
+            <!--  sakai -->
             <!--dependency>
-      			<groupId>org.sakaiproject.profile</groupId>
-      			<artifactId>profile-api</artifactId>
-	  			<version>${profile-api.version}</version>
-	  			<scope>provided</scope>
-    		</dependency-->
+                <groupId>org.sakaiproject.profile</groupId>
+                <artifactId>profile-api</artifactId>
+                <version>${profile-api.version}</version>
+                <scope>provided</scope>
+            </dependency-->
 
-    		<!--  external -->
-    		<dependency>
-      			<groupId>log4j</groupId>
-      			<artifactId>log4j</artifactId>
-      			<version>${log4j.version}</version>
-	  			<scope>provided</scope>
+            <!--  external -->
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>

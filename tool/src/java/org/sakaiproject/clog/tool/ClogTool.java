@@ -25,49 +25,49 @@ import org.sakaiproject.util.ResourceLoader;
  */
 public class ClogTool extends HttpServlet {
 
-	private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
-	private SakaiProxy sakaiProxy;
-	private ClogManager clogManager;
-	
-	public void init(ServletConfig config) throws ServletException {
+    private SakaiProxy sakaiProxy;
+    private ClogManager clogManager;
+    
+    public void init(ServletConfig config) throws ServletException {
 
-		super.init(config);
+        super.init(config);
 
-		logger.debug("init");
-		
-		try {
-			ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
-			sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
-			clogManager = (ClogManager) componentManager.get(ClogManager.class);
-		} catch (Throwable t) {
-			throw new ServletException("Failed to initialise ClogTool servlet.", t);
-		}
-	}
+        logger.debug("init");
+        
+        try {
+            ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
+            sakaiProxy = (SakaiProxy) componentManager.get(SakaiProxy.class);
+            clogManager = (ClogManager) componentManager.get(ClogManager.class);
+        } catch (Throwable t) {
+            throw new ServletException("Failed to initialise ClogTool servlet.", t);
+        }
+    }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		logger.debug("doGet()");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        logger.debug("doGet()");
 
-		if (sakaiProxy == null) {
-			throw new ServletException("sakaiProxy MUST be initialised.");
-		}
-		
-		String siteId = sakaiProxy.getCurrentSiteId();
-		
-		String userId = null;
-		Session session = (Session) request.getAttribute(RequestFilter.ATTR_SESSION);
-		if(session != null) {
-			userId = session.getUserId();
-		} else {
-			if (!"!gateway".equals(siteId)) {
-				// We are not logged in
-				throw new ServletException("Not logged in.");
-			}
-		}
+        if (sakaiProxy == null) {
+            throw new ServletException("sakaiProxy MUST be initialised.");
+        }
+        
+        String siteId = sakaiProxy.getCurrentSiteId();
+        
+        String userId = null;
+        Session session = (Session) request.getAttribute(RequestFilter.ATTR_SESSION);
+        if(session != null) {
+            userId = session.getUserId();
+        } else {
+            if (!"!gateway".equals(siteId)) {
+                // We are not logged in
+                throw new ServletException("Not logged in.");
+            }
+        }
 
         // If we're on the gateway show the authors view by default
-	    String state = ("!gateway".equals(siteId)) ? "viewMembers" : "viewAllPosts";
+        String state = ("!gateway".equals(siteId)) ? "viewMembers" : "viewAllPosts";
 
         String siteLanguage = sakaiProxy.getCurrentSiteLocale();
 
@@ -101,26 +101,26 @@ public class ClogTool extends HttpServlet {
             language += "_" + country;
         }
 
-		request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
-		
-	    request.setAttribute("userId", userId);
-	    request.setAttribute("siteId", siteId);
-	    request.setAttribute("state", state);
+        request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
+        
+        request.setAttribute("userId", userId);
+        request.setAttribute("siteId", siteId);
+        request.setAttribute("state", state);
 
-		String placementId = (String) request.getAttribute(Tool.PLACEMENT_ID);
-	    request.setAttribute("placementId", placementId);
-	    request.setAttribute("editor", sakaiProxy.getWysiwygEditor());
-	    request.setAttribute("isolanguage", language);
+        String placementId = (String) request.getAttribute(Tool.PLACEMENT_ID);
+        request.setAttribute("placementId", placementId);
+        request.setAttribute("editor", sakaiProxy.getWysiwygEditor());
+        request.setAttribute("isolanguage", language);
         request.setAttribute("groups", clogManager.getSiteGroupsForCurrentUser(siteId));
-	    request.setAttribute("publicAllowed", sakaiProxy.isPublicAllowed() ? "true":"false");
+        request.setAttribute("publicAllowed", sakaiProxy.isPublicAllowed() ? "true":"false");
 
-		String postId = request.getParameter("postId");
-		if (postId != null) {
-	        request.setAttribute("state", "post");
-			request.setAttribute("postId", postId);
-		}
+        String postId = request.getParameter("postId");
+        if (postId != null) {
+            request.setAttribute("state", "post");
+            request.setAttribute("postId", postId);
+        }
 
-		response.setContentType("text/html");
-        request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);	
-	}
+        response.setContentType("text/html");
+        request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);  
+    }
 }

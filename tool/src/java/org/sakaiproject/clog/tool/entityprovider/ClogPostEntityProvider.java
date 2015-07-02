@@ -46,153 +46,153 @@ import org.sakaiproject.util.ResourceLoader;
 @Setter
 public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, /*Createable,*/ Describeable, /*CollectionResolvable,*/ ActionsExecutable, Redirectable, Statisticable {
 
-	private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
+    private static final String[] EVENT_KEYS = new String[] { ClogManager.CLOG_POST_CREATED, ClogManager.CLOG_POST_DELETED, ClogManager.CLOG_POST_RECYCLED, ClogManager.CLOG_POST_RESTORED, ClogManager.CLOG_COMMENT_CREATED, ClogManager.CLOG_COMMENT_DELETED };
 
-	private ClogManager clogManager;
-	private SakaiProxy  sakaiProxy;
+    private ClogManager clogManager;
+    private SakaiProxy  sakaiProxy;
 
-	public final static String ENTITY_PREFIX = "clog-post";
+    public final static String ENTITY_PREFIX = "clog-post";
 
-	protected final Logger LOG = Logger.getLogger(getClass());
+    protected final Logger LOG = Logger.getLogger(getClass());
 
-	public boolean entityExists(String id) {
+    public boolean entityExists(String id) {
 
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("entityExists(" + id + ")");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("entityExists(" + id + ")");
         }
 
-		if (id == null) {
-			return false;
-		}
-
-		if ("".equals(id)) {
-			return false;
+        if (id == null) {
+            return false;
         }
 
-		try {
-			return clogManager.getPost(id) != null;
-		} catch (Exception e) {
-			LOG.error("Caught exception whilst getting post.", e);
-			return false;
-		}
-	}
-
-	public Object getEntity(EntityReference ref) {
-
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("getEntity(" + ref.getId() + ")");
+        if ("".equals(id)) {
+            return false;
         }
 
-		String postId = ref.getId();
+        try {
+            return clogManager.getPost(id) != null;
+        } catch (Exception e) {
+            LOG.error("Caught exception whilst getting post.", e);
+            return false;
+        }
+    }
 
-		if (postId == null || "".equals(postId)) {
-			return new Post();
-		}
+    public Object getEntity(EntityReference ref) {
 
-		Post post = null;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getEntity(" + ref.getId() + ")");
+        }
 
-		try {
-			post = clogManager.getPost(postId);
-		} catch (Exception e) {
-			LOG.error("Caught exception whilst getting post with id '" + postId + "'", e);
-		}
+        String postId = ref.getId();
 
-		if (post == null) {
-			throw new EntityException("No post with id '" + postId + "'", ref.getReference(), HttpServletResponse.SC_BAD_REQUEST);
-		}
+        if (postId == null || "".equals(postId)) {
+            return new Post();
+        }
 
-		// TODO: Security !!!!
+        Post post = null;
 
-		return post;
-	}
+        try {
+            post = clogManager.getPost(postId);
+        } catch (Exception e) {
+            LOG.error("Caught exception whilst getting post with id '" + postId + "'", e);
+        }
 
-	@EntityCustomAction(action = "store", viewKey = EntityView.VIEW_NEW)
-	public ActionReturn handleStore(Map<String, Object> params) {
+        if (post == null) {
+            throw new EntityException("No post with id '" + postId + "'", ref.getReference(), HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        // TODO: Security !!!!
+
+        return post;
+    }
+
+    @EntityCustomAction(action = "store", viewKey = EntityView.VIEW_NEW)
+    public ActionReturn handleStore(Map<String, Object> params) {
 
         LOG.debug("handleStore");
 
-		String userId = developerHelperService.getCurrentUserId();
+        String userId = developerHelperService.getCurrentUserId();
 
-		String id = (String) params.get("id");
-		String visibility = (String) params.get("visibility");
-		String title = (String) params.get("title");
-		String content = (String) params.get("content");
-		String siteId = (String) params.get("siteId");
-		boolean commentable = Boolean.parseBoolean((String) params.get("commentable"));
-		String mode = (String) params.get("mode");
-		String groupsString = (String) params.get("groups");
+        String id = (String) params.get("id");
+        String visibility = (String) params.get("visibility");
+        String title = (String) params.get("title");
+        String content = (String) params.get("content");
+        String siteId = (String) params.get("siteId");
+        boolean commentable = Boolean.parseBoolean((String) params.get("commentable"));
+        String mode = (String) params.get("mode");
+        String groupsString = (String) params.get("groups");
 
-		Post post = new Post();
-		post.setId(id);
-		post.setVisibility(visibility);
-		post.setCreatorId(userId);
-		post.setSiteId(siteId);
-		post.setTitle(title);
+        Post post = new Post();
+        post.setId(id);
+        post.setVisibility(visibility);
+        post.setCreatorId(userId);
+        post.setSiteId(siteId);
+        post.setTitle(title);
 
         if (groupsString != null && groupsString.length() > 0) {
             post.setGroups(Arrays.asList(groupsString.split(",")));
         }
 
-		post.setContent(content);
-		post.setCommentable(commentable);
+        post.setContent(content);
+        post.setCommentable(commentable);
 
-		boolean isNew = "".equals(post.getId());
+        boolean isNew = "".equals(post.getId());
 
-		boolean isWithdrawn = false;
+        boolean isWithdrawn = false;
 
-		boolean isBeingPublished = false;
+        boolean isBeingPublished = false;
 
-		if (!isNew && !post.isAutoSave()) {
-			try {
-				Post oldPost = clogManager.getPostHeader(post.getId());
-				if (oldPost.isReady() && post.isPrivate()) {
-					isWithdrawn = true;
-				} else if (oldPost.isPrivate() && post.isReady()) {
-					isBeingPublished = true;
-				}
-			} catch (Exception e) {
-				LOG.info("Failed to get post with id '" + post.getId() + "'. This could happen if this is the first time a post has been saved or published.", e);
-			}
-		}
+        if (!isNew && !post.isAutoSave()) {
+            try {
+                Post oldPost = clogManager.getPostHeader(post.getId());
+                if (oldPost.isReady() && post.isPrivate()) {
+                    isWithdrawn = true;
+                } else if (oldPost.isPrivate() && post.isReady()) {
+                    isBeingPublished = true;
+                }
+            } catch (Exception e) {
+                LOG.info("Failed to get post with id '" + post.getId() + "'. This could happen if this is the first time a post has been saved or published.", e);
+            }
+        }
 
-		if (clogManager.savePost(post)) {
-			if ((isNew || (mode != null && "publish".equals(mode))) && post.isReady() && !post.isAutoSave()) {
-				sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED, post.getReference(), post.getSiteId());
-			}
+        if (clogManager.savePost(post)) {
+            if ((isNew || (mode != null && "publish".equals(mode))) && post.isReady() && !post.isAutoSave()) {
+                sakaiProxy.postEvent(ClogManager.CLOG_POST_CREATED, post.getReference(), post.getSiteId());
+            }
 
-			if (isWithdrawn) {
-				sakaiProxy.postEvent(ClogManager.CLOG_POST_WITHDRAWN, post.getReference(), post.getSiteId());
-			}
+            if (isWithdrawn) {
+                sakaiProxy.postEvent(ClogManager.CLOG_POST_WITHDRAWN, post.getReference(), post.getSiteId());
+            }
 
-			if (isBeingPublished) {
-				sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, post.getReference(), post.getSiteId());
-			}
+            if (isBeingPublished) {
+                sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, post.getReference(), post.getSiteId());
+            }
 
             if (!post.isAutoSave()) {
                 return new ActionReturn(clogManager.getSiteGroupsForCurrentUser(siteId));
             } else {
-			    return new ActionReturn(post.getId());
+                return new ActionReturn(post.getId());
             }
-		} else {
-			return new ActionReturn("FAIL");
+        } else {
+            return new ActionReturn("FAIL");
         }
-	}
+    }
 
-	public Object getSampleEntity() {
-		return new Post();
-	}
+    public Object getSampleEntity() {
+        return new Post();
+    }
 
-	public String getEntityPrefix() {
-		return ENTITY_PREFIX;
-	}
+    public String getEntityPrefix() {
+        return ENTITY_PREFIX;
+    }
 
-	public String[] getHandledOutputFormats() {
-		return new String[] { Formats.JSON, Formats.HTML };
-	}
+    public String[] getHandledOutputFormats() {
+        return new String[] { Formats.JSON, Formats.HTML };
+    }
 
-	public String[] getHandledInputFormats() {
-		return new String[] { Formats.HTML, Formats.JSON, Formats.FORM };
-	}
+    public String[] getHandledInputFormats() {
+        return new String[] { Formats.HTML, Formats.JSON, Formats.FORM };
+    }
 
     @EntityURLRedirect(value = "/{prefix}/{postId}")
     public String mapPostUrl(String incomingUrl, Map<String, String> tokens) {
@@ -223,53 +223,53 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
         }
     }
 
-	@EntityCustomAction(action = "posts", viewKey = EntityView.VIEW_LIST)
-	public PostsData handlePosts(EntityReference ref, Map<String, Object> params) {
+    @EntityCustomAction(action = "posts", viewKey = EntityView.VIEW_LIST)
+    public PostsData handlePosts(EntityReference ref, Map<String, Object> params) {
 
-		QueryBean query = new QueryBean();
+        QueryBean query = new QueryBean();
         query.setSearchAutoSaved(true);
 
-		String creatorId = (String) params.get("creatorId");
-		if (creatorId != null) {
-			query.setCreator(creatorId);
+        String creatorId = (String) params.get("creatorId");
+        if (creatorId != null) {
+            query.setCreator(creatorId);
         }
 
-		String groupId = (String) params.get("groupId");
+        String groupId = (String) params.get("groupId");
         if (groupId != null) {
             query.setGroup(groupId);
-		    query.setVisibilities(Arrays.asList(new String[] { Visibilities.GROUP }));
+            query.setVisibilities(Arrays.asList(new String[] { Visibilities.GROUP }));
         }
 
-		String visibilities = (String) params.get("visibilities");
-		if (visibilities != null) {
-			String[] values = visibilities.split(",");
-			query.setVisibilities(Arrays.asList(values));
-		}
+        String visibilities = (String) params.get("visibilities");
+        if (visibilities != null) {
+            String[] values = visibilities.split(",");
+            query.setVisibilities(Arrays.asList(values));
+        }
 
-		String siteId= (String) params.get("siteId");
-		if (siteId != null) {
+        String siteId= (String) params.get("siteId");
+        if (siteId != null) {
 
-			query.setSiteId(siteId);
+            query.setSiteId(siteId);
 
-			if ("!gateway".equals(siteId)) {
-				query.setVisibilities(Arrays.asList(new String[] { Visibilities.PUBLIC }));
-				query.setSiteId("");
-			} else if (siteId.startsWith("~") && query.getVisibilities().equals(Arrays.asList(Visibilities.PUBLIC))) {
-				// We are on a MyWorkspace and PUBLIC has been requested. PUBLIC
-				// posts always
-				// retain the site ID of the site they were originally created
-				// in so a site id
-				// query for the MyWorkspace will fail. We need to flatten the
-				// site id.
-				query.setSiteId("");
-			}
-		}
+            if ("!gateway".equals(siteId)) {
+                query.setVisibilities(Arrays.asList(new String[] { Visibilities.PUBLIC }));
+                query.setSiteId("");
+            } else if (siteId.startsWith("~") && query.getVisibilities().equals(Arrays.asList(Visibilities.PUBLIC))) {
+                // We are on a MyWorkspace and PUBLIC has been requested. PUBLIC
+                // posts always
+                // retain the site ID of the site they were originally created
+                // in so a site id
+                // query for the MyWorkspace will fail. We need to flatten the
+                // site id.
+                query.setSiteId("");
+            }
+        }
 
         int page = 0;
-		String pageString = (String) params.get("page");
-		if (pageString != null) {
+        String pageString = (String) params.get("page");
+        if (pageString != null) {
             try {
-			    page = Integer.parseInt(pageString);
+                page = Integer.parseInt(pageString);
                 query.setPage(page);
             } catch (NumberFormatException nfe) {
                 LOG.error("Invalid page number " + pageString + " supplied. The first page will be returned ...");
@@ -278,8 +278,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
             }
         }
 
-		try {
-			List<Post> posts = clogManager.getPosts(query);
+        try {
+            List<Post> posts = clogManager.getPosts(query);
             int pageSize = 10;
             int start  = page * pageSize;
             int postsTotal = posts.size();
@@ -306,168 +306,168 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
                 data.posts = posts.subList(start, end);
                 return data;
             }
-		} catch (Exception e) {
-			LOG.error("Caught exception whilst getting posts. Returning an empty list ...", e);
-		}
+        } catch (Exception e) {
+            LOG.error("Caught exception whilst getting posts. Returning an empty list ...", e);
+        }
 
         return new PostsData();
-	}
+    }
 
-	public void deleteEntity(EntityReference ref, Map<String, Object> params) {
+    public void deleteEntity(EntityReference ref, Map<String, Object> params) {
 
-		LOG.debug("deleteEntity");
+        LOG.debug("deleteEntity");
 
-		String siteId = (String) params.get("siteId");
+        String siteId = (String) params.get("siteId");
 
-		if (clogManager.deletePost(ref.getId())) {
-			String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + ref.getId();
-			sakaiProxy.postEvent(ClogManager.CLOG_POST_DELETED, reference, siteId);
-		}
-	}
+        if (clogManager.deletePost(ref.getId())) {
+            String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + ref.getId();
+            sakaiProxy.postEvent(ClogManager.CLOG_POST_DELETED, reference, siteId);
+        }
+    }
 
-	@EntityCustomAction(action = "recycle", viewKey = EntityView.VIEW_SHOW)
-	public String handleRecycle(EntityReference ref) {
+    @EntityCustomAction(action = "recycle", viewKey = EntityView.VIEW_SHOW)
+    public String handleRecycle(EntityReference ref) {
 
-		String postId = ref.getId();
+        String postId = ref.getId();
 
-		if (postId == null)
-			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
+        if (postId == null)
+            throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
 
-		Post post = null;
+        Post post = null;
 
-		try {
-			post = clogManager.getPost(postId);
-		} catch (Exception e) {
-		}
+        try {
+            post = clogManager.getPost(postId);
+        } catch (Exception e) {
+        }
 
-		if (post == null)
-			throw new IllegalArgumentException("Invalid post id");
+        if (post == null)
+            throw new IllegalArgumentException("Invalid post id");
 
-		if (clogManager.recyclePost(postId)) {
-			String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + ref.getId();
-			sakaiProxy.postEvent(ClogManager.CLOG_POST_RECYCLED, reference, post.getSiteId());
+        if (clogManager.recyclePost(postId)) {
+            String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + ref.getId();
+            sakaiProxy.postEvent(ClogManager.CLOG_POST_RECYCLED, reference, post.getSiteId());
 
-			return "SUCCESS";
-		} else {
-			return "FAIL";
-		}
-	}
+            return "SUCCESS";
+        } else {
+            return "FAIL";
+        }
+    }
 
-	@EntityCustomAction(action = "restore", viewKey = EntityView.VIEW_LIST)
-	public String handleRestore(Map<String,Object> params) {
+    @EntityCustomAction(action = "restore", viewKey = EntityView.VIEW_LIST)
+    public String handleRestore(Map<String,Object> params) {
 
-		String userId = developerHelperService.getCurrentUserId();
-		
-		if (userId == null) {
-			throw new EntityException("You must be logged in to restore posts","",HttpServletResponse.SC_UNAUTHORIZED);
-		}
-		
-		if (!params.containsKey("posts")) {
-			throw new EntityException("Bad request: a posts param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
-		}
-		
-		String postIdsString = (String) params.get("posts");
-		
-		String[] postIds = postIdsString.split(",");
-		
-		for (String postId : postIds) {
-			Post post = null;
+        String userId = developerHelperService.getCurrentUserId();
+        
+        if (userId == null) {
+            throw new EntityException("You must be logged in to restore posts","",HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        
+        if (!params.containsKey("posts")) {
+            throw new EntityException("Bad request: a posts param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
+        }
+        
+        String postIdsString = (String) params.get("posts");
+        
+        String[] postIds = postIdsString.split(",");
+        
+        for (String postId : postIds) {
+            Post post = null;
 
-			try {
-				post = clogManager.getPost(postId);
-			} catch (Exception e) {
-				LOG.error("Failed to retrieve post with id '" + postId + "' during restore operation. Skipping restore ...",e);
-				continue;
-			}
+            try {
+                post = clogManager.getPost(postId);
+            } catch (Exception e) {
+                LOG.error("Failed to retrieve post with id '" + postId + "' during restore operation. Skipping restore ...",e);
+                continue;
+            }
 
-			if (post == null) {
-				LOG.info("Post id '" + postId + "' is invalid. Skipping restore ...");
-				continue;
-			}
+            if (post == null) {
+                LOG.info("Post id '" + postId + "' is invalid. Skipping restore ...");
+                continue;
+            }
 
-			if (clogManager.restorePost(postId)) {
-				String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + postId;
-				sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, reference, post.getSiteId());
-			}
-		}
-		
-		return "SUCCESS";
-	}
-	
-	@EntityCustomAction(action = "remove", viewKey = EntityView.VIEW_LIST)
-	public String handleRemove(Map<String,Object> params) {
-		
-		String userId = developerHelperService.getCurrentUserId();
-		
-		if(userId == null) {
-			throw new EntityException("You must be logged in to delete posts","",HttpServletResponse.SC_UNAUTHORIZED);
-		}
-		
-		if(!params.containsKey("posts")) {
-			throw new EntityException("Bad request: a posts param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
-		}
-		
-		String siteId = (String) params.get("site");
-		
-		if(siteId == null) {
-			throw new EntityException("Bad request: a site param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
-		}
-		
-		String postIdsString = (String) params.get("posts");
-		
-		String[] postIds = postIdsString.split(",");
-		
-		for(String postId : postIds) {
+            if (clogManager.restorePost(postId)) {
+                String reference = ClogManager.REFERENCE_ROOT + "/" + post.getSiteId() + "/posts/" + postId;
+                sakaiProxy.postEvent(ClogManager.CLOG_POST_RESTORED, reference, post.getSiteId());
+            }
+        }
+        
+        return "SUCCESS";
+    }
+    
+    @EntityCustomAction(action = "remove", viewKey = EntityView.VIEW_LIST)
+    public String handleRemove(Map<String,Object> params) {
+        
+        String userId = developerHelperService.getCurrentUserId();
+        
+        if(userId == null) {
+            throw new EntityException("You must be logged in to delete posts","",HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        
+        if(!params.containsKey("posts")) {
+            throw new EntityException("Bad request: a posts param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
+        }
+        
+        String siteId = (String) params.get("site");
+        
+        if(siteId == null) {
+            throw new EntityException("Bad request: a site param must be supplied","",HttpServletResponse.SC_BAD_REQUEST);
+        }
+        
+        String postIdsString = (String) params.get("posts");
+        
+        String[] postIds = postIdsString.split(",");
+        
+        for(String postId : postIds) {
 
-			if (clogManager.deletePost(postId)) {
-				String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + postId;
-				sakaiProxy.postEvent(ClogManager.CLOG_POST_DELETED, reference, siteId);
-			}
-		}
-		
-		return "SUCCESS";
-	}
+            if (clogManager.deletePost(postId)) {
+                String reference = ClogManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + postId;
+                sakaiProxy.postEvent(ClogManager.CLOG_POST_DELETED, reference, siteId);
+            }
+        }
+        
+        return "SUCCESS";
+    }
 
-	@EntityCustomAction(action = "deleteAutosavedCopy", viewKey = EntityView.VIEW_SHOW)
-	public String handleDeleteAutosavedCopy(EntityReference ref) {
-		String postId = ref.getId();
+    @EntityCustomAction(action = "deleteAutosavedCopy", viewKey = EntityView.VIEW_SHOW)
+    public String handleDeleteAutosavedCopy(EntityReference ref) {
+        String postId = ref.getId();
 
-		if (postId == null) {
-			throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
-		}
+        if (postId == null) {
+            throw new IllegalArgumentException("Invalid path provided: expect to receive the post id");
+        }
 
-		if (clogManager.deleteAutosavedCopy(postId))
-			return "SUCCESS";
-		else
-			throw new EntityException("Failed to delete the autosaved copy.", postId);
-	}
+        if (clogManager.deleteAutosavedCopy(postId))
+            return "SUCCESS";
+        else
+            throw new EntityException("Failed to delete the autosaved copy.", postId);
+    }
 
-	/**
-	 * From Statisticable
-	 */
-	public String getAssociatedToolId() {
-		return "sakai.clog";
-	}
+    /**
+     * From Statisticable
+     */
+    public String getAssociatedToolId() {
+        return "sakai.clog";
+    }
 
-	/**
-	 * From Statisticable
-	 */
-	public String[] getEventKeys() {
-		String[] temp = new String[EVENT_KEYS.length];
-		System.arraycopy(EVENT_KEYS, 0, temp, 0, EVENT_KEYS.length);
-		return temp;
-	}
+    /**
+     * From Statisticable
+     */
+    public String[] getEventKeys() {
+        String[] temp = new String[EVENT_KEYS.length];
+        System.arraycopy(EVENT_KEYS, 0, temp, 0, EVENT_KEYS.length);
+        return temp;
+    }
 
-	/**
-	 * From Statisticable
-	 */
-	public Map<String, String> getEventNames(Locale locale) {
-		Map<String, String> localeEventNames = new HashMap<String, String>();
-		ResourceLoader msgs = new ResourceLoader("org.sakaiproject.clog.bundle.Events");
-		msgs.setContextLocale(locale);
-		for (int i = 0; i < EVENT_KEYS.length; i++) {
-			localeEventNames.put(EVENT_KEYS[i], msgs.getString(EVENT_KEYS[i]));
-		}
-		return localeEventNames;
-	}
+    /**
+     * From Statisticable
+     */
+    public Map<String, String> getEventNames(Locale locale) {
+        Map<String, String> localeEventNames = new HashMap<String, String>();
+        ResourceLoader msgs = new ResourceLoader("org.sakaiproject.clog.bundle.Events");
+        msgs.setContextLocale(locale);
+        for (int i = 0; i < EVENT_KEYS.length; i++) {
+            localeEventNames.put(EVENT_KEYS[i], msgs.getString(EVENT_KEYS[i]));
+        }
+        return localeEventNames;
+    }
 }

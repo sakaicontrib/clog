@@ -29,45 +29,45 @@ import lombok.Setter;
 @Getter @Setter
 public class QueryBean {
 
-	private List<String> visibilities
+    private List<String> visibilities
          = Arrays.asList(new String [] {Visibilities.SITE,Visibilities.TUTOR,Visibilities.PRIVATE});
-	private String creator = "";
-	private String siteId = "";
-	private String title = "";
-	private String keyword = "";
+    private String creator = "";
+    private String siteId = "";
+    private String title = "";
+    private String keyword = "";
     private String group = "";
-	private String caller = "";
-	private boolean searchAutoSaved = false;
-	private int page = 0;
+    private String caller = "";
+    private boolean searchAutoSaved = false;
+    private int page = 0;
 
-	public boolean hasConditions() {
+    public boolean hasConditions() {
 
-		return creator.length() > 0 || siteId.length() > 0 || visibilities.size() > 0
+        return creator.length() > 0 || siteId.length() > 0 || visibilities.size() > 0
                 || title.length() > 0 || keyword.length() > 0 || group.length() > 0;
-	}
+    }
 
-	public boolean queryBySiteId() {
-		return !siteId.equals("");
-	}
+    public boolean queryBySiteId() {
+        return !siteId.equals("");
+    }
 
-	public boolean queryByVisibility() {
-		return visibilities.size() > 0;
-	}
+    public boolean queryByVisibility() {
+        return visibilities.size() > 0;
+    }
 
-	public boolean queryByTitle() {
-		return title.length() > 0;
-	}
+    public boolean queryByTitle() {
+        return title.length() > 0;
+    }
 
-	public boolean queryByKeyword() {
-		return keyword.length() > 0;
-	}
+    public boolean queryByKeyword() {
+        return keyword.length() > 0;
+    }
 
-	public boolean queryByCreator() {
-		return !creator.trim().equals("");
-	}
+    public boolean queryByCreator() {
+        return !creator.trim().equals("");
+    }
 
     public boolean queryByGroup() {
-		return !group.trim().equals("");
+        return !group.trim().equals("");
     }
 
     public boolean byPublic() {

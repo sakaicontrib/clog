@@ -5,7 +5,7 @@ import org.sakaiproject.util.UserNotificationPreferencesRegistrationImpl;
 
 public class ClogUserNotificationPreferencesRegistrationImpl extends UserNotificationPreferencesRegistrationImpl {
 
-	public ResourceLoader getResourceLoader(String location) {
-		return new ResourceLoader(location);
-	}
+    public ResourceLoader getResourceLoader(String location) {
+        return new ResourceLoader(location);
+    }
 }

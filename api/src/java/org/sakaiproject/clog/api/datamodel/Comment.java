@@ -31,134 +31,134 @@ import org.w3c.dom.Element;
 
 public class Comment implements Entity {
 
-	private String id = "";
-	private String content = "";
-	private long createdDate = -1L;
-	private long modifiedDate = -1L;
-	private String creatorId;
-	private String creatorDisplayName;
-	private String postId;
-	private String siteId;
+    private String id = "";
+    private String content = "";
+    private long createdDate = -1L;
+    private long modifiedDate = -1L;
+    private String creatorId;
+    private String creatorDisplayName;
+    private String postId;
+    private String siteId;
 
-	public Comment() {
-		this("");
-	}
+    public Comment() {
+        this("");
+    }
 
-	public Comment(String text) {
-		this(text, new Date().getTime());
-	}
+    public Comment(String text) {
+        this(text, new Date().getTime());
+    }
 
-	public Comment(String text, long createdDate) {
-		setContent(text);
-		this.createdDate = createdDate;
-		modifiedDate = createdDate;
-	}
+    public Comment(String text, long createdDate) {
+        setContent(text);
+        this.createdDate = createdDate;
+        modifiedDate = createdDate;
+    }
 
-	/**
-	 * If the supplied is different to the current, sets the modified date to
-	 * the current date so ... be careful!
-	 * 
-	 * @param text
-	 */
-	public void setContent(String text) {
-		setContent(text, true);
-	}
+    /**
+     * If the supplied is different to the current, sets the modified date to
+     * the current date so ... be careful!
+     * 
+     * @param text
+     */
+    public void setContent(String text) {
+        setContent(text, true);
+    }
 
-	public void setContent(String text, boolean modified) {
-		if (!this.content.equals(text) && modified) {
-			modifiedDate = new Date().getTime();
-		}
+    public void setContent(String text, boolean modified) {
+        if (!this.content.equals(text) && modified) {
+            modifiedDate = new Date().getTime();
+        }
 
-		this.content = StringEscapeUtils.unescapeHtml(text.trim());
-	}
+        this.content = StringEscapeUtils.unescapeHtml(text.trim());
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public String getCreatorId() {
-		return creatorId;
-	}
+    public String getCreatorId() {
+        return creatorId;
+    }
 
-	public void setCreatorId(String creatorId) {
-		this.creatorId = creatorId;
-	}
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
 
-	public void setCreatedDate(long createdDate) {
-		this.createdDate = createdDate;
-		this.modifiedDate = createdDate;
-	}
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
+        this.modifiedDate = createdDate;
+    }
 
-	public long getCreatedDate() {
-		return createdDate;
-	}
+    public long getCreatedDate() {
+        return createdDate;
+    }
 
-	public void setModifiedDate(long modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
+    public void setModifiedDate(long modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 
-	public long getModifiedDate() {
-		return modifiedDate;
-	}
+    public long getModifiedDate() {
+        return modifiedDate;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setPostId(String postId) {
-		this.postId = postId;
-	}
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
 
-	public String getSiteId() {
-		return siteId;
-	}
+    public String getSiteId() {
+        return siteId;
+    }
 
-	public void setSiteId(String siteId) {
-		this.siteId = siteId;
-	}
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
 
-	public String getPostId() {
-		return postId;
-	}
+    public String getPostId() {
+        return postId;
+    }
 
-	public void setCreatorDisplayName(String creatorDisplayName) {
-		this.creatorDisplayName = creatorDisplayName;
-	}
+    public void setCreatorDisplayName(String creatorDisplayName) {
+        this.creatorDisplayName = creatorDisplayName;
+    }
 
-	public String getCreatorDisplayName() {
-		return creatorDisplayName;
-	}
+    public String getCreatorDisplayName() {
+        return creatorDisplayName;
+    }
 
-	public ResourceProperties getProperties() {
-		ResourceProperties rp = new BaseResourceProperties();
+    public ResourceProperties getProperties() {
+        ResourceProperties rp = new BaseResourceProperties();
 
-		rp.addProperty("id", getId());
-		return rp;
-	}
+        rp.addProperty("id", getId());
+        return rp;
+    }
 
-	public String getReference() {
-		return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + siteId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
-	}
+    public String getReference() {
+        return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + siteId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
+    }
 
-	public String getReference(String arg0) {
-		return getReference();
-	}
+    public String getReference(String arg0) {
+        return getReference();
+    }
 
-	public String getUrl() {
-		String toolId = SakaiProxy.getClogToolId(siteId);
-		return SakaiProxy.getServerUrl() + "/portal/directtool/" + toolId + "?state=post&postId=" + getId();
-	}
+    public String getUrl() {
+        String toolId = SakaiProxy.getClogToolId(siteId);
+        return SakaiProxy.getServerUrl() + "/portal/directtool/" + toolId + "?state=post&postId=" + getId();
+    }
 
-	public String getUrl(String arg0) {
-		return getUrl();
-	}
+    public String getUrl(String arg0) {
+        return getUrl();
+    }
 
-	public Element toXml(Document arg0, Stack arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Element toXml(Document arg0, Stack arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

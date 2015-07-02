@@ -23,10 +23,10 @@ import org.sakaiproject.clog.api.datamodel.Post;
 
 public interface ClogSecurityManager {
 
-	public boolean canCurrentUserCommentOnPost(Post post);
-	public boolean canCurrentUserDeletePost(Post post) throws SecurityException;
-	public boolean canCurrentUserEditPost(Post post);
-	public List<Post> filter(List<Post> posts);
-	public boolean canCurrentUserReadPost(Post post);
-	public boolean canAccessSiteAndTool(String siteId);
+    public boolean canCurrentUserCommentOnPost(Post post);
+    public boolean canCurrentUserDeletePost(Post post) throws SecurityException;
+    public boolean canCurrentUserEditPost(Post post);
+    public List<Post> filter(List<Post> posts);
+    public boolean canCurrentUserReadPost(Post post);
+    public boolean canAccessSiteAndTool(String siteId);
 }

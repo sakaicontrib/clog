@@ -29,78 +29,78 @@ import org.sakaiproject.user.api.UserDirectoryService;
 
 @Setter
 public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable {
-	
-	public final static String ENTITY_PREFIX = "clog-author";
+    
+    public final static String ENTITY_PREFIX = "clog-author";
 
-	protected final Logger LOG = Logger.getLogger(getClass());
+    protected final Logger LOG = Logger.getLogger(getClass());
 
-	private ClogManager clogManager;
-	private UserDirectoryService userDirectoryService;
+    private ClogManager clogManager;
+    private UserDirectoryService userDirectoryService;
 
-	public boolean entityExists(String id) {
-		
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("entityExists(" + id + ")");
-		}
-
-		if (id == null) {
-			return false;
-		}
-
-		if ("".equals(id)) {
-			return false;
+    public boolean entityExists(String id) {
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("entityExists(" + id + ")");
         }
 
-		try {
-			userDirectoryService.getUser(id);
-			return true;
-		} catch (Exception e) {
-			LOG.error("Caught exception whilst getting user.", e);
-			return false;
-		}
-	}
-
-	/**
-	 * No intention of implementing this. Forced to due to the fact that
-	 * CollectionsResolvable extends Resolvable
-	 */
-	public Object getEntity(EntityReference ref) {
-
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("getEntity(" + ref.getId() + ")");
+        if (id == null) {
+            return false;
         }
 
-		LOG.warn("getEntity is unimplemented. Returning null ...");
+        if ("".equals(id)) {
+            return false;
+        }
 
-		return null;
-	}
+        try {
+            userDirectoryService.getUser(id);
+            return true;
+        } catch (Exception e) {
+            LOG.error("Caught exception whilst getting user.", e);
+            return false;
+        }
+    }
 
-	public Object getSampleEntity() {
-		return new ClogMember();
-	}
+    /**
+     * No intention of implementing this. Forced to due to the fact that
+     * CollectionsResolvable extends Resolvable
+     */
+    public Object getEntity(EntityReference ref) {
 
-	public String getEntityPrefix() {
-		return ENTITY_PREFIX;
-	}
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getEntity(" + ref.getId() + ")");
+        }
 
-	public String[] getHandledOutputFormats() {
-		return new String[] { Formats.JSON };
-	}
+        LOG.warn("getEntity is unimplemented. Returning null ...");
 
-	@EntityCustomAction(action = "authors", viewKey = EntityView.VIEW_LIST)
-	public AuthorsData handleAuthors(EntityReference ref, Map<String, Object> params) {
+        return null;
+    }
 
-		String siteId = (String) params.get("siteId");
+    public Object getSampleEntity() {
+        return new ClogMember();
+    }
 
-		if (siteId == null) {
+    public String getEntityPrefix() {
+        return ENTITY_PREFIX;
+    }
+
+    public String[] getHandledOutputFormats() {
+        return new String[] { Formats.JSON };
+    }
+
+    @EntityCustomAction(action = "authors", viewKey = EntityView.VIEW_LIST)
+    public AuthorsData handleAuthors(EntityReference ref, Map<String, Object> params) {
+
+        String siteId = (String) params.get("siteId");
+
+        if (siteId == null) {
             throw new EntityException("No site id supplied.", "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
         int page = 0;
-		String pageString = (String) params.get("page");
-		if (pageString != null) {
+        String pageString = (String) params.get("page");
+        if (pageString != null) {
             try {
-			    page = Integer.parseInt(pageString);
+                page = Integer.parseInt(pageString);
             } catch (NumberFormatException nfe) {
                 LOG.error("Invalid page number " + pageString + " supplied. The first page will be returned ...");
                 throw new EntityException("Invalid page value. Needs to be an integer.", ""
@@ -108,10 +108,10 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
             }
         }
 
-		String sort = (String) params.get("sort");
+        String sort = (String) params.get("sort");
 
         try {
-		    List<ClogMember> authors = clogManager.getAuthors(siteId, sort);
+            List<ClogMember> authors = clogManager.getAuthors(siteId, sort);
             int pageSize = 10;
             int start  = page * pageSize;
             int authorsTotal = authors.size();
@@ -143,5 +143,5 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
             LOG.error("Caught exception whilst getting authors.", e);
             return null;
         }
-	}
+    }
 }

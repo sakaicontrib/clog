@@ -1,29 +1,29 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
-  	<modelVersion>4.0.0</modelVersion>
+    
+    <modelVersion>4.0.0</modelVersion>
   
-  	<name>CLOG PACK</name>
-  	<groupId>org.sakaiproject.clog</groupId>
-  	<artifactId>clog-pack</artifactId>
-  	<description>Deployment of components</description>
+    <name>CLOG PACK</name>
+    <groupId>org.sakaiproject.clog</groupId>
+    <artifactId>clog-pack</artifactId>
+    <description>Deployment of components</description>
   
-  	<parent>
-    	<artifactId>clog</artifactId>
-    	<groupId>org.sakaiproject.clog</groupId>
-    	<version>11-SNAPSHOT</version>
-  	</parent>
-  	
-  	<packaging>sakai-component</packaging>
-  	
-  	<properties>
-    	<deploy.target>components</deploy.target>
-  	</properties>
-  	
-  	<dependencies>
-    	<dependency>
-      		<groupId>org.sakaiproject.clog</groupId>
-      		<artifactId>clog-impl</artifactId>
-    	</dependency>
-  	</dependencies>
+    <parent>
+        <artifactId>clog</artifactId>
+        <groupId>org.sakaiproject.clog</groupId>
+        <version>11-SNAPSHOT</version>
+    </parent>
+    
+    <packaging>sakai-component</packaging>
+    
+    <properties>
+        <deploy.target>components</deploy.target>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.sakaiproject.clog</groupId>
+            <artifactId>clog-impl</artifactId>
+        </dependency>
+    </dependencies>
 </project>

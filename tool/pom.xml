@@ -1,49 +1,49 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
-  	<modelVersion>4.0.0</modelVersion>
-  	
-  	<name>CLOG TOOL</name>
-  	<artifactId>clog-tool</artifactId>
-  	<groupId>org.sakaiproject.clog</groupId>
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <name>CLOG TOOL</name>
+    <artifactId>clog-tool</artifactId>
+    <groupId>org.sakaiproject.clog</groupId>
   
-  	<parent>
-    	<artifactId>clog</artifactId>
-    	<groupId>org.sakaiproject.clog</groupId>
-    	<version>11-SNAPSHOT</version>
-  	</parent>
-  	
-  	<packaging>war</packaging>
-  	
-  	<dependencies>
-       	<dependency>
-       		<groupId>org.sakaiproject.clog</groupId>
-       		<artifactId>clog-api</artifactId>
-     	</dependency>
-     	<dependency>
-       		<groupId>org.sakaiproject.kernel</groupId>
-       		<artifactId>sakai-component-manager</artifactId>
-     	</dependency>
-     	<dependency>
-       		<groupId>org.sakaiproject.kernel</groupId>
-       		<artifactId>sakai-kernel-api</artifactId>
-     	</dependency>
-     	<dependency>
-       		<groupId>org.sakaiproject.kernel</groupId>
+    <parent>
+        <artifactId>clog</artifactId>
+        <groupId>org.sakaiproject.clog</groupId>
+        <version>11-SNAPSHOT</version>
+    </parent>
+    
+    <packaging>war</packaging>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.sakaiproject.clog</groupId>
+            <artifactId>clog-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.kernel</groupId>
+            <artifactId>sakai-component-manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.kernel</groupId>
+            <artifactId>sakai-kernel-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.kernel</groupId>
             <artifactId>sakai-kernel-util</artifactId>
-     	</dependency>
-   		<dependency>
-			<groupId>org.sakaiproject.entitybroker</groupId>
-			<artifactId>entitybroker-utils</artifactId>
-   		</dependency>
-   		<dependency>
-			<groupId>org.sakaiproject.entitybroker</groupId>
-			<artifactId>entitybroker-api</artifactId>
-   		</dependency>
-		<dependency>
-			<groupId>org.sakaiproject.search</groupId>
-			<artifactId>search-api</artifactId>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.entitybroker</groupId>
+            <artifactId>entitybroker-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.entitybroker</groupId>
+            <artifactId>entitybroker-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.sakaiproject.search</groupId>
+            <artifactId>search-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -52,21 +52,21 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
         </dependency>
-    	<dependency>
-     		<groupId>javax.servlet</groupId>
-     		<artifactId>servlet-api</artifactId>
-    	</dependency>
-    	<dependency>
-     		<groupId>log4j</groupId>
-     		<artifactId>log4j</artifactId>
-    	</dependency>
-    	<dependency>
-     		<groupId>commons-lang</groupId>
-     		<artifactId>commons-lang</artifactId>
-    	</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -79,7 +79,7 @@
             <version>1.1.2</version>
             <scope>compile</scope>
         </dependency>
-	</dependencies>
+    </dependencies>
 
     <build>
         <plugins>

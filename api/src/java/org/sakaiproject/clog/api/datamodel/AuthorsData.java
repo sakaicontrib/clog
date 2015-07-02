@@ -6,7 +6,7 @@ import org.sakaiproject.clog.api.ClogMember;
 
 public class AuthorsData {
 
-	public int authorsTotal;
-	public List<ClogMember> authors;
+    public int authorsTotal;
+    public List<ClogMember> authors;
     public String status = "MORE";
 }

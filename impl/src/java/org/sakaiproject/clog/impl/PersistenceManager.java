@@ -26,249 +26,249 @@ import org.sakaiproject.clog.api.SakaiProxy;
 
 public class PersistenceManager {
 
-	private Logger logger = Logger.getLogger(PersistenceManager.class);
+    private Logger logger = Logger.getLogger(PersistenceManager.class);
 
-	private ISQLGenerator sqlGenerator;
+    private ISQLGenerator sqlGenerator;
 
-	private SakaiProxy sakaiProxy;
+    private SakaiProxy sakaiProxy;
 
-	public PersistenceManager(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
+    public PersistenceManager(SakaiProxy sakaiProxy) {
+        this.sakaiProxy = sakaiProxy;
 
-		String vendor = sakaiProxy.getVendor();
+        String vendor = sakaiProxy.getVendor();
 
-		// TODO load the proper class using reflection. We can use a named based
-		// system to locate the correct SQLGenerator
-		if (vendor.equals("mysql"))
-			sqlGenerator = new MySQLGenerator();
-		else if (vendor.equals("oracle"))
-			sqlGenerator = new OracleSQLGenerator();
-		else if (vendor.equals("hsqldb"))
-			sqlGenerator = new HiperSonicGenerator();
-		else {
-			logger.error("Unknown database vendor:" + vendor + ". Defaulting to HypersonicDB ...");
-			sqlGenerator = new HiperSonicGenerator();
-		}
+        // TODO load the proper class using reflection. We can use a named based
+        // system to locate the correct SQLGenerator
+        if (vendor.equals("mysql"))
+            sqlGenerator = new MySQLGenerator();
+        else if (vendor.equals("oracle"))
+            sqlGenerator = new OracleSQLGenerator();
+        else if (vendor.equals("hsqldb"))
+            sqlGenerator = new HiperSonicGenerator();
+        else {
+            logger.error("Unknown database vendor:" + vendor + ". Defaulting to HypersonicDB ...");
+            sqlGenerator = new HiperSonicGenerator();
+        }
 
-		if (sakaiProxy.isAutoDDL()) {
-			if (!setupTables()) {
-				logger.error("Failed to setup the tables");
-			}
-		}
-	}
+        if (sakaiProxy.isAutoDDL()) {
+            if (!setupTables()) {
+                logger.error("Failed to setup the tables");
+            }
+        }
+    }
 
-	public boolean setupTables() {
+    public boolean setupTables() {
 
         logger.debug("setupTables()");
 
-		Connection connection = null;
-		Statement statement = null;
+        Connection connection = null;
+        Statement statement = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommitFlag = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommitFlag = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
-			statement = connection.createStatement();
+            statement = connection.createStatement();
 
-			try {
-				List<String> statements = sqlGenerator.getCreateTablesStatements();
+            try {
+                List<String> statements = sqlGenerator.getCreateTablesStatements();
 
-				for (String sql : statements) {
-					statement.executeUpdate(sql);
+                for (String sql : statements) {
+                    statement.executeUpdate(sql);
                 }
 
-				connection.commit();
+                connection.commit();
 
-				return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage() + ". Rolling back ...");
-				connection.rollback();
-			} finally {
-				connection.setAutoCommit(oldAutoCommitFlag);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage());
-		} finally {
-			if (statement != null) {
-				try {
-					statement.close();
-				} catch (Exception e) {
-				}
-			}
+                return true;
+            } catch (Exception e) {
+                logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage() + ". Rolling back ...");
+                connection.rollback();
+            } finally {
+                connection.setAutoCommit(oldAutoCommitFlag);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage());
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (Exception e) {
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
+            sakaiProxy.returnConnection(connection);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean existPost(String OID) throws Exception {
-		if (logger.isDebugEnabled())
-			logger.debug("existPost(" + OID + ")");
+    public boolean existPost(String OID) throws Exception {
+        if (logger.isDebugEnabled())
+            logger.debug("existPost(" + OID + ")");
 
-		Connection connection = null;
-		Statement statement = null;
-		ResultSet rs = null;
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet rs = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(sqlGenerator.getSelectPost(OID));
-			boolean exists = rs.next();
-			return exists;
-		} finally {
-			if (statement != null) {
-				try {
-					statement.close();
-				} catch (SQLException e) {}
-			}
+        try {
+            connection = sakaiProxy.borrowConnection();
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sqlGenerator.getSelectPost(OID));
+            boolean exists = rs.next();
+            return exists;
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {}
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
-	}
+            sakaiProxy.returnConnection(connection);
+        }
+    }
 
-	public List<Post> getAllPost(String placementId) throws Exception {
-		return getAllPost(placementId, false);
-	}
+    public List<Post> getAllPost(String placementId) throws Exception {
+        return getAllPost(placementId, false);
+    }
 
-	public List<Post> getAllPost(String placementId, boolean populate) throws Exception {
-		if (logger.isDebugEnabled())
-			logger.debug("getAllPost(" + placementId + ")");
+    public List<Post> getAllPost(String placementId, boolean populate) throws Exception {
+        if (logger.isDebugEnabled())
+            logger.debug("getAllPost(" + placementId + ")");
 
-		List<Post> result = new ArrayList<Post>();
+        List<Post> result = new ArrayList<Post>();
 
-		Connection connection = null;
-		Statement statement = null;
-		ResultSet rs = null;
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet rs = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			statement = connection.createStatement();
-			rs = statement.executeQuery(sqlGenerator.getSelectAllPost(placementId));
-			result = transformResultSetInPostCollection(rs, connection);
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
+        try {
+            connection = sakaiProxy.borrowConnection();
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sqlGenerator.getSelectAllPost(placementId));
+            result = transformResultSetInPostCollection(rs, connection);
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
 
-			if (statement != null) {
-				try {
-					statement.close();
-				} catch (Exception e) {
-				}
-			}
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (Exception e) {
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
+            sakaiProxy.returnConnection(connection);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public boolean saveComment(Comment comment) {
-		Connection connection = null;
-		List<PreparedStatement> statements = null;
+    public boolean saveComment(Comment comment) {
+        Connection connection = null;
+        List<PreparedStatement> statements = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommit = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
-			try {
+            try {
 
-				statements = sqlGenerator.getSaveStatementsForComment(comment, connection);
-				for (PreparedStatement st : statements)
-					st.executeUpdate();
+                statements = sqlGenerator.getSaveStatementsForComment(comment, connection);
+                for (PreparedStatement st : statements)
+                    st.executeUpdate();
 
-				connection.commit();
+                connection.commit();
 
-				return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst saving comment. Rolling back ...", e);
-				connection.rollback();
-			} finally {
-				connection.setAutoCommit(oldAutoCommit);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst saving comment.", e);
-		} finally {
-			if (statements != null) {
-				for (PreparedStatement st : statements) {
-					try {
-						st.close();
-					} catch (SQLException e) {
-					}
-				}
-			}
+                return true;
+            } catch (Exception e) {
+                logger.error("Caught exception whilst saving comment. Rolling back ...", e);
+                connection.rollback();
+            } finally {
+                connection.setAutoCommit(oldAutoCommit);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst saving comment.", e);
+        } finally {
+            if (statements != null) {
+                for (PreparedStatement st : statements) {
+                    try {
+                        st.close();
+                    } catch (SQLException e) {
+                    }
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
+            sakaiProxy.returnConnection(connection);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean deleteComment(String commentId) {
-		Connection connection = null;
-		List<PreparedStatement> statements = null;
+    public boolean deleteComment(String commentId) {
+        Connection connection = null;
+        List<PreparedStatement> statements = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommit = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
-			try {
+            try {
 
-				statements = sqlGenerator.getDeleteStatementsForComment(commentId, connection);
-				for (PreparedStatement st : statements)
-					st.executeUpdate();
+                statements = sqlGenerator.getDeleteStatementsForComment(commentId, connection);
+                for (PreparedStatement st : statements)
+                    st.executeUpdate();
 
-				connection.commit();
+                connection.commit();
 
-				return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst deleting comment. Rolling back ...", e);
-				connection.rollback();
-			} finally {
-				connection.setAutoCommit(oldAutoCommit);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst deleting comment.", e);
-		} finally {
-			if (statements != null) {
-				for (PreparedStatement st : statements) {
-					try {
-						st.close();
-					} catch (SQLException e) {
-					}
-				}
-			}
+                return true;
+            } catch (Exception e) {
+                logger.error("Caught exception whilst deleting comment. Rolling back ...", e);
+                connection.rollback();
+            } finally {
+                connection.setAutoCommit(oldAutoCommit);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst deleting comment.", e);
+        } finally {
+            if (statements != null) {
+                for (PreparedStatement st : statements) {
+                    try {
+                        st.close();
+                    } catch (SQLException e) {
+                    }
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
+            sakaiProxy.returnConnection(connection);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean savePost(Post post) {
+    public boolean savePost(Post post) {
 
         logger.debug("savePost()");
 
-		Connection connection = null;
-		List<PreparedStatement> statements = null;
+        Connection connection = null;
+        List<PreparedStatement> statements = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommit = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
-			try {
-				if (post.isAutoSave()) {
-					statements = sqlGenerator.getInsertStatementsForAutoSavedPost(post, connection);
+            try {
+                if (post.isAutoSave()) {
+                    statements = sqlGenerator.getInsertStatementsForAutoSavedPost(post, connection);
                 } else {
-					Post currentPost = null;
+                    Post currentPost = null;
                     try {
                         currentPost = getPost(post.getId()); 
                     } catch (Exception e1) {}
@@ -276,625 +276,625 @@ public class PersistenceManager {
                     statements = sqlGenerator.getInsertStatementsForPost(post, currentPost, connection);
                 }
 
-				for (PreparedStatement st : statements) {
-					st.executeUpdate();
+                for (PreparedStatement st : statements) {
+                    st.executeUpdate();
                 }
 
-				if (post.getSiteId().startsWith("~")) {
+                if (post.getSiteId().startsWith("~")) {
 
-					// This post is on a MyWorkspace site
+                    // This post is on a MyWorkspace site
 
-					String accessUrl = sakaiProxy.getAccessUrl();
-					String content = post.getContent();
-					Pattern p = Pattern.compile(accessUrl + "/content/user/" + sakaiProxy.getCurrentUserEid() + "/([^\"]*)\"");
-					Matcher m = p.matcher(content);
-					while (m.find()) {
-						String contentId = m.group(1);
-						if (post.isPublic()) {
-							if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, true)) {
-								throw new Exception("Failed to make embedded resource public");
+                    String accessUrl = sakaiProxy.getAccessUrl();
+                    String content = post.getContent();
+                    Pattern p = Pattern.compile(accessUrl + "/content/user/" + sakaiProxy.getCurrentUserEid() + "/([^\"]*)\"");
+                    Matcher m = p.matcher(content);
+                    while (m.find()) {
+                        String contentId = m.group(1);
+                        if (post.isPublic()) {
+                            if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, true)) {
+                                throw new Exception("Failed to make embedded resource public");
                             }
-						} else {
-							if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, false)) {
-								throw new Exception("Failed to make embedded resource public");
+                        } else {
+                            if (!sakaiProxy.setResourcePublic("/user/" + sakaiProxy.getCurrentUserId() + "/" + contentId, false)) {
+                                throw new Exception("Failed to make embedded resource public");
                             }
-						}
-					}
-				}
+                        }
+                    }
+                }
 
-				connection.commit();
-				return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst saving post. Rolling back ...", e);
-				connection.rollback();
-			} finally {
-				connection.setAutoCommit(oldAutoCommit);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst saving post.", e);
-		} finally {
-			if (statements != null) {
-				for (PreparedStatement st : statements) {
-					try {
-						st.close();
-					} catch (SQLException e) {
-					}
-				}
-			}
+                connection.commit();
+                return true;
+            } catch (Exception e) {
+                logger.error("Caught exception whilst saving post. Rolling back ...", e);
+                connection.rollback();
+            } finally {
+                connection.setAutoCommit(oldAutoCommit);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst saving post.", e);
+        } finally {
+            if (statements != null) {
+                for (PreparedStatement st : statements) {
+                    try {
+                        st.close();
+                    } catch (SQLException e) {
+                    }
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
-
-		return false;
-	}
-
-	public boolean deletePost(Post post) {
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("deletePost(" + post.getId() + ")");
+            sakaiProxy.returnConnection(connection);
         }
 
-		Connection connection = null;
-		List<PreparedStatement> statements = null;
+        return false;
+    }
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommit = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+    public boolean deletePost(Post post) {
 
-			try {
-				statements = sqlGenerator.getDeleteStatementsForPost(post, connection);
-
-				for (PreparedStatement st : statements)
-					st.executeUpdate();
-
-				connection.commit();
-
-				return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst deleting post. Rolling back ...", e);
-				connection.rollback();
-			} finally {
-				connection.setAutoCommit(oldAutoCommit);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst deleting post.", e);
-		} finally {
-			if (statements != null) {
-				for (PreparedStatement st : statements) {
-					try {
-						st.close();
-					} catch (Exception e) {
-					}
-				}
-			}
-
-			sakaiProxy.returnConnection(connection);
-		}
-
-		return false;
-	}
-
-	public boolean recyclePost(Post post) {
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("recyclePost(" + post.getId() + ")");
+        if (logger.isDebugEnabled()) {
+            logger.debug("deletePost(" + post.getId() + ")");
         }
 
-		Connection connection = null;
-		List<PreparedStatement> statements = null;
+        Connection connection = null;
+        List<PreparedStatement> statements = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommit = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
-			try {
-				statements = sqlGenerator.getRecycleStatementsForPost(post, connection);
-				for (PreparedStatement st : statements)
-					st.executeUpdate();
-				connection.commit();
-				return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst recycling post. Rolling back ...", e);
-				connection.rollback();
-			} finally {
-				connection.setAutoCommit(oldAutoCommit);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst recycling post.", e);
-			return false;
-		} finally {
-			if (statements != null) {
-				for (PreparedStatement st : statements) {
-					try {
-						st.close();
-					} catch (SQLException e) {
-					}
-				}
-			}
+            try {
+                statements = sqlGenerator.getDeleteStatementsForPost(post, connection);
 
-			sakaiProxy.returnConnection(connection);
-		}
+                for (PreparedStatement st : statements)
+                    st.executeUpdate();
 
-		return false;
-	}
+                connection.commit();
 
-	public boolean restorePost(Post post) {
+                return true;
+            } catch (Exception e) {
+                logger.error("Caught exception whilst deleting post. Rolling back ...", e);
+                connection.rollback();
+            } finally {
+                connection.setAutoCommit(oldAutoCommit);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst deleting post.", e);
+        } finally {
+            if (statements != null) {
+                for (PreparedStatement st : statements) {
+                    try {
+                        st.close();
+                    } catch (Exception e) {
+                    }
+                }
+            }
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("restorePost(" + post.getId() + ")");
+            sakaiProxy.returnConnection(connection);
         }
 
-		Connection connection = null;
-		PreparedStatement statement = null;
+        return false;
+    }
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommit = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+    public boolean recyclePost(Post post) {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("recyclePost(" + post.getId() + ")");
+        }
+
+        Connection connection = null;
+        List<PreparedStatement> statements = null;
+
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+
+            try {
+                statements = sqlGenerator.getRecycleStatementsForPost(post, connection);
+                for (PreparedStatement st : statements)
+                    st.executeUpdate();
+                connection.commit();
+                return true;
+            } catch (Exception e) {
+                logger.error("Caught exception whilst recycling post. Rolling back ...", e);
+                connection.rollback();
+            } finally {
+                connection.setAutoCommit(oldAutoCommit);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst recycling post.", e);
+            return false;
+        } finally {
+            if (statements != null) {
+                for (PreparedStatement st : statements) {
+                    try {
+                        st.close();
+                    } catch (SQLException e) {
+                    }
+                }
+            }
+
+            sakaiProxy.returnConnection(connection);
+        }
+
+        return false;
+    }
+
+    public boolean restorePost(Post post) {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("restorePost(" + post.getId() + ")");
+        }
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
             try {
                 statement = sqlGenerator.getRestoreStatementForPost(post, connection);
                 statement.executeUpdate();
                 connection.commit();
                 return true;
-			} catch (Exception e) {
-				logger.error("Caught exception whilst restoring post.", e);
+            } catch (Exception e) {
+                logger.error("Caught exception whilst restoring post.", e);
                 return false;
-			} finally {
-				connection.setAutoCommit(oldAutoCommit);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst restoring post.", e);
+            } finally {
+                connection.setAutoCommit(oldAutoCommit);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst restoring post.", e);
             return false;
-		} finally {
-			if (statement != null) {
+        } finally {
+            if (statement != null) {
                 try {
                     statement.close();
                 } catch (SQLException e) {}
-			}
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
-	}
+            sakaiProxy.returnConnection(connection);
+        }
+    }
 
-	public List<Post> getPosts(QueryBean query) throws Exception {
-		List<Post> posts = new ArrayList<Post>();
+    public List<Post> getPosts(QueryBean query) throws Exception {
+        List<Post> posts = new ArrayList<Post>();
 
-		Connection connection = null;
-		Statement st = null;
-		ResultSet rs = null;
+        Connection connection = null;
+        Statement st = null;
+        ResultSet rs = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = connection.createStatement();
-			List<String> sqlStatements = sqlGenerator.getSelectStatementsForQuery(query);
-			for (String sql : sqlStatements) {
-				rs = st.executeQuery(sql);
-				posts.addAll(transformResultSetInPostCollection(rs, connection));
-			}
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
+        try {
+            connection = sakaiProxy.borrowConnection();
+            st = connection.createStatement();
+            List<String> sqlStatements = sqlGenerator.getSelectStatementsForQuery(query);
+            for (String sql : sqlStatements) {
+                rs = st.executeQuery(sql);
+                posts.addAll(transformResultSetInPostCollection(rs, connection));
+            }
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
 
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
-
-		return posts;
-	}
-
-	public Post getPost(String postId) throws Exception {
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("getPost(" + postId + ")");
+            sakaiProxy.returnConnection(connection);
         }
 
-		Connection connection = null;
-		Statement st = null;
-		ResultSet rs = null;
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = connection.createStatement();
-			String sql = sqlGenerator.getSelectPost(postId);
-			rs = st.executeQuery(sql);
-			List<Post> posts = transformResultSetInPostCollection(rs, connection);
+        return posts;
+    }
 
-			if (posts.size() == 0)
-				throw new Exception("getPost: Unable to find post with id:" + postId);
-			if (posts.size() > 1)
-				throw new Exception("getPost: there is more than one post with id:" + postId);
+    public Post getPost(String postId) throws Exception {
 
-			return posts.get(0);
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
-
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
-
-			sakaiProxy.returnConnection(connection);
-		}
-	}
-
-	public Post getAutosavedPost(String postId) {
-		if (logger.isDebugEnabled())
-			logger.debug("getAutosavedPost(" + postId + ")");
-
-		Connection connection = null;
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = sqlGenerator.getSelectAutosavedPost(postId, connection);
-			rs = st.executeQuery();
-			List<Post> posts = transformResultSetInPostCollection(rs, connection);
-
-			if (posts.size() == 0) {
-				return null;
-			}
-			if (posts.size() > 1) {
-				logger.error("getAutosavedPost: there is more than one post with id:" + postId);
-				return null;
-			}
-
-			return posts.get(0);
-		} catch (Exception e) {
-			logger.error("Caught exception whilst getting autosaved post", e);
-			return null;
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
-
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
-
-			sakaiProxy.returnConnection(connection);
-		}
-	}
-
-	private List<Post> transformResultSetInPostCollection(ResultSet rs, Connection connection) throws Exception {
-
-		List<Post> result = new ArrayList<Post>();
-
-		if (rs == null) {
-			return result;
+        if (logger.isDebugEnabled()) {
+            logger.debug("getPost(" + postId + ")");
         }
 
-		Statement extrasST = null;
+        Connection connection = null;
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            connection = sakaiProxy.borrowConnection();
+            st = connection.createStatement();
+            String sql = sqlGenerator.getSelectPost(postId);
+            rs = st.executeQuery(sql);
+            List<Post> posts = transformResultSetInPostCollection(rs, connection);
 
-		try {
-			extrasST = connection.createStatement();
+            if (posts.size() == 0)
+                throw new Exception("getPost: Unable to find post with id:" + postId);
+            if (posts.size() > 1)
+                throw new Exception("getPost: there is more than one post with id:" + postId);
 
-			while (rs.next()) {
-				Post post = new Post();
+            return posts.get(0);
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
 
-				String postId = rs.getString(ISQLGenerator.POST_ID);
-				post.setId(postId);
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
 
-				String visibility = rs.getString(ISQLGenerator.VISIBILITY);
-				post.setVisibility(visibility);
+            sakaiProxy.returnConnection(connection);
+        }
+    }
 
-				if (!post.isAutoSave()) {
-					post.setAutosavedVersion(getAutosavedPost(postId));
+    public Post getAutosavedPost(String postId) {
+        if (logger.isDebugEnabled())
+            logger.debug("getAutosavedPost(" + postId + ")");
+
+        Connection connection = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            connection = sakaiProxy.borrowConnection();
+            st = sqlGenerator.getSelectAutosavedPost(postId, connection);
+            rs = st.executeQuery();
+            List<Post> posts = transformResultSetInPostCollection(rs, connection);
+
+            if (posts.size() == 0) {
+                return null;
+            }
+            if (posts.size() > 1) {
+                logger.error("getAutosavedPost: there is more than one post with id:" + postId);
+                return null;
+            }
+
+            return posts.get(0);
+        } catch (Exception e) {
+            logger.error("Caught exception whilst getting autosaved post", e);
+            return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
+
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
+
+            sakaiProxy.returnConnection(connection);
+        }
+    }
+
+    private List<Post> transformResultSetInPostCollection(ResultSet rs, Connection connection) throws Exception {
+
+        List<Post> result = new ArrayList<Post>();
+
+        if (rs == null) {
+            return result;
+        }
+
+        Statement extrasST = null;
+
+        try {
+            extrasST = connection.createStatement();
+
+            while (rs.next()) {
+                Post post = new Post();
+
+                String postId = rs.getString(ISQLGenerator.POST_ID);
+                post.setId(postId);
+
+                String visibility = rs.getString(ISQLGenerator.VISIBILITY);
+                post.setVisibility(visibility);
+
+                if (!post.isAutoSave()) {
+                    post.setAutosavedVersion(getAutosavedPost(postId));
                 }
 
-				String siteId = rs.getString(ISQLGenerator.SITE_ID);
-				post.setSiteId(siteId);
+                String siteId = rs.getString(ISQLGenerator.SITE_ID);
+                post.setSiteId(siteId);
 
-				String title = rs.getString(ISQLGenerator.TITLE);
-				post.setTitle(title);
+                String title = rs.getString(ISQLGenerator.TITLE);
+                post.setTitle(title);
 
-				String content = rs.getString(ISQLGenerator.CONTENT);
-				post.setContent(content);
+                String content = rs.getString(ISQLGenerator.CONTENT);
+                post.setContent(content);
 
-				Date postCreatedDate = rs.getTimestamp(ISQLGenerator.CREATED_DATE);
-				post.setCreatedDate(postCreatedDate.getTime());
+                Date postCreatedDate = rs.getTimestamp(ISQLGenerator.CREATED_DATE);
+                post.setCreatedDate(postCreatedDate.getTime());
 
-				Date postModifiedDate = rs.getTimestamp(ISQLGenerator.MODIFIED_DATE);
-				post.setModifiedDate(postModifiedDate.getTime());
+                Date postModifiedDate = rs.getTimestamp(ISQLGenerator.MODIFIED_DATE);
+                post.setModifiedDate(postModifiedDate.getTime());
 
-				String postCreatorId = rs.getString(ISQLGenerator.CREATOR_ID);
-				post.setCreatorId(postCreatorId);
+                String postCreatorId = rs.getString(ISQLGenerator.CREATOR_ID);
+                post.setCreatorId(postCreatorId);
 
-				String keywordsText = rs.getString(ISQLGenerator.KEYWORDS);
-				post.setKeywordsText(keywordsText);
+                String keywordsText = rs.getString(ISQLGenerator.KEYWORDS);
+                post.setKeywordsText(keywordsText);
 
-				int allowComments = rs.getInt(ISQLGenerator.ALLOW_COMMENTS);
-				post.setCommentable(allowComments == 1);
+                int allowComments = rs.getInt(ISQLGenerator.ALLOW_COMMENTS);
+                post.setCommentable(allowComments == 1);
 
-				String sql = sqlGenerator.getSelectComments(postId);
-				ResultSet extrasRS = extrasST.executeQuery(sql);
-				post.setComments(transformResultSetInCommentCollection(extrasRS));
-				extrasRS.close();
+                String sql = sqlGenerator.getSelectComments(postId);
+                ResultSet extrasRS = extrasST.executeQuery(sql);
+                post.setComments(transformResultSetInCommentCollection(extrasRS));
+                extrasRS.close();
 
-				String groupsSql = sqlGenerator.getSelectGroups(postId);
-				extrasRS  = extrasST.executeQuery(groupsSql);
-				post.setGroups(transformResultSetInGroupCollection(extrasRS));
-				extrasRS.close();
+                String groupsSql = sqlGenerator.getSelectGroups(postId);
+                extrasRS  = extrasST.executeQuery(groupsSql);
+                post.setGroups(transformResultSetInGroupCollection(extrasRS));
+                extrasRS.close();
 
-				post.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
+                post.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
 
-				result.add(post);
-			}
-		} finally {
+                result.add(post);
+            }
+        } finally {
 
-			if (extrasST != null) {
-				try {
-					extrasST.close();
-				} catch (Exception e) { }
-			}
-		}
-
-		return result;
-	}
-
-	private List<Comment> transformResultSetInCommentCollection(ResultSet rs) throws Exception {
-
-		List<Comment> result = new ArrayList<Comment>();
-
-		if (rs == null) {
-			return result;
+            if (extrasST != null) {
+                try {
+                    extrasST.close();
+                } catch (Exception e) { }
+            }
         }
 
-		while (rs.next()) {
-			Comment comment = new Comment();
-			comment.setId(rs.getString(ISQLGenerator.COMMENT_ID));
-			comment.setPostId(rs.getString(ISQLGenerator.POST_ID));
-			comment.setSiteId(rs.getString("SITE_ID"));
-			comment.setCreatorId(rs.getString(ISQLGenerator.CREATOR_ID));
-			comment.setCreatedDate(rs.getTimestamp(ISQLGenerator.CREATED_DATE).getTime());
-			comment.setContent(rs.getString(ISQLGenerator.CONTENT));
-			comment.setModifiedDate(rs.getTimestamp(ISQLGenerator.MODIFIED_DATE).getTime());
-			comment.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
+        return result;
+    }
 
-			result.add(comment);
-		}
+    private List<Comment> transformResultSetInCommentCollection(ResultSet rs) throws Exception {
 
-		return result;
-	}
+        List<Comment> result = new ArrayList<Comment>();
 
-	private List<String> transformResultSetInGroupCollection(ResultSet rs) throws Exception {
-
-		List<String> result = new ArrayList<String>();
-
-		if (rs == null) {
-			return result;
+        if (rs == null) {
+            return result;
         }
 
-		while (rs.next()) {
-			result.add(rs.getString(ISQLGenerator.GROUP_ID));
-		}
+        while (rs.next()) {
+            Comment comment = new Comment();
+            comment.setId(rs.getString(ISQLGenerator.COMMENT_ID));
+            comment.setPostId(rs.getString(ISQLGenerator.POST_ID));
+            comment.setSiteId(rs.getString("SITE_ID"));
+            comment.setCreatorId(rs.getString(ISQLGenerator.CREATOR_ID));
+            comment.setCreatedDate(rs.getTimestamp(ISQLGenerator.CREATED_DATE).getTime());
+            comment.setContent(rs.getString(ISQLGenerator.CONTENT));
+            comment.setModifiedDate(rs.getTimestamp(ISQLGenerator.MODIFIED_DATE).getTime());
+            comment.setCreatorDisplayName(sakaiProxy.getDisplayNameForTheUser(comment.getCreatorId()));
 
-		return result;
-	}
+            result.add(comment);
+        }
 
-	public Comment getComment(String commentId) throws Exception {
-		if (logger.isDebugEnabled())
-			logger.debug("getComment(" + commentId + ")");
+        return result;
+    }
 
-		Connection connection = null;
-		Statement st = null;
-		ResultSet rs = null;
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = connection.createStatement();
-			String sql = sqlGenerator.getSelectComment(commentId);
-			rs = st.executeQuery(sql);
-			List<Comment> comments = transformResultSetInCommentCollection(rs);
-			if (comments.size() < 1) {
-				logger.error("Failed to find comment with id '" + commentId + "'");
-				return null;
-			}
+    private List<String> transformResultSetInGroupCollection(ResultSet rs) throws Exception {
 
-			return comments.get(0);
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
+        List<String> result = new ArrayList<String>();
 
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
+        if (rs == null) {
+            return result;
+        }
 
-			sakaiProxy.returnConnection(connection);
-		}
-	}
+        while (rs.next()) {
+            result.add(rs.getString(ISQLGenerator.GROUP_ID));
+        }
 
-	public void setSakaiProxy(SakaiProxy sakaiProxy) {
-		this.sakaiProxy = sakaiProxy;
-	}
+        return result;
+    }
 
-	public SakaiProxy getSakaiProxy() {
-		return sakaiProxy;
-	}
+    public Comment getComment(String commentId) throws Exception {
+        if (logger.isDebugEnabled())
+            logger.debug("getComment(" + commentId + ")");
 
-	public List<ClogMember> getPublicBloggers() {
-		List<ClogMember> members = new ArrayList<ClogMember>();
+        Connection connection = null;
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            connection = sakaiProxy.borrowConnection();
+            st = connection.createStatement();
+            String sql = sqlGenerator.getSelectComment(commentId);
+            rs = st.executeQuery(sql);
+            List<Comment> comments = transformResultSetInCommentCollection(rs);
+            if (comments.size() < 1) {
+                logger.error("Failed to find comment with id '" + commentId + "'");
+                return null;
+            }
 
-		Connection connection = null;
-		Statement publicST = null;
-		Statement countST = null;
-		ResultSet rs = null;
-		ResultSet countRS = null;
+            return comments.get(0);
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			publicST = connection.createStatement();
-			countST = connection.createStatement();
-			String sql = sqlGenerator.getSelectPublicBloggers();
-			rs = publicST.executeQuery(sql);
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
 
-			while (rs.next()) {
-				String userId = rs.getString(ISQLGenerator.CREATOR_ID);
-				ClogMember member = sakaiProxy.getMember(userId);
-				String countPostsQuery = sqlGenerator.getCountPublicPosts(userId);
-				countRS = countST.executeQuery(countPostsQuery);
+            sakaiProxy.returnConnection(connection);
+        }
+    }
 
-				countRS.next();
+    public void setSakaiProxy(SakaiProxy sakaiProxy) {
+        this.sakaiProxy = sakaiProxy;
+    }
 
-				int count = countRS.getInt("NUMBER_POSTS");
+    public SakaiProxy getSakaiProxy() {
+        return sakaiProxy;
+    }
 
-				countRS.close();
-				member.setNumberOfPosts(count);
+    public List<ClogMember> getPublicBloggers() {
+        List<ClogMember> members = new ArrayList<ClogMember>();
 
-				members.add(member);
-			}
-		} catch (Exception e) {
-			logger.error("Caught exception whilst getting public bloggers.", e);
-		} finally {
-			if (countRS != null) {
-				try {
-					countRS.close();
-				} catch (Exception e) {
-				}
-			}
+        Connection connection = null;
+        Statement publicST = null;
+        Statement countST = null;
+        ResultSet rs = null;
+        ResultSet countRS = null;
 
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
+        try {
+            connection = sakaiProxy.borrowConnection();
+            publicST = connection.createStatement();
+            countST = connection.createStatement();
+            String sql = sqlGenerator.getSelectPublicBloggers();
+            rs = publicST.executeQuery(sql);
 
-			if (publicST != null) {
-				try {
-					publicST.close();
-				} catch (Exception e) {
-				}
-			}
+            while (rs.next()) {
+                String userId = rs.getString(ISQLGenerator.CREATOR_ID);
+                ClogMember member = sakaiProxy.getMember(userId);
+                String countPostsQuery = sqlGenerator.getCountPublicPosts(userId);
+                countRS = countST.executeQuery(countPostsQuery);
 
-			if (countST != null) {
-				try {
-					countST.close();
-				} catch (Exception e) {
-				}
-			}
+                countRS.next();
 
-			sakaiProxy.returnConnection(connection);
-		}
-		return members;
-	}
+                int count = countRS.getInt("NUMBER_POSTS");
 
-	public boolean postExists(String postId) throws Exception {
-		Connection connection = null;
-		Statement st = null;
-		ResultSet rs = null;
+                countRS.close();
+                member.setNumberOfPosts(count);
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = connection.createStatement();
-			String sql = sqlGenerator.getSelectPost(postId);
-			rs = st.executeQuery(sql);
-			boolean exists = rs.next();
-			return exists;
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
+                members.add(member);
+            }
+        } catch (Exception e) {
+            logger.error("Caught exception whilst getting public bloggers.", e);
+        } finally {
+            if (countRS != null) {
+                try {
+                    countRS.close();
+                } catch (Exception e) {
+                }
+            }
 
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
-	}
+            if (publicST != null) {
+                try {
+                    publicST.close();
+                } catch (Exception e) {
+                }
+            }
 
-	public boolean populateAuthorData(ClogMember author, String siteId) {
-		Connection connection = null;
-		Statement st = null;
-		ResultSet rs = null;
+            if (countST != null) {
+                try {
+                    countST.close();
+                } catch (Exception e) {
+                }
+            }
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = connection.createStatement();
-			String sql = sqlGenerator.getSelectAuthorStatement(author.getUserId(), siteId);
-			rs = st.executeQuery(sql);
-			if (rs.next()) {
-				int totalPosts = rs.getInt(ISQLGenerator.TOTAL_POSTS);
-				int totalComments = rs.getInt(ISQLGenerator.TOTAL_COMMENTS);
-				long lastPostDate = -1L;
-				Timestamp ts = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE);
-				if (ts != null) {
-					lastPostDate = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE).getTime();
-				}
-				author.setNumberOfPosts(totalPosts);
-				author.setNumberOfComments(totalComments);
-				author.setDateOfLastPost(lastPostDate);
-			}
+            sakaiProxy.returnConnection(connection);
+        }
+        return members;
+    }
 
-			return true;
-		} catch (Exception e) {
-			logger.error("Failed to populate author data.", e);
-			return false;
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e) {
-				}
-			}
+    public boolean postExists(String postId) throws Exception {
+        Connection connection = null;
+        Statement st = null;
+        ResultSet rs = null;
 
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
+        try {
+            connection = sakaiProxy.borrowConnection();
+            st = connection.createStatement();
+            String sql = sqlGenerator.getSelectPost(postId);
+            rs = st.executeQuery(sql);
+            boolean exists = rs.next();
+            return exists;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
-	}
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
 
-	public boolean deleteAutosavedCopy(String postId) {
+            sakaiProxy.returnConnection(connection);
+        }
+    }
 
-		Connection connection = null;
-		PreparedStatement st = null;
+    public boolean populateAuthorData(ClogMember author, String siteId) {
+        Connection connection = null;
+        Statement st = null;
+        ResultSet rs = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			boolean oldAutoCommitFlag = connection.getAutoCommit();
-			connection.setAutoCommit(false);
+        try {
+            connection = sakaiProxy.borrowConnection();
+            st = connection.createStatement();
+            String sql = sqlGenerator.getSelectAuthorStatement(author.getUserId(), siteId);
+            rs = st.executeQuery(sql);
+            if (rs.next()) {
+                int totalPosts = rs.getInt(ISQLGenerator.TOTAL_POSTS);
+                int totalComments = rs.getInt(ISQLGenerator.TOTAL_COMMENTS);
+                long lastPostDate = -1L;
+                Timestamp ts = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE);
+                if (ts != null) {
+                    lastPostDate = rs.getTimestamp(ISQLGenerator.LAST_POST_DATE).getTime();
+                }
+                author.setNumberOfPosts(totalPosts);
+                author.setNumberOfComments(totalComments);
+                author.setDateOfLastPost(lastPostDate);
+            }
+
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to populate author data.", e);
+            return false;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Exception e) {
+                }
+            }
+
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
+
+            sakaiProxy.returnConnection(connection);
+        }
+    }
+
+    public boolean deleteAutosavedCopy(String postId) {
+
+        Connection connection = null;
+        PreparedStatement st = null;
+
+        try {
+            connection = sakaiProxy.borrowConnection();
+            boolean oldAutoCommitFlag = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
             try {
                 st = sqlGenerator.getDeleteAutosavedCopyStatement(postId, connection);
@@ -907,33 +907,33 @@ public class PersistenceManager {
             } finally {
                 connection.setAutoCommit(oldAutoCommitFlag);
             }
-		} catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Caught exception whilst deleting autosaved copy.", e);
             return false;
-		} finally {
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
-	}
+            sakaiProxy.returnConnection(connection);
+        }
+    }
 
     public ClogGroup getClogGroup(String groupId) {
 
         ClogGroup clogGroup = new ClogGroup();
         clogGroup.setId(groupId);
 
-		Connection connection = null;
-		PreparedStatement st = null;
+        Connection connection = null;
+        PreparedStatement st = null;
 
-		try {
-			connection = sakaiProxy.borrowConnection();
-			st = sqlGenerator.getSelectGroupDataStatement(groupId, connection);
-			ResultSet rs = st.executeQuery();
+        try {
+            connection = sakaiProxy.borrowConnection();
+            st = sqlGenerator.getSelectGroupDataStatement(groupId, connection);
+            ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 clogGroup.setTotalPosts(rs.getInt("TOTAL_POSTS"));
                 Timestamp lastPostDate = rs.getTimestamp("LAST_POST_DATE");
@@ -942,18 +942,18 @@ public class PersistenceManager {
                 }
             }
             rs.close();
-		} catch (Exception e) {
-			logger.error("Caught exception whilst getting clog group. Returning a ClogGroup with just the id set ...", e);
-		} finally {
-			if (st != null) {
-				try {
-					st.close();
-				} catch (Exception e) {
-				}
-			}
+        } catch (Exception e) {
+            logger.error("Caught exception whilst getting clog group. Returning a ClogGroup with just the id set ...", e);
+        } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (Exception e) {
+                }
+            }
 
-			sakaiProxy.returnConnection(connection);
-		}
+            sakaiProxy.returnConnection(connection);
+        }
 
         return clogGroup;
     }
