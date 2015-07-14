@@ -52,11 +52,8 @@ public class Post implements Entity {
 	@Getter @Setter
 	private String creatorDisplayName = null;
 
-	@Getter
-	private List<String> keywords = new ArrayList<String>();
-
-	@Getter
-	private List<Comment> comments = new ArrayList<Comment>();
+    @Getter
+    private List<Comment> comments = new ArrayList<Comment>();
 
 	@Getter @Setter
 	private String siteId;
@@ -70,276 +67,236 @@ public class Post implements Entity {
 	@Getter @Setter
     private List<String> groups = new ArrayList<String>();
 
-	public Post() {
+    public Post() {
 
-		long now = new Date().getTime();
-		createdDate = now;
-		modifiedDate = now;
-	}
+        long now = new Date().getTime();
+        createdDate = now;
+        modifiedDate = now;
+    }
 
-	public void addKeyword(String keyword) {
-		keywords.add(keyword);
-	}
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        numberOfComments += 1;
+    }
+    
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+        numberOfComments = comments.size();
+    }
 
-	public String getKeywordsText() {
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
+    }
 
-		if (keywords.size() == 0) {
-			return "";
-		}
+    public String getVisibility() {
+        return visibility;
+    }
 
-		StringBuilder keywordsText = new StringBuilder();
-		for (String keyword : keywords) {
-			keywordsText.append(keyword + ",");
-		}
-		keywordsText.setLength(keywordsText.length() - 1);
-		return keywordsText.toString();
-	}
+    public boolean isPrivate() {
+        return Visibilities.PRIVATE.equals(visibility);
+    }
 
-	public void setKeywords(List<String> keywords) {
-		this.keywords = keywords;
+    public boolean isPublic() {
+        return Visibilities.PUBLIC.equals(visibility);
+    }
 
-		if (this.keywords == null)
-			this.keywords = new ArrayList<String>();
-	}
+    public boolean isGroup() {
+        return Visibilities.GROUP.equals(visibility);
+    }
 
-	public void setKeywordsText(String keywordsText) {
-		String[] keywordsArray = keywordsText.split(",");
-		setKeywords(Arrays.asList(keywordsArray));
-	}
+    /**
+     * @see org.sakaiproject.entity.api.Entity#getProperties()
+     */
+    public ResourceProperties getProperties() {
+        ResourceProperties rp = new BaseResourceProperties();
 
-	public void addComment(Comment comment) {
-		comments.add(comment);
-		numberOfComments += 1;
-	}
-	
-	public void setComments(List<Comment> comments) {
-		this.comments = comments;
-		numberOfComments = comments.size();
-	}
+        rp.addProperty("id", getId());
+        return rp;
+    }
 
-	public void setVisibility(String visibility) {
-		this.visibility = visibility;
-	}
+    /**
+     * @see org.sakaiproject.entity.api.Entity#getReference()
+     * 
+     * @return
+     */
+    public String getReference() {
+        return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + siteId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
+    }
 
-	public String getVisibility() {
-		return visibility;
-	}
+    /**
+     * @see org.sakaiproject.entity.api.Entity#getReference()
+     * 
+     * @return
+     */
+    public String getReference(String rootProperty) {
+        return getReference();
+    }
 
-	public boolean isPrivate() {
-		return Visibilities.PRIVATE.equals(visibility);
-	}
+    /**
+     * @see org.sakaiproject.entity.api.Entity#getUrl()
+     */
+    public String getUrl() {
+        String toolId = SakaiProxy.getClogToolId(siteId);
+        return SakaiProxy.getServerUrl() + "/portal/directtool/" + toolId + "?state=post&postId=" + getId();
+    }
 
-	public boolean isPublic() {
-		return Visibilities.PUBLIC.equals(visibility);
-	}
+    /**
+     * @see org.sakaiproject.entity.api.Entity#getUrl()
+     */
+    public String getUrl(String rootProperty) {
+        return getUrl();
+    }
 
-	public boolean isGroup() {
-		return Visibilities.GROUP.equals(visibility);
-	}
+    /**
+     * @see org.sakaiproject.entity.api.Entity#toXml()
+     * 
+     * @return
+     */
+    public Element toXml(Document doc, Stack stack) {
+        Element postElement = doc.createElement(XmlDefs.POST);
 
-	/**
-	 * @see org.sakaiproject.entity.api.Entity#getProperties()
-	 */
-	public ResourceProperties getProperties() {
-		ResourceProperties rp = new BaseResourceProperties();
+        if (stack.isEmpty()) {
+            doc.appendChild(postElement);
+        } else {
+            ((Element) stack.peek()).appendChild(postElement);
+        }
 
-		rp.addProperty("id", getId());
-		return rp;
-	}
+        stack.push(postElement);
 
-	/**
-	 * @see org.sakaiproject.entity.api.Entity#getReference()
-	 * 
-	 * @return
-	 */
-	public String getReference() {
-		return ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + siteId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
-	}
+        postElement.setAttribute(XmlDefs.COMMENTABLE, ((isCommentable()) ? "true" : "false"));
+        postElement.setAttribute(XmlDefs.VISIBILITY, getVisibility());
 
-	/**
-	 * @see org.sakaiproject.entity.api.Entity#getReference()
-	 * 
-	 * @return
-	 */
-	public String getReference(String rootProperty) {
-		return getReference();
-	}
+        Element idElement = doc.createElement(XmlDefs.ID);
+        idElement.setTextContent(id);
+        postElement.appendChild(idElement);
 
-	/**
-	 * @see org.sakaiproject.entity.api.Entity#getUrl()
-	 */
-	public String getUrl() {
-		String toolId = SakaiProxy.getClogToolId(siteId);
-		return SakaiProxy.getServerUrl() + "/portal/directtool/" + toolId + "?state=post&postId=" + getId();
-	}
+        Element createdDateElement = doc.createElement(XmlDefs.CREATEDDATE);
+        createdDateElement.setTextContent(Long.toString(createdDate));
+        postElement.appendChild(createdDateElement);
 
-	/**
-	 * @see org.sakaiproject.entity.api.Entity#getUrl()
-	 */
-	public String getUrl(String rootProperty) {
-		return getUrl();
-	}
+        Element modifiedDateElement = doc.createElement(XmlDefs.MODIFIEDDATE);
+        modifiedDateElement.setTextContent(Long.toString(modifiedDate));
+        postElement.appendChild(modifiedDateElement);
 
-	/**
-	 * @see org.sakaiproject.entity.api.Entity#toXml()
-	 * 
-	 * @return
-	 */
-	public Element toXml(Document doc, Stack stack) {
-		Element postElement = doc.createElement(XmlDefs.POST);
+        Element creatorIdElement = doc.createElement(XmlDefs.CREATORID);
+        creatorIdElement.setTextContent(creatorId);
+        postElement.appendChild(creatorIdElement);
 
-		if (stack.isEmpty()) {
-			doc.appendChild(postElement);
-		} else {
-			((Element) stack.peek()).appendChild(postElement);
-		}
+        Element titleElement = doc.createElement(XmlDefs.TITLE);
+        titleElement.setTextContent(wrapWithCDATA(title));
+        postElement.appendChild(titleElement);
 
-		stack.push(postElement);
+        if (comments.size() > 0) {
+            Element commentsElement = doc.createElement(XmlDefs.COMMENTS);
 
-		postElement.setAttribute(XmlDefs.COMMENTABLE, ((isCommentable()) ? "true" : "false"));
-		postElement.setAttribute(XmlDefs.VISIBILITY, getVisibility());
+            for (Comment comment : comments) {
+                Element commentElement = doc.createElement(XmlDefs.COMMENT);
+                commentElement.setAttribute(XmlDefs.ID, comment.getId());
+                commentElement.setAttribute(XmlDefs.CREATORID, comment.getCreatorId());
+                commentElement.setAttribute(XmlDefs.CREATEDDATE, Long.toString(comment.getCreatedDate()));
+                commentElement.setAttribute(XmlDefs.MODIFIEDDATE, Long.toString(comment.getModifiedDate()));
+                commentElement.setTextContent(wrapWithCDATA(comment.getContent()));
 
-		Element idElement = doc.createElement(XmlDefs.ID);
-		idElement.setTextContent(id);
-		postElement.appendChild(idElement);
+                commentsElement.appendChild(commentElement);
+            }
 
-		Element createdDateElement = doc.createElement(XmlDefs.CREATEDDATE);
-		createdDateElement.setTextContent(Long.toString(createdDate));
-		postElement.appendChild(createdDateElement);
+            postElement.appendChild(commentsElement);
+        }
 
-		Element modifiedDateElement = doc.createElement(XmlDefs.MODIFIEDDATE);
-		modifiedDateElement.setTextContent(Long.toString(modifiedDate));
-		postElement.appendChild(modifiedDateElement);
+        stack.pop();
 
-		Element creatorIdElement = doc.createElement(XmlDefs.CREATORID);
-		creatorIdElement.setTextContent(creatorId);
-		postElement.appendChild(creatorIdElement);
+        return postElement;
+    }
 
-		Element keywordsElement = doc.createElement(XmlDefs.KEYWORDS);
-		keywordsElement.setTextContent(wrapWithCDATA(getKeywordsText()));
-		postElement.appendChild(keywordsElement);
+    private String wrapWithCDATA(String s) {
+        return CDATA_PREFIX + s + CDATA_SUFFIX;
+    }
 
-		Element titleElement = doc.createElement(XmlDefs.TITLE);
-		titleElement.setTextContent(wrapWithCDATA(title));
-		postElement.appendChild(titleElement);
+    private String stripCDATA(String s) {
+        if (s.startsWith(CDATA_PREFIX) && s.endsWith(CDATA_SUFFIX)) {
+            s = s.substring(CDATA_PREFIX.length());
+            s = s.substring(0, s.length() - CDATA_SUFFIX.length());
+        }
 
-		if (comments.size() > 0) {
-			Element commentsElement = doc.createElement(XmlDefs.COMMENTS);
+        return s;
+    }
 
-			for (Comment comment : comments) {
-				Element commentElement = doc.createElement(XmlDefs.COMMENT);
-				commentElement.setAttribute(XmlDefs.ID, comment.getId());
-				commentElement.setAttribute(XmlDefs.CREATORID, comment.getCreatorId());
-				commentElement.setAttribute(XmlDefs.CREATEDDATE, Long.toString(comment.getCreatedDate()));
-				commentElement.setAttribute(XmlDefs.MODIFIEDDATE, Long.toString(comment.getModifiedDate()));
-				commentElement.setTextContent(wrapWithCDATA(comment.getContent()));
+    public void fromXml(Element postElement) {
+        if (!postElement.getTagName().equals(XmlDefs.POST)) {
+            return;
+        }
 
-				commentsElement.appendChild(commentElement);
-			}
+        String commentable = postElement.getAttribute(XmlDefs.COMMENTABLE);
+        setCommentable((commentable.equals("true")) ? true : false);
 
-			postElement.appendChild(commentsElement);
-		}
+        String visibility = postElement.getAttribute(XmlDefs.VISIBILITY);
+        setVisibility(visibility);
 
-		stack.pop();
+        NodeList children = postElement.getElementsByTagName(XmlDefs.CREATORID);
+        setCreatorId(children.item(0).getFirstChild().getTextContent());
 
-		return postElement;
-	}
+        children = postElement.getElementsByTagName(XmlDefs.CREATEDDATE);
+        setCreatedDate(Long.parseLong(children.item(0).getFirstChild().getTextContent()));
 
-	private String wrapWithCDATA(String s) {
-		return CDATA_PREFIX + s + CDATA_SUFFIX;
-	}
+        children = postElement.getElementsByTagName(XmlDefs.MODIFIEDDATE);
+        setModifiedDate(Long.parseLong(children.item(0).getFirstChild().getTextContent()));
 
-	private String stripCDATA(String s) {
-		if (s.startsWith(CDATA_PREFIX) && s.endsWith(CDATA_SUFFIX)) {
-			s = s.substring(CDATA_PREFIX.length());
-			s = s.substring(0, s.length() - CDATA_SUFFIX.length());
-		}
+        children = postElement.getElementsByTagName(XmlDefs.TITLE);
+        if (children.getLength() > 0) {
+            setTitle(stripCDATA(children.item(0).getFirstChild().getTextContent()));
+        }
 
-		return s;
-	}
+        children = postElement.getElementsByTagName(XmlDefs.COMMENT);
+        int numChildren = children.getLength();
+        for (int i = 0; i < numChildren; i++) {
+            Element commentElement = (Element) children.item(i);
 
-	public void fromXml(Element postElement) {
-		if (!postElement.getTagName().equals(XmlDefs.POST)) {
-			return;
-		}
+            String commentCreatorId = commentElement.getAttribute(XmlDefs.CREATORID);
+            String commentCreatedDate = commentElement.getAttribute(XmlDefs.CREATEDDATE);
+            String commentModifiedDate = commentElement.getAttribute(XmlDefs.MODIFIEDDATE);
+            String text = commentElement.getFirstChild().getTextContent();
 
-		String commentable = postElement.getAttribute(XmlDefs.COMMENTABLE);
-		setCommentable((commentable.equals("true")) ? true : false);
+            Comment comment = new Comment();
+            comment.setCreatorId(commentCreatorId);
+            comment.setCreatedDate(Long.parseLong(commentCreatedDate));
+            comment.setModifiedDate(Long.parseLong(commentModifiedDate));
+            comment.setContent(stripCDATA(text));
 
-		String visibility = postElement.getAttribute(XmlDefs.VISIBILITY);
-		setVisibility(visibility);
+            addComment(comment);
+        }
+    }
 
-		NodeList children = postElement.getElementsByTagName(XmlDefs.CREATORID);
-		setCreatorId(children.item(0).getFirstChild().getTextContent());
+    public boolean hasComments() {
+        return comments.size() > 0;
+    }
 
-		children = postElement.getElementsByTagName(XmlDefs.CREATEDDATE);
-		setCreatedDate(Long.parseLong(children.item(0).getFirstChild().getTextContent()));
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+    }
 
-		children = postElement.getElementsByTagName(XmlDefs.MODIFIEDDATE);
-		setModifiedDate(Long.parseLong(children.item(0).getFirstChild().getTextContent()));
+    public boolean isRecycled() {
+        return Visibilities.RECYCLED.equals(visibility);
+    }
 
-		children = postElement.getElementsByTagName(XmlDefs.TITLE);
-		if (children.getLength() > 0) {
-			setTitle(stripCDATA(children.item(0).getFirstChild().getTextContent()));
-		}
+    public boolean isReady() {
+        return Visibilities.SITE.equals(visibility) || Visibilities.TUTOR.equals(visibility);
+    }
 
-		children = postElement.getElementsByTagName(XmlDefs.KEYWORDS);
-		if (children.getLength() > 0) {
-			String keywordsText = stripCDATA(children.item(0).getFirstChild().getTextContent());
-			setKeywordsText(keywordsText);
-		}
+    public boolean isAutoSave() {
+        return Visibilities.AUTOSAVE.equals(visibility);
+    }
 
-		children = postElement.getElementsByTagName(XmlDefs.COMMENT);
-		int numChildren = children.getLength();
-		for (int i = 0; i < numChildren; i++) {
-			Element commentElement = (Element) children.item(i);
+    public boolean isVisibleToSite() {
+        return Visibilities.SITE.equals(visibility);
+    }
 
-			String commentCreatorId = commentElement.getAttribute(XmlDefs.CREATORID);
-			String commentCreatedDate = commentElement.getAttribute(XmlDefs.CREATEDDATE);
-			String commentModifiedDate = commentElement.getAttribute(XmlDefs.MODIFIEDDATE);
-			String text = commentElement.getFirstChild().getTextContent();
-
-			Comment comment = new Comment();
-			comment.setCreatorId(commentCreatorId);
-			comment.setCreatedDate(Long.parseLong(commentCreatedDate));
-			comment.setModifiedDate(Long.parseLong(commentModifiedDate));
-			comment.setContent(stripCDATA(text));
-
-			addComment(comment);
-		}
-	}
-
-	public boolean hasComments() {
-		return comments.size() > 0;
-	}
-
-	public void removeComment(Comment comment) {
-		comments.remove(comment);
-	}
-
-	public boolean isRecycled() {
-		return Visibilities.RECYCLED.equals(visibility);
-	}
-
-	public boolean isReady() {
-		return Visibilities.SITE.equals(visibility) || Visibilities.TUTOR.equals(visibility);
-	}
-
-	public boolean isAutoSave() {
-		return Visibilities.AUTOSAVE.equals(visibility);
-	}
-
-	public boolean isVisibleToSite() {
-		return Visibilities.SITE.equals(visibility);
-	}
-
-	public boolean isVisibleToTutors() {
-		return Visibilities.TUTOR.equals(visibility);
-	}
-	
-	public void minimise() {
-		content = "";
-		numberOfComments = comments.size();
-		comments = new ArrayList<Comment>();
-	}
+    public boolean isVisibleToTutors() {
+        return Visibilities.TUTOR.equals(visibility);
+    }
+    
+    public void minimise() {
+        content = "";
+        numberOfComments = comments.size();
+        comments = new ArrayList<Comment>();
+    }
 }

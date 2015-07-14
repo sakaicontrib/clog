@@ -112,12 +112,8 @@ public class SQLGenerator implements ISQLGenerator {
 				statement.append(TITLE).append(" = '").append(query.getTitle()).append("' AND ");
             }
 
-			if (query.queryByKeyword()) {
-				statement.append(KEYWORDS).append(" LIKE '%").append(query.getKeyword()).append("%' AND ");
-            }
-
-			if (query.queryByCreator()) {
-				statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND");
+            if (query.queryByCreator()) {
+                statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND");
             }
 
             if (query.queryByGroup()) {
@@ -149,232 +145,230 @@ public class SQLGenerator implements ISQLGenerator {
 
 		String sql = statement.toString();
         logger.debug(sql);
-		statements.add(sql);
-		return statements;
-	}
+        statements.add(sql);
+        return statements;
+    }
 
-	protected String doTableForPost() {
-		StringBuilder statement = new StringBuilder();
-		statement.append("CREATE TABLE ").append(TABLE_POST);
-		statement.append("(");
-		statement.append(POST_ID + " CHAR(36) NOT NULL,");
-		statement.append(SITE_ID + " " + VARCHAR + "(255), ");
-		statement.append(TITLE + " " + VARCHAR + "(255) NOT NULL, ");
-		statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
-		statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL" + ", ");
-		statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
-		statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
-		statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
-		statement.append(ALLOW_COMMENTS + " " + INT + ", ");
-		statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
-		statement.append("CONSTRAINT clog_post_pk PRIMARY KEY (" + POST_ID + ")");
-		statement.append(")");
-		return statement.toString();
-	}
+    protected String doTableForPost() {
+        StringBuilder statement = new StringBuilder();
+        statement.append("CREATE TABLE ").append(TABLE_POST);
+        statement.append("(");
+        statement.append(POST_ID + " CHAR(36) NOT NULL,");
+        statement.append(SITE_ID + " " + VARCHAR + "(255), ");
+        statement.append(TITLE + " " + VARCHAR + "(255) NOT NULL, ");
+        statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
+        statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL" + ", ");
+        statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
+        statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
+        statement.append(ALLOW_COMMENTS + " " + INT + ", ");
+        statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
+        statement.append("CONSTRAINT clog_post_pk PRIMARY KEY (" + POST_ID + ")");
+        statement.append(")");
+        return statement.toString();
+    }
 
-	protected String doTableForAutoSavedPost() {
-		StringBuilder statement = new StringBuilder();
-		statement.append("CREATE TABLE ").append(TABLE_AUTOSAVED_POST);
-		statement.append("(");
-		statement.append(POST_ID + " CHAR(36) NOT NULL,");
-		statement.append(SITE_ID + " " + VARCHAR + "(255), ");
-		statement.append(TITLE + " " + VARCHAR + "(255) NOT NULL, ");
-		statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
-		statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL, ");
-		statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
-		statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
-		statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
-		statement.append(ALLOW_COMMENTS + " " + INT + ", ");
-		statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
-		statement.append("CONSTRAINT clog_autosaved_post_pk PRIMARY KEY (" + POST_ID + ")");
-		statement.append(")");
-		return statement.toString();
-	}
+    protected String doTableForAutoSavedPost() {
+        StringBuilder statement = new StringBuilder();
+        statement.append("CREATE TABLE ").append(TABLE_AUTOSAVED_POST);
+        statement.append("(");
+        statement.append(POST_ID + " CHAR(36) NOT NULL,");
+        statement.append(SITE_ID + " " + VARCHAR + "(255), ");
+        statement.append(TITLE + " " + VARCHAR + "(255) NOT NULL, ");
+        statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
+        statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL, ");
+        statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
+        statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
+        statement.append(ALLOW_COMMENTS + " " + INT + ", ");
+        statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
+        statement.append("CONSTRAINT clog_autosaved_post_pk PRIMARY KEY (" + POST_ID + ")");
+        statement.append(")");
+        return statement.toString();
+    }
 
-	protected String doTableForComments() {
-		StringBuilder statement = new StringBuilder();
-		statement.append("CREATE TABLE ").append(TABLE_COMMENT);
-		statement.append("(");
-		statement.append(COMMENT_ID + " CHAR(36) NOT NULL,");
-		statement.append(POST_ID + " CHAR(36) NOT NULL,");
-		statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
-		statement.append(CREATOR_ID + " CHAR(36) NOT NULL,");
-		statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL,");
-		statement.append(MODIFIED_DATE + " " + TIMESTAMP + " NOT NULL,");
-		statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
-		statement.append("CONSTRAINT clog_comment_pk PRIMARY KEY (" + COMMENT_ID + ")");
-		statement.append(")");
-		return statement.toString();
-	}
+    protected String doTableForComments() {
+        StringBuilder statement = new StringBuilder();
+        statement.append("CREATE TABLE ").append(TABLE_COMMENT);
+        statement.append("(");
+        statement.append(COMMENT_ID + " CHAR(36) NOT NULL,");
+        statement.append(POST_ID + " CHAR(36) NOT NULL,");
+        statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
+        statement.append(CREATOR_ID + " CHAR(36) NOT NULL,");
+        statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL,");
+        statement.append(MODIFIED_DATE + " " + TIMESTAMP + " NOT NULL,");
+        statement.append(CONTENT + " " + CLOB + " NOT NULL, ");
+        statement.append("CONSTRAINT clog_comment_pk PRIMARY KEY (" + COMMENT_ID + ")");
+        statement.append(")");
+        return statement.toString();
+    }
 
-	protected String doTableForAuthor() {
+    protected String doTableForAuthor() {
 
-		StringBuilder statement = new StringBuilder();
-		statement.append("CREATE TABLE ").append(TABLE_AUTHOR);
-		statement.append("(");
-		statement.append(USER_ID + " CHAR(36) NOT NULL,");
-		statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
-		statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
-		statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
-		statement.append(TOTAL_COMMENTS + " " + INT + " NOT NULL,");
-		statement.append("CONSTRAINT clog_author_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
-		statement.append(")");
-		return statement.toString();
-	}
+        StringBuilder statement = new StringBuilder();
+        statement.append("CREATE TABLE ").append(TABLE_AUTHOR);
+        statement.append("(");
+        statement.append(USER_ID + " CHAR(36) NOT NULL,");
+        statement.append(SITE_ID + " " + VARCHAR + "(255) NOT NULL, ");
+        statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
+        statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
+        statement.append(TOTAL_COMMENTS + " " + INT + " NOT NULL,");
+        statement.append("CONSTRAINT clog_author_pk PRIMARY KEY (" + USER_ID + "," + SITE_ID + ")");
+        statement.append(")");
+        return statement.toString();
+    }
 
-	protected String doTableForPostGroup() {
+    protected String doTableForPostGroup() {
 
-		StringBuilder statement = new StringBuilder();
-		statement.append("CREATE TABLE ").append(TABLE_POST_GROUP);
-		statement.append("(");
-		statement.append(POST_ID + " CHAR(36) NOT NULL,");
-		statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
-		statement.append(MODIFIED_DATE + " " + TIMESTAMP + " NOT NULL,");
-		statement.append("CONSTRAINT clog_post_group_pk PRIMARY KEY (" + POST_ID + "," + GROUP_ID + ")");
-		statement.append(")");
-		return statement.toString();
-	}
+        StringBuilder statement = new StringBuilder();
+        statement.append("CREATE TABLE ").append(TABLE_POST_GROUP);
+        statement.append("(");
+        statement.append(POST_ID + " CHAR(36) NOT NULL,");
+        statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
+        statement.append(MODIFIED_DATE + " " + TIMESTAMP + " NOT NULL,");
+        statement.append("CONSTRAINT clog_post_group_pk PRIMARY KEY (" + POST_ID + "," + GROUP_ID + ")");
+        statement.append(")");
+        return statement.toString();
+    }
 
-	protected String doTableForGroupData() {
+    protected String doTableForGroupData() {
 
-		StringBuilder statement = new StringBuilder();
-		statement.append("CREATE TABLE ").append(TABLE_GROUP_DATA);
-		statement.append("(");
-		statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
-		statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
-		statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
-		statement.append("CONSTRAINT clog_group_data_pk PRIMARY KEY (" + GROUP_ID + ")");
-		statement.append(")");
-		return statement.toString();
-	}
+        StringBuilder statement = new StringBuilder();
+        statement.append("CREATE TABLE ").append(TABLE_GROUP_DATA);
+        statement.append("(");
+        statement.append(GROUP_ID + " " + VARCHAR + "(99) NOT NULL, ");
+        statement.append(TOTAL_POSTS + " " + INT + " NOT NULL,");
+        statement.append(LAST_POST_DATE + " " + TIMESTAMP + ",");
+        statement.append("CONSTRAINT clog_group_data_pk PRIMARY KEY (" + GROUP_ID + ")");
+        statement.append(")");
+        return statement.toString();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
-	 * util.ISQLGenerator#getSelectAllPost(java.lang.String)
-	 */
-	public String getSelectComments(String postId) {
-		return "SELECT * FROM " + TABLE_COMMENT + " WHERE " + POST_ID + "='" + postId + "' ORDER BY " + CREATED_DATE + " ASC";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
+     * util.ISQLGenerator#getSelectAllPost(java.lang.String)
+     */
+    public String getSelectComments(String postId) {
+        return "SELECT * FROM " + TABLE_COMMENT + " WHERE " + POST_ID + "='" + postId + "' ORDER BY " + CREATED_DATE + " ASC";
+    }
 
-	public String getSelectComment(String commentId) {
-		return "SELECT * FROM " + TABLE_COMMENT + " WHERE " + COMMENT_ID + "='" + commentId + "'";
-	}
+    public String getSelectComment(String commentId) {
+        return "SELECT * FROM " + TABLE_COMMENT + " WHERE " + COMMENT_ID + "='" + commentId + "'";
+    }
 
-	public String getSelectGroups(String postId) {
-		return "SELECT " + GROUP_ID + " FROM " + TABLE_POST_GROUP + " WHERE " + POST_ID + "='" + postId + "'";
-	}
+    public String getSelectGroups(String postId) {
+        return "SELECT " + GROUP_ID + " FROM " + TABLE_POST_GROUP + " WHERE " + POST_ID + "='" + postId + "'";
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
-	 * util.ISQLGenerator#getSelectAllPost(java.lang.String)
-	 */
-	public String getSelectAllPost(String siteId) {
-		return "SELECT * FROM " + TABLE_POST + " WHERE " + SITE_ID + "='" + siteId + "' ORDER BY " + CREATED_DATE + " DESC";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
+     * util.ISQLGenerator#getSelectAllPost(java.lang.String)
+     */
+    public String getSelectAllPost(String siteId) {
+        return "SELECT * FROM " + TABLE_POST + " WHERE " + SITE_ID + "='" + siteId + "' ORDER BY " + CREATED_DATE + " DESC";
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
-	 * util.ISQLGenerator#getSelectPost(java.lang.String)
-	 */
-	public String getSelectPost(String OID) {
-		return "SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + "='" + OID + "'";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
+     * util.ISQLGenerator#getSelectPost(java.lang.String)
+     */
+    public String getSelectPost(String OID) {
+        return "SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + "='" + OID + "'";
+    }
 
-	public List<PreparedStatement> getSaveStatementsForComment(Comment comment, Connection connection) throws Exception {
-		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
+    public List<PreparedStatement> getSaveStatementsForComment(Comment comment, Connection connection) throws Exception {
+        List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
 
-		Statement testST = null;
-		ResultSet rs = null;
+        Statement testST = null;
+        ResultSet rs = null;
 
-		try {
-			if ("".equals(comment.getId())) {
-				comment.setId(UUID.randomUUID().toString());
+        try {
+            if ("".equals(comment.getId())) {
+                comment.setId(UUID.randomUUID().toString());
 
-				String sql = "INSERT INTO " + TABLE_COMMENT + " VALUES(?,?,?,?,?,?,?)";
+                String sql = "INSERT INTO " + TABLE_COMMENT + " VALUES(?,?,?,?,?,?,?)";
 
-				PreparedStatement statement = connection.prepareStatement(sql);
+                PreparedStatement statement = connection.prepareStatement(sql);
 
-				statement.setString(1, comment.getId());
-				statement.setString(2, comment.getPostId());
-				statement.setString(3, comment.getSiteId());
-				statement.setString(4, comment.getCreatorId());
-				statement.setTimestamp(5, new Timestamp(comment.getCreatedDate()));
-				statement.setTimestamp(6, new Timestamp(comment.getModifiedDate()));
-				statement.setString(7, comment.getContent());
+                statement.setString(1, comment.getId());
+                statement.setString(2, comment.getPostId());
+                statement.setString(3, comment.getSiteId());
+                statement.setString(4, comment.getCreatorId());
+                statement.setTimestamp(5, new Timestamp(comment.getCreatedDate()));
+                statement.setTimestamp(6, new Timestamp(comment.getModifiedDate()));
+                statement.setString(7, comment.getContent());
 
-				statements.add(statement);
+                statements.add(statement);
 
-				testST = connection.createStatement();
-				rs = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + comment.getPostId() + "'");
-				if (rs.next()) {
-					String blogCreatorId = rs.getString(CREATOR_ID);
-					String siteId = rs.getString(SITE_ID);
+                testST = connection.createStatement();
+                rs = testST.executeQuery("SELECT * FROM " + TABLE_POST + " WHERE " + POST_ID + " = '" + comment.getPostId() + "'");
+                if (rs.next()) {
+                    String blogCreatorId = rs.getString(CREATOR_ID);
+                    String siteId = rs.getString(SITE_ID);
 
-					PreparedStatement authorST = connection.prepareStatement("UPDATE " + TABLE_AUTHOR + " SET " + TOTAL_COMMENTS + " = " + TOTAL_COMMENTS + " + 1 WHERE " + USER_ID + " = ? AND " + SITE_ID + " = ?");
-					authorST.setString(1, blogCreatorId);
-					authorST.setString(2, siteId);
+                    PreparedStatement authorST = connection.prepareStatement("UPDATE " + TABLE_AUTHOR + " SET " + TOTAL_COMMENTS + " = " + TOTAL_COMMENTS + " + 1 WHERE " + USER_ID + " = ? AND " + SITE_ID + " = ?");
+                    authorST.setString(1, blogCreatorId);
+                    authorST.setString(2, siteId);
 
-					statements.add(authorST);
-				}
-			} else {
-				String sql = "UPDATE " + TABLE_COMMENT + " SET " + CONTENT + " = ?," + MODIFIED_DATE + " = ? WHERE " + COMMENT_ID + " = ?";
-				PreparedStatement statement = connection.prepareStatement(sql);
+                    statements.add(authorST);
+                }
+            } else {
+                String sql = "UPDATE " + TABLE_COMMENT + " SET " + CONTENT + " = ?," + MODIFIED_DATE + " = ? WHERE " + COMMENT_ID + " = ?";
+                PreparedStatement statement = connection.prepareStatement(sql);
 
-				statement.setString(1, comment.getContent());
-				statement.setTimestamp(2, new Timestamp(comment.getModifiedDate()));
-				statement.setString(3, comment.getId());
-				statements.add(statement);
-			}
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-			} catch (Exception e) {
-			}
+                statement.setString(1, comment.getContent());
+                statement.setTimestamp(2, new Timestamp(comment.getModifiedDate()));
+                statement.setString(3, comment.getId());
+                statements.add(statement);
+            }
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+            }
 
-			try {
-				if (testST != null) {
-					testST.close();
-				}
-			} catch (Exception e) {
-			}
-		}
+            try {
+                if (testST != null) {
+                    testST.close();
+                }
+            } catch (Exception e) {
+            }
+        }
 
-		return statements;
-	}
+        return statements;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
-	 * util.ISQLGenerator#getDeleteStatementsForPost(java.lang.String,
-	 * java.lang.String)
-	 */
-	public List<PreparedStatement> getDeleteStatementsForPost(Post post, Connection connection) throws Exception {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * uk.ac.lancs.e_science.sakaiproject.component.blogger.persistence.sql.
+     * util.ISQLGenerator#getDeleteStatementsForPost(java.lang.String,
+     * java.lang.String)
+     */
+    public List<PreparedStatement> getDeleteStatementsForPost(Post post, Connection connection) throws Exception {
 
-		List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
+        List<PreparedStatement> statements = new ArrayList<PreparedStatement>();
 
-		PreparedStatement commentST = connection.prepareStatement("DELETE FROM " + TABLE_COMMENT + " WHERE " + POST_ID + " = ?");
-		commentST.setString(1, post.getId());
-		statements.add(commentST);
+        PreparedStatement commentST = connection.prepareStatement("DELETE FROM " + TABLE_COMMENT + " WHERE " + POST_ID + " = ?");
+        commentST.setString(1, post.getId());
+        statements.add(commentST);
 
-		PreparedStatement postST = connection.prepareStatement("DELETE FROM " + TABLE_POST + " WHERE " + POST_ID + " = ?");
-		postST.setString(1, post.getId());
-		statements.add(postST);
+        PreparedStatement postST = connection.prepareStatement("DELETE FROM " + TABLE_POST + " WHERE " + POST_ID + " = ?");
+        postST.setString(1, post.getId());
+        statements.add(postST);
 
-		return statements;
-	}
+        return statements;
+    }
 
     private List<PreparedStatement> getDeleteFromGroupAndDecrementGroupPostCountStatements(Post post, Connection connection) throws Exception {
 
@@ -457,7 +451,7 @@ public class SQLGenerator implements ISQLGenerator {
 		// one.
 		statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
-		String sql = "INSERT INTO " + TABLE_AUTOSAVED_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + KEYWORDS + "," + ALLOW_COMMENTS + "," + VISIBILITY + ") VALUES (?,?,?,?,?,?,?,?,?,'" + Visibilities.AUTOSAVE + "')";
+        String sql = "INSERT INTO " + TABLE_AUTOSAVED_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + ALLOW_COMMENTS + "," + VISIBILITY + ") VALUES (?,?,?,?,?,?,?,?,'" + Visibilities.AUTOSAVE + "')";
 
 		PreparedStatement postST = connection.prepareStatement(sql);
 		postST.setString(1, post.getId());
@@ -473,9 +467,7 @@ public class SQLGenerator implements ISQLGenerator {
 
 		postST.setString(7, post.getCreatorId());
 
-		postST.setString(8, post.getKeywordsText());
-
-		postST.setInt(9, (post.isCommentable()) ? 1 : 0);
+        postST.setInt(8, (post.isCommentable()) ? 1 : 0);
 
 		statements.add(postST);
 
@@ -496,7 +488,7 @@ public class SQLGenerator implements ISQLGenerator {
 		statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
         if (currentPost == null) {
-            String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + KEYWORDS + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?)";
 
             PreparedStatement postST = connection.prepareStatement(sql);
             postST.setString(1, post.getId());
@@ -515,9 +507,7 @@ public class SQLGenerator implements ISQLGenerator {
 
             postST.setString(8, post.getVisibility());
 
-            postST.setString(9, post.getKeywordsText());
-
-            postST.setInt(10, (post.isCommentable()) ? 1 : 0);
+            postST.setInt(9, (post.isCommentable()) ? 1 : 0);
 
             statements.add(postST);
 

@@ -18,7 +18,10 @@
 package org.sakaiproject.clog.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.sakaiproject.clog.api.datamodel.Visibilities;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,20 +29,20 @@ import lombok.Setter;
 @Getter @Setter
 public class QueryBean {
 
-	private List<String> visibilities = new ArrayList<String>();
-	private String creator = "";
-	private String siteId = "";
-	private String title = "";
-	private String keyword = "";
+    private List<String> visibilities
+         = Arrays.asList(new String [] {Visibilities.SITE,Visibilities.TUTOR,Visibilities.PRIVATE});
+    private String creator = "";
+    private String siteId = "";
+    private String title = "";
     private String group = "";
 	private String caller = "";
 	private boolean searchAutoSaved = false;
 
 	public boolean hasConditions() {
 
-		return creator.length() > 0 || siteId.length() > 0 || visibilities.size() > 0
-                || title.length() > 0 || keyword.length() > 0 || group.length() > 0;
-	}
+        return creator.length() > 0 || siteId.length() > 0 || visibilities.size() > 0
+                || title.length() > 0 || group.length() > 0;
+    }
 
 	public boolean queryBySiteId() {
 		return !siteId.equals("");
@@ -53,13 +56,9 @@ public class QueryBean {
 		return title.length() > 0;
 	}
 
-	public boolean queryByKeyword() {
-		return keyword.length() > 0;
-	}
-
-	public boolean queryByCreator() {
-		return !creator.trim().equals("");
-	}
+    public boolean queryByCreator() {
+        return !creator.trim().equals("");
+    }
 
     public boolean queryByGroup() {
 		return !group.trim().equals("");
