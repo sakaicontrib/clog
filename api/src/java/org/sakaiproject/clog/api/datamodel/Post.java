@@ -53,9 +53,6 @@ public class Post implements Entity {
     private String creatorDisplayName = null;
 
     @Getter
-    private List<String> keywords = new ArrayList<String>();
-
-    @Getter
     private List<Comment> comments = new ArrayList<Comment>();
 
     @Getter @Setter
@@ -75,36 +72,6 @@ public class Post implements Entity {
         long now = new Date().getTime();
         createdDate = now;
         modifiedDate = now;
-    }
-
-    public void addKeyword(String keyword) {
-        keywords.add(keyword);
-    }
-
-    public String getKeywordsText() {
-
-        if (keywords.size() == 0) {
-            return "";
-        }
-
-        StringBuilder keywordsText = new StringBuilder();
-        for (String keyword : keywords) {
-            keywordsText.append(keyword + ",");
-        }
-        keywordsText.setLength(keywordsText.length() - 1);
-        return keywordsText.toString();
-    }
-
-    public void setKeywords(List<String> keywords) {
-        this.keywords = keywords;
-
-        if (this.keywords == null)
-            this.keywords = new ArrayList<String>();
-    }
-
-    public void setKeywordsText(String keywordsText) {
-        String[] keywordsArray = keywordsText.split(",");
-        setKeywords(Arrays.asList(keywordsArray));
     }
 
     public void addComment(Comment comment) {
@@ -215,10 +182,6 @@ public class Post implements Entity {
         creatorIdElement.setTextContent(creatorId);
         postElement.appendChild(creatorIdElement);
 
-        Element keywordsElement = doc.createElement(XmlDefs.KEYWORDS);
-        keywordsElement.setTextContent(wrapWithCDATA(getKeywordsText()));
-        postElement.appendChild(keywordsElement);
-
         Element titleElement = doc.createElement(XmlDefs.TITLE);
         titleElement.setTextContent(wrapWithCDATA(title));
         postElement.appendChild(titleElement);
@@ -281,12 +244,6 @@ public class Post implements Entity {
         children = postElement.getElementsByTagName(XmlDefs.TITLE);
         if (children.getLength() > 0) {
             setTitle(stripCDATA(children.item(0).getFirstChild().getTextContent()));
-        }
-
-        children = postElement.getElementsByTagName(XmlDefs.KEYWORDS);
-        if (children.getLength() > 0) {
-            String keywordsText = stripCDATA(children.item(0).getFirstChild().getTextContent());
-            setKeywordsText(keywordsText);
         }
 
         children = postElement.getElementsByTagName(XmlDefs.COMMENT);

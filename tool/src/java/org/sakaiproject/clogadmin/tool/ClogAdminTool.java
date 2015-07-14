@@ -119,7 +119,6 @@ public class ClogAdminTool extends HttpServlet {
                 QueryBean query = new QueryBean();
                 query.setSiteId(siteId);
                 query.setTitle(title);
-                query.setKeyword("imported_from_blogger");
 
                 List<Post> posts = clogManager.getPosts(query);
 
@@ -135,7 +134,6 @@ public class ClogAdminTool extends HttpServlet {
                 String xml = postRS.getString("XML");
 
                 Post post = new Post();
-                post.addKeyword("imported_from_blogger");
                 post.setSiteId(siteId);
 
                 saxParser.populatePost(xml, post);
@@ -255,7 +253,6 @@ public class ClogAdminTool extends HttpServlet {
                 QueryBean query = new QueryBean();
                 query.setSiteId(siteId);
                 query.setTitle(title);
-                query.setKeyword("imported_from_blog");
 
                 List<Post> posts = clogManager.getPosts(query);
 
@@ -263,8 +260,6 @@ public class ClogAdminTool extends HttpServlet {
                     // Already imported. Skip it.
                     continue;
                 }
-
-                post.addKeyword("imported_from_blog");
 
                 Date postCreatedDate = postRS.getTimestamp(ISQLGenerator.CREATED_DATE);
                 post.setCreatedDate(postCreatedDate.getTime());
@@ -274,9 +269,6 @@ public class ClogAdminTool extends HttpServlet {
 
                 String postCreatorId = postRS.getString(ISQLGenerator.CREATOR_ID);
                 post.setCreatorId(postCreatorId);
-
-                String keywordsText = postRS.getString(ISQLGenerator.KEYWORDS);
-                post.setKeywordsText(keywordsText);
 
                 int allowComments = postRS.getInt(ISQLGenerator.ALLOW_COMMENTS);
                 post.setCommentable(allowComments == 1);
@@ -506,7 +498,6 @@ public class ClogAdminTool extends HttpServlet {
                 QueryBean query = new QueryBean();
                 query.setSiteId(post.getSiteId());
                 query.setTitle(title);
-                query.setKeyword("imported_from_blogwow");
 
                 List<Post> posts = clogManager.getPosts(query);
 
@@ -514,8 +505,6 @@ public class ClogAdminTool extends HttpServlet {
                     // Already imported. Skip it.
                     continue;
                 }
-
-                post.addKeyword("imported_from_blogwow");
 
                 post.setTitle(title);
                 post.setCreatedDate(created.getTime());

@@ -112,10 +112,6 @@ public class SQLGenerator implements ISQLGenerator {
                 statement.append(TITLE).append(" = '").append(query.getTitle()).append("' AND ");
             }
 
-            if (query.queryByKeyword()) {
-                statement.append(KEYWORDS).append(" LIKE '%").append(query.getKeyword()).append("%' AND ");
-            }
-
             if (query.queryByCreator()) {
                 statement.append(CREATOR_ID).append(" = '").append(query.getCreator()).append("' AND");
             }
@@ -164,7 +160,6 @@ public class SQLGenerator implements ISQLGenerator {
         statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL" + ", ");
         statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
         statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
-        statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
         statement.append(ALLOW_COMMENTS + " " + INT + ", ");
         statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
         statement.append("CONSTRAINT clog_post_pk PRIMARY KEY (" + POST_ID + ")");
@@ -183,7 +178,6 @@ public class SQLGenerator implements ISQLGenerator {
         statement.append(CREATED_DATE + " " + TIMESTAMP + " NOT NULL, ");
         statement.append(MODIFIED_DATE + " " + TIMESTAMP + ", ");
         statement.append(CREATOR_ID + " " + VARCHAR + "(255) NOT NULL, ");
-        statement.append(KEYWORDS + " " + VARCHAR + "(255), ");
         statement.append(ALLOW_COMMENTS + " " + INT + ", ");
         statement.append(VISIBILITY + " " + VARCHAR + "(16) NOT NULL, ");
         statement.append("CONSTRAINT clog_autosaved_post_pk PRIMARY KEY (" + POST_ID + ")");
@@ -457,7 +451,7 @@ public class SQLGenerator implements ISQLGenerator {
         // one.
         statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
-        String sql = "INSERT INTO " + TABLE_AUTOSAVED_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + KEYWORDS + "," + ALLOW_COMMENTS + "," + VISIBILITY + ") VALUES (?,?,?,?,?,?,?,?,?,'" + Visibilities.AUTOSAVE + "')";
+        String sql = "INSERT INTO " + TABLE_AUTOSAVED_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + ALLOW_COMMENTS + "," + VISIBILITY + ") VALUES (?,?,?,?,?,?,?,?,'" + Visibilities.AUTOSAVE + "')";
 
         PreparedStatement postST = connection.prepareStatement(sql);
         postST.setString(1, post.getId());
@@ -473,9 +467,7 @@ public class SQLGenerator implements ISQLGenerator {
 
         postST.setString(7, post.getCreatorId());
 
-        postST.setString(8, post.getKeywordsText());
-
-        postST.setInt(9, (post.isCommentable()) ? 1 : 0);
+        postST.setInt(8, (post.isCommentable()) ? 1 : 0);
 
         statements.add(postST);
 
@@ -496,7 +488,7 @@ public class SQLGenerator implements ISQLGenerator {
         statements.add(getDeleteAutosavedCopyStatement(post.getId(), connection));
 
         if (currentPost == null) {
-            String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + KEYWORDS + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO " + TABLE_POST + " (" + POST_ID + "," + SITE_ID + "," + TITLE + "," + CONTENT + "," + CREATED_DATE + "," + MODIFIED_DATE + "," + CREATOR_ID + "," + VISIBILITY + "," + ALLOW_COMMENTS + ") VALUES (?,?,?,?,?,?,?,?,?)";
 
             PreparedStatement postST = connection.prepareStatement(sql);
             postST.setString(1, post.getId());
@@ -515,9 +507,7 @@ public class SQLGenerator implements ISQLGenerator {
 
             postST.setString(8, post.getVisibility());
 
-            postST.setString(9, post.getKeywordsText());
-
-            postST.setInt(10, (post.isCommentable()) ? 1 : 0);
+            postST.setInt(9, (post.isCommentable()) ? 1 : 0);
 
             statements.add(postST);
 

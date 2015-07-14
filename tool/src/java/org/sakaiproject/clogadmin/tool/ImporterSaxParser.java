@@ -29,7 +29,6 @@ public class ImporterSaxParser extends DefaultHandler {
     private boolean processingTitle = false;
     private boolean processingShortText = false;
     private boolean processingDate = false;
-    private boolean processingKeyword = false;
     private boolean processingCreator = false;
     private boolean processingVisibility = false;
     private boolean processingAllowComments = false;
@@ -79,8 +78,6 @@ public class ImporterSaxParser extends DefaultHandler {
             processingShortText = true;
         else if ("date".equals(qName))
             processingDate = true;
-        else if ("keyword".equals(qName))
-            processingKeyword = true;
         else if ("idCreator".equals(qName))
             processingCreator = true;
         else if ("visibility".equals(qName))
@@ -122,8 +119,6 @@ public class ImporterSaxParser extends DefaultHandler {
             processingShortText = false;
         else if ("date".equals(qName))
             processingDate = false;
-        else if ("keyword".equals(qName))
-            processingKeyword = false;
         else if ("idCreator".equals(qName))
             processingCreator = false;
         else if ("visibility".equals(qName))
@@ -236,9 +231,7 @@ public class ImporterSaxParser extends DefaultHandler {
             long date = Long.parseLong(data);
             post.setCreatedDate(date);
             post.setModifiedDate(date);
-        } else if (processingKeyword)
-            post.addKeyword(data);
-        else if (processingCreator) {
+        } else if (processingCreator) {
             logger.error("Creator ID: " + data);
             post.setCreatorId(data);
         } else if (processingVisibility) {

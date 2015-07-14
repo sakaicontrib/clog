@@ -48,9 +48,6 @@ public interface ISQLGenerator {
     public static final String SITE_ID = "SITE_ID";
 
     // From CLOG_POST
-    public static final String KEYWORDS = "KEYWORDS";
-
-    // From CLOG_POST
     public static final String ALLOW_COMMENTS = "ALLOW_COMMENTS";
 
     // From CLOG_COMMENT

@@ -624,9 +624,6 @@ public class PersistenceManager {
                 String postCreatorId = rs.getString(ISQLGenerator.CREATOR_ID);
                 post.setCreatorId(postCreatorId);
 
-                String keywordsText = rs.getString(ISQLGenerator.KEYWORDS);
-                post.setKeywordsText(keywordsText);
-
                 int allowComments = rs.getInt(ISQLGenerator.ALLOW_COMMENTS);
                 post.setCommentable(allowComments == 1);
 

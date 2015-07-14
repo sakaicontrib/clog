@@ -34,7 +34,6 @@ public class QueryBean {
     private String creator = "";
     private String siteId = "";
     private String title = "";
-    private String keyword = "";
     private String group = "";
     private String caller = "";
     private boolean searchAutoSaved = false;
@@ -43,7 +42,7 @@ public class QueryBean {
     public boolean hasConditions() {
 
         return creator.length() > 0 || siteId.length() > 0 || visibilities.size() > 0
-                || title.length() > 0 || keyword.length() > 0 || group.length() > 0;
+                || title.length() > 0 || group.length() > 0;
     }
 
     public boolean queryBySiteId() {
@@ -56,10 +55,6 @@ public class QueryBean {
 
     public boolean queryByTitle() {
         return title.length() > 0;
-    }
-
-    public boolean queryByKeyword() {
-        return keyword.length() > 0;
     }
 
     public boolean queryByCreator() {
