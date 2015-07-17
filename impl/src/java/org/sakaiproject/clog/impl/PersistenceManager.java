@@ -169,6 +169,7 @@ public class PersistenceManager {
     }
 
     public boolean saveComment(Comment comment) {
+
         Connection connection = null;
         List<PreparedStatement> statements = null;
 
@@ -178,8 +179,8 @@ public class PersistenceManager {
             connection.setAutoCommit(false);
 
             try {
-
                 statements = sqlGenerator.getSaveStatementsForComment(comment, connection);
+
                 for (PreparedStatement st : statements)
                     st.executeUpdate();
 

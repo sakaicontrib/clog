@@ -253,8 +253,10 @@ public class ClogManagerImpl implements ClogManager {
     }
 
     public String archive(String siteId, Document doc, Stack stack, String archivePath, List attachments) {
-        if (logger.isDebugEnabled())
+
+        if (logger.isDebugEnabled()) {
             logger.debug("archive(siteId:" + siteId + ",archivePath:" + archivePath + ")");
+        }
 
         StringBuilder results = new StringBuilder();
 
@@ -265,7 +267,7 @@ public class ClogManagerImpl implements ClogManager {
         try {
             // start with an element with our very own (service) name
             Element element = doc.createElement(serviceName());
-            element.setAttribute("version", "2.5.x");
+            element.setAttribute("version", "11.x");
             ((Element) stack.peek()).appendChild(element);
             stack.push(element);
 
@@ -299,7 +301,10 @@ public class ClogManagerImpl implements ClogManager {
      * From EntityProducer
      */
     public String merge(String siteId, Element root, String archivePath, String fromSiteId, Map attachmentNames, Map userIdTrans, Set userListAllowImport) {
-        logger.debug("merge(siteId:" + siteId + ",root tagName:" + root.getTagName() + ",archivePath:" + archivePath + ",fromSiteId:" + fromSiteId);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("merge(siteId:" + siteId + ",root tagName:" + root.getTagName() + ",archivePath:" + archivePath + ",fromSiteId:" + fromSiteId);
+        }
 
         StringBuilder results = new StringBuilder();
 
@@ -311,7 +316,7 @@ public class ClogManagerImpl implements ClogManager {
         for (int i = 0; i < numberPosts; i++) {
             Node child = postNodes.item(i);
             if (child.getNodeType() != Node.ELEMENT_NODE) {
-                // Problem
+                logger.error("Post nodes should be elements. Skipping ...");
                 continue;
             }
 
@@ -322,6 +327,13 @@ public class ClogManagerImpl implements ClogManager {
             post.setSiteId(siteId);
 
             savePost(post);
+
+            for (Comment comment : post.getComments()) {
+                comment.setPostId(post.getId());
+                comment.setSiteId(post.getSiteId());
+                saveComment(comment);
+            }
+
             postCount++;
         }
 
@@ -334,8 +346,10 @@ public class ClogManagerImpl implements ClogManager {
      * From EntityProducer
      */
     public Entity getEntity(Reference ref) {
-        if (logger.isDebugEnabled())
+
+        if (logger.isDebugEnabled()) {
             logger.debug("getEntity(Ref ID:" + ref.getId() + ")");
+        }
 
         Entity rv = null;
 
@@ -362,8 +376,10 @@ public class ClogManagerImpl implements ClogManager {
      * From EntityProducer
      */
     public Collection getEntityAuthzGroups(Reference ref, String userId) {
-        if (logger.isDebugEnabled())
+
+        if (logger.isDebugEnabled()) {
             logger.debug("getEntityAuthzGroups(Ref ID:" + ref.getId() + "," + userId + ")");
+        }
 
         List ids = new ArrayList();
         ids.add("/site/" + ref.getContext());

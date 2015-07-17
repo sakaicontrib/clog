@@ -15,6 +15,7 @@ public class XmlDefs {
     public static final String SHORTTEXT = "shortText";
     public static final String COMMENTS = "comments";
     public static final String COMMENT = "comment";
+    public static final String CONTENT = "content";
     public static final String IMAGE = "image";
     public static final String FILENAME = "fileName";
     public static final String FULLRESOURCEID = "fullResourceId";
