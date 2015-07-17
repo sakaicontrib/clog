@@ -185,6 +185,9 @@ public class Post implements Entity {
         Element titleElement = doc.createElement(XmlDefs.TITLE);
         titleElement.setTextContent(wrapWithCDATA(title));
         postElement.appendChild(titleElement);
+        Element contentElement = doc.createElement(XmlDefs.CONTENT);
+        contentElement.setTextContent(wrapWithCDATA(content));
+        postElement.appendChild(contentElement);
 
         if (comments.size() > 0) {
             Element commentsElement = doc.createElement(XmlDefs.COMMENTS);
@@ -213,6 +216,7 @@ public class Post implements Entity {
     }
 
     private String stripCDATA(String s) {
+
         if (s.startsWith(CDATA_PREFIX) && s.endsWith(CDATA_SUFFIX)) {
             s = s.substring(CDATA_PREFIX.length());
             s = s.substring(0, s.length() - CDATA_SUFFIX.length());
@@ -222,6 +226,7 @@ public class Post implements Entity {
     }
 
     public void fromXml(Element postElement) {
+
         if (!postElement.getTagName().equals(XmlDefs.POST)) {
             return;
         }
@@ -246,23 +251,33 @@ public class Post implements Entity {
             setTitle(stripCDATA(children.item(0).getFirstChild().getTextContent()));
         }
 
-        children = postElement.getElementsByTagName(XmlDefs.COMMENT);
-        int numChildren = children.getLength();
-        for (int i = 0; i < numChildren; i++) {
-            Element commentElement = (Element) children.item(i);
+        children = postElement.getElementsByTagName(XmlDefs.CONTENT);
+        if (children.getLength() > 0) {
+            setContent(stripCDATA(children.item(0).getFirstChild().getTextContent()));
+        }
 
-            String commentCreatorId = commentElement.getAttribute(XmlDefs.CREATORID);
-            String commentCreatedDate = commentElement.getAttribute(XmlDefs.CREATEDDATE);
-            String commentModifiedDate = commentElement.getAttribute(XmlDefs.MODIFIEDDATE);
-            String text = commentElement.getFirstChild().getTextContent();
+        NodeList comments = postElement.getElementsByTagName(XmlDefs.COMMENTS);
 
-            Comment comment = new Comment();
-            comment.setCreatorId(commentCreatorId);
-            comment.setCreatedDate(Long.parseLong(commentCreatedDate));
-            comment.setModifiedDate(Long.parseLong(commentModifiedDate));
-            comment.setContent(stripCDATA(text));
+        if (comments.getLength() == 1) {
+            Element commentsElement = (Element) comments.item(0);
+            children = commentsElement.getElementsByTagName(XmlDefs.COMMENT);
+            int numChildren = children.getLength();
+            for (int i = 0; i < numChildren; i++) {
+                Element commentElement = (Element) children.item(i);
 
-            addComment(comment);
+                String commentCreatorId = commentElement.getAttribute(XmlDefs.CREATORID);
+                String commentCreatedDate = commentElement.getAttribute(XmlDefs.CREATEDDATE);
+                String commentModifiedDate = commentElement.getAttribute(XmlDefs.MODIFIEDDATE);
+                String text = commentElement.getFirstChild().getTextContent();
+
+                Comment comment = new Comment();
+                comment.setCreatorId(commentCreatorId);
+                comment.setCreatedDate(Long.parseLong(commentCreatedDate));
+                comment.setModifiedDate(Long.parseLong(commentModifiedDate));
+                comment.setContent(stripCDATA(text), false);
+
+                addComment(comment);
+            }
         }
     }
 
