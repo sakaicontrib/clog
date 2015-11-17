@@ -165,6 +165,13 @@ clog.utils = {
             }
             return 0;
         }
+        
+        if (title.length > 255) {
+            if ('AUTOSAVE' !== visibility) {
+                alert(long_title_warning);
+            }
+            return 0;
+        }
 
         var success = false;
 
