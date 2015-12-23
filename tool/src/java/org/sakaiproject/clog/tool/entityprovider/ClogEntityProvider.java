@@ -76,7 +76,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
                                             ,"",HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        if(!clogSecurityManager.canAccessSiteAndTool(siteId)) {
+        if (clogSecurityManager.getSiteIfCurrentUserCanAccessTool(siteId) == null) {
             throw new EntityException("Access denied.","",HttpServletResponse.SC_UNAUTHORIZED);
         }
         
@@ -107,7 +107,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
             throw new EntityException("Failed to retrieve posts for site " + siteId,"",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        List<Post> filteredPosts = clogSecurityManager.filter(posts);
+        List<Post> filteredPosts = clogSecurityManager.filter(posts, siteId);
         List<SparsePost> sparsePosts = new ArrayList<SparsePost>(filteredPosts.size());
         
         for(Post filteredPost : filteredPosts) {
@@ -169,7 +169,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
             throw new EntityException("Failed to retrieve posts for user " + requestedUserId,"",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
-        List<Post> filteredPosts = clogSecurityManager.filter(posts);
+        List<Post> filteredPosts = clogSecurityManager.filter(posts, null);
         
         for (Post filteredPost : filteredPosts) {
             filteredPost.minimise();

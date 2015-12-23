@@ -280,7 +280,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
         try {
             List<Post> posts = clogManager.getPosts(query);
-            int pageSize = 10;
+            int pageSize = 20;
             int start  = page * pageSize;
             int postsTotal = posts.size();
 

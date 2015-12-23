@@ -128,13 +128,13 @@ public class PersistenceManager {
         }
     }
 
-    public List<Post> getAllPost(String placementId) throws Exception {
-        return getAllPost(placementId, false);
+    public List<Post> getAllPost(String siteId) throws Exception {
+        return getAllPost(siteId, false);
     }
 
-    public List<Post> getAllPost(String placementId, boolean populate) throws Exception {
+    public List<Post> getAllPost(String siteId, boolean populate) throws Exception {
         if (logger.isDebugEnabled())
-            logger.debug("getAllPost(" + placementId + ")");
+            logger.debug("getAllPost(" + siteId + ")");
 
         List<Post> result = new ArrayList<Post>();
 
@@ -145,7 +145,7 @@ public class PersistenceManager {
         try {
             connection = sakaiProxy.borrowConnection();
             statement = connection.createStatement();
-            rs = statement.executeQuery(sqlGenerator.getSelectAllPost(placementId));
+            rs = statement.executeQuery(sqlGenerator.getSelectAllPost(siteId));
             result = transformResultSetInPostCollection(rs, connection);
         } finally {
             if (rs != null) {

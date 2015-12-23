@@ -29,6 +29,7 @@ clog.sortByComments = clog.SORT_COMMENTS_DOWN;
 // Sorting keys end
 //
 clog.LOCAL_STORAGE_KEY = 'clog';
+clog.AJAX_TIMEOUT = 5000;
 
 clog.states = {
     GROUPS: 'groups',
@@ -444,6 +445,7 @@ clog.switchState = function (state,arg) {
 	       	url: "/direct/clog-post/posts.json?siteId=" + clog.siteId + "&visibilities=RECYCLED",
 	       	dataType: "json",
 			cache: false,
+            timeout: clog.AJAX_TIMEOUT,
 		   	success: function (data) {
 
 				var posts = data.posts;

@@ -148,7 +148,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         return toolManager.getCurrentPlacement().getContext(); // equivalent to
     }
 
-    private Site getSiteOrNull(String siteId) {
+    public Site getSiteOrNull(String siteId) {
 
         Site site = null;
 
@@ -400,18 +400,28 @@ public class SakaiProxyImpl implements SakaiProxy {
     }
 
     public boolean isAllowedFunction(String function, String siteId) {
+
         try {
-            if (isCurrentUserAdmin())
-                return true;
-
             Site site = siteService.getSite(siteId);
-            Role r = site.getUserRole(getCurrentUserId());
+            Role role = site.getUserRole(getCurrentUserId());
+            return isAllowedFunction(function, role);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-            if (r == null) {
+    public boolean isAllowedFunction(String function, Role role) {
+
+        try {
+            if (isCurrentUserAdmin()) {
+                return true;
+            }
+
+            if (role == null) {
                 return false;
             }
 
-            return r.isAllowed(function);
+            return role.isAllowed(function);
         } catch (Exception e) {
             logger.error("Caught exception while performing function test", e);
         }

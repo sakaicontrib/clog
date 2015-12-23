@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
@@ -31,6 +32,8 @@ import org.sakaiproject.site.api.Site;
 public interface SakaiProxy {
 
     public String getCurrentSiteId();
+
+    public Site getSiteOrNull(String siteId);
 
     /**
      * Returns the locale_string property of the current site.
@@ -88,6 +91,8 @@ public interface SakaiProxy {
     public void registerFunction(String function);
 
     public boolean isAllowedFunction(String function, String siteId);
+
+    public boolean isAllowedFunction(String function, Role role);
 
     public void postEvent(String event, String entityId, String siteId);
 

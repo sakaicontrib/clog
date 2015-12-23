@@ -20,13 +20,14 @@ package org.sakaiproject.clog.api;
 import java.util.List;
 
 import org.sakaiproject.clog.api.datamodel.Post;
+import org.sakaiproject.site.api.Site;
 
 public interface ClogSecurityManager {
 
     public boolean canCurrentUserCommentOnPost(Post post);
     public boolean canCurrentUserDeletePost(Post post) throws SecurityException;
     public boolean canCurrentUserEditPost(Post post);
-    public List<Post> filter(List<Post> posts);
+    public List<Post> filter(List<Post> posts, String siteId);
     public boolean canCurrentUserReadPost(Post post);
-    public boolean canAccessSiteAndTool(String siteId);
+    public Site getSiteIfCurrentUserCanAccessTool(String siteId);
 }

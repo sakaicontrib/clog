@@ -24,6 +24,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.log4j.Logger;
+import org.sakaiproject.authz.api.Role;
+import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogSecurityManager;
@@ -40,6 +42,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
     private static final Logger logger = Logger.getLogger(ClogSecurityManagerImpl.class);
 
     private SakaiProxy  sakaiProxy;
+    private SecurityService securityService;
     private SiteService siteService;
     private ToolManager toolManager;
 
@@ -111,11 +114,18 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
      * Tests whether the current user can read each Post and if not, filters
      * that post out of the resulting list
      */
-    public List<Post> filter(List<Post> posts) {
+    public List<Post> filter(List<Post> posts, String siteId) {
 
         List<Post> filtered = new ArrayList<Post>();
+
+        Site site = getSiteIfCurrentUserCanAccessTool(siteId);
+
+        String currentUserId = sakaiProxy.getCurrentUserId();
+
+        boolean readAny = securityService.unlock(currentUserId, ClogFunctions.CLOG_POST_READ_ANY, "/site/" + siteId);
+
         for (Post post : posts) {
-            if (canCurrentUserReadPost(post)) {
+            if (canCurrentUserReadPost(post, site, readAny)) {
                 filtered.add(post);
             }
         }
@@ -124,44 +134,23 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
     }
 
     public boolean canCurrentUserReadPost(Post post) {
-        
-        String siteId = post.getSiteId();
-        
-        canAccessSiteAndTool(siteId);
 
-        final boolean maintainer = sakaiProxy.isCurrentUserMaintainer(siteId);
+        Site site = sakaiProxy.getSiteOrNull(post.getSiteId());
 
-        final boolean tutor = sakaiProxy.isCurrentUserTutor(siteId);
+        if (site != null) {
+            String currentUserId = sakaiProxy.getCurrentUserId();
+            boolean readAny
+                = securityService.unlock(currentUserId, ClogFunctions.CLOG_POST_READ_ANY, "/site/" + post.getSiteId());
+            return canCurrentUserReadPost(post, site, readAny);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean canCurrentUserReadPost(Post post, Site site, boolean readAny) {
 
         // If the post is public, yes.
         if (post.isPublic()) {
-            return true;
-        }
-
-        try {
-            if (post.isVisibleToSite() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
-                return true;
-            }
-        } catch (Exception e) {
-            logger.error("Exception during security check.", e);
-        }
-
-        try {
-            if (post.isVisibleToTutors() && tutor) {
-                return true;
-            }
-        } catch (Exception e) {
-            logger.error("Exception during security check.", e);
-        }
-
-        // Only maintainers can view recycled posts
-        if (post.isRecycled() && maintainer) {
-            return true;
-        }
-
-        // Allow search to index posts
-        String threadName = Thread.currentThread().getName();
-        if (!post.isPrivate() && "IndexManager".equals(threadName)) {
             return true;
         }
 
@@ -171,10 +160,38 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
         if (currentUser != null && currentUser.equals(post.getCreatorId())) {
             return true;
         }
+        
+        String siteId = post.getSiteId();
+
+        try {
+            if (post.isVisibleToSite() && securityService.unlock(currentUser, ClogFunctions.CLOG_POST_READ_ANY, "/site/" + siteId)) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
+
+        try {
+            if (post.isVisibleToTutors() && sakaiProxy.isCurrentUserTutor(siteId)) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
+
+        // Only maintainers can view recycled posts
+        if (post.isRecycled() && sakaiProxy.isCurrentUserMaintainer(siteId)) {
+            return true;
+        }
+
+        // Allow search to index posts
+        String threadName = Thread.currentThread().getName();
+        if (!post.isPrivate() && "IndexManager".equals(threadName)) {
+            return true;
+        }
 
         try {
             if (post.isGroup()) {
-                Site site = siteService.getSiteVisit(siteId);
                 for (String groupId : post.getGroups()) {
                     Group group = site.getGroup(groupId);
                     if (group.getMember(currentUser) != null) {
@@ -188,30 +205,22 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
         return false;
     }
-    
-    /**
-     * Checks whether the current user can access this site and whether they can
-     * see the forums tool.
-     * 
-     * @param siteId
-     * @throws EntityException
-     */
-    public boolean canAccessSiteAndTool(String siteId) {
-        
-        //check user can access this site
+
+    public Site getSiteIfCurrentUserCanAccessTool(String siteId) {
+
         Site site;
         try {
             site = siteService.getSiteVisit(siteId);
         } catch (Exception e) {
-            return false;
+            return null;
         }
 
         //check user can access the tool, it might be hidden
         ToolConfiguration toolConfig = site.getToolForCommonId("sakai.clog");
         if(!toolManager.isVisible(site, toolConfig)) {
-            return false;
+            return null;
         }
-        
-        return true;
+
+        return site;
     }
 }

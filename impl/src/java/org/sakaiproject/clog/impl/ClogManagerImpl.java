@@ -112,12 +112,12 @@ public class ClogManagerImpl implements ClogManager {
         return post;
     }
 
-    public List<Post> getPosts(String placementId) throws Exception {
+    public List<Post> getPosts(String siteId) throws Exception {
 
         // Get all the posts for the supplied site and filter them through the
         // security manager
-        List<Post> unfiltered = persistenceManager.getAllPost(placementId);
-        return clogSecurityManager.filter(unfiltered);
+        List<Post> unfiltered = persistenceManager.getAllPost(siteId);
+        return clogSecurityManager.filter(unfiltered, siteId);
     }
 
     public List<Post> getPosts(QueryBean query) throws Exception {
@@ -130,12 +130,19 @@ public class ClogManagerImpl implements ClogManager {
             return (List<Post>) cache.get(Visibilities.PUBLIC);
         } else if (query.queryBySiteId()) {
             if (query.getVisibilities().contains(Visibilities.RECYCLED)) {
-                return clogSecurityManager.filter(persistenceManager.getPosts(query));
+                return clogSecurityManager.filter(persistenceManager.getPosts(query), query.getSiteId());
             } else {
                 String siteId = query.getSiteId();
 
                 if (!cache.containsKey(siteId)) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Cache miss on site id: " + siteId);
+                    }
                     cache.put(siteId, new HashMap<String, List<Post>>());
+                } else {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Cache hit on site id: " + siteId);
+                    }
                 }
 
                 Map<String, List<Post>> siteMap = (Map<String, List<Post>>) cache.get(siteId);
@@ -162,10 +169,10 @@ public class ClogManagerImpl implements ClogManager {
                         logger.debug("Cache hit on '" + key + "'");
                     }
                 }
-                return clogSecurityManager.filter((List<Post>) siteMap.get(key));
+                return clogSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
             }
         } else {
-            return clogSecurityManager.filter(persistenceManager.getPosts(query));
+            return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
         }
     }
 
