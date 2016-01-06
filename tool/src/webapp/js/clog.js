@@ -8,6 +8,7 @@ clog.homeState = null;
 clog.onMyWorkspace = false;
 clog.onGateway = false;
 clog.titleChanged = false;
+clog.AJAX_TIMEOUT = 10000;
 
 clog.autosave_id = null;
 
@@ -112,6 +113,7 @@ clog.switchState = function (state,arg) {
 	       	'url': url,
 	       	dataType: "json",
 			cache: false,
+            timeout: clog.AJAX_TIMEOUT,
 		   	success: function (data) {
 
 				clog.currentPosts = data['clog-post_collection'];
@@ -158,6 +160,7 @@ clog.switchState = function (state,arg) {
 	    	url: "/direct/clog-author.json?siteId=" + clog.siteId,
 	      	dataType: "json",
 			cache: false,
+            timeout: clog.AJAX_TIMEOUT,
 		   	success: function (data) {
 
 				var authors = data['clog-author_collection'];
@@ -213,6 +216,7 @@ clog.switchState = function (state,arg) {
 	       	'url': url,
 	       	dataType: "json",
 			cache: false,
+            timeout: clog.AJAX_TIMEOUT,
 		   	success: function (data) {
 
 				var profileMarkup = clog.sakai.getProfileMarkup(userId);
@@ -265,6 +269,7 @@ clog.switchState = function (state,arg) {
 	       	'url': url,
 	       	dataType: "json",
 			cache: false,
+            timeout: clog.AJAX_TIMEOUT,
 		   	success: function (data) {
 
 				var profileMarkup = clog.sakai.getProfileMarkup(userId);
@@ -442,6 +447,7 @@ clog.switchState = function (state,arg) {
 	       	url: "/direct/clog-post.json?siteId=" + clog.siteId + "&visibilities=RECYCLED",
 	       	dataType: "json",
 			cache: false,
+            timeout: clog.AJAX_TIMEOUT,
 		   	success: function (data) {
 
 				var posts = data['clog-post_collection'];

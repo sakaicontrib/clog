@@ -31,6 +31,8 @@ public interface SakaiProxy {
 
 	public String getCurrentSiteId();
 
+    public Site getSiteOrNull(String siteId);
+
     /**
      * Returns the locale_string property of the current site.
      *

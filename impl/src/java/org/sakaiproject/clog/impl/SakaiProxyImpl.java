@@ -140,7 +140,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 		return toolManager.getCurrentPlacement().getContext(); // equivalent to
 	}
 
-    private Site getSiteOrNull(String siteId) {
+    public Site getSiteOrNull(String siteId) {
 
         Site site = null;
 

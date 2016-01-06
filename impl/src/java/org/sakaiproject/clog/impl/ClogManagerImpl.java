@@ -113,14 +113,14 @@ public class ClogManagerImpl implements ClogManager {
 		// Get all the posts for the supplied site and filter them through the
 		// security manager
 		List<Post> unfiltered = persistenceManager.getAllPost(placementId);
-		return clogSecurityManager.filter(unfiltered);
+		return clogSecurityManager.filter(unfiltered, placementId);
 	}
 
 	public List<Post> getPosts(QueryBean query) throws Exception {
 
 		// Get all the posts for the supplied site and filter them through the
 		// security manager
-        return clogSecurityManager.filter(persistenceManager.getPosts(query));
+        return clogSecurityManager.filter(persistenceManager.getPosts(query), query.getSiteId());
 	}
 
 	public boolean savePost(Post post) {

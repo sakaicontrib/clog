@@ -18,12 +18,14 @@
 package org.sakaiproject.clog.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.log4j.Logger;
+import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogSecurityManager;
@@ -43,6 +45,9 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 	
 	@Getter @Setter
 	private SiteService siteService;
+
+	@Setter
+    private SecurityService securityService;
 	
 	@Getter @Setter
 	private ToolManager toolManager;
@@ -115,84 +120,98 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 	 * Tests whether the current user can read each Post and if not, filters
 	 * that post out of the resulting list
 	 */
-	public List<Post> filter(List<Post> posts) {
+    public List<Post> filter(List<Post> posts, String siteId) {
 
-		List<Post> filtered = new ArrayList<Post>();
-		for (Post post : posts) {
-			if (canCurrentUserReadPost(post)) {
-				filtered.add(post);
-			}
-		}
+        List<Post> filtered = new ArrayList<Post>();
 
-		return filtered;
-	}
+        Site site = getSiteIfCurrentUserCanAccessTool(siteId);
 
-	public boolean canCurrentUserReadPost(Post post) {
-		
-		String siteId = post.getSiteId();
-		
-		canAccessSiteAndTool(siteId);
+        String currentUserId = sakaiProxy.getCurrentUserId();
 
-		final boolean maintainer = sakaiProxy.isCurrentUserMaintainer(siteId);
+        boolean readAny = securityService.unlock(currentUserId, ClogFunctions.CLOG_POST_READ_ANY, "/site/" + siteId);
 
-		final boolean tutor = sakaiProxy.isCurrentUserTutor(siteId);
+        for (Post post : posts) {
+            if (canCurrentUserReadPost(post, site, readAny)) {
+                filtered.add(post);
+            }
+        }
 
-		// If the post is public, yes.
-		if (post.isPublic()) {
-			return true;
-		}
+        return filtered;
+    }
 
-		try {
-			if (post.isVisibleToSite() && sakaiProxy.isAllowedFunction(ClogFunctions.CLOG_POST_READ_ANY, post.getSiteId())) {
-				return true;
-			}
-		} catch (Exception e) {
-			logger.error("Exception during security check.", e);
-		}
+    public boolean canCurrentUserReadPost(Post post) {
 
-		try {
-			if (post.isVisibleToTutors() && tutor) {
-				return true;
-			}
-		} catch (Exception e) {
-			logger.error("Exception during security check.", e);
-		}
+        Site site = sakaiProxy.getSiteOrNull(post.getSiteId());
 
-		// Only maintainers can view recycled posts
-		if (post.isRecycled() && maintainer) {
-			return true;
-		}
+        if (site != null) {
+            String currentUserId = sakaiProxy.getCurrentUserId();
+            boolean readAny
+                = securityService.unlock(currentUserId, ClogFunctions.CLOG_POST_READ_ANY, "/site/" + post.getSiteId());
+            return canCurrentUserReadPost(post, site, readAny);
+        } else {
+            return false;
+        }
+    }
 
-		// Allow search to index posts
-		String threadName = Thread.currentThread().getName();
-		if (!post.isPrivate() && "IndexManager".equals(threadName)) {
-			return true;
-		}
+    private boolean canCurrentUserReadPost(Post post, Site site, boolean readAny) {
 
-		String currentUser = sakaiProxy.getCurrentUserId();
+        // If the post is public, yes.
+        if (post.isPublic()) {
+            return true;
+        }
 
-		// If the current user is authenticated and the post author, yes.
-		if (currentUser != null && currentUser.equals(post.getCreatorId())) {
-			return true;
-		}
+        String currentUser = sakaiProxy.getCurrentUserId();
 
-		try {
-			if (post.isGroup()) {
-			    Site site = siteService.getSiteVisit(siteId);
+        // If the current user is authenticated and the post author, yes.
+        if (currentUser != null && currentUser.equals(post.getCreatorId())) {
+            return true;
+        }
+
+        String siteId = post.getSiteId();
+
+        try {
+            if (post.isVisibleToSite() && securityService.unlock(currentUser, ClogFunctions.CLOG_POST_READ_ANY, "/site/" + siteId)) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
+
+        try {
+            if (post.isVisibleToTutors() && sakaiProxy.isCurrentUserTutor(siteId)) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
+
+        // Only maintainers can view recycled posts
+        if (post.isRecycled() && sakaiProxy.isCurrentUserMaintainer(siteId)) {
+            return true;
+        }
+
+        // Allow search to index posts
+        String threadName = Thread.currentThread().getName();
+        if (!post.isPrivate() && "IndexManager".equals(threadName)) {
+            return true;
+        }
+
+        try {
+            if (post.isGroup()) {
                 for (String groupId : post.getGroups()) {
                     Group group = site.getGroup(groupId);
                     if (group.getMember(currentUser) != null) {
                         return true;
                     }
                 }
-			}
-		} catch (Exception e) {
-			logger.error("Exception during security check.", e);
-		}
+            }
+        } catch (Exception e) {
+            logger.error("Exception during security check.", e);
+        }
 
-		return false;
-	}
-	
+        return false;
+    }
+
 	/**
 	 * Checks whether the current user can access this site and whether they can
 	 * see the forums tool.
@@ -218,4 +237,22 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 		
 		return true;
 	}
+
+    public Site getSiteIfCurrentUserCanAccessTool(String siteId) {
+
+        Site site;
+        try {
+            site = siteService.getSiteVisit(siteId);
+        } catch (Exception e) {
+            return null;
+        }
+
+        //check user can access the tool, it might be hidden
+        ToolConfiguration toolConfig = site.getToolForCommonId("sakai.clog");
+        if(!toolManager.isVisible(site, toolConfig)) {
+            return null;
+        }
+
+        return site;
+    }
 }

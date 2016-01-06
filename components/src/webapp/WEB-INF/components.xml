@@ -50,6 +50,7 @@
 	<bean id="org.sakaiproject.clog.api.ClogSecurityManager"
     	class="org.sakaiproject.clog.impl.ClogSecurityManagerImpl">
         <property name="sakaiProxy"><ref bean="org.sakaiproject.clog.api.SakaiProxy"/></property>
+		<property name="securityService"><ref bean="org.sakaiproject.authz.api.SecurityService"/></property>
 		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
 		<property name="toolManager"><ref bean="org.sakaiproject.tool.api.ToolManager"/></property>
     </bean>
