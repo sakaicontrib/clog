@@ -55,56 +55,80 @@
       mode: 'vars',
       cache: false,
       encoding: 'UTF-8',
+      async: false,
+      checkAvailableLanguages: false,
       callback: null
     };
     settings = $.extend(defaults, settings);
-    if (settings.language === null || settings.language == '') {
-      settings.language = $.i18n.browserLang();
-    }
-    if (settings.language === null) {
-      settings.language = '';
-    }
 
-    var indexFileUrl = settings.path + 'languages.json';
+    // Try to ensure that we have at a least a two letter language code
+    settings.language = this.normaliseLanguageCode(settings.language);
 
-    var languages = [];
+    var languagesFileLoadedCallback = function (languages) {
 
-    $.ajax({
-      url: indexFileUrl,
-      async: false,
-      cache: false,
-      success: function (data, status) {
-          languages = data.languages;
+      settings.totalFiles = 0;
+      settings.filesLoaded = 0;
+
+      // load and parse bundle files
+      var files = getFiles(settings.name);
+
+      if (settings.async) {
+        for (var i = 0, j = files.length; i < j; i++) {
+          // 1 for the base.
+          settings.totalFiles += 1;
+          // 2. with language code (eg, Messages_pt.properties)
+          var shortCode = settings.language.substring(0, 2);
+          if (languages.length == 0 || $.inArray(shortCode, languages) != -1) {
+            // 1 for the short code file
+            settings.totalFiles += 1;
+          }
+          // 3. with language code and country code (eg, Messages_pt_PT.properties)
+          if (settings.language.length >= 5) {
+            var longCode = settings.language.substring(0, 5);
+            if (languages.length == 0 || $.inArray(longCode, languages) != -1) {
+              // 1 for the long code file
+              settings.totalFiles += 1;
+            }
+          }
+        }
       }
-    });
 
-    // load and parse bundle files
-    var files = getFiles(settings.name);
-    for (var i = 0; i < files.length; i++) {
-      // 1. load base (eg, Messages.properties)
-      loadAndParseFile(settings.path + files[i] + '.properties', settings);
-      // 2. with language code (eg, Messages_pt.properties)
-      if (settings.language.length >= 2) {
+      for (var k = 0, m = files.length; k < m; k++) {
+        // 1. load base (eg, Messages.properties)
+        loadAndParseFile(settings.path + files[k] + '.properties', settings);
+        // 2. with language code (eg, Messages_pt.properties)
         var shortCode = settings.language.substring(0, 2);
-        if (languages.length > 0 && $.inArray(shortCode, languages) != -1) {
-            loadAndParseFile(settings.path + files[i] + '_' + shortCode + '.properties', settings);
+        if (languages.length == 0 || $.inArray(shortCode, languages) != -1) {
+          loadAndParseFile(settings.path + files[k] + '_' + shortCode + '.properties', settings);
+        }
+        // 3. with language code and country code (eg, Messages_pt_PT.properties)
+        if (settings.language.length >= 5) {
+          var longCode = settings.language.substring(0, 5);
+          if (languages.length == 0 || $.inArray(longCode, languages) != -1) {
+            loadAndParseFile(settings.path + files[k] + '_' + longCode + '.properties', settings);
+          }
         }
       }
-      // 3. with language code and country code (eg, Messages_pt_PT.properties)
-      if (settings.language.length >= 5) {
-        var longCode = settings.language.substring(0, 5);
-        if (languages.length > 0 && $.inArray(longCode, languages) != -1) {
-            loadAndParseFile(settings.path + files[i] + '_' + longCode + '.properties', settings);
-        }
-      }
-    }
 
-    // call callback
-    if (settings.callback) {
-      settings.callback();
+      // call callback
+      if (settings.callback && !settings.async) {
+        settings.callback();
+      }
+    };
+
+    if (settings.checkAvailableLanguages) {
+      $.ajax({
+        url: settings.path + 'languages.json',
+        async: settings.async,
+        cache: false,
+        success: function (data, textStatus, jqXHR) {
+          languagesFileLoadedCallback(data.languages || []);
+        }
+      });
+    } else {
+      languagesFileLoadedCallback([]);
     }
   };
-
 
   /**
    * When configured with mode: 'map', allows access to bundle values by specifying its key.
@@ -233,41 +257,53 @@
 
     if (value.length == 0)
       return "";
-    if (value.lengh == 1 && typeof(value[0]) == "string")
+    if (value.length == 1 && typeof(value[0]) == "string")
       return value[0];
 
-    var s = "";
+    var str = "";
     for (i = 0; i < value.length; i++) {
       if (typeof(value[i]) == "string")
-        s += value[i];
+        str += value[i];
       // Must be a number
       else if (phvList && value[i] < phvList.length)
-        s += phvList[value[i]];
+        str += phvList[value[i]];
       else if (!phvList && value[i] + 1 < arguments.length)
-        s += arguments[value[i] + 1];
+        str += arguments[value[i] + 1];
       else
-        s += "{" + value[i] + "}";
+        str += "{" + value[i] + "}";
     }
 
-    return s;
+    return str;
   };
 
-  /** Language reported by browser, normalized code */
-  $.i18n.browserLang = function () {
-    return normaliseLanguageCode(navigator.language /* Mozilla */ || navigator.userLanguage /* IE */);
-  };
+  function callbackIfComplete(settings) {
 
+      if (settings.async) {
+        settings.filesLoaded += 1;
+        if (settings.filesLoaded === settings.totalFiles) {
+          if (settings.callback) {
+            settings.callback();
+          }
+        }
+      }
+  }
 
   /** Load and parse .properties files */
   function loadAndParseFile(filename, settings) {
+
     $.ajax({
       url: filename,
-      async: false,
+      async: settings.async,
       cache: settings.cache,
-      contentType: 'text/plain;charset=' + settings.encoding,
       dataType: 'text',
       success: function (data, status) {
+
         parseData(data, settings.mode);
+        callbackIfComplete(settings);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log('Failed to download or parse ' + filename);
+        callbackIfComplete(settings);
       }
     });
   }
@@ -276,8 +312,8 @@
   function parseData(data, mode) {
     var parsed = '';
     var parameters = data.split(/\n/);
-    var regPlaceHolder = /(\{\d+\})/g;
-    var regRepPlaceHolder = /\{(\d+)\}/g;
+    var regPlaceHolder = /(\{\d+})/g;
+    var regRepPlaceHolder = /\{(\d+)}/g;
     var unicodeRE = /(\\u.{4})/ig;
     for (var i = 0; i < parameters.length; i++) {
       parameters[i] = parameters[i].replace(/^\s\s*/, '').replace(/\s\s*$/, ''); // trim
@@ -285,7 +321,7 @@
         var pair = parameters[i].split('=');
         if (pair.length > 0) {
           /** Process key & value */
-          var name = unescape(pair[0]).replace(/^\s\s*/, '').replace(/\s\s*$/, ''); // trim
+          var name = decodeURI(pair[0]).replace(/^\s\s*/, '').replace(/\s\s*$/, ''); // trim
           var value = pair.length == 1 ? "" : pair[1];
           // process multi-line values
           while (value.match(/\\$/) == "\\") {
@@ -376,13 +412,20 @@
   }
 
   /** Ensure language code is in the format aa_AA. */
-  function normaliseLanguageCode(lang) {
+  $.i18n.normaliseLanguageCode = function (lang) {
+
+    if (!lang || lang.length < 2) {
+      lang = (navigator.languages) ? navigator.languages[0]
+                                        : (navigator.language || navigator.userLanguage /* IE */ || 'en');
+    }
+
     lang = lang.toLowerCase();
+    lang = lang.replace(/-/,"_"); // some browsers report language as en-US instead of en_US
     if (lang.length > 3) {
       lang = lang.substring(0, 3) + lang.substring(3).toUpperCase();
     }
     return lang;
-  }
+  };
 
   /** Unescape unicode chars ('\u00e3') */
   function unescapeUnicode(str) {
@@ -420,12 +463,12 @@
           flags = (separator.ignoreCase ? "i" : "") +
               (separator.multiline ? "m" : "") +
               (separator.sticky ? "y" : ""),
-          separator = RegExp(separator.source, flags + "g"), // make `global` and avoid `lastIndex` issues by working with a copy
+          separator = new RegExp(separator.source, flags + "g"), // make `global` and avoid `lastIndex` issues by working with a copy
           separator2, match, lastIndex, lastLength;
 
       str = str + ""; // type conversion
       if (!cbSplit._compliantExecNpcg) {
-        separator2 = RegExp("^" + separator.source + "$(?!\\s)", flags); // doesn't need /g or /y, but they don't hurt
+        separator2 = new RegExp("^" + separator.source + "$(?!\\s)", flags); // doesn't need /g or /y, but they don't hurt
       }
 
       /* behavior for `limit`: if it's...

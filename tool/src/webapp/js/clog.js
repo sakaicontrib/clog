@@ -46,7 +46,7 @@ clog.fitFrame = function () {
 };
 
 clog.switchState = function (state,arg) {
-	
+
 	// Clear the autosave interval
 	if (clog.autosave_id) {
 		clearInterval(clog.autosave_id);
@@ -62,7 +62,7 @@ clog.switchState = function (state,arg) {
 	} else {
 		$("#clog_create_post_link").hide();
     }
-	
+
 	if ('home' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_home_link > span').addClass('current');
@@ -523,166 +523,174 @@ clog.toggleFullContent = function (v) {
 		return;
 	}
 
+    var languagesLoaded = function () {
+
+        clog.i18n = $.i18n.map;
+
+        clog.i18n.months = clog.i18n.months.split(',');
+
+        clog.monthMappings = {};
+        clog.i18n.months.forEach(function (m, i) {
+            clog.monthMappings[m] = i + 1;
+        });
+
+        if ('!gateway' === clog.siteId) {
+            clog.onGateway = true;
+        }
+
+        if (clog.siteId.match(/^~/)) {
+            clog.onMyWorkspace = true;
+        }
+
+        // This comes from sakai.properties, via the ClogTool servlet 
+        if ('true' === clog.publicAllowed) {
+            clog.publicAllowed = true;
+        }
+
+        clog.homeState = 'viewAllPosts';
+
+        // We need the toolbar in a template so we can swap in the translations
+        if ($(document).width() < 800) {
+            clog.utils.renderTemplate('pda_toolbar',{},'clog_toolbar');
+            $(document).ready(function () {
+
+                $('#clog-toolbar-dropdown').change(function () {
+                    clog.switchState(this.value);
+                });
+            });
+        } else {
+            clog.utils.renderTemplate('toolbar', {} ,'clog_toolbar');
+
+            if (clog.groups.length > 0) {
+                $("#clog_groups_link").show().click(function (e) {
+                    return clog.switchState('groups');
+                });
+            }
+
+            $('#clog_home_link>span>a').click(function (e) {
+                return clog.switchState('home');
+            });
+
+            $('#clog_view_authors_link>span>a').click(function (e) {
+                return clog.switchState('viewMembers');
+            });
+
+            $('#clog_my_clog_link>span>a').click(function (e) {
+                return clog.switchState('userPosts');
+            });
+
+            if (clog.publicAllowed) {
+                $('#clog_my_public_posts_link>span>a').click(function (e) {
+                    return clog.switchState('myPublicPosts');
+                });
+            }
+
+            $('#clog_create_post_link>span>a').click(function (e) {
+                return clog.switchState('createPost');
+            });
+
+            $('#clog_permissions_link>span>a').click(function (e) {
+                return clog.switchState('permissions');
+            });
+
+            $('#clog_recycle_bin_link>span>a').click(function (e) {
+                return clog.switchState('viewRecycled');
+            });
+        }
+
+        // If we are on a My Workspace type site (characterised by a tilde as the
+        // first character in the site id), show the user's posts by default.
+        if (clog.onMyWorkspace) {
+            clog.state = 'userPosts';
+            clog.homeState = 'userPosts';
+            $("#clog_view_authors_link").hide();
+            $("#clog_my_clog_link").hide();
+
+            if (clog.publicAllowed) {
+                $("#clog_my_public_posts_link").show();
+            }
+        }
+
+        $.tablesorter.addParser({
+            id: 'clogDate',
+            is: function (s) {
+                return false;
+            },
+            format: function (s) {
+
+                if (s === clog.i18n.none) {
+                    return 0;
+                }
+
+                var matches = s.match(/^([\d]{1,2}) (\w+) ([\d]{4}) \@ ([\d]{2}):([\d]{2}).*$/);
+                var d = new Date(matches[3], clog.monthMappings[matches[2]], matches[1], matches[4], matches[5], 0);
+                return d.getTime();
+            },
+            type: 'numeric'
+        });
+
+        clog.utils.addFormattedLastPostDatesToGroups(clog.groups);
+
+        try {
+            if (window.frameElement) {
+                window.frameElement.style.minHeight = '600px';
+            }
+        } catch (err) { }
+
+        if (!clog.onGateway) {
+
+            var permissionsCallback = function (permissions) {
+
+                    clog.currentUserPermissions = new ClogPermissions(permissions);
+
+                    if (clog.currentUserPermissions == null) {
+                        return;
+                    }
+
+                    if (clog.currentUserPermissions.modifyPermissions) {
+                        $("#clog_permissions_link").show();
+                    } else {
+                        $("#clog_permissions_link").hide();
+                    }
+
+                    if (clog.currentUserPermissions.postDeleteAny) {
+                        $("#clog_recycle_bin_link").show();
+                    } else {
+                        $("#clog_recycle_bin_link").hide();
+                    }
+
+                    if (clog.currentUserPermissions.postReadAny) {
+                        $("#clog_view_authors_link").show();
+                        $("#clog_view_authors_link").css('display','inline');
+                    }
+
+                    // Now switch into the requested state
+                    clog.switchState(clog.state, clog);
+                };
+
+            clog.utils.getCurrentUserPermissions(permissionsCallback);
+        } else {
+            $("#clog_permissions_link").hide();
+            $("#clog_my_clog_link").hide();
+            $("#clog_home_link").hide();
+            $('#clog_recycle_bin_link').hide();
+            clog.currentUserPermissions = new ClogPermissions();
+
+            // Now switch into the requested state
+            clog.switchState(clog.state, clog);
+        }
+    };
+
     $.i18n.properties({
         name:'ui',
         path:'/clog-tool/i18n/',
         mode: 'both',
-        language: sakai.locale.userLocale
-    });
-
-    clog.i18n = $.i18n.map;
-
-    clog.i18n.months = clog.i18n.months.split(',');
-
-    clog.monthMappings = {};
-    clog.i18n.months.forEach(function (m, i) {
-        clog.monthMappings[m] = i + 1;
-    });
-
-	if ('!gateway' === clog.siteId) {
-		clog.onGateway = true;
-	}
-	
-	if (clog.siteId.match(/^~/)) {
-		clog.onMyWorkspace = true;
-	}
-
-	// This comes from sakai.properties, via the ClogTool servlet 
-	if ('true' === clog.publicAllowed) {
-		clog.publicAllowed = true;
-	}
-	
-	clog.homeState = 'viewAllPosts';
-
-	// We need the toolbar in a template so we can swap in the translations
-    if ($(document).width() < 800) {
-	    clog.utils.renderTemplate('pda_toolbar',{},'clog_toolbar');
-        $(document).ready(function () {
-
-            $('#clog-toolbar-dropdown').change(function () {
-                clog.switchState(this.value);
-            });
-        });
-    } else {
-	    clog.utils.renderTemplate('toolbar', {} ,'clog_toolbar');
-
-        if (clog.groups.length > 0) {
-            $("#clog_groups_link").show().click(function (e) {
-                return clog.switchState('groups');
-            });
+        checkAvailableLanguages: true,
+        async: true,
+        language: sakai.locale.userLocale,
+        callback: function () {
+            languagesLoaded();
         }
-
-	    $('#clog_home_link>span>a').click(function (e) {
-		    return clog.switchState('home');
-	    });
-
-	    $('#clog_view_authors_link>span>a').click(function (e) {
-		    return clog.switchState('viewMembers');
-	    });
-
-	    $('#clog_my_clog_link>span>a').click(function (e) {
-		    return clog.switchState('userPosts');
-    	});
-
-	    if (clog.publicAllowed) {
-		    $('#clog_my_public_posts_link>span>a').click(function (e) {
-			    return clog.switchState('myPublicPosts');
-		    });
-	    }
-
-	    $('#clog_create_post_link>span>a').click(function (e) {
-		    return clog.switchState('createPost');
-	    });
-
-	    $('#clog_permissions_link>span>a').click(function (e) {
-		    return clog.switchState('permissions');
-	    });
-
-	    $('#clog_recycle_bin_link>span>a').click(function (e) {
-		    return clog.switchState('viewRecycled');
-	    });
-    }
-
-	// If we are on a My Workspace type site (characterised by a tilde as the
-	// first character in the site id), show the user's posts by default.
-	if (clog.onMyWorkspace) {
-		clog.state = 'userPosts';
-		clog.homeState = 'userPosts';
-		$("#clog_view_authors_link").hide();
-		$("#clog_my_clog_link").hide();
-		
-		if (clog.publicAllowed) {
-            $("#clog_my_public_posts_link").show();
-        }
-	}
-    
-    $.tablesorter.addParser({
-        id: 'clogDate',
-        is: function (s) {
-            return false;
-        },
-        format: function (s) {
-
-            if (s === clog.i18n.none) {
-                return 0;
-            }
-
-            var matches = s.match(/^([\d]{1,2}) (\w+) ([\d]{4}) \@ ([\d]{2}):([\d]{2}).*$/);
-            var d = new Date(matches[3], clog.monthMappings[matches[2]], matches[1], matches[4], matches[5], 0);
-            return d.getTime();
-        },
-        type: 'numeric'
     });
-
-    clog.utils.addFormattedLastPostDatesToGroups(clog.groups);
-
-    try {
-        if (window.frameElement) {
-            window.frameElement.style.minHeight = '600px';
-        }
-    } catch (err) { }
-
-	if (!clog.onGateway) {
-
-        var permissionsCallback = function (permissions) {
-
-		        clog.currentUserPermissions = new ClogPermissions(permissions);
-
-                if (clog.currentUserPermissions == null) {
-                    return;
-                }
-            
-                if (clog.currentUserPermissions.modifyPermissions) {
-                    $("#clog_permissions_link").show();
-                } else {
-                    $("#clog_permissions_link").hide();
-                }
-
-                if (clog.currentUserPermissions.postDeleteAny) {
-                    $("#clog_recycle_bin_link").show();
-                } else {
-                    $("#clog_recycle_bin_link").hide();
-                }
-
-                if (clog.currentUserPermissions.postReadAny) {
-                    $("#clog_view_authors_link").show();
-                    $("#clog_view_authors_link").css('display','inline');
-                }
-
-                // Now switch into the requested state
-                clog.switchState(clog.state, clog);
-            };
-
-		clog.utils.getCurrentUserPermissions(permissionsCallback);
-	} else {
-		$("#clog_permissions_link").hide();
-		$("#clog_my_clog_link").hide();
-		$("#clog_home_link").hide();
-		$('#clog_recycle_bin_link').hide();
-		clog.currentUserPermissions = new ClogPermissions();
-
-	    // Now switch into the requested state
-	    clog.switchState(clog.state, clog);
-	}
 })(jQuery);
 
