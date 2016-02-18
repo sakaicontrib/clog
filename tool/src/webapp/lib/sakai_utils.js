@@ -29,8 +29,6 @@ clog.sakai = {
     setupFCKEditor: function (textarea_id, width, height) {
 
         sakai.editor.launch(textarea_id, {}, width, height);
-        
-        clog.fitFrame();
 	},
     setupCKEditor: function (textarea_id, width, height) {
 
@@ -39,10 +37,6 @@ clog.sakai = {
         }
 
         sakai.editor.launch(textarea_id,{},width,height);
-        
-        CKEDITOR.instances[textarea_id].on('instanceReady',function (e) {
-            clog.fitFrame();
-        });
 	},
     setupWysiwygEditor: function (editorId, textarea_id, width, height) {
 

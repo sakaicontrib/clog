@@ -514,7 +514,6 @@ clog.utils = {
                     $(document).ready(function () {
 
                         clog.utils.attachProfilePopup();
-                        clog.fitFrame();
                     });
 
                     if (!clog.settings.showBody) {
@@ -575,9 +574,6 @@ clog.utils = {
                 $(document).ready(function () {
 
                     clog.utils.attachProfilePopup();
-
-                    clog.fitFrame();
-
                     loadImage.hide();
                 });
 

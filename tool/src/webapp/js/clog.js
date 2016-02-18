@@ -36,15 +36,6 @@ clog.states = {
     GROUP_POSTS: 'groupPosts'
 };
 
-clog.fitFrame = function () {
-
-    try {
-        if (window.frameElement) {
-            setMainFrameHeight(window.frameElement.id);
-        }
-    } catch (err) { }
-};
-
 clog.switchState = function (state,arg) {
 
 	// Clear the autosave interval
@@ -106,8 +97,6 @@ clog.switchState = function (state,arg) {
                 headers: {
                     2: { sorter: "clogDate" }
                 } });
-
-            clog.fitFrame();
         });
 	} else if (clog.states.GROUP_POSTS === state) {
         if (!arg || !arg.groupId) return;
@@ -284,8 +273,6 @@ clog.switchState = function (state,arg) {
                     $('.content').show();
 
                     if (clog.currentPost.comments.length > 0) $('.comments').show();
-
-                    clog.fitFrame();
                 });
             };
 
@@ -325,7 +312,6 @@ clog.switchState = function (state,arg) {
                     $('#clog_visibility_maintainer,#clog_visibility_site').click(function (e) {
 
                         $('#clog-group-fieldset').hide();
-                        clog.fitFrame();
                     });
 
                     if (clog.currentPost.groups.length > 0) {
@@ -338,7 +324,6 @@ clog.switchState = function (state,arg) {
                     
                     $('#clog-visibility-group').click(function (e) {
                         $('#clog-group-fieldset').show();
-                        clog.fitFrame();
                     });
 
                     $('#clog_save_post_button').click(function () {
@@ -430,9 +415,6 @@ clog.switchState = function (state,arg) {
                 clog.utils.renderTemplate('permissions', {'perms': perms}, 'clog_content');
 
                 $(document).ready(function () {
-
-                    clog.fitFrame();
-
                     $('#clog_permissions_save_button').bind('click', clog.utils.savePermissions);
                 });
             };
@@ -457,8 +439,6 @@ clog.switchState = function (state,arg) {
 	 			posts.forEach(function (p) {
 					clog.utils.renderPost(p, 'post_' + p.id);
                 });
-
-                clog.fitFrame();
 
 				if (posts.length > 0) {
 					$('#clog_really_delete_button').click(clog.utils.deleteSelectedPosts);
@@ -506,10 +486,6 @@ clog.toggleFullContent = function (v) {
         // CLOG-59
         this.setLocalStorageSetting('showBody', true);
     }
-
-    $(document).ready(function () {
-        clog.fitFrame();
-    });
 };
 
 (function ($) {
@@ -631,12 +607,6 @@ clog.toggleFullContent = function (v) {
 
         clog.utils.addFormattedLastPostDatesToGroups(clog.groups);
 
-        try {
-            if (window.frameElement) {
-                window.frameElement.style.minHeight = '600px';
-            }
-        } catch (err) { }
-
         if (!clog.onGateway) {
 
             var permissionsCallback = function (permissions) {
@@ -661,7 +631,6 @@ clog.toggleFullContent = function (v) {
 
                     if (clog.currentUserPermissions.postReadAny) {
                         $("#clog_view_authors_link").show();
-                        $("#clog_view_authors_link").css('display','inline');
                     }
 
                     // Now switch into the requested state
