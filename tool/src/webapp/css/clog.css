@@ -153,9 +153,6 @@ th.clogSortableTableHeaderSortDown {
 }
 
 /** top nav icons **/
-#clog_view_authors_link {
-	display: none;
-}
 
 .clog_author_image_div {
 	float: right;
