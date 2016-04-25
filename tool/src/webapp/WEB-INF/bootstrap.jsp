@@ -26,7 +26,7 @@
         
         </script>
         ${sakaiHtmlHead}
-        <link rel="stylesheet" type="text/css" href="/library/js/jquery/jquery-ui/css/smoothness/jquery-ui.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="/library/webjars/jquery-ui/1.11.3/jquery-ui.css" media="all"/>
         <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
         <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
         <script type="text/javascript" src="/library/webjars/jquery/1.11.3/jquery.min.js"></script>
