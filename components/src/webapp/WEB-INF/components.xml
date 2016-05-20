@@ -74,13 +74,5 @@
         <property name="searchIndexBuilder"><ref bean="org.sakaiproject.search.api.SearchIndexBuilder" /></property>
         
     </bean>
-
-    <bean id="org.sakaiproject.clog.dashboard.ClogDashboardIntegration"
-        class="org.sakaiproject.clog.dashboard.ClogDashboardIntegration"
-        init-method="init">
-        <property name="clogManager"><ref bean="org.sakaiproject.clog.api.ClogManager"/></property>
-        <property name="dashboardLogic"><ref bean="org.sakaiproject.dash.logic.DashboardLogic"/></property>
-        <property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
-    </bean>
     
 </beans>
