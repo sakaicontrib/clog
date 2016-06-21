@@ -111,7 +111,7 @@
             <plugin>
                 <groupId>com.github.jknack</groupId>
                 <artifactId>handlebars-maven-plugin</artifactId>
-                <version>2.0.0</version>
+                <version>4.0.5</version>
                 <executions>
                     <execution>
                         <id>templates</id>
@@ -122,10 +122,7 @@
                         <configuration>
                             <output>${project.build.directory}/${project.build.finalName}/templates/templates.js</output>
                             <prefix>${basedir}/src/webapp/WEB-INF/templates</prefix>
-                            <suffix>.handlebars</suffix>
-                            <handlebarsJsFile>/handlebars-v2.0.0.js</handlebarsJsFile>
                             <amd>false</amd>
-                            <encoding>UTF-8</encoding>
                         </configuration>
                     </execution>
                 </executions>
