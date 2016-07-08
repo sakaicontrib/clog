@@ -453,6 +453,7 @@ clog.utils = {
 
         this.decoratePost(post);
         this.renderTemplate('post', post, output);
+        if (MathJax) { MathJax.Hub.Queue(["Typeset",MathJax.Hub]); }
     },
     renderPageOfPosts: function (args) {
 
