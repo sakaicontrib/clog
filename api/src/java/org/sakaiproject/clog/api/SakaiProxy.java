@@ -28,6 +28,7 @@ import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.site.api.Site;
+import org.sakaiproject.site.api.ToolConfiguration;
 
 public interface SakaiProxy {
 
@@ -125,4 +126,8 @@ public interface SakaiProxy {
     public String getWysiwygEditor();
 
     public Cache getCache(String cache);
+
+    void addToolToToolConfig(ToolConfiguration tool);
+
+    boolean saveSite(Site site);
 }
