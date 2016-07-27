@@ -159,7 +159,7 @@ public class ClogManagerImpl implements ClogManager {
                     logger.debug("KEY: " + key);
                 }
 
-                if (!siteMap.containsKey(key)) {
+                if (siteMap != null && !siteMap.containsKey(key)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Cache miss on '" + key + "'. It will be added.");
                     }
@@ -169,7 +169,11 @@ public class ClogManagerImpl implements ClogManager {
                         logger.debug("Cache hit on '" + key + "'");
                     }
                 }
-                return clogSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
+                if (siteMap != null) {
+                    return clogSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
+                } else {
+                    return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
+                }
             }
         } else {
             return clogSecurityManager.filter(persistenceManager.getPosts(query), null);

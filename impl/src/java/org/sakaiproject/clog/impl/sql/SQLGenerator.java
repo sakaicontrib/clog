@@ -109,7 +109,7 @@ public class SQLGenerator implements ISQLGenerator {
             }
 
             if (query.queryByTitle()) {
-                statement.append(TITLE).append(" = '").append(query.getTitle()).append("' AND ");
+                statement.append(TITLE).append(" = '").append(query.getTitle().replace("'","''")).append("' AND ");
             }
 
             if (query.queryByCreator()) {

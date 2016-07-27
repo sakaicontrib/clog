@@ -19,6 +19,7 @@ import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
 import org.sakaiproject.component.api.ComponentManager;
 import org.sakaiproject.component.api.ServerConfigurationService;
+import org.sakaiproject.site.api.*;
 
 /**
  * @author Adrian Fish (a.fish@lancaster.ac.uk)
@@ -490,9 +491,25 @@ public class ClogAdminTool extends HttpServlet {
 
                 Post post = new Post();
 
+                String siteId = null;
                 if (location.startsWith("/site/")) {
-                    String siteId = location.substring(location.lastIndexOf("/") + 1);
+                    siteId = location.substring(location.lastIndexOf("/") + 1);
                     post.setSiteId(siteId);
+                }
+
+                if (siteId != null && !siteId.isEmpty()) {
+                    String pageId = sakaiProxy.getClogPageId(siteId);
+                    // Site does not have Clogs installed, add it
+                    if (pageId.isEmpty()) {
+                        Site site = sakaiProxy.getSiteOrNull(siteId);
+                        if(site != null) {
+                            SitePage sitePage = site.addPage();
+
+                            ToolConfiguration tool = sitePage.addTool();
+                            sakaiProxy.addToolToToolConfig(tool);
+                            sakaiProxy.saveSite(site);
+                        }
+                    }
                 }
 
                 QueryBean query = new QueryBean();
@@ -535,6 +552,9 @@ public class ClogAdminTool extends HttpServlet {
                         comment.setModifiedDate(commentModified.getTime());
                         comment.setContent(commentText);
                         comment.setPostId(post.getId());
+                        if(siteId != null) {
+                            comment.setSiteId(siteId);
+                        }
 
                         clogManager.saveComment(comment);
                     }

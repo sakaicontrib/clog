@@ -753,4 +753,27 @@ public class SakaiProxyImpl implements SakaiProxy {
             return null;
         }
     }
+
+    public void addToolToToolConfig(ToolConfiguration tool) {
+        tool.setTool("sakai.clog", toolManager.getTool("sakai.clog"));
+        tool.setTitle(toolManager.getTool("sakai.clog").getTitle());
+    }
+
+    public boolean saveSite(Site site) {
+        try {
+            Collection<Group> groups = site.getGroups();
+            for (Group g : groups) {
+                if (g.getTitle() == null || g.getTitle().trim().length() == 0) {
+                    g.setTitle("null");
+                }
+            }
+
+            siteService.save(site);
+            return true;
+        } catch (Exception e) {
+            logger.error("Error saving site: '" + site + "'.");
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
