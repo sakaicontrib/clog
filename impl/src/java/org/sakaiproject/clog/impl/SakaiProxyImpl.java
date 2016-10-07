@@ -592,7 +592,7 @@ public class SakaiProxyImpl implements SakaiProxy {
                     filteredFunctions.add(function);
             }
 
-            if (functions.contains("site.upd")) {
+            if (functions.contains("realm.upd")) {
                 filteredFunctions.add(ClogFunctions.CLOG_MODIFY_PERMISSIONS);
             }
         }
@@ -660,7 +660,7 @@ public class SakaiProxyImpl implements SakaiProxy {
                 AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
                 Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
 
-                if (!siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS) && !siteRole.isAllowed("site.upd")) {
+                if (!siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS) && !siteRole.isAllowed("realm.upd")) {
                     if (siteHelperRole == null || !siteHelperRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS)) {
                         logger.warn(userId + " attempted to update CLOG permissions for site " + site.getTitle());
                         return false;
