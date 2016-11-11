@@ -257,7 +257,8 @@ clog.utils = {
                 'id': $('#clog_comment_id_field').val(),
                 'postId': clog.currentPost.id,
                 'content': clog.sakai.getEditorData(wysiwygEditor,'clog_content_editor'),
-                'siteId': clog.siteId
+                'siteId': clog.siteId,
+                'fromSamepage': true
                 };
 
         jQuery.ajax( {
@@ -267,7 +268,7 @@ clog.utils = {
             dataType: 'text',
             timeout: clog.AJAX_TIMEOUT,
             success: function (id) {
-                clog.switchState('viewAllPosts');
+                clog.switchState('post',comment);
             },
             error : function (xmlHttpRequest, textStatus, error) {
                 alert("Failed to save comment. Status: " + textStatus + '. Error: ' + error);
@@ -377,12 +378,11 @@ clog.utils = {
 
         return false;
     },
-    findPost: function (postId, callback) {
-        
-        if (!clog.currentPosts) {
+    findPost: function (postId, callback, fromSamepage) {
 
-            jQuery.ajax( {
-                url: "/direct/clog-post/" + postId + ".json",
+        if (!clog.currentPosts || fromSamepage) {
+            jQuery.ajax({
+                url: "/direct/clog/post/" + postId + ".json",
                 dataType: "json",
                 cache: false,
                 timeout: clog.AJAX_TIMEOUT,
@@ -406,7 +406,7 @@ clog.utils = {
         if (!confirm(clog.i18n.delete_comment_message)) {
             return false;
         }
-        
+
         jQuery.ajax( {
             url: "/direct/clog-comment/" + commentId + "?siteId=" + clog.siteId,
             type:'DELETE',
