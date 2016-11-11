@@ -268,6 +268,10 @@ clog.switchState = function (state,arg) {
 
                     $('#clog_user_posts_link').click(function (e) {
                         clog.switchState('userPosts',{'userId' : clog.currentPost.creatorId});
+
+                        clog.utils.renderTemplate('post_page', cp, 'clog_content');
+
+                        clog.utils.renderPost(cp, 'post_' + clog.currentPost.id);
                     });
 
                     $('.content').show();
@@ -277,7 +281,7 @@ clog.switchState = function (state,arg) {
             };
 
 		if (arg && arg.postId) {
-			clog.utils.findPost(arg.postId, postCallback);
+			clog.utils.findPost(arg.postId, postCallback, arg.fromSamepage);
         }
 	} else if ('createPost' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
