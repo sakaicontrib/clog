@@ -56,7 +56,7 @@
 							<a href="#" onclick="return clog.utils.deleteComment('{{id}}');" title="{{translate 'delete_comment_tooltip'}}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
 						{{/if}}
 						{{#if canEdit}}
-							<a href="javascript:;" onClick="clog.switchState('createComment',{postId: '{{../id}}',commentId:'{{id}}'});" title="{{translate 'edit_comment_tooltip'}}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
+							<a href="javascript:;" onClick="clog.switchState('createComment',{postId: '{{../id}}',commentId:'{{id}}',fromSamepage: true});" title="{{translate 'edit_comment_tooltip'}}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
 						{{/if}}
 					</div>
 					{{/each}}
