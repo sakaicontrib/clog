@@ -409,7 +409,7 @@ clog.switchState = function (state,arg) {
                 });
             };
 
-        clog.utils.findPost(arg.postId, commentCallback);
+        clog.utils.findPost(arg.postId, commentCallback, arg.fromSamepage);
 	} else if ('permissions' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_permissions_link > span').addClass('current');
