@@ -282,7 +282,7 @@ clog.switchState = function (state,arg) {
 
 		if (arg && arg.postId) {
 			clog.utils.findPost(arg.postId, postCallback, arg.fromSamepage);
-        }
+		}
 	} else if ('createPost' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_create_post_link > span').addClass('current');
@@ -409,7 +409,7 @@ clog.switchState = function (state,arg) {
                 });
             };
 
-        clog.utils.findPost(arg.postId, commentCallback, arg.fromSamepage);
+		clog.utils.findPost(arg.postId, commentCallback, arg.fromSamepage);
 	} else if ('permissions' === state) {
 	    $('#clog_toolbar > li > span').removeClass('current');
 	    $('#clog_permissions_link > span').addClass('current');
