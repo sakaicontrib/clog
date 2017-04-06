@@ -124,7 +124,7 @@ public class ClogManagerImpl implements ClogManager {
 
         Cache cache = sakaiProxy.getCache(POST_CACHE);
         if (query.byPublic()) {
-            if (!cache.containsKey(Visibilities.PUBLIC)) {
+            if (cache.get(Visibilities.PUBLIC) == null) {
                 cache.put(Visibilities.PUBLIC, persistenceManager.getPosts(query));
             }
             return (List<Post>) cache.get(Visibilities.PUBLIC);
@@ -134,7 +134,7 @@ public class ClogManagerImpl implements ClogManager {
             } else {
                 String siteId = query.getSiteId();
 
-                if (!cache.containsKey(siteId)) {
+                if (cache.get(siteId) == null) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Cache miss on site id: " + siteId);
                     }
@@ -159,7 +159,7 @@ public class ClogManagerImpl implements ClogManager {
                     logger.debug("KEY: " + key);
                 }
 
-                if (!siteMap.containsKey(key)) {
+                if (siteMap != null && !siteMap.containsKey(key)) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Cache miss on '" + key + "'. It will be added.");
                     }
@@ -169,7 +169,11 @@ public class ClogManagerImpl implements ClogManager {
                         logger.debug("Cache hit on '" + key + "'");
                     }
                 }
-                return clogSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
+                if (siteMap != null) {
+                    return clogSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
+                } else {
+                    return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
+                }
             }
         } else {
             return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
@@ -486,7 +490,7 @@ public class ClogManagerImpl implements ClogManager {
         Cache cache = sakaiProxy.getCache(AUTHOR_CACHE);
 
         if ("!gateway".equals(siteId)) {
-            if (!cache.containsKey("public")) {
+            if (cache.get("public") == null) {
                 logger.debug("Cache miss on \"public\". Caching empty map ...");
                 cache.put("public", new HashMap<String, List<ClogMember>>());
             }
@@ -494,7 +498,7 @@ public class ClogManagerImpl implements ClogManager {
             Map<String, List<ClogMember>> publicMap = (Map<String, List<ClogMember>>) cache.get("public");
             return getOrCacheAuthors(publicMap, sortedBy, siteId); 
         } else {
-            if (!cache.containsKey(siteId)) {
+            if (cache.get(siteId) == null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Cache miss on \"" + siteId + "\". Caching empty map ...");
                 }
