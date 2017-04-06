@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib prefix="util" uri="http://example.com/functions" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html  
@@ -20,7 +21,7 @@
                 onPDAPortal:'${onPDAPortal}',
                 i18n: {},
                 groups: [
-                            <c:forEach items="${groups}" var="i" varStatus="is">{id: '${i.id}', title: '${i.title}', totalPosts: ${i.totalPosts}, lastPostDate: ${i.lastPostDate}}<c:if test="${not is.last}">,</c:if></c:forEach>
+                            <c:forEach items="${groups}" var="i" varStatus="is">{id: '${i.id}', title: '${util:escapeJS(i.title)}', totalPosts: ${i.totalPosts}, lastPostDate: ${i.lastPostDate}}<c:if test="${not is.last}">,</c:if></c:forEach>
                 ]
             };
         
