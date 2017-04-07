@@ -201,8 +201,13 @@ clog.switchState = function (state,arg) {
 			userId = arg.userId;
         }
 
+        if (arg && !arg.userDisplayName) {
+            arg.userDisplayName = userId;
+        }
+
         var templateData = {
-                creatorId: userId,
+                userId: userId,
+                userDisplayName: arg.userDisplayName,
                 showRSS: (userId !== clog.userId && !clog.onGateway),
                 onGateway: clog.onGateway,
                 siteId: clog.siteId,
@@ -210,12 +215,6 @@ clog.switchState = function (state,arg) {
             };
 
         clog.utils.renderTemplate('all_user_posts', templateData, 'clog_content');
-
-        $(document).ready(function () {
-
-            var profileMarkup = clog.sakai.getProfileMarkup(userId);
-            $('#clog-author-profile').html(profileMarkup);
-        });
 
         // renderPageOfPosts uses this. Set it to the start page
         clog.page = 0;
@@ -232,12 +231,6 @@ clog.switchState = function (state,arg) {
 		var userId = clog.userId;
 
         clog.utils.renderTemplate('all_user_posts', {'creatorId': userId}, 'clog_content');
-
-        $(document).ready(function () {
-
-            var profileMarkup = clog.sakai.getProfileMarkup(userId);
-            $('#clog-author-profile').html(profileMarkup);
-        });
 
         // renderPageOfPosts uses this. Set it to the start page
         clog.page = 0;
@@ -267,11 +260,7 @@ clog.switchState = function (state,arg) {
                 $(document).ready(function () {
 
                     $('#clog_user_posts_link').click(function (e) {
-                        clog.switchState('userPosts',{'userId' : clog.currentPost.creatorId});
-
-                        clog.utils.renderTemplate('post_page', cp, 'clog_content');
-
-                        clog.utils.renderPost(cp, 'post_' + clog.currentPost.id);
+                        clog.switchState('userPosts',{'userId' : clog.currentPost.creatorId, userDisplayName: clog.currentPost.creatorDisplayName});
                     });
 
                     $('.content').show();
@@ -482,11 +471,13 @@ clog.setLocalStorageSetting = function (key, value) {
 clog.toggleFullContent = function (v) {
 
 	if (v.checked) {
-		$('.clog_body').hide();
+		$('.clog-body').hide();
+		$('.postOptionsPanel').hide();
         // CLOG-59
         this.setLocalStorageSetting('showBody', false);
     } else {
-		$('.clog_body').show();
+		$('.clog-body').show();
+		$('.postOptionsPanel').show();
         // CLOG-59
         this.setLocalStorageSetting('showBody', true);
     }
@@ -556,7 +547,7 @@ clog.toggleFullContent = function (v) {
             });
 
             $('#clog_my_clog_link>span>a').click(function (e) {
-                return clog.switchState('userPosts');
+                return clog.switchState('userPosts', {userDisplayName: clog.userDisplayName});
             });
 
             if (clog.publicAllowed) {
@@ -655,12 +646,11 @@ clog.toggleFullContent = function (v) {
     };
 
     $.i18n.properties({
-        name:'ui',
-        path:'/clog-tool/i18n/',
-        mode: 'both',
-        checkAvailableLanguages: true,
         async: true,
         language: sakai.locale.userLocale,
+        mode: 'map',
+        name:'ui',
+        path:'/clog-tool/i18n/',
         callback: function () {
             languagesLoaded();
         }

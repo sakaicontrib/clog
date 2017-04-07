@@ -1,12 +1,16 @@
 	{{#unless onGateway}}
-	<h2>{{translate 'worksite_posts_label'}}&nbsp;<a target="_blank" href="/direct/clog-rss/site/{{siteId}}.xml" title="{{translate 'site_rss_tooltip'}}"><img src="/library/image/silk/feed.png"/></a></h2>
+    <h2>{{translate 'worksite_posts_label'}}&nbsp;<a target="_blank" href="/direct/clog-rss/site/{{siteId}}.xml" title="{{translate 'site_rss_tooltip'}}"><span class="fa fa-rss-square"></span></a></h2>
 	{{/unless}}
-	<div id="clog-posts-total-wrapper"><span id="clog-posts-total"></span><span>{{translate 'posts_in_total'}}</span></div>
+    <div id="clog-posts-total-wrapper"><span id="clog-posts-total"></span><span>{{translate 'posts_in_total'}}</span></div>
 	<div id="clog-body-toggle">
-   		<input type="checkbox"
-                 {{#unless showBody}} checked {{/unless}}
-                 onclick="clog.toggleFullContent(this);"/>
-		<span>{{translate 'show_title_only_label'}}</span>
+        <div>
+        <label id="clog-body-toggle-label">
+            <input type="checkbox"
+                     {{#unless showBody}} checked {{/unless}}
+                     onclick="clog.toggleFullContent(this);" />
+            {{translate 'show_title_only_label'}}
+        </label>
+   	    </div>
    	</div>
     <div id="clog-posts-wrapper">
     	<br />
