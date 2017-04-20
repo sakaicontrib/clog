@@ -1,10 +1,18 @@
-	<div id="clog-author-profile"></div>
-	<div id="clog-posts-total-wrapper"><span id="clog-posts-total"></span><span>{{translate 'posts_in_total'}}</span></div>
+	<div id="clog-author-profile">
+        <span class="clog-photo clog-photo-bigger" style="background-image:url(/direct/profile/{{userId}}/image/thumb)" class="profile" data-user-id="{{userId}}"></span>
+        <h3 style="display: inline-block">{{userDisplayName}}</h3>
+        {{#if showRSS}}&nbsp;<a target="_blank" href="/direct/clog-rss/user/{{userId}}.xml{{#unless onGateway}}?siteId={{siteId}}{{/unless}}" title="{{translate 'user_rss_tooltip'}}"><span class="fa fa-rss-square"></span></a>{{/if}}
+    </div>
+    <div id="clog-posts-total-wrapper"><span id="clog-posts-total"></span><span>{{translate 'posts_in_total'}}</span></div>
 	<div id="clog-body-toggle">
-   		<input type="checkbox"
-                 {{#unless showBody}} checked {{/unless}}
-                 onclick="clog.toggleFullContent(this);"/>
-		<span>{{translate 'show_title_only_label'}}</span>{{#if showRSS}}&nbsp;<a target="_blank" href="/direct/clog-rss/user/{{creatorId}}.xml{{#unless onGateway}}?siteId={{siteId}}{{/unless}}" title="{{translate 'user_rss_tooltip'}}"><img src="/library/image/silk/feed.png"/></a>{{/if}}
+        <div>
+        <label id="clog-body-toggle-label">
+            <input type="checkbox"
+                     {{#unless showBody}} checked {{/unless}}
+                     onclick="clog.toggleFullContent(this);" />
+            {{translate 'show_title_only_label'}}
+        </label>
+   	    </div>
    	</div>
     <div id="clog-posts-wrapper">
     	<br />

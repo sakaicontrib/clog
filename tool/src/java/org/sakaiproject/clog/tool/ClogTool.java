@@ -101,9 +101,12 @@ public class ClogTool extends HttpServlet {
             language += "_" + country;
         }
 
+        String displayName = sakaiProxy.getDisplayNameForTheUser(userId);
+
         request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
         
         request.setAttribute("userId", userId);
+        request.setAttribute("userDisplayName", displayName);
         request.setAttribute("siteId", siteId);
         request.setAttribute("state", state);
 

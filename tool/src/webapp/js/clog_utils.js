@@ -84,19 +84,7 @@ clog.utils = {
         return false;
     },
     attachProfilePopup: function () {
-
-        $('a.profile').cluetip({
-            width: '620px',
-            cluetipClass: 'clog',
-            sticky: true,
-            dropShadow: false,
-            arrows: true,
-            mouseOutClose: true,
-            closeText: '<img src="/library/image/silk/cross.png" alt="close" />',
-            closePosition: 'top',
-            showTitle: false,
-            hoverIntent: true
-        });
+        profile.attachPopups($('.profile'));
     },
     formatDate: function (millis) {
 
@@ -433,6 +421,8 @@ clog.utils = {
                         || (clog.currentUserPermissions.postUpdateOwn && p.creatorId === clog.userId);
         p.isModified = p.modifiedDate > p.createdDate;
 
+        p.totalComments = p.comments.length;
+
         p.comments.forEach(function (c) {
 
             c.modified = c.modifiedDate > c.createdDate;
@@ -453,6 +443,19 @@ clog.utils = {
 
         this.decoratePost(post);
         this.renderTemplate('post', post, output);
+        $('#clog-comments-show-' + post.id).click(function (e) {
+
+            $('#clog-comments-' + post.id).show();
+            $(this).hide();
+            $('#clog-comments-hide-' + post.id).show();
+        });
+
+        $('#clog-comments-hide-' + post.id).click(function (e) {
+
+            $('#clog-comments-' + post.id).hide();
+            $(this).hide();
+            $('#clog-comments-show-' + post.id).show();
+        });
         if (typeof MathJax !== 'undefined') { MathJax.Hub.Queue(["Typeset",MathJax.Hub]); }
     },
     renderPageOfPosts: function (args) {
@@ -518,7 +521,7 @@ clog.utils = {
                     });
 
                     if (!clog.settings.showBody) {
-                        $('.clog_body').hide();
+                        $('.clog-body').hide();
                     }
 
                     loadImage.hide();

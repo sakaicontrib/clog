@@ -1,66 +1,79 @@
 	<div class="postOuterContainer">
 		<div class="postInnerContainer">
-			<span class="postOptionsPanel">
-			{{#unless isRecycled}}
-			    {{#if canComment}}
-				<a href="#" title="{{translate 'comment_on_post_tooltip'}}" onClick="clog.switchState('createComment',{postId: '{{id}}'});"><img src="/library/image/silk/comment_add.png" width="16" height="16" alt="Add Comment"/></a>&nbsp;
-			    {{/if}}
-			    {{#if canDelete}}
-				<a href="#" title="{{translate 'delete_post_tooltip'}}" onclick="return clog.utils.recyclePost('{{id}}');"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete"/></a>&nbsp;
-			    {{/if}}
-			    {{#if canEdit}}
-				<a href="javascript:;" onClick="clog.switchState('createPost',{postId:'{{id}}'});" title="{{translate 'edit_post_tooltip'}}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit"/></a>&nbsp;
-			    {{/if}}
-			{{/unless}}
-			</span>
-			<div class="clog_author">
-				<div class="clog_author_image_div"><img src="/direct/profile/{{creatorId}}/image"/></div>
-				<div style="float: right;">
-				<a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a>
-                <br />
-                <span style="font-size: smaller;font-style: italic;">{{translate 'created_label'}}</span>
-                <span style="font-size: smaller;font-style: italic;">{{formattedCreatedDate}}</span>
-                {{#if isModified}}
-                <br/>
-                <span style="font-size: smaller;font-style: italic;">{{translate 'modified_label'}}</span>
-                <span style="font-size: smaller;font-style: italic;">{{formattedModifiedDate}}</span>
-                {{/if}}
-				</div>
-			</div>
-			<br/>
-			<br/>
-			<div class="title">
-				<span>
-					<a href="javascript:;" onclick="clog.switchState('post',{'postId':'{{id}}'});" title="{{translate 'view_post_tooltip'}}"><span>{{title}}</span></a>
-				</span>
-				{{#if private}}
-				<a class="clog-draft-label" title="{{translate 'private_post_tooltip'}}">{{translate 'draft_label'}}</a>
-				{{/if}}
-			</div>
+            <div class="clog-post-header">
+                <div class="clog-post-title">
+                    <span>
+                        <a href="javascript:;" onclick="clog.switchState('post',{'postId':'{{id}}'});" title="{{translate 'view_post_tooltip'}}"><h4 style="display: inline-block">{{title}}</h4></a>
+                    </span>
+                    {{#if private}}
+                    <a class="clog-draft-label" title="{{translate 'private_post_tooltip'}}">{{translate 'draft_label'}}</a>
+                    {{/if}}
+                </div>
+                
+                <div class="clog-author">
+                    <span class="clog-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></span>
+                    <div style="display: inline-block;">
+                        <a class="profile" data-user-id="{{creatorId}}">{{creatorDisplayName}}</a>
+                        <br />
+                        <span style="font-size: smaller;font-style: italic;">{{translate 'created_label'}}</span>
+                        <span style="font-size: smaller;font-style: italic;">{{formattedCreatedDate}}</span>
+                    {{#if isModified}}
+                        <br/>
+                        <span style="font-size: smaller;font-style: italic;">{{translate 'modified_label'}}</span>
+                        <span style="font-size: smaller;font-style: italic;">{{formattedModifiedDate}}</span>
+                    {{/if}}
+                    </div>
+                </div>
+            </div>
 
-            <div class="clog_body">
+            <div class="clog-body">
 
-			    <div class="content">{{{content}}}</div>
+			    <div class="clog-content">{{{content}}}</div>
 
-			    <br />
+                <div class="postOptionsPanel">
+                {{#unless isRecycled}}
+                    {{#if canComment}}
+                    <a href="javascript:;" title="{{translate 'comment_on_post_tooltip'}}" onClick="clog.switchState('createComment',{postId: '{{id}}'});"><i class="fa fa-comment-o"></i></a>
+                    {{/if}}
+                    {{#if canDelete}}
+                    <a href="#" title="{{translate 'delete_post_tooltip'}}" onclick="return clog.utils.recyclePost('{{id}}');"><i class="fa fa-trash-o"></i></a>
+                    {{/if}}
+                    {{#if canEdit}}
+                    <a href="javascript:;" onClick="clog.switchState('createPost',{postId:'{{id}}'});" title="{{translate 'edit_post_tooltip'}}"><i class="fa fa-pencil-square-o" style="transform: translateY(1px);"></i></a>
+                    {{/if}}
+                {{/unless}}
+                </div>
 
-			    <span id="{{id}}_comments" class="comments">
+                <div class="clog-comments-header">
+                    <a id="clog-comments-show-{{id}}" class="clog-comments-show" data-post-id="{{id}}" href="javascript:;">{{translate 'show_comments'}}</a>
+                    <a id="clog-comments-hide-{{id}}" class="clog-comments-hide" data-post-id="{{id}}" href="javascript:;">{{translate 'hide_comments'}}</a>
+                    <span>{{totalComments}} {{translate 'comments'}}</span>
+                </div>
+			    <div id="clog-comments-{{id}}" class="clog-comments">
 					{{#each comments}}
-					<div class="clog_comment">
+					<div class="clog-comment">
 						<div style="overflow:auto; margin-bottom: 10px;">
-							<div class="clog_author_image_div"><img src="/direct/profile/{{creatorId}}/image" width="50"/></div>
-							<div style="float:left;"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a><br/><span class="clog_comment_date">{{translate 'created_label'}} {{formattedCreatedDate}}</span>{{#if modified}}<br/><span class="clog_comment_date">{{translate 'modified_label'}} {{formattedModifiedDate}}</span>{{/if}}</div>
+                            <div class="clog-photo" style="background-image:url(/direct/profile/{{creatorId}}/image)"></div>
+							<div style="float:left;">
+                                <a class="profile" data-user-id="{{creatorId}}">{{creatorDisplayName}}</a>
+                                <br/>
+                                <span class="clog_comment_date">{{translate 'created_label'}} {{formattedCreatedDate}}</span>
+                                {{#if modified}}
+                                <br/>
+                                <span class="clog_comment_date">{{translate 'modified_label'}} {{formattedModifiedDate}}</span>
+                                {{/if}}
+                            </div>
 						</div>
 						<div class="clog_comment_content">{{{content}}}</div>
 						{{#if canDelete}}
-							<a href="#" onclick="return clog.utils.deleteComment('{{id}}');" title="{{translate 'delete_comment_tooltip'}}"><img src="/library/image/silk/cross.png" width="16" height="16" alt="Delete Comment"/></a>&nbsp;
+							<a href="#" onclick="return clog.utils.deleteComment('{{id}}');" title="{{translate 'delete_comment_tooltip'}}"><i class="fa fa-trash-o"></i></a>&nbsp;
 						{{/if}}
 						{{#if canEdit}}
-							<a href="javascript:;" onClick="clog.switchState('createComment',{postId: '{{../id}}',commentId:'{{id}}',fromSamepage: true});" title="{{translate 'edit_comment_tooltip'}}"><img src="/library/image/silk/pencil.png" width="16" height="16" alt="Edit Comment"/></a>
+							<a href="javascript:;" onClick="clog.switchState('createComment',{postId: '{{../id}}',commentId:'{{id}}',fromSamepage: true});" title="{{translate 'edit_comment_tooltip'}}"><i class="fa fa-pencil-square-o" style="transform: translateY(1px);"></i></a>
 						{{/if}}
 					</div>
 					{{/each}}
-			    </span>
-		    </div>
-		</div>
-	</div>
+                </div>
+        	</div> <!-- /clog-body -->
+        </div> <!-- /postInnerContainer -->
+	</div> <!-- /postOuterContainer -->

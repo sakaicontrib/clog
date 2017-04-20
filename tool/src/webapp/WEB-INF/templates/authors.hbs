@@ -1,9 +1,9 @@
 		{{#each authors}}
 		<tr>
-			<td><img src="/direct/profile/{{userId}}/image" width="20" alt="User"/>&nbsp;<a href="javascript:;" onclick="clog.switchState('userPosts',{userId: '{{userId}}'});" rel="/direct/profile/{{userId}}/formatted" class="icon profile">{{userDisplayName}}</a></td>
+            <td><span style="background-image:url(/direct/profile/{{userId}}/image/thumb)" class="clog-photo profile" data-user-id="{{userId}}" /><a href="javascript:;" onclick="clog.switchState('userPosts',{userId: '{{userId}}', userDisplayName: '{{userDisplayName}}'});" class="icon">{{userDisplayName}}</a></td>
 			<td>{{numberOfPosts}}</td>
 			<td>{{formattedDateOfLastPost}}</td>
 			<td>{{numberOfComments}}</td>
-			{{#unless clogOnGateway}}<td><a target="_blank" href="/direct/clog-rss/user/{{userId}}.xml?siteId={{../../siteId}}" title="{{translate 'user_rss_tooltip'}}"><img src="/library/image/silk/feed.png"/></a></td>{{/unless}}
+			{{#unless clogOnGateway}}<td><a target="_blank" href="/direct/clog-rss/user/{{userId}}.xml?siteId={{../../siteId}}" title="{{translate 'user_rss_tooltip'}}"><span class="fa fa-rss-square"></span></a></td>{{/unless}}
 		</tr>
 		{{/each}}

@@ -12,6 +12,7 @@
 
             var clog = {
                 userId:'${userId}',
+                userDisplayName:'${userDisplayName}',
                 siteId:'${siteId}',
                 placementId:'${placementId}',
                 state:'${state}',
@@ -28,19 +29,17 @@
         </script>
         ${sakaiHtmlHead}
         <link rel="stylesheet" type="text/css" href="/library/webjars/jquery-ui/1.11.3/jquery-ui.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="/library/webjars/fontawesome/4.7.0/css/font-awesome.min.css" media="all"/>
         <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
         <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
         <script type="text/javascript" src="/library/webjars/jquery/1.11.3/jquery.min.js"></script>
-        <script type="text/javascript" src="/library/webjars/jquery-ui/1.11.3/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="/library/js/jquery/hoverIntent/r7/jquery.hoverIntent.minified.js"></script>
-        <script type="text/javascript" src="/library/js/jquery/cluetip/1.2.10/jquery.cluetip.min.js"></script>
-        <script type="text/javascript" src="/library/webjars/jquery-i18n-properties/1.2.2/jquery.i18n.properties.min.js"></script>
+        <script type="text/javascript" src="/clog-tool/lib/jquery.i18n.properties.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/handlebars.runtime-v4.0.5.js"></script>
+        <script type="text/javascript" src="/library/webjars/handlebars/4.0.5/handlebars.runtime.min.js"></script>
         <script type="text/javascript" src="/clog-tool/templates/templates.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
         <script type="text/javascript" src="/clog-tool/js/clog_utils.js"></script>
+        <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
         <script type="text/javascript" src="/clog-tool/js/clog_permissions.js"></script>
         <script type="text/javascript" src="/profile2-tool/javascript/profile2-eb.js"></script>
     </head>
