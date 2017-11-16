@@ -213,7 +213,7 @@ clog.utils = {
             'content': content,
             'groups': groups,
             'siteId': clog.siteId,
-            'mode': isPublish
+            'mode': isPublish ? "publish" : null
         };
                 
         jQuery.ajax( {
