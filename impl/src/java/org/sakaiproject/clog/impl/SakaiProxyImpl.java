@@ -343,6 +343,21 @@ public class SakaiProxyImpl implements SakaiProxy {
         return map;
     }
 
+    public List<User> getUsersInGroups(String siteId, Collection<String> groups) {
+        List<User> users = new ArrayList<>();
+        Set<String> groupSet = new HashSet<>(groups);
+
+        try {
+            Collection<String> userIds = siteService.getSite(siteId).getMembersInGroups(groupSet);
+            users.addAll(userDirectoryService.getUsers(userIds));
+        } catch (IdUnusedException e) {
+            logger.error("Invalid site id. No users in group will be returned.");
+        }
+
+        return users;
+    }
+
+
     /*
      * public List<String> getEidMaintainerSiteMembers() { // TODO
      * Auto-generated method stub return null; }

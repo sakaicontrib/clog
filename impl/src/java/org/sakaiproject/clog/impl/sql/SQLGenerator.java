@@ -535,13 +535,14 @@ public class SQLGenerator implements ISQLGenerator {
 
             statements.addAll(getGroupTableStatements(post, currentPost, connection));
 
+            // post is new post and currentVisibility is old visibility
             if (post.isReady() || post.isPublic()) {
-                if (Visibilities.PRIVATE.equals(currentVisibility) || Visibilities.RECYCLED.equals(currentVisibility) || Visibilities.GROUP.equals(currentVisibility)) {
+                if (Visibilities.PRIVATE.equals(currentVisibility) || Visibilities.RECYCLED.equals(currentVisibility)) {
                     // This post has been made visible
                     statements.addAll(getAuthorTableStatements(post, true, connection));
                 }
             } else {
-                if (Visibilities.SITE.equals(currentVisibility) || Visibilities.TUTOR.equals(currentVisibility) || Visibilities.PUBLIC.equals(currentVisibility)) {
+                if (Visibilities.SITE.equals(currentVisibility) || Visibilities.TUTOR.equals(currentVisibility) || Visibilities.PUBLIC.equals(currentVisibility) || Visibilities.GROUP.equals(currentVisibility)) {
                     // This post has been hidden
                     statements.addAll(getAuthorTableStatements(post, false, connection));
                 }

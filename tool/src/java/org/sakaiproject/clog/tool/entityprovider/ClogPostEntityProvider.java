@@ -145,7 +145,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
         if (!isNew && !post.isAutoSave()) {
             try {
                 Post oldPost = clogManager.getPostHeader(post.getId());
-                if (oldPost.isReady() && post.isPrivate()) {
+                if ((oldPost.isReady() || oldPost.isPublic()) && post.isPrivate()) {
                     isWithdrawn = true;
                 } else if (oldPost.isPrivate() && post.isReady()) {
                     isBeingPublished = true;
