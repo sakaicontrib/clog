@@ -656,7 +656,7 @@ clog.toggleFullContent = function (v) {
         mode: 'both',
         checkAvailableLanguages: true,
         async: true,
-        language: sakai.locale.userLocale,
+        language: sakai.locale.userLocale || "en",
         callback: function () {
             languagesLoaded();
         }
