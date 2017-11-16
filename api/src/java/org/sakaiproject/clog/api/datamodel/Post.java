@@ -297,7 +297,7 @@ public class Post implements Entity {
     }
 
     public boolean isReady() {
-        return Visibilities.SITE.equals(visibility) || Visibilities.TUTOR.equals(visibility);
+        return Visibilities.SITE.equals(visibility) || Visibilities.TUTOR.equals(visibility) || Visibilities.GROUP.equals(visibility);
     }
 
     public boolean isAutoSave() {
