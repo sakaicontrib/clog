@@ -1,7 +1,9 @@
 package org.sakaiproject.clog.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.datamodel.Comment;
@@ -27,6 +29,8 @@ public class NewCommentNotification extends SiteEmailNotification {
 
     @Setter
     private SakaiProxy sakaiProxy;
+
+    private String resourceAbility;
 
     public NewCommentNotification() {
     }
@@ -74,8 +78,7 @@ public class NewCommentNotification extends SiteEmailNotification {
         Reference ref = EntityManager.newReference(event.getResource());
         Comment comment = (Comment) ref.getEntity();
 
-        ref = EntityManager.newReference(ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + comment.getSiteId() + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + comment.getPostId());
-        Post post = (Post) ref.getEntity();
+        Post post = getPostFromComment(comment);
 
         String creatorName = "";
         try {
@@ -85,6 +88,11 @@ public class NewCommentNotification extends SiteEmailNotification {
         }
 
         return rb.getFormattedMessage("noti.body", new Object[] { creatorName, post.getTitle(), post.getUrl() });
+    }
+
+    private Post getPostFromComment(Comment comment) {
+        Reference ref = EntityManager.newReference(ClogManager.REFERENCE_ROOT + Entity.SEPARATOR + comment.getSiteId() + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + comment.getPostId());
+        return (Post) ref.getEntity();
     }
 
     protected String getSubject(Event event) {
@@ -111,5 +119,39 @@ public class NewCommentNotification extends SiteEmailNotification {
         rv.add(getFromAddress(event));
         rv.add(getTo(event));
         return rv;
+    }
+
+    @Override
+    protected List<User> getRecipients(Event event) {
+
+        Reference ref = EntityManager.newReference(event.getResource());
+        Comment comment = (Comment) ref.getEntity();
+        List<User> recipients = new ArrayList<>();
+
+        Post post = getPostFromComment(comment);
+
+        if (post.isVisibleToTutors()) {
+            // Is the notification dispatcher thread safe?
+            this.resourceAbility = ClogFunctions.CLOG_TUTOR;
+        }
+
+        try {
+            recipients = super.getRecipients(event);
+        }
+        finally {
+            this.resourceAbility = null;
+        }
+
+        if (post.isGroup()) {
+            List<User> usersInGroups = sakaiProxy.getUsersInGroups(post.getSiteId(), post.getGroups());
+            recipients.retainAll(usersInGroups);
+        }
+
+        return recipients;
+    }
+
+    @Override
+    protected String getResourceAbility() {
+        return this.resourceAbility;
     }
 }

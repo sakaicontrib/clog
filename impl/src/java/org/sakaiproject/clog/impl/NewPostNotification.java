@@ -1,7 +1,9 @@
 package org.sakaiproject.clog.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.component.cover.ServerConfigurationService;
@@ -21,6 +23,7 @@ public class NewPostNotification extends SiteEmailNotification {
     private static ResourceLoader rb = new ResourceLoader("newpost");
 
     private SakaiProxy sakaiProxy = null;
+    private String resourceAbility;
 
     public NewPostNotification() {
     }
@@ -111,5 +114,37 @@ public class NewPostNotification extends SiteEmailNotification {
         rv.add(getFromAddress(event));
         rv.add(getTo(event));
         return rv;
+    }
+
+    @Override
+    protected List<User> getRecipients(Event event) {
+
+        Reference ref = EntityManager.newReference(event.getResource());
+        Post post = (Post) ref.getEntity();
+        List<User> recipients = new ArrayList<>();
+
+        if (post.isVisibleToTutors()) {
+            // Is the notification dispatcher thread safe?
+            this.resourceAbility = ClogFunctions.CLOG_TUTOR;
+        }
+
+        try {
+            recipients = super.getRecipients(event);
+        }
+        finally {
+            this.resourceAbility = null;
+        }
+
+        if (post.isGroup()) {
+            List<User> usersInGroups = sakaiProxy.getUsersInGroups(post.getSiteId(), post.getGroups());
+            recipients.retainAll(usersInGroups);
+        }
+
+        return recipients;
+    }
+
+    @Override
+    protected String getResourceAbility() {
+        return this.resourceAbility;
     }
 }

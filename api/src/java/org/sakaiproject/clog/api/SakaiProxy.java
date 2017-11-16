@@ -18,6 +18,7 @@ package org.sakaiproject.clog.api;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import org.sakaiproject.search.api.InvalidSearchQueryException;
 import org.sakaiproject.search.api.SearchResult;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.ToolConfiguration;
+import org.sakaiproject.user.api.User;
 
 public interface SakaiProxy {
 
@@ -48,6 +50,8 @@ public interface SakaiProxy {
      *  in the current site.
      */
     public Map<String, String> getSiteGroupsForCurrentUser(String siteId);
+
+    public List<User> getUsersInGroups(String siteId, Collection<String> group);
 
     public String getCurrentToolId();
 
