@@ -28,15 +28,15 @@
         
         </script>
         ${sakaiHtmlHead}
-        <link rel="stylesheet" type="text/css" href="/library/webjars/jquery-ui/1.11.3/jquery-ui.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="/library/webjars/jquery-ui/1.12.1/jquery-ui.css" media="all"/>
         <link rel="stylesheet" type="text/css" href="/library/webjars/fontawesome/4.7.0/css/font-awesome.min.css" media="all"/>
         <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
         <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
-        <script type="text/javascript" src="/library/webjars/jquery/1.11.3/jquery.min.js"></script>
+        <script type="text/javascript" src="/library/webjars/jquery/1.12.4/jquery.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.i18n.properties.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
-        <script type="text/javascript" src="/library/webjars/handlebars/4.0.5/handlebars.runtime.min.js"></script>
+        <script type="text/javascript" src="/library/webjars/handlebars/4.0.6/handlebars.runtime.min.js"></script>
         <script type="text/javascript" src="/clog-tool/templates/templates.js"></script>
         <script type="text/javascript" src="/clog-tool/js/clog_utils.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>
