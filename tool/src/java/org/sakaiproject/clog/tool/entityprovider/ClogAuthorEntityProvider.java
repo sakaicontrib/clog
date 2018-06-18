@@ -112,7 +112,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
 
         try {
             List<ClogMember> authors = clogManager.getAuthors(siteId, sort);
-            int pageSize = 10;
+            int pageSize = 50;
             int start  = page * pageSize;
             int authorsTotal = authors.size();
 
