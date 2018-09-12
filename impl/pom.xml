@@ -11,7 +11,7 @@
     <parent>
         <artifactId>clog</artifactId>
         <groupId>org.sakaiproject.clog</groupId>
-        <version>13-SNAPSHOT</version>
+        <version>19-SNAPSHOT</version>
     </parent>
   
     <dependencies>
@@ -25,7 +25,7 @@
         </dependency-->
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.sakaiproject.kernel</groupId>
