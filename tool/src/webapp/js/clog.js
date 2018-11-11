@@ -38,6 +38,10 @@ clog.states = {
 
 clog.switchState = function (state,arg) {
 
+    // CLOG-200
+    // We don't want infinite scroll for everything. Views that need it will switch it back on
+    $(window).off('scroll.clog');
+
 	// Clear the autosave interval
 	if (clog.autosave_id) {
 		clearInterval(clog.autosave_id);
