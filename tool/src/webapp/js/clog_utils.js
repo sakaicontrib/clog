@@ -437,7 +437,13 @@ clog.utils = {
     renderTemplate: function (name, data, output) {
 
         var template = Handlebars.templates[name];
-        document.getElementById(output).innerHTML = template(data);
+        var el = document.getElementById(output);
+
+        if (el) {
+          el.innerHTML = template(data);
+        } else {
+          if (console) console.log('No element for id: ' + output);
+        }
     },
     renderPost: function (post, output) {
 
