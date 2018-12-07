@@ -217,7 +217,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
         //check user can access the tool, it might be hidden
         ToolConfiguration toolConfig = site.getToolForCommonId("sakai.clog");
-        if(!toolManager.isVisible(site, toolConfig)) {
+        if(toolConfig == null || !toolManager.isVisible(site, toolConfig)) {
             return null;
         }
 
