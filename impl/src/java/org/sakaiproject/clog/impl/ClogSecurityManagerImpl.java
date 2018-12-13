@@ -116,7 +116,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
      */
     public List<Post> filter(List<Post> posts, String siteId) {
 
-        List<Post> filtered = new ArrayList<Post>();
+        List<Post> filtered = new ArrayList<>();
 
         Site site = getSiteIfCurrentUserCanAccessTool(siteId);
 
