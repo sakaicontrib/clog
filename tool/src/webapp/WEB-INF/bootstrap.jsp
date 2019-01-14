@@ -33,7 +33,6 @@
         <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
         <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
         <script type="text/javascript" src="/library/webjars/jquery/1.12.4/jquery.min.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery.i18n.properties.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
         <script type="text/javascript" src="/library/webjars/handlebars/4.0.6/handlebars.runtime.min.js"></script>
