@@ -500,7 +500,7 @@ clog.toggleFullContent = function (v) {
 
     var languagesLoaded = function () {
 
-        clog.i18n = $.i18n.map;
+        clog.i18n = portal.i18n.translations["clog"];
 
         clog.i18n.months = clog.i18n.months.split(',');
 
@@ -649,15 +649,15 @@ clog.toggleFullContent = function (v) {
         }
     };
 
-    $.i18n.properties({
-        async: true,
-        language: sakai.locale.userLocale,
-        mode: 'map',
-        name:'ui',
-        path:'/clog-tool/i18n/',
-        callback: function () {
-            languagesLoaded();
-        }
+    $(function () {
+
+        portal.i18n.loadProperties({
+            resourceClass: 'org.sakaiproject.clog.api.ClogManager',
+            resourceBundle: 'org.sakaiproject.clog.bundle.ui',
+            namespace: 'clog',
+            callback: function () {
+              languagesLoaded();
+            }
+        });
     });
 })(jQuery);
-
