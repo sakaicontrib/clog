@@ -623,3 +623,11 @@ clog.utils = {
 Handlebars.registerHelper('translate', function (key) {
     return clog.i18n[key];
 });
+
+Handlebars.registerHelper('if_eq', function(a, b, options) {
+    if (a == b) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
+});
