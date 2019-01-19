@@ -25,12 +25,13 @@
         <input id="clog_make_post_public_button" type="button" value="{{translate 'make_post_public_label'}}" title="{{translate 'make_post_public_tooltip'}}"/>
         {{/if}}
     {{else}}
-        <input id="clog_visibility_tutor" type="radio" name="visibility"/>{{translate 'tutor_visibility'}}
+        <input id="clog_visibility_tutor" type="radio" name="visibility" {{#if_eq post.visibility "TUTOR"}}checked="checked"{{/if_eq}}/> {{translate 'tutor_visibility'}}
         <br/>
-        <input id="clog_visibility_site" type="radio" name="visibility" checked="checked"/>{{translate 'site_visibility'}}
+        <input id="clog_visibility_site" type="radio" name="visibility" {{#unless post.visibility}}checked="checked"{{/unless}}
+                                                                        {{#if_eq post.visibility "SITE"}}checked="checked"{{/if_eq}}/> {{translate 'site_visibility'}}
         {{#if hasGroups}}
         <br/>
-        <input id="clog-visibility-group" type="radio" name="visibility"/>{{translate 'group_visibility'}}
+        <input id="clog-visibility-group" type="radio" name="visibility" {{#if_eq post.visibility "GROUP"}}checked="checked"{{/if_eq}}/> {{translate 'group_visibility'}}
         <br/>
         <fieldset id="clog-group-fieldset">
             <legend>Groups or Sets</legend>
