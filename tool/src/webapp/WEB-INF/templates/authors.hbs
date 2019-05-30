@@ -1,6 +1,6 @@
 		{{#each authors}}
 		<tr>
-            <td><span style="background-image:url(/direct/profile/{{userId}}/image/thumb)" class="clog-photo profile" data-user-id="{{userId}}" /><a href="javascript:;" onclick="clog.switchState('userPosts',{userId: '{{userId}}', userDisplayName: '{{userDisplayName}}'});" class="icon">{{userDisplayName}}</a></td>
+            <td><span style="background-image:url(/direct/profile/{{userId}}/image/thumb)" class="clog-photo profile" data-user-id="{{userId}}" /><a href="javascript:;" onclick="clog.switchState('userPosts',{userId: '{{userId}}', userDisplayName: '{{escapequote userDisplayName}}'});" class="icon">{{userDisplayName}}</a></td>
 			<td>{{numberOfPosts}}</td>
 			<td>{{formattedDateOfLastPost}}</td>
 			<td>{{numberOfComments}}</td>

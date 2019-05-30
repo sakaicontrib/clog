@@ -623,3 +623,7 @@ clog.utils = {
 Handlebars.registerHelper('translate', function (key) {
     return clog.i18n[key];
 });
+
+Handlebars.registerHelper('escapequote', function(variable) {
+  return variable.replace(/\'/g, "\\'");
+});
