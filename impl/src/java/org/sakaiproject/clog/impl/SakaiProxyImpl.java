@@ -592,7 +592,7 @@ public class SakaiProxyImpl implements SakaiProxy {
                     filteredFunctions.add(function);
             }
 
-            if (functions.contains("realm.upd")) {
+            if (functions.contains("realm.upd") && functions.contains("site.upd")) {
                 filteredFunctions.add(ClogFunctions.CLOG_MODIFY_PERMISSIONS);
             }
         }
