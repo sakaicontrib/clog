@@ -8,7 +8,7 @@
       lang="${isolanguage}">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript">
+        <script>
 
             var clog = {
                 userId:'${userId}',
@@ -54,7 +54,10 @@
 
         </div> <!-- /portletBody-->
 
-        <script type="text/javascript" src="/clog-tool/js/clog.js"></script>
+        <script type="module">
+            import {loadClog} from "/clog-tool/js/clog.js${portalCDNQuery}";
+            loadClog();
+        </script>
 
     </body>
 </html>
