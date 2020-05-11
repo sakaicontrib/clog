@@ -20,9 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +31,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
-import org.sakaiproject.authz.api.AuthzPermissionException;
 import org.sakaiproject.authz.api.FunctionManager;
-import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityService;
@@ -48,7 +44,6 @@ import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.email.api.DigestService;
-import org.sakaiproject.email.api.EmailService;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.entity.api.ResourceProperties;
@@ -120,10 +115,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 
     private NotificationService notificationService;
 
-    public void setNotificationService(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
     public void init() {
 
         NotificationEdit ne = notificationService.addTransientNotification();
@@ -139,9 +130,6 @@ public class SakaiProxyImpl implements SakaiProxy {
         NewCommentNotification cn = new NewCommentNotification();
         cn.setSakaiProxy(this);
         ne2.setAction(cn);
-    }
-
-    public void destroy() {
     }
 
     public String getCurrentSiteId() {
@@ -395,7 +383,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         List functions = functionManager.getRegisteredFunctions("clog.");
 
         if (!functions.contains(function)) {
-            functionManager.registerFunction(function);
+            functionManager.registerFunction(function, true);
         }
     }
 
@@ -600,116 +588,6 @@ public class SakaiProxyImpl implements SakaiProxy {
         return filteredFunctions;
     }
 
-    public Map<String, Set<String>> getSitePermissions(String siteId) {
-
-        Map<String, Set<String>> perms = new HashMap<String, Set<String>>();
-
-        String userId = getCurrentUserId();
-
-        if (userId == null) {
-            throw new SecurityException("This action (perms) is not accessible to anon and there is no current user.");
-        }
-
-        try {
-            Site site = siteService.getSite(siteId);
-
-            Set<Role> roles = site.getRoles();
-            for (Role role : roles) {
-                Set<String> functions = role.getAllowedFunctions();
-                Set<String> filteredFunctions = new TreeSet<String>();
-                for (String function : functions) {
-                    if (function.startsWith("clog"))
-                        filteredFunctions.add(function);
-                }
-
-                perms.put(role.getId(), filteredFunctions);
-            }
-        } catch (Exception e) {
-            logger.error("Failed to get current site permissions.", e);
-        }
-
-        return perms;
-    }
-
-    public boolean setPermissionsForSite(String siteId, Map<String, Object> params) {
-
-        String userId = getCurrentUserId();
-
-        if (userId == null)
-            throw new SecurityException("This action (setPerms) is not accessible to anon and there is no current user.");
-
-        Site site = null;
-
-        try {
-            site = siteService.getSite(siteId);
-        } catch (IdUnusedException ide) {
-            logger.warn(userId + " attempted to update CLOG permissions for unknown site " + siteId);
-            return false;
-        }
-
-        boolean admin = securityService.isSuperUser(userId);
-
-        try {
-
-            AuthzGroup authzGroup = authzGroupService.getAuthzGroup(site.getReference());
-
-            // admin can update permissions. check for anyone else
-            if (!securityService.isSuperUser()) {
-
-                Role siteRole = authzGroup.getUserRole(userId);
-                AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
-                Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
-
-                if (!siteRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS) && !siteRole.isAllowed("realm.upd")) {
-                    if (siteHelperRole == null || !siteHelperRole.isAllowed(ClogFunctions.CLOG_MODIFY_PERMISSIONS)) {
-                        logger.warn(userId + " attempted to update CLOG permissions for site " + site.getTitle());
-                        return false;
-                    }
-                }
-            }
-
-            boolean changed = false;
-
-            for (String name : params.keySet()) {
-                if (!name.contains(":")) {
-                    continue;
-                }
-
-                String value = (String) params.get(name);
-
-                String roleId = name.substring(0, name.indexOf(":"));
-
-                Role role = authzGroup.getRole(roleId);
-                if (role == null) {
-                    throw new IllegalArgumentException("Invalid role id '" + roleId + "' provided in POST parameters.");
-                }
-                String function = name.substring(name.indexOf(":") + 1);
-
-                if ("true".equals(value)) {
-                    role.allowFunction(function);
-                } else {
-                    role.disallowFunction(function);
-                }
-
-                changed = true;
-            }
-
-            if (changed) {
-                try {
-                    authzGroupService.save(authzGroup);
-                } catch (AuthzPermissionException ape) {
-                    throw new SecurityException("The permissions for this site (" + siteId + ") cannot be updated by the current user.");
-                }
-            }
-
-            return true;
-        } catch (GroupNotDefinedException gnde) {
-            logger.error("No realm defined for site (" + siteId + ").");
-        }
-
-        return false;
-    }
-
     private String getFromAddress() {
         return serverConfigurationService.getString("setup.request", "sakai-clog@sakai.lancs.ac.uk");
     }
@@ -757,23 +635,5 @@ public class SakaiProxyImpl implements SakaiProxy {
     public void addToolToToolConfig(ToolConfiguration tool) {
         tool.setTool("sakai.clog", toolManager.getTool("sakai.clog"));
         tool.setTitle(toolManager.getTool("sakai.clog").getTitle());
-    }
-
-    public boolean saveSite(Site site) {
-        try {
-            Collection<Group> groups = site.getGroups();
-            for (Group g : groups) {
-                if (g.getTitle() == null || g.getTitle().trim().length() == 0) {
-                    g.setTitle("null");
-                }
-            }
-
-            siteService.save(site);
-            return true;
-        } catch (Exception e) {
-            logger.error("Error saving site: '" + site + "'.");
-            e.printStackTrace();
-            return false;
-        }
     }
 }

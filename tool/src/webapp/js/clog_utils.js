@@ -25,64 +25,6 @@ clog.utils = {
             }
         });
     },
-    getSitePermissionMatrix: function (callback) {
-
-        jQuery.ajax( {
-            url: "/direct/clog/perms.json?siteId=" + clog.siteId,
-            dataType: "json",
-            cache: false,
-            timeout: clog.AJAX_TIMEOUT,
-            success: function(json) {
-
-                var p = json.data;
-
-                var perms = [];
-
-                for (role in p) {
-                    var permSet = {'role': role};
-
-                    p[role].forEach(function (p) {
-                        eval("permSet." + p.replace(/\./g,"_") + " = true");
-                    });
-
-                    perms.push(permSet);
-                }
-
-                callback(perms);
-            },
-            error: function(xmlHttpRequest, textStatus, error) {
-                alert("Failed to get permissions. Status: " + textStatus + ". Error: " + error);
-            }
-        });
-    },
-    savePermissions: function () {
-
-        var myData = { siteId: clog.siteId };
-        $('.clog_permission_checkbox').each(function (b) {
-
-            if (this.checked) {
-                myData[this.id] = 'true';
-            } else {
-                myData[this.id] = 'false';
-            }
-        });
-
-        jQuery.ajax( {
-            url: "/direct/clog/savePerms",
-            type: 'POST',
-            data: myData,
-            dataType: 'text',
-            timeout: clog.AJAX_TIMEOUT,
-            success: function (result) {
-                location.reload();
-            },
-            error : function(xmlHttpRequest, textStatus, error) {
-                alert("Failed to save permissions. Status: " + textStatus + '. Error: ' + error);
-            }
-        });
-
-        return false;
-    },
     attachProfilePopup: function () {
         profile.attachPopups($('.profile'));
     },
@@ -130,7 +72,7 @@ clog.utils = {
         if (!clog.sakai.isEditorDirty(wysiwygEditor, 'clog_content_editor') && !clog.titleChanged) {
             return 0;
         }
-    
+
         return clog.utils.storePost('AUTOSAVE',null,wysiwygEditor);
     },
     savePostAsDraft: function (wysiwygEditor) {
@@ -155,7 +97,7 @@ clog.utils = {
             }
             return 0;
         }
-        
+
         if (title.length > 255) {
             if ('AUTOSAVE' !== visibility) {
                 alert(long_title_warning);
@@ -166,7 +108,7 @@ clog.utils = {
         var success = false;
 
         var groups = '';
-        
+
         if ('READY' === visibility) {
             if ($('#clog_visibility_tutor').prop('checked')) {
                 visibility = 'TUTOR';
@@ -203,7 +145,7 @@ clog.utils = {
             'siteId': clog.siteId,
             'mode': isPublish
         };
-                
+
         jQuery.ajax( {
             url: '/direct/clog-post/store.json',
             type: 'POST',
@@ -240,7 +182,7 @@ clog.utils = {
         return success;
     },
     saveComment: function (wysiwygEditor) {
-        
+
 		var comment = {
  			'id': $('#clog_comment_id_field').val(),
 			'postId': clog.currentPost.id,
@@ -311,11 +253,11 @@ clog.utils = {
         return false;
     },
     deleteSelectedPosts: function () {
-    
+
         if (!confirm(clog.i18n.really_delete_post_message)) {
             return false;
         }
-        
+
         var selected = $('.clog_recycled_post_checkbox:checked');
 
         if (selected.length <= 0) {
@@ -390,7 +332,7 @@ clog.utils = {
         }
     },
     deleteComment: function (commentId) {
-                        
+
         if (!confirm(clog.i18n.delete_comment_message)) {
             return false;
         }
@@ -406,7 +348,7 @@ clog.utils = {
                 alert("Failed to delete comment. Status: " + textStatus + ". Error: " + error);
             }
         });
-        
+
         return false;
     },
     decoratePost: function (p) {
@@ -612,7 +554,7 @@ clog.utils = {
     getScrollFunction: function (args, callback) {
 
         var scroller = function () {
-            
+
             var wintop = $(window).scrollTop(), docheight = $(document).height(), winheight = $(window).height();
 
             if  ((wintop/(docheight-winheight)) > 0.95 || $("body").data("scroll-clog") === true) {
