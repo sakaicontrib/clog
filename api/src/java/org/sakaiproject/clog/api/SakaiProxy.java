@@ -111,10 +111,6 @@ public interface SakaiProxy {
 
     public Set<String> getSitePermissionsForCurrentUser(String siteId);
 
-    public Map<String, Set<String>> getSitePermissions(String siteId);
-
-    public boolean setPermissionsForSite(String siteId, Map<String, Object> params);
-
     public boolean isPublicAllowed();
 
     public String getCurrentUserEid();
@@ -128,6 +124,4 @@ public interface SakaiProxy {
     public Cache getCache(String cache);
 
     void addToolToToolConfig(ToolConfiguration tool);
-
-    boolean saveSite(Site site);
 }
