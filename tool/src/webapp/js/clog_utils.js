@@ -242,7 +242,7 @@ clog.utils = {
                 if (clog.states.GROUP_POSTS === clog.currentState) {
                     clog.switchState(clog.currentState, { groupId: clog.currentGroupId, groupTitle: clog.currentGroupTitle });
                 } else {
-                    clog.switchState(clog.currentState);
+                    clog.switchState('viewAllPosts');
                 }
             },
             error: function (xmlHttpRequest, textStatus, error) {
