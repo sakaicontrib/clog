@@ -93,14 +93,14 @@ clog.utils = {
 
         if (title.length < 4) {
             if ('AUTOSAVE' !== visibility) {
-                alert(short_title_warning);
+                alert(clog.i18n.short_title_warning);
             }
             return 0;
         }
 
         if (title.length > 255) {
             if ('AUTOSAVE' !== visibility) {
-                alert(long_title_warning);
+                alert(clog.i18n.long_title_warning);
             }
             return 0;
         }
