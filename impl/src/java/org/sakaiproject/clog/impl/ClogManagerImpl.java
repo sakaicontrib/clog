@@ -467,7 +467,7 @@ public class ClogManagerImpl implements ClogManager {
         String entityId = parts[4];
 
         if ("posts".equals(subType)) {
-            reference.set("clog", "posts", entityId, null, siteId);
+            reference.set("sakai:clog", "posts", entityId, null, siteId);
             return true;
         }
 

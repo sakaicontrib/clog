@@ -426,7 +426,7 @@ public class SakaiProxyImpl implements SakaiProxy {
     }
 
     public void postEvent(String event, String reference, String siteId) {
-        eventTrackingService.post(eventTrackingService.newEvent(event, reference, true));
+        eventTrackingService.post(eventTrackingService.newEvent(event, reference, null, true, NotificationService.NOTI_OPTIONAL));
     }
 
     public Set<String> getSiteUsers(String siteId) {
