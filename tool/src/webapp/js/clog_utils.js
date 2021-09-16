@@ -175,7 +175,12 @@ clog.utils = {
                 }
             },
             error : function(xmlHttpRequest, textStatus, error) {
-                alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);
+				if(xmlHttpRequest.status === 401) {
+					alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);
+					location.href = portal.loggedOutUrl;
+				} else {
+					alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);
+				}
             }
         });
 
