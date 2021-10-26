@@ -116,7 +116,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
      */
     public List<Post> filter(List<Post> posts, String siteId) {
 
-        List<Post> filtered = new ArrayList<Post>();
+        List<Post> filtered = new ArrayList<>();
 
         Site site = getSiteIfCurrentUserCanAccessTool(siteId);
 
@@ -217,7 +217,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
         //check user can access the tool, it might be hidden
         ToolConfiguration toolConfig = site.getToolForCommonId("sakai.clog");
-        if(!toolManager.isVisible(site, toolConfig)) {
+        if(toolConfig == null || !toolManager.isVisible(site, toolConfig)) {
             return null;
         }
 

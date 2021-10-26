@@ -25,64 +25,6 @@ clog.utils = {
             }
         });
     },
-    getSitePermissionMatrix: function (callback) {
-
-        jQuery.ajax( {
-            url: "/direct/clog/perms.json?siteId=" + clog.siteId,
-            dataType: "json",
-            cache: false,
-            timeout: clog.AJAX_TIMEOUT,
-            success: function(json) {
-
-                var p = json.data;
-
-                var perms = [];
-
-                for (role in p) {
-                    var permSet = {'role': role};
-
-                    p[role].forEach(function (p) {
-                        eval("permSet." + p.replace(/\./g,"_") + " = true");
-                    });
-
-                    perms.push(permSet);
-                }
-
-                callback(perms);
-            },
-            error: function(xmlHttpRequest, textStatus, error) {
-                alert("Failed to get permissions. Status: " + textStatus + ". Error: " + error);
-            }
-        });
-    },
-    savePermissions: function () {
-
-        var myData = { siteId: clog.siteId };
-        $('.clog_permission_checkbox').each(function (b) {
-
-            if (this.checked) {
-                myData[this.id] = 'true';
-            } else {
-                myData[this.id] = 'false';
-            }
-        });
-
-        jQuery.ajax( {
-            url: "/direct/clog/savePerms",
-            type: 'POST',
-            data: myData,
-            dataType: 'text',
-            timeout: clog.AJAX_TIMEOUT,
-            success: function (result) {
-                location.reload();
-            },
-            error : function(xmlHttpRequest, textStatus, error) {
-                alert("Failed to save permissions. Status: " + textStatus + '. Error: ' + error);
-            }
-        });
-
-        return false;
-    },
     attachProfilePopup: function () {
         profile.attachPopups($('.profile'));
     },
@@ -130,7 +72,7 @@ clog.utils = {
         if (!clog.sakai.isEditorDirty(wysiwygEditor, 'clog_content_editor') && !clog.titleChanged) {
             return 0;
         }
-    
+
         return clog.utils.storePost('AUTOSAVE',null,wysiwygEditor);
     },
     savePostAsDraft: function (wysiwygEditor) {
@@ -151,14 +93,14 @@ clog.utils = {
 
         if (title.length < 4) {
             if ('AUTOSAVE' !== visibility) {
-                alert(short_title_warning);
+                alert(clog.i18n.short_title_warning);
             }
             return 0;
         }
-        
+
         if (title.length > 255) {
             if ('AUTOSAVE' !== visibility) {
-                alert(long_title_warning);
+                alert(clog.i18n.long_title_warning);
             }
             return 0;
         }
@@ -166,7 +108,7 @@ clog.utils = {
         var success = false;
 
         var groups = '';
-        
+
         if ('READY' === visibility) {
             if ($('#clog_visibility_tutor').prop('checked')) {
                 visibility = 'TUTOR';
@@ -203,7 +145,7 @@ clog.utils = {
             'siteId': clog.siteId,
             'mode': isPublish
         };
-                
+
         jQuery.ajax( {
             url: '/direct/clog-post/store.json',
             type: 'POST',
@@ -233,14 +175,19 @@ clog.utils = {
                 }
             },
             error : function(xmlHttpRequest, textStatus, error) {
-                alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);
+				if(xmlHttpRequest.status === 401) {
+					alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);
+					location.href = portal.loggedOutUrl;
+				} else {
+					alert("Failed to store post. Status: " + textStatus + '. Error: ' + error);
+				}
             }
         });
 
         return success;
     },
     saveComment: function (wysiwygEditor) {
-        
+
 		var comment = {
  			'id': $('#clog_comment_id_field').val(),
 			'postId': clog.currentPost.id,
@@ -300,7 +247,7 @@ clog.utils = {
                 if (clog.states.GROUP_POSTS === clog.currentState) {
                     clog.switchState(clog.currentState, { groupId: clog.currentGroupId, groupTitle: clog.currentGroupTitle });
                 } else {
-                    clog.switchState(clog.currentState);
+                    clog.switchState('viewAllPosts');
                 }
             },
             error: function (xmlHttpRequest, textStatus, error) {
@@ -311,11 +258,11 @@ clog.utils = {
         return false;
     },
     deleteSelectedPosts: function () {
-    
+
         if (!confirm(clog.i18n.really_delete_post_message)) {
             return false;
         }
-        
+
         var selected = $('.clog_recycled_post_checkbox:checked');
 
         if (selected.length <= 0) {
@@ -390,7 +337,7 @@ clog.utils = {
         }
     },
     deleteComment: function (commentId) {
-                        
+
         if (!confirm(clog.i18n.delete_comment_message)) {
             return false;
         }
@@ -406,7 +353,7 @@ clog.utils = {
                 alert("Failed to delete comment. Status: " + textStatus + ". Error: " + error);
             }
         });
-        
+
         return false;
     },
     decoratePost: function (p) {
@@ -437,7 +384,13 @@ clog.utils = {
     renderTemplate: function (name, data, output) {
 
         var template = Handlebars.templates[name];
-        document.getElementById(output).innerHTML = template(data);
+        var el = document.getElementById(output);
+
+        if (el) {
+          el.innerHTML = template(data);
+        } else {
+          if (console) console.log('No element for id: ' + output);
+        }
     },
     renderPost: function (post, output) {
 
@@ -606,7 +559,7 @@ clog.utils = {
     getScrollFunction: function (args, callback) {
 
         var scroller = function () {
-            
+
             var wintop = $(window).scrollTop(), docheight = $(document).height(), winheight = $(window).height();
 
             if  ((wintop/(docheight-winheight)) > 0.95 || $("body").data("scroll-clog") === true) {
@@ -622,4 +575,16 @@ clog.utils = {
 
 Handlebars.registerHelper('translate', function (key) {
     return clog.i18n[key];
+});
+
+Handlebars.registerHelper('escapequote', function(variable) {
+  return variable.replace(/\'/g, "\\'");
+});
+
+Handlebars.registerHelper('if_eq', function(a, b, options) {
+    if (a == b) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
 });

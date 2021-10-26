@@ -195,40 +195,4 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
 
         return sakaiProxy.getSitePermissionsForCurrentUser(siteId);
     }
-
-    @EntityCustomAction(action = "perms", viewKey = EntityView.VIEW_LIST)
-    public Map<String, Set<String>> handlePermsGet(EntityView view, Map<String, Object> params) {
-
-        String userId = developerHelperService.getCurrentUserId();
-        
-        if (userId == null) {
-            throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
-
-        String siteId = (String) params.get("siteId");
-
-        if (siteId == null || siteId.length() <= 0) {
-            throw new EntityException("No siteId supplied", "", HttpServletResponse.SC_BAD_REQUEST);
-        }
-
-        return sakaiProxy.getSitePermissions(siteId);
-    }
-
-    @EntityCustomAction(action = "savePerms", viewKey = EntityView.VIEW_NEW)
-    public String handleSavePermissions(EntityView view, Map<String, Object> params) {
-
-        String userId = developerHelperService.getCurrentUserId();
-        
-        if (userId == null) {
-            throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
-
-        String siteId = (String) params.get("siteId");
-
-        if (sakaiProxy.setPermissionsForSite(siteId, params)) {
-            return "success";
-        } else {
-            throw new EntityException("Failed to set perms", "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-    }
 }

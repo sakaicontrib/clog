@@ -1,18 +1,23 @@
 package org.sakaiproject.clog.impl;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogFunctions;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogMember;
@@ -24,19 +29,20 @@ import org.sakaiproject.clog.api.datamodel.ClogGroup;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
+import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.HttpAccess;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.memory.api.Cache;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+@Slf4j
 public class ClogManagerImpl implements ClogManager {
-
-    private Logger logger = Logger.getLogger(ClogManagerImpl.class);
 
     private PersistenceManager persistenceManager;
 
@@ -46,13 +52,14 @@ public class ClogManagerImpl implements ClogManager {
     @Setter
     private SakaiProxy sakaiProxy;
 
+    @Autowired
+    private ServerConfigurationService serverConfigurationService;
+
     public void init() {
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("init()");
-        }
+        log.debug("init()");
 
-        logger.info("Registering Clog functions ...");
+        log.info("Registering Clog functions ...");
 
         sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_CREATE);
         sakaiProxy.registerFunction(ClogFunctions.CLOG_POST_READ_ANY);
@@ -70,17 +77,20 @@ public class ClogManagerImpl implements ClogManager {
         sakaiProxy.registerFunction(ClogFunctions.CLOG_MODIFY_PERMISSIONS);
         sakaiProxy.registerFunction(ClogFunctions.CLOG_TUTOR);
 
-        logger.info("Registered Clog functions ...");
+        log.info("Registered Clog functions ...");
 
         sakaiProxy.registerEntityProducer(this);
 
         persistenceManager = new PersistenceManager(sakaiProxy);
+
+        if (serverConfigurationService.getBoolean("clog.importFromBlogWow", false)) {
+            importBlogWowData();
+        }
     }
 
     public Post getPost(String postId) throws Exception {
 
-        if (logger.isDebugEnabled())
-            logger.debug("getPost(" + postId + ")");
+        log.debug("getPost({})", postId);
 
         Post post = persistenceManager.getPost(postId);
         if (clogSecurityManager.canCurrentUserReadPost(post))
@@ -90,8 +100,8 @@ public class ClogManagerImpl implements ClogManager {
     }
 
     public Comment getComment(String commentId) throws Exception {
-        if (logger.isDebugEnabled())
-            logger.debug("getComment(" + commentId + ")");
+
+        log.debug("getComment({})", commentId);
 
         Comment comment = persistenceManager.getComment(commentId);
         // if (securityManager.canCurrentUserReadPost(post))
@@ -103,9 +113,7 @@ public class ClogManagerImpl implements ClogManager {
 
     public Post getPostHeader(String postId) throws Exception {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("getUnfilteredPost(" + postId + ")");
-        }
+        log.debug("getUnfilteredPost({})", postId);
 
         Post post = persistenceManager.getPost(postId);
         post.setContent("");
@@ -121,6 +129,10 @@ public class ClogManagerImpl implements ClogManager {
     }
 
     public List<Post> getPosts(QueryBean query) throws Exception {
+        return getPosts(query, true);
+    }
+
+    private List<Post> getPosts(QueryBean query, boolean filter) throws Exception {
 
         Cache cache = sakaiProxy.getCache(POST_CACHE);
         if (query.byPublic()) {
@@ -130,19 +142,19 @@ public class ClogManagerImpl implements ClogManager {
             return (List<Post>) cache.get(Visibilities.PUBLIC);
         } else if (query.queryBySiteId()) {
             if (query.getVisibilities().contains(Visibilities.RECYCLED)) {
-                return clogSecurityManager.filter(persistenceManager.getPosts(query), query.getSiteId());
+                if (filter) {
+                    return clogSecurityManager.filter(persistenceManager.getPosts(query), query.getSiteId());
+                } else {
+                    return persistenceManager.getPosts(query);
+                }
             } else {
                 String siteId = query.getSiteId();
 
                 if (cache.get(siteId) == null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Cache miss on site id: " + siteId);
-                    }
+                    log.debug("Cache miss on site id: {}", siteId);
                     cache.put(siteId, new HashMap<String, List<Post>>());
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Cache hit on site id: " + siteId);
-                    }
+                    log.debug("Cache hit on site id: {}", siteId);
                 }
 
                 Map<String, List<Post>> siteMap = (Map<String, List<Post>>) cache.get(siteId);
@@ -155,28 +167,34 @@ public class ClogManagerImpl implements ClogManager {
                     key = query.getGroup();
                 }
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("KEY: " + key);
-                }
+                log.debug("KEY: {}", key);
 
                 if (siteMap != null && !siteMap.containsKey(key)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Cache miss on '" + key + "'. It will be added.");
-                    }
+                    log.debug("Cache miss on '{}'. It will be added.", key);
                     siteMap.put(key, persistenceManager.getPosts(query));
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Cache hit on '" + key + "'");
-                    }
+                    log.debug("Cache hit on '{}'", key);
                 }
                 if (siteMap != null) {
-                    return clogSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
+                    if (filter) {
+                        return clogSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
+                    } else {
+                        return (List<Post>) siteMap.get(key);
+                    }
                 } else {
-                    return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
+                    if (filter) {
+                        return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
+                    } else {
+                        return persistenceManager.getPosts(query);
+                    }
                 }
             }
         } else {
-            return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
+            if (filter) {
+                return clogSecurityManager.filter(persistenceManager.getPosts(query), null);
+            } else {
+                return persistenceManager.getPosts(query);
+            }
         }
     }
 
@@ -186,10 +204,10 @@ public class ClogManagerImpl implements ClogManager {
                 removeSiteFromCaches(post.getSiteId());
                 return true;
             } else {
-                logger.error("Failed to save post");
+                log.error("Failed to save post");
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst saving post", e);
+            log.error("Caught exception whilst saving post", e);
         }
 
         return false;
@@ -218,7 +236,7 @@ public class ClogManagerImpl implements ClogManager {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst saving comment", e);
+            log.error("Caught exception whilst saving comment", e);
         }
 
         return false;
@@ -231,7 +249,7 @@ public class ClogManagerImpl implements ClogManager {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst deleting comment.", e);
+            log.error("Caught exception whilst deleting comment.", e);
         }
 
         return false;
@@ -249,7 +267,7 @@ public class ClogManagerImpl implements ClogManager {
                 }
             }
         } catch (Exception e) {
-            logger.error("Caught an exception whilst recycling post '" + postId + "'");
+            log.error("Caught an exception whilst recycling post '" + postId + "'");
         }
 
         return false;
@@ -265,9 +283,7 @@ public class ClogManagerImpl implements ClogManager {
 
     public String archive(String siteId, Document doc, Stack stack, String archivePath, List attachments) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("archive(siteId:" + siteId + ",archivePath:" + archivePath + ")");
-        }
+        log.debug("archive(siteId:{},archivePath:{})", siteId, archivePath);
 
         StringBuilder results = new StringBuilder();
 
@@ -300,7 +316,7 @@ public class ClogManagerImpl implements ClogManager {
             results.append(getLabel() + ": Finished. " + postCount + " post(s) archived.\n");
         } catch (Exception any) {
             results.append(getLabel() + ": exception caught. Message: " + any.getMessage());
-            logger.warn(getLabel() + " exception caught. Message: " + any.getMessage());
+            log.warn(getLabel() + " exception caught. Message: " + any.getMessage());
         }
 
         stack.pop();
@@ -313,9 +329,7 @@ public class ClogManagerImpl implements ClogManager {
      */
     public String merge(String siteId, Element root, String archivePath, String fromSiteId, Map attachmentNames, Map userIdTrans, Set userListAllowImport) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("merge(siteId:" + siteId + ",root tagName:" + root.getTagName() + ",archivePath:" + archivePath + ",fromSiteId:" + fromSiteId);
-        }
+        log.debug("merge(siteId:{},root tagName:{},archivePath:{},fromSiteId:{}", siteId, root.getTagName(), archivePath, fromSiteId);
 
         StringBuilder results = new StringBuilder();
 
@@ -327,7 +341,7 @@ public class ClogManagerImpl implements ClogManager {
         for (int i = 0; i < numberPosts; i++) {
             Node child = postNodes.item(i);
             if (child.getNodeType() != Node.ELEMENT_NODE) {
-                logger.error("Post nodes should be elements. Skipping ...");
+                log.error("Post nodes should be elements. Skipping ...");
                 continue;
             }
 
@@ -358,9 +372,7 @@ public class ClogManagerImpl implements ClogManager {
      */
     public Entity getEntity(Reference ref) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("getEntity(Ref ID:" + ref.getId() + ")");
-        }
+        log.debug("getEntity(Ref ID:{})", ref.getId());
 
         Entity rv = null;
 
@@ -377,7 +389,7 @@ public class ClogManagerImpl implements ClogManager {
                 rv = getComment(commentId);
             }
         } catch (Exception e) {
-            logger.warn("getEntity(): " + e);
+            log.warn("getEntity(): " + e);
         }
 
         return rv;
@@ -388,9 +400,7 @@ public class ClogManagerImpl implements ClogManager {
      */
     public Collection getEntityAuthzGroups(Reference ref, String userId) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("getEntityAuthzGroups(Ref ID:" + ref.getId() + "," + userId + ")");
-        }
+        log.debug("getEntityAuthzGroups(Ref ID:{},userId:{})", ref.getId(), userId);
 
         List ids = new ArrayList();
         ids.add("/site/" + ref.getContext());
@@ -410,7 +420,7 @@ public class ClogManagerImpl implements ClogManager {
             Entity entity = getPost(postId);
             return entity.getProperties();
         } catch (Exception e) {
-            logger.warn("getEntity(): " + e);
+            log.warn("getEntity(): " + e);
             return null;
         }
     }
@@ -457,7 +467,7 @@ public class ClogManagerImpl implements ClogManager {
         String entityId = parts[4];
 
         if ("posts".equals(subType)) {
-            reference.set("clog", "posts", entityId, null, siteId);
+            reference.set("sakai:clog", "posts", entityId, null, siteId);
             return true;
         }
 
@@ -479,7 +489,7 @@ public class ClogManagerImpl implements ClogManager {
             if (persistenceManager.postExists(postId))
                 return true;
         } catch (Exception e) {
-            logger.error("entityExists threw an exception", e);
+            log.error("entityExists threw an exception", e);
         }
 
         return false;
@@ -491,7 +501,7 @@ public class ClogManagerImpl implements ClogManager {
 
         if ("!gateway".equals(siteId)) {
             if (cache.get("public") == null) {
-                logger.debug("Cache miss on \"public\". Caching empty map ...");
+                log.debug("Cache miss on \"public\". Caching empty map ...");
                 cache.put("public", new HashMap<String, List<ClogMember>>());
             }
 
@@ -499,9 +509,7 @@ public class ClogManagerImpl implements ClogManager {
             return getOrCacheAuthors(publicMap, sortedBy, siteId); 
         } else {
             if (cache.get(siteId) == null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cache miss on \"" + siteId + "\". Caching empty map ...");
-                }
+                log.debug("Cache miss on \"{}\". Caching empty map ...", siteId);
                 cache.put(siteId, new HashMap<String, List<ClogMember>>());
             }
 
@@ -517,14 +525,10 @@ public class ClogManagerImpl implements ClogManager {
         String sort = (sortedBy == null) ? SORT_NAME_DOWN : sortedBy;
 
         if (map.containsKey(sort)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Cache hit on \"" + sort + "\".");
-            }
+            log.debug("Cache hit on \"{}\".", sort);
             authors = map.get(sort);
         } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Cache miss on \"" + sort + "\".");
-            }
+            log.debug("Cache miss on \"{}\".", sort);
             authors = (siteId == null) ? persistenceManager.getPublicBloggers() : sakaiProxy.getSiteMembers(siteId);
             for (ClogMember author : authors) {
                 persistenceManager.populateAuthorData(author, siteId);
@@ -569,7 +573,7 @@ public class ClogManagerImpl implements ClogManager {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("Caught an exception whilst restoring post '" + postId + "'");
+            log.error("Caught an exception whilst restoring post '" + postId + "'");
         }
 
         return false;
@@ -591,6 +595,127 @@ public class ClogManagerImpl implements ClogManager {
         }
 
         return groups;
+    }
+
+    private void importBlogWowData() {
+
+        log.debug("Importing BlogWow data ...");
+
+        Connection connection = null;
+        Statement postST = null;
+        ResultSet postRS = null;
+        Statement commentST = null;
+        ResultSet commentRS = null;
+
+        int numberImported = 0;
+
+        try {
+            connection = sakaiProxy.borrowConnection();
+
+            postST = connection.createStatement();
+            commentST = connection.createStatement();
+            postRS = postST.executeQuery("SELECT blogwow_entry.*,location FROM blogwow_entry,blogwow_blog WHERE blogwow_entry.blog_id = blogwow_blog.id");
+            while (postRS.next()) {
+                String id = postRS.getString("id");
+                String title = postRS.getString("title");
+                String text = postRS.getString("text");
+                Date created = postRS.getTimestamp("dateCreated");
+                Date modified = postRS.getTimestamp("dateModified");
+                String privacySetting = postRS.getString("privacySetting");
+                String ownerId = postRS.getString("ownerId");
+                String location = postRS.getString("location");
+
+                log.debug("Importing BlogWow post '{}' at location '{}' ...", title, location);
+
+                String siteId = null;
+                if (location.startsWith("/site/")) {
+                    siteId = location.substring(location.lastIndexOf("/") + 1);
+                } else {
+                    log.debug("location {} does not represent a site. Skipping post ...", siteId);
+                    continue;
+                }
+
+                QueryBean query = new QueryBean();
+                query.setSiteId(siteId);
+                query.setTitle(title);
+
+                if (getPosts(query, false).size() > 0) {
+                    // Already imported. Skip it.
+                    continue;
+                }
+
+                Post post = new Post();
+                post.setSiteId(siteId);
+                post.setTitle(title);
+                post.setCreatedDate(created.getTime());
+                post.setModifiedDate(modified.getTime());
+                post.setCreatorId(ownerId);
+                post.setContent(text);
+
+                if ("private".equals(privacySetting)) {
+                    post.setVisibility(Visibilities.PRIVATE);
+                } else {
+                    post.setVisibility(Visibilities.SITE);
+                }
+
+                if (savePost(post)) {
+
+                    commentRS = commentST.executeQuery("SELECT * FROM blogwow_comment WHERE entry_id = '" + id + "'");
+                    while (commentRS.next()) {
+                        String commentText = commentRS.getString("text");
+                        Date commentCreated = commentRS.getTimestamp("dateCreated");
+                        Date commentModified = commentRS.getTimestamp("dateModified");
+                        String commentOwnerId = commentRS.getString("ownerId");
+
+                        Comment comment = new Comment();
+                        comment.setCreatorId(commentOwnerId);
+                        comment.setCreatedDate(commentCreated.getTime());
+                        comment.setModifiedDate(commentModified.getTime());
+                        comment.setContent(commentText);
+                        comment.setPostId(post.getId());
+                        if(siteId != null) {
+                            comment.setSiteId(siteId);
+                        }
+
+                        saveComment(comment);
+                    }
+                    commentRS.close();
+                    numberImported++;
+                }
+
+            }
+        } catch (Exception e) {
+            log.error("Exception thrown whilst importing blog wow data", e);
+        } finally {
+            if (commentRS != null) {
+                try {
+                    commentRS.close();
+                } catch (Exception e) {
+                }
+            }
+            if (postRS != null) {
+                try {
+                    postRS.close();
+                } catch (Exception e) {
+                }
+            }
+            if (commentST != null) {
+                try {
+                    commentST.close();
+                } catch (Exception e) {
+                }
+            }
+            if (postST != null) {
+                try {
+                    postST.close();
+                } catch (Exception e) {
+                }
+            }
+
+            sakaiProxy.returnConnection(connection);
+        }
+
+        log.debug("Imported {} BlogWow posts", numberImported);
     }
 
     private class UserDisplayNameComparator implements Comparator<ClogMember> {

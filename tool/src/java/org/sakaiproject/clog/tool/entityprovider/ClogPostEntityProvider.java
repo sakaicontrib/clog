@@ -113,6 +113,10 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
         String userId = developerHelperService.getCurrentUserId();
 
+        if (userId == null) {
+            throw new EntityException("You must be logged in to store posts","",HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
         String id = (String) params.get("id");
         String visibility = (String) params.get("visibility");
         String title = (String) params.get("title");

@@ -114,7 +114,7 @@ th.clogSortableTableHeaderSortDown {
 	margin-top: 3px;
 }
 
-#clog_content table td { padding: 3px; }
+#clog_content table td { padding: 8px; }
 #clog_content table tr.odd td {
 	background-color: #FFFFC0;
 }
@@ -230,4 +230,8 @@ a.clog-draft-label:hover {
 .clog-body {
 	border-top: 1px solid #E0E0E0;
 	margin-left: 7px;
+}
+
+#clog-authors a {
+	line-height: 18px;
 }

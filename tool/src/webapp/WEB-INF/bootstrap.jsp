@@ -8,7 +8,7 @@
       lang="${isolanguage}">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript">
+        <script>
 
             var clog = {
                 userId:'${userId}',
@@ -33,7 +33,6 @@
         <link href="/profile2-tool/css/profile2-profile-entity.css" type="text/css" rel="stylesheet" media="all" />
         <link rel="stylesheet" type="text/css" href="/clog-tool/css/clog.css"  media="all"/>
         <script type="text/javascript" src="/library/webjars/jquery/1.12.4/jquery.min.js"></script>
-        <script type="text/javascript" src="/clog-tool/lib/jquery.i18n.properties.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
         <script type="text/javascript" src="/library/webjars/handlebars/4.0.6/handlebars.runtime.min.js"></script>
@@ -55,7 +54,10 @@
 
         </div> <!-- /portletBody-->
 
-        <script type="text/javascript" src="/clog-tool/js/clog.js"></script>
+        <script type="module">
+            import {loadClog} from "/clog-tool/js/clog.js${portalCDNQuery}";
+            loadClog();
+        </script>
 
     </body>
 </html>

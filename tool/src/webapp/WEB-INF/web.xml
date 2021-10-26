@@ -21,12 +21,6 @@
 		<load-on-startup>1</load-on-startup>        
      </servlet>
      
-    <servlet>
-        <servlet-name>sakai.clogadmin</servlet-name>
-	    <servlet-class>org.sakaiproject.clogadmin.tool.ClogAdminTool</servlet-class>
-		<load-on-startup>1</load-on-startup>        
-     </servlet>
-
     <listener>
         <listener-class>org.sakaiproject.util.ToolListener</listener-class>
     </listener>  
@@ -40,5 +34,3 @@
 	</welcome-file-list>
 
 </web-app>
-
-		
