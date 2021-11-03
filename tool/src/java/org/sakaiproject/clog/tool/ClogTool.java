@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
 import org.sakaiproject.component.api.ComponentManager;
@@ -21,12 +20,13 @@ import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.util.RequestFilter;
 import org.sakaiproject.util.ResourceLoader;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Adrian Fish (a.fish@lancaster.ac.uk)
  */
+@Slf4j
 public class ClogTool extends HttpServlet {
-
-    private Logger logger = Logger.getLogger(getClass());
 
     private SakaiProxy sakaiProxy;
     private ClogManager clogManager;
@@ -35,7 +35,7 @@ public class ClogTool extends HttpServlet {
 
         super.init(config);
 
-        logger.debug("init");
+        log.debug("init");
         
         try {
             ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
@@ -48,7 +48,7 @@ public class ClogTool extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        logger.debug("doGet()");
+        log.debug("doGet()");
 
         if (sakaiProxy == null) {
             throw new ServletException("sakaiProxy MUST be initialised.");
@@ -92,7 +92,7 @@ public class ClogTool extends HttpServlet {
         }
 
         if (locale == null || rl == null) {
-            logger.error("Failed to load the site or user i18n bundle");
+            log.error("Failed to load the site or user i18n bundle");
         }
 
         String language = locale.getLanguage();

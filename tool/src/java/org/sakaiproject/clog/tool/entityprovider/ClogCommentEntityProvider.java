@@ -3,8 +3,8 @@ package org.sakaiproject.clog.tool.entityprovider;
 import java.util.Map;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.SakaiProxy;
@@ -14,11 +14,10 @@ import org.sakaiproject.entitybroker.entityprovider.capabilities.*;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 
+@Slf4j
 public class ClogCommentEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, Createable, Describeable, Deleteable {
     
     public final static String ENTITY_PREFIX = "clog-comment";
-    
-    protected final Logger LOG = Logger.getLogger(getClass());
 
     @Setter
     private ClogManager clogManager;
@@ -27,9 +26,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
     private SakaiProxy sakaiProxy = null;
 
     public String createEntity(EntityReference ref, Object entity, Map<String, Object> params) {
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("createEntity");
+        log.debug("createEntity");
 
         String userId = developerHelperService.getCurrentUserId();
 
@@ -59,8 +56,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
     }
 
     public boolean entityExists(String id) {
-        if (LOG.isDebugEnabled())
-            LOG.debug("entityExists(" + id + ")");
+        log.debug("entityExists({})", id);
 
         if (id == null) {
             return false;
@@ -72,15 +68,13 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
         try {
             return (clogManager.getComment(id) != null);
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting post.", e);
+            log.error("Caught exception whilst getting post.", e);
             return false;
         }
     }
 
     public Object getEntity(EntityReference ref) {
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("getEntity(" + ref.getId() + ")");
+        log.debug("getEntity({})", ref.getId());
 
         String id = ref.getId();
 
@@ -93,7 +87,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
         try {
             comment = clogManager.getComment(id);
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting comment.", e);
+            log.error("Caught exception whilst getting comment.", e);
         }
 
         if (comment == null) {
@@ -122,9 +116,7 @@ public class ClogCommentEntityProvider extends AbstractEntityProvider implements
     }
 
     public void deleteEntity(EntityReference ref, Map<String, Object> params) {
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("deleteEntity");
+        log.debug("deleteEntity");
 
         String siteId = (String) params.get("siteId");
 

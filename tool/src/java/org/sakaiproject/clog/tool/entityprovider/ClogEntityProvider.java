@@ -9,8 +9,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.ClogManager;
@@ -29,11 +29,10 @@ import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 
+@Slf4j
 public class ClogEntityProvider extends AbstractEntityProvider implements AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable, ReferenceParseable {
     
     public final static String ENTITY_PREFIX = "clog";
-
-    private final Logger LOG = Logger.getLogger(getClass());
 
     @Setter
     private ClogManager clogManager;
@@ -103,7 +102,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
         try {
             posts = clogManager.getPosts(query);
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting posts.", e);
+            log.error("Caught exception whilst getting posts.", e);
             throw new EntityException("Failed to retrieve posts for site " + siteId,"",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
@@ -165,7 +164,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
         try {
             posts = clogManager.getPosts(query);
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting posts.", e);
+            log.error("Caught exception whilst getting posts.", e);
             throw new EntityException("Failed to retrieve posts for user " + requestedUserId,"",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
