@@ -11,8 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.PostsData;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
@@ -43,6 +43,7 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.entitybroker.util.TemplateParseUtil;
 import org.sakaiproject.util.ResourceLoader;
 
+@Slf4j
 @Setter
 public class ClogPostEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Inputable, Outputable, /*Createable,*/ Describeable, /*CollectionResolvable,*/ ActionsExecutable, Redirectable, Statisticable {
 
@@ -53,13 +54,8 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
     public final static String ENTITY_PREFIX = "clog-post";
 
-    protected final Logger LOG = Logger.getLogger(getClass());
-
     public boolean entityExists(String id) {
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("entityExists(" + id + ")");
-        }
+        log.debug("entityExists({})", id);
 
         if (id == null) {
             return false;
@@ -72,16 +68,13 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
         try {
             return clogManager.getPost(id) != null;
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting post.", e);
+            log.error("Caught exception whilst getting post.", e);
             return false;
         }
     }
 
     public Object getEntity(EntityReference ref) {
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getEntity(" + ref.getId() + ")");
-        }
+        log.debug("getEntity({})", ref.getId());
 
         String postId = ref.getId();
 
@@ -94,7 +87,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
         try {
             post = clogManager.getPost(postId);
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting post with id '" + postId + "'", e);
+            log.error("Caught exception whilst getting post with id '{}'", postId, e);
         }
 
         if (post == null) {
@@ -109,7 +102,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
     @EntityCustomAction(action = "store", viewKey = EntityView.VIEW_NEW)
     public ActionReturn handleStore(Map<String, Object> params) {
 
-        LOG.debug("handleStore");
+        log.debug("handleStore");
 
         String userId = developerHelperService.getCurrentUserId();
 
@@ -155,7 +148,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
                     isBeingPublished = true;
                 }
             } catch (Exception e) {
-                LOG.info("Failed to get post with id '" + post.getId() + "'. This could happen if this is the first time a post has been saved or published.", e);
+                log.info("Failed to get post with id '{}'. This could happen if this is the first time a post has been saved or published.", post.getId(), e);
             }
         }
 
@@ -219,7 +212,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
                     return post.getUrl();
                 }
             } catch (Exception e) {
-                LOG.error("Caught exception whilst getting post.", e);
+                log.error("Caught exception whilst getting post.", e);
                 return null;
             }
         } else {
@@ -276,7 +269,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
                 page = Integer.parseInt(pageString);
                 query.setPage(page);
             } catch (NumberFormatException nfe) {
-                LOG.error("Invalid page number " + pageString + " supplied. The first page will be returned ...");
+                log.error("Invalid page number {} supplied. The first page will be returned ...", pageString);
                 throw new EntityException("Invalid page value. Needs to be an integer.", ""
                                                                     , HttpServletResponse.SC_BAD_REQUEST);
             }
@@ -295,9 +288,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
             } else {
                 int end = start + pageSize;
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("end: " + end);
-                }
+                log.debug("end: {}", end);
 
                 PostsData data = new PostsData();
                 data.postsTotal = postsTotal;
@@ -311,7 +302,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
                 return data;
             }
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting posts. Returning an empty list ...", e);
+            log.error("Caught exception whilst getting posts. Returning an empty list ...", e);
         }
 
         return new PostsData();
@@ -319,7 +310,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
 
     public void deleteEntity(EntityReference ref, Map<String, Object> params) {
 
-        LOG.debug("deleteEntity");
+        log.debug("deleteEntity");
 
         String siteId = (String) params.get("siteId");
 
@@ -380,12 +371,12 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
             try {
                 post = clogManager.getPost(postId);
             } catch (Exception e) {
-                LOG.error("Failed to retrieve post with id '" + postId + "' during restore operation. Skipping restore ...",e);
+                log.error("Failed to retrieve post with id '{}' during restore operation. Skipping restore ...", postId, e);
                 continue;
             }
 
             if (post == null) {
-                LOG.info("Post id '" + postId + "' is invalid. Skipping restore ...");
+                log.info("Post id '{}' is invalid. Skipping restore ...", postId);
                 continue;
             }
 

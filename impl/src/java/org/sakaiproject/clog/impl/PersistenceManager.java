@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.ClogGroup;
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
@@ -20,13 +19,15 @@ import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.impl.sql.HiperSonicGenerator;
 import org.sakaiproject.clog.impl.sql.MySQLGenerator;
 import org.sakaiproject.clog.impl.sql.OracleSQLGenerator;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.QueryBean;
 import org.sakaiproject.clog.api.SakaiProxy;
 
+@Slf4j
 public class PersistenceManager {
-
-    private Logger logger = Logger.getLogger(PersistenceManager.class);
 
     private ISQLGenerator sqlGenerator;
 
@@ -46,20 +47,20 @@ public class PersistenceManager {
         else if (vendor.equals("hsqldb"))
             sqlGenerator = new HiperSonicGenerator();
         else {
-            logger.error("Unknown database vendor:" + vendor + ". Defaulting to HypersonicDB ...");
+            log.error("Unknown database vendor: {}. Defaulting to HypersonicDB ...", vendor);
             sqlGenerator = new HiperSonicGenerator();
         }
 
         if (sakaiProxy.isAutoDDL()) {
             if (!setupTables()) {
-                logger.error("Failed to setup the tables");
+                log.error("Failed to setup the tables");
             }
         }
     }
 
     public boolean setupTables() {
 
-        logger.debug("setupTables()");
+        log.debug("setupTables()");
 
         Connection connection = null;
         Statement statement = null;
@@ -82,13 +83,13 @@ public class PersistenceManager {
 
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage() + ". Rolling back ...");
+                log.error("Caught exception whilst setting up tables. Message: {}. Rolling back ...", e.getMessage());
                 connection.rollback();
             } finally {
                 connection.setAutoCommit(oldAutoCommitFlag);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst setting up tables. Message: " + e.getMessage());
+            log.error("Caught exception whilst setting up tables. Message: {}", e.getMessage());
         } finally {
             if (statement != null) {
                 try {
@@ -104,8 +105,7 @@ public class PersistenceManager {
     }
 
     public boolean existPost(String OID) throws Exception {
-        if (logger.isDebugEnabled())
-            logger.debug("existPost(" + OID + ")");
+        log.debug("existPost({})", OID);
 
         Connection connection = null;
         Statement statement = null;
@@ -133,8 +133,7 @@ public class PersistenceManager {
     }
 
     public List<Post> getAllPost(String siteId, boolean populate) throws Exception {
-        if (logger.isDebugEnabled())
-            logger.debug("getAllPost(" + siteId + ")");
+        log.debug("getAllPost({})", siteId);
 
         List<Post> result = new ArrayList<Post>();
 
@@ -188,13 +187,13 @@ public class PersistenceManager {
 
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst saving comment. Rolling back ...", e);
+                log.error("Caught exception whilst saving comment. Rolling back ...", e);
                 connection.rollback();
             } finally {
                 connection.setAutoCommit(oldAutoCommit);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst saving comment.", e);
+            log.error("Caught exception whilst saving comment.", e);
         } finally {
             if (statements != null) {
                 for (PreparedStatement st : statements) {
@@ -230,13 +229,13 @@ public class PersistenceManager {
 
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst deleting comment. Rolling back ...", e);
+                log.error("Caught exception whilst deleting comment. Rolling back ...", e);
                 connection.rollback();
             } finally {
                 connection.setAutoCommit(oldAutoCommit);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst deleting comment.", e);
+            log.error("Caught exception whilst deleting comment.", e);
         } finally {
             if (statements != null) {
                 for (PreparedStatement st : statements) {
@@ -255,7 +254,7 @@ public class PersistenceManager {
 
     public boolean savePost(Post post) {
 
-        logger.debug("savePost()");
+        log.debug("savePost()");
 
         Connection connection = null;
         List<PreparedStatement> statements = null;
@@ -306,13 +305,13 @@ public class PersistenceManager {
                 connection.commit();
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst saving post. Rolling back ...", e);
+                log.error("Caught exception whilst saving post. Rolling back ...", e);
                 connection.rollback();
             } finally {
                 connection.setAutoCommit(oldAutoCommit);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst saving post.", e);
+            log.error("Caught exception whilst saving post.", e);
         } finally {
             if (statements != null) {
                 for (PreparedStatement st : statements) {
@@ -330,10 +329,7 @@ public class PersistenceManager {
     }
 
     public boolean deletePost(Post post) {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("deletePost(" + post.getId() + ")");
-        }
+        log.debug("deletePost({})", post.getId());
 
         Connection connection = null;
         List<PreparedStatement> statements = null;
@@ -353,13 +349,13 @@ public class PersistenceManager {
 
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst deleting post. Rolling back ...", e);
+                log.error("Caught exception whilst deleting post. Rolling back ...", e);
                 connection.rollback();
             } finally {
                 connection.setAutoCommit(oldAutoCommit);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst deleting post.", e);
+            log.error("Caught exception whilst deleting post.", e);
         } finally {
             if (statements != null) {
                 for (PreparedStatement st : statements) {
@@ -377,10 +373,7 @@ public class PersistenceManager {
     }
 
     public boolean recyclePost(Post post) {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("recyclePost(" + post.getId() + ")");
-        }
+        log.debug("recyclePost({})", post.getId());
 
         Connection connection = null;
         List<PreparedStatement> statements = null;
@@ -397,13 +390,13 @@ public class PersistenceManager {
                 connection.commit();
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst recycling post. Rolling back ...", e);
+                log.error("Caught exception whilst recycling post. Rolling back ...", e);
                 connection.rollback();
             } finally {
                 connection.setAutoCommit(oldAutoCommit);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst recycling post.", e);
+            log.error("Caught exception whilst recycling post.", e);
             return false;
         } finally {
             if (statements != null) {
@@ -422,10 +415,7 @@ public class PersistenceManager {
     }
 
     public boolean restorePost(Post post) {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("restorePost(" + post.getId() + ")");
-        }
+        log.debug("restorePost({})", post.getId());
 
         Connection connection = null;
         PreparedStatement statement = null;
@@ -441,13 +431,13 @@ public class PersistenceManager {
                 connection.commit();
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst restoring post.", e);
+                log.error("Caught exception whilst restoring post.", e);
                 return false;
             } finally {
                 connection.setAutoCommit(oldAutoCommit);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst restoring post.", e);
+            log.error("Caught exception whilst restoring post.", e);
             return false;
         } finally {
             if (statement != null) {
@@ -497,10 +487,7 @@ public class PersistenceManager {
     }
 
     public Post getPost(String postId) throws Exception {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("getPost(" + postId + ")");
-        }
+        log.debug("getPost({})", postId);
 
         Connection connection = null;
         Statement st = null;
@@ -538,8 +525,7 @@ public class PersistenceManager {
     }
 
     public Post getAutosavedPost(String postId) {
-        if (logger.isDebugEnabled())
-            logger.debug("getAutosavedPost(" + postId + ")");
+        log.debug("getAutosavedPost({})", postId);
 
         Connection connection = null;
         PreparedStatement st = null;
@@ -554,13 +540,13 @@ public class PersistenceManager {
                 return null;
             }
             if (posts.size() > 1) {
-                logger.error("getAutosavedPost: there is more than one post with id:" + postId);
+                log.error("getAutosavedPost: there is more than one post with id: {}", postId);
                 return null;
             }
 
             return posts.get(0);
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting autosaved post", e);
+            log.error("Caught exception whilst getting autosaved post", e);
             return null;
         } finally {
             if (rs != null) {
@@ -695,8 +681,7 @@ public class PersistenceManager {
     }
 
     public Comment getComment(String commentId) throws Exception {
-        if (logger.isDebugEnabled())
-            logger.debug("getComment(" + commentId + ")");
+        log.debug("getComment({})", commentId);
 
         Connection connection = null;
         Statement st = null;
@@ -708,7 +693,7 @@ public class PersistenceManager {
             rs = st.executeQuery(sql);
             List<Comment> comments = transformResultSetInCommentCollection(rs);
             if (comments.size() < 1) {
-                logger.error("Failed to find comment with id '" + commentId + "'");
+                log.error("Failed to find comment with id '{}'", commentId);
                 return null;
             }
 
@@ -772,7 +757,7 @@ public class PersistenceManager {
                 members.add(member);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting public bloggers.", e);
+            log.error("Caught exception whilst getting public bloggers.", e);
         } finally {
             if (countRS != null) {
                 try {
@@ -863,7 +848,7 @@ public class PersistenceManager {
 
             return true;
         } catch (Exception e) {
-            logger.error("Failed to populate author data.", e);
+            log.error("Failed to populate author data.", e);
             return false;
         } finally {
             if (rs != null) {
@@ -900,13 +885,13 @@ public class PersistenceManager {
                 connection.commit();
                 return true;
             } catch (Exception e) {
-                logger.error("Caught exception whilst deleting autosaved copy.", e);
+                log.error("Caught exception whilst deleting autosaved copy.", e);
                 return false;
             } finally {
                 connection.setAutoCommit(oldAutoCommitFlag);
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst deleting autosaved copy.", e);
+            log.error("Caught exception whilst deleting autosaved copy.", e);
             return false;
         } finally {
             if (st != null) {
@@ -941,7 +926,7 @@ public class PersistenceManager {
             }
             rs.close();
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting clog group. Returning a ClogGroup with just the id set ...", e);
+            log.error("Caught exception whilst getting clog group. Returning a ClogGroup with just the id set ...", e);
         } finally {
             if (st != null) {
                 try {

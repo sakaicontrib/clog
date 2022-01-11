@@ -7,8 +7,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.ClogMember;
 import org.sakaiproject.clog.api.datamodel.AuthorsData;
@@ -27,21 +27,17 @@ import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.user.api.UserDirectoryService;
 
+@Slf4j
 @Setter
 public class ClogAuthorEntityProvider extends AbstractEntityProvider implements CoreEntityProvider, AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable {
     
     public final static String ENTITY_PREFIX = "clog-author";
 
-    protected final Logger LOG = Logger.getLogger(getClass());
-
     private ClogManager clogManager;
     private UserDirectoryService userDirectoryService;
 
     public boolean entityExists(String id) {
-        
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("entityExists(" + id + ")");
-        }
+        log.debug("entityExists({})", id);
 
         if (id == null) {
             return false;
@@ -55,7 +51,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
             userDirectoryService.getUser(id);
             return true;
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting user.", e);
+            log.error("Caught exception whilst getting user.", e);
             return false;
         }
     }
@@ -65,12 +61,8 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
      * CollectionsResolvable extends Resolvable
      */
     public Object getEntity(EntityReference ref) {
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getEntity(" + ref.getId() + ")");
-        }
-
-        LOG.warn("getEntity is unimplemented. Returning null ...");
+        log.debug("getEntity({})", ref.getId());
+        log.warn("getEntity is unimplemented. Returning null ...");
 
         return null;
     }
@@ -102,7 +94,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
             try {
                 page = Integer.parseInt(pageString);
             } catch (NumberFormatException nfe) {
-                LOG.error("Invalid page number " + pageString + " supplied. The first page will be returned ...");
+                log.error("Invalid page number {} supplied. The first page will be returned ...", pageString);
                 throw new EntityException("Invalid page value. Needs to be an integer.", ""
                                                                     , HttpServletResponse.SC_BAD_REQUEST);
             }
@@ -123,9 +115,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
             } else {
                 int end = start + pageSize;
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("end: " + end);
-                }
+                log.debug("end: {}", end);
 
                 AuthorsData data = new AuthorsData();
                 data.authorsTotal = authorsTotal;
@@ -140,7 +130,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
             }
 
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting authors.", e);
+            log.error("Caught exception whilst getting authors.", e);
             return null;
         }
     }

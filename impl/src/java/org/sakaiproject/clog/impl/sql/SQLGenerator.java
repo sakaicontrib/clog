@@ -29,17 +29,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
-
 import org.sakaiproject.clog.api.datamodel.Comment;
 import org.sakaiproject.clog.api.sql.ISQLGenerator;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.datamodel.Visibilities;
 import org.sakaiproject.clog.api.QueryBean;
 
+@Slf4j
 public class SQLGenerator implements ISQLGenerator {
-
-    private static final Logger logger = Logger.getLogger(SQLGenerator.class);
 
     // by default, oracle values
     public String BLOB = "BLOB";
@@ -144,7 +144,7 @@ public class SQLGenerator implements ISQLGenerator {
         statement.append(" ORDER BY ").append(CREATED_DATE).append(" DESC ");
 
         String sql = statement.toString();
-        logger.debug(sql);
+        log.debug(sql);
         statements.add(sql);
         return statements;
     }
