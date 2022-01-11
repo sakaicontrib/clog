@@ -7,7 +7,6 @@ import java.util.Map;
 
 import lombok.Setter;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.clog.api.datamodel.Post;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.QueryBean;
@@ -26,8 +25,6 @@ import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 public class ClogRSSEntityProvider extends AbstractEntityProvider implements AutoRegisterEntityProvider, Inputable, Outputable, Describeable, ActionsExecutable {
     
     public final static String ENTITY_PREFIX = "clog-rss";
-    
-    protected final Logger LOG = Logger.getLogger(getClass());
 
     private ClogManager clogManager;
     private SakaiProxy  sakaiProxy;

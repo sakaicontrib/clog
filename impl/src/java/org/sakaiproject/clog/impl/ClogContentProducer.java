@@ -16,10 +16,12 @@ import org.sakaiproject.search.api.SearchIndexBuilder;
 import org.sakaiproject.search.api.SearchService;
 import org.sakaiproject.search.api.SearchUtils;
 import org.sakaiproject.search.util.HTMLParser;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.sakaiproject.search.model.SearchBuilderItem;
 
-import org.apache.log4j.Logger;
-
+@Slf4j
 public class ClogContentProducer implements EntityContentProducer {
 
     private ClogManager clogManager = null;
@@ -40,8 +42,6 @@ public class ClogContentProducer implements EntityContentProducer {
         this.searchIndexBuilder = searchIndexBuilder;
     }
 
-    private Logger logger = Logger.getLogger(ClogContentProducer.class);
-
     public void init() {
         searchService.registerFunction(ClogManager.CLOG_POST_CREATED);
         searchService.registerFunction(ClogManager.CLOG_POST_DELETED);
@@ -51,16 +51,14 @@ public class ClogContentProducer implements EntityContentProducer {
     }
 
     public boolean canRead(String reference) {
-        if (logger.isDebugEnabled())
-            logger.debug("canRead()");
+        log.debug("canRead()");
 
         // TODO: sort this !
         return true;
     }
 
     public Integer getAction(Event event) {
-        if (logger.isDebugEnabled())
-            logger.debug("getAction()");
+        log.debug("getAction()");
 
         String eventName = event.getEvent();
 
@@ -73,15 +71,13 @@ public class ClogContentProducer implements EntityContentProducer {
     }
 
     public String getContainer(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getContainer()");
+        log.debug("getContainer()");
 
         return null;
     }
 
     public String getContent(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getContent(" + ref + ")");
+        log.debug("getContent({})", ref);
 
         String[] parts = ref.split(Entity.SEPARATOR);
 
@@ -110,35 +106,31 @@ public class ClogContentProducer implements EntityContentProducer {
 
             return sb.toString();
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting content for post '" + id + "'", e);
+            log.error("Caught exception whilst getting content for post '{}'", id, e);
         }
 
         return null;
     }
 
     public Reader getContentReader(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getContentReader(" + ref + ")");
+        log.debug("getContentReader({})", ref);
 
         return null;
     }
 
     public Map getCustomProperties(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getCustomProperties(" + ref + ")");
+        log.debug("getCustomProperties({})", ref);
         return null;
     }
 
     public String getCustomRDF(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getCustomRDF(" + ref + ")");
+        log.debug("getCustomRDF({})", ref);
 
         return null;
     }
 
     public String getId(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getId(" + ref + ")");
+        log.debug("getId({})", ref);
 
         String[] parts = ref.split(Entity.SEPARATOR);
 
@@ -152,8 +144,7 @@ public class ClogContentProducer implements EntityContentProducer {
     }
 
     public List getSiteContent(String siteId) {
-        if (logger.isDebugEnabled())
-            logger.debug("getSiteContent(" + siteId + ")");
+        log.debug("getSiteContent({})", siteId);
 
         List refs = new ArrayList();
 
@@ -163,22 +154,20 @@ public class ClogContentProducer implements EntityContentProducer {
             for (Post post : posts)
                 refs.add(post.getReference());
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting site content", e);
+            log.error("Caught exception whilst getting site content", e);
         }
 
         return refs;
     }
 
     public Iterator getSiteContentIterator(String siteId) {
-        if (logger.isDebugEnabled())
-            logger.debug("getSiteContentIterator(" + siteId + ")");
+        log.debug("getSiteContentIterator({})", siteId);
 
         return getSiteContent(siteId).iterator();
     }
 
     public String getSiteId(String eventRef) {
-        if (logger.isDebugEnabled())
-            logger.debug("getSiteId(" + eventRef + ")");
+        log.debug("getSiteId({})", eventRef);
 
         String[] parts = eventRef.split(Entity.SEPARATOR);
         if (parts.length == 4) {
@@ -187,7 +176,7 @@ public class ClogContentProducer implements EntityContentProducer {
                 Post post = clogManager.getPost(postId);
                 return post.getSiteId();
             } catch (Exception e) {
-                logger.error("Failed to find post with id '" + postId + "'");
+                log.error("Failed to find post with id '{}'", postId);
                 return null;
             }
         } else if (parts.length == 5) {
@@ -199,15 +188,13 @@ public class ClogContentProducer implements EntityContentProducer {
     }
 
     public String getSubType(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getSubType(" + ref + ")");
+        log.debug("getSubType({})", ref);
 
         return null;
     }
 
     public String getTitle(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getTitle(" + ref + ")");
+        log.debug("getTitle({})", ref);
 
         String[] parts = ref.split(Entity.SEPARATOR);
         String type = parts[2];
@@ -222,7 +209,7 @@ public class ClogContentProducer implements EntityContentProducer {
             Post post = clogManager.getPost(id);
             return post.getTitle();
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting title for post '" + id + "'", e);
+            log.error("Caught exception whilst getting title for post '{}'", id, e);
         }
 
         return "Unrecognised";
@@ -233,15 +220,13 @@ public class ClogContentProducer implements EntityContentProducer {
     }
 
     public String getType(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getType(" + ref + ")");
+        log.debug("getType({})", ref);
 
         return "clog";
     }
 
     public String getUrl(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("getUrl(" + ref + ")");
+        log.debug("getUrl({})", ref);
 
         String[] parts = ref.split(Entity.SEPARATOR);
         String type = parts[2];
@@ -256,29 +241,26 @@ public class ClogContentProducer implements EntityContentProducer {
             Post post = clogManager.getPost(id);
             return post.getUrl();
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting url for post '" + id + "'", e);
+            log.error("Caught exception whilst getting url for post '{}'", id,  e);
         }
 
         return null;
     }
 
     public boolean isContentFromReader(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("isContentFromReader(" + ref + ")");
+        log.debug("isContentFromReader({})", ref);
 
         return false;
     }
 
     public boolean isForIndex(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("isForIndex(" + ref + ")");
+        log.debug("isForIndex({})", ref);
 
         return true;
     }
 
     public boolean matches(String ref) {
-        if (logger.isDebugEnabled())
-            logger.debug("matches(" + ref + ")");
+        log.debug("matches({})", ref);
 
         if (ref == null)
             return false;

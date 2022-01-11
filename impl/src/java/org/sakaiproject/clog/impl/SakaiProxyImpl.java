@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.FunctionManager;
@@ -75,11 +74,11 @@ import org.sakaiproject.util.BaseResourceProperties;
 import org.sakaiproject.util.FormattedText;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Setter
 public class SakaiProxyImpl implements SakaiProxy {
-
-    private final Logger logger = Logger.getLogger(SakaiProxyImpl.class);
 
     private ToolManager toolManager;
 
@@ -143,7 +142,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         try {
             site = siteService.getSite(siteId);
         } catch (IdUnusedException idue) {
-            logger.warn("No site with id '" + siteId + "'");
+            log.warn("No site with id '{}'", siteId);
         }
 
         return site;
@@ -249,7 +248,7 @@ public class SakaiProxyImpl implements SakaiProxy {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("Exception thrown whilst checking for maintainer status", e);
+            log.error("Exception thrown whilst checking for maintainer status", e);
             return false;
         }
     }
@@ -279,7 +278,7 @@ public class SakaiProxyImpl implements SakaiProxy {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("Exception thrown whilst checking for tutor status", e);
+            log.error("Exception thrown whilst checking for tutor status", e);
             return false;
         }
     }
@@ -325,7 +324,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             }
         } catch (IdUnusedException idue) {
             // This should never happen. Really.
-            logger.error("Invalid site id. No groups will be returned.");
+            log.error("Invalid site id. No groups will be returned.");
         }
 
         return map;
@@ -347,11 +346,11 @@ public class SakaiProxyImpl implements SakaiProxy {
                     ClogMember member = new ClogMember(sakaiUser);
                     result.add(member);
                 } catch (UserNotDefinedException unde) {
-                    logger.error("Failed to get site member details", unde);
+                    log.error("Failed to get site member details", unde);
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception thrown whilst getting site members", e);
+            log.error("Exception thrown whilst getting site members", e);
         }
 
         return result;
@@ -411,7 +410,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
             return role.isAllowed(function);
         } catch (Exception e) {
-            logger.error("Caught exception while performing function test", e);
+            log.error("Caught exception while performing function test", e);
         }
 
         return false;
@@ -444,7 +443,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         try {
             return siteService.getSite(siteId).getTitle();
         } catch (Exception e) {
-            logger.error("Caught exception whilst getting site title", e);
+            log.error("Caught exception whilst getting site title", e);
         }
 
         return "";
@@ -508,9 +507,9 @@ public class SakaiProxyImpl implements SakaiProxy {
             return resourceId;
 
         } catch (PermissionException pe) {
-            logger.error("Caught permission exception whilst storing resource. Returning null ...", pe);
+            log.error("Caught permission exception whilst storing resource. Returning null ...", pe);
         } catch (Exception e) {
-            logger.error("Caught an exception whilst storing resource. Returning null ...", e);
+            log.error("Caught an exception whilst storing resource. Returning null ...", e);
         } finally {
             disableSecurityAdvisor(securityAdvisor);
         }
@@ -534,7 +533,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         } catch (InvalidSearchQueryException isqe) {
             throw isqe;
         } catch (Exception e) {
-            logger.error("Caught exception whilst searching", e);
+            log.error("Caught exception whilst searching", e);
         }
 
         return results;
@@ -627,7 +626,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             }
             return c;
         } catch (Exception e) {
-            logger.error("Exception whilst retrieving '" + cache + "' cache. Returning null ...", e);
+            log.error("Exception whilst retrieving '{}' cache. Returning null ...", cache, e);
             return null;
         }
     }

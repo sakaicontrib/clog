@@ -22,8 +22,8 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.clog.api.datamodel.Post;
@@ -36,10 +36,9 @@ import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.ToolManager;
 
+@Slf4j
 @Setter
 public class ClogSecurityManagerImpl implements ClogSecurityManager {
-
-    private static final Logger logger = Logger.getLogger(ClogSecurityManagerImpl.class);
 
     private SakaiProxy  sakaiProxy;
     private SecurityService securityService;
@@ -48,7 +47,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
 
     public boolean canCurrentUserCommentOnPost(Post post) {
 
-        logger.debug("canCurrentUserCommentOnPost()");
+        log.debug("canCurrentUserCommentOnPost()");
 
         // if(sakaiProxy.isOnGateway() && post.isPublic() &&
         // post.isCommentable())
@@ -168,7 +167,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("Exception during security check.", e);
+            log.error("Exception during security check.", e);
         }
 
         try {
@@ -176,7 +175,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("Exception during security check.", e);
+            log.error("Exception during security check.", e);
         }
 
         // Only maintainers can view recycled posts
@@ -200,7 +199,7 @@ public class ClogSecurityManagerImpl implements ClogSecurityManager {
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception during security check.", e);
+            log.error("Exception during security check.", e);
         }
 
         return false;
