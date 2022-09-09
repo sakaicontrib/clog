@@ -280,6 +280,9 @@ public class ClogContentProducer implements EntityContentProducer {
         if (logger.isDebugEnabled())
             logger.debug("matches(" + ref + ")");
 
+        if (ref == null)
+            return false;
+
         String[] parts = ref.split(Entity.SEPARATOR);
 
         if (ClogManager.ENTITY_PREFIX.equals(parts[1]))
