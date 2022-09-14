@@ -109,7 +109,7 @@ clog.utils = {
 
         var groups = '';
 
-        if ('READY' === visibility) {
+        if ('READY' === visibility || 'PRIVATE' === visibility) {
             if ($('#clog_visibility_tutor').prop('checked')) {
                 visibility = 'TUTOR';
             } else if ($('#clog_visibility_site').prop('checked')) {
