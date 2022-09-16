@@ -404,7 +404,7 @@ clog.switchState = function (state,arg) {
 
         var posts = data.posts;
 
-        var clogRecycledPosts = posts;
+        const clogRecycledPosts = posts;
         clog.utils.addFormattedDatesToPosts(clogRecycledPosts);
 
         clog.utils.renderTemplate('recycled_posts', {'posts': posts}, 'clog_content');
