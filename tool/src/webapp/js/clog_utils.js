@@ -188,10 +188,17 @@ clog.utils = {
     },
     saveComment: function (wysiwygEditor) {
 
+		const contentComment = clog.sakai.getEditorData(wysiwygEditor, 'clog_content_editor');
+
+		if (! contentComment) {
+			alert(clog.i18n.no_content_warning);
+			return 0;
+		}
+
 		var comment = {
  			'id': $('#clog_comment_id_field').val(),
 			'postId': clog.currentPost.id,
-			'content': clog.sakai.getEditorData(wysiwygEditor,'clog_content_editor'),
+			'content': contentComment,
 			'siteId': clog.siteId,
 			'fromSamepage': true
 		};
