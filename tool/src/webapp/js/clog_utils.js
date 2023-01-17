@@ -188,9 +188,9 @@ clog.utils = {
     },
     saveComment: function (wysiwygEditor) {
 
-		var contentComment = clog.sakai.getEditorData(wysiwygEditor, 'clog_content_editor');
+		const contentComment = clog.sakai.getEditorData(wysiwygEditor, 'clog_content_editor');
 
-		if ('' == contentComment) {
+		if (! contentComment) {
 			alert(clog.i18n.no_content_warning);
 			return 0;
 		}
