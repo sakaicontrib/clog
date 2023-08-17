@@ -148,7 +148,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
                     isBeingPublished = true;
                 }
             } catch (Exception e) {
-                log.info("Failed to get post with id '{}'. This could happen if this is the first time a post has been saved or published.", post.getId(), e);
+                log.info("Failed to get post with id '{}'. This could happen if this is the first time a post has been saved or published. Message '{}'", post.getId(), e.getMessage());
             }
         }
 
