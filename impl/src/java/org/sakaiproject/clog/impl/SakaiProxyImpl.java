@@ -523,7 +523,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         contexts.add(getCurrentSiteId());
 
         try {
-            SearchList sl = searchService.search(searchTerms, contexts, 0, 50, "normal", "normal");
+            SearchList sl = searchService.search(searchTerms, contexts, null, 0, 50, "normal", "normal");
             for (Iterator i = sl.iterator(0); i.hasNext();) {
                 SearchResult sr = (SearchResult) i.next();
 
