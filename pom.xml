@@ -6,13 +6,13 @@
   <parent>
     <groupId>org.sakaiproject</groupId>
     <artifactId>master</artifactId>
-    <version>23-SNAPSHOT</version>
+    <version>25-SNAPSHOT</version>
   </parent>
 
   <name>CLOG</name>
   <groupId>org.sakaiproject.clog</groupId>
   <artifactId>clog</artifactId>
-  <version>23-SNAPSHOT</version>
+  <version>25-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
