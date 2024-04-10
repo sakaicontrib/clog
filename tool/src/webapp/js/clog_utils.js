@@ -105,6 +105,19 @@ clog.utils = {
             return 0;
         }
 
+        if (!$('#clog_visibility_tutor').prop('checked') && !$('#clog_visibility_site').prop('checked') && !$('#clog-visibility-group').length) {
+            if ('AUTOSAVE' !== visibility) {
+                alert(clog.i18n.no_visibility_warning);
+            }
+            return 0;
+        } else if (!$('#clog_visibility_tutor').prop('checked') && !$('#clog_visibility_site').prop('checked') && $('#clog-visibility-group').length && !$('#clog-visibility-group').prop('checked')) {
+            if ('AUTOSAVE' !== visibility) {
+                alert(clog.i18n.no_visibility_warning_group);
+            }
+            return 0;
+        }
+
+
         var success = false;
 
         var groups = '';
