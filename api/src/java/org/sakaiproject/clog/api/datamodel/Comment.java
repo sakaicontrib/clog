@@ -20,7 +20,6 @@ package org.sakaiproject.clog.api.datamodel;
 import java.util.Date;
 import java.util.Stack;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.sakaiproject.clog.api.ClogManager;
 import org.sakaiproject.clog.api.cover.SakaiProxy;
 import org.sakaiproject.entity.api.Entity;
@@ -68,8 +67,7 @@ public class Comment implements Entity {
         if (!this.content.equals(text) && modified) {
             modifiedDate = new Date().getTime();
         }
-
-        this.content = StringEscapeUtils.unescapeHtml4(text.trim());
+        this.content = text;
     }
 
     public String getContent() {
