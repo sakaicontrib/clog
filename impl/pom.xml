@@ -6,7 +6,7 @@
   <parent>
     <artifactId>clog</artifactId>
     <groupId>org.sakaiproject.clog</groupId>
-    <version>23-SNAPSHOT</version>
+    <version>25-SNAPSHOT</version>
   </parent>
   
   <name>CLOG IMPL</name>
@@ -50,10 +50,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
