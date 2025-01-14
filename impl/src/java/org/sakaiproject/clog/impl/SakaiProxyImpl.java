@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -113,6 +114,8 @@ public class SakaiProxyImpl implements SakaiProxy {
     private SearchService searchService;
 
     private NotificationService notificationService;
+
+    private static final String SEARCH_TOOL = "clog";
 
     public void init() {
 
@@ -523,7 +526,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         contexts.add(getCurrentSiteId());
 
         try {
-            SearchList sl = searchService.search(searchTerms, contexts, null, 0, 50, "normal", "normal");
+            SearchList sl = searchService.search(searchTerms, contexts, Collections.singletonList(SEARCH_TOOL), 0, 50, "normal", "normal");
             for (Iterator i = sl.iterator(0); i.hasNext();) {
                 SearchResult sr = (SearchResult) i.next();
 
