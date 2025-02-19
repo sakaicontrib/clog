@@ -35,7 +35,7 @@
         <script type="text/javascript" src="/library/webjars/jquery/1.12.4/jquery.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.min.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/jquery.tablesorter.pager.min.js"></script>
-        <script type="text/javascript" src="/library/webjars/handlebars/4.0.6/handlebars.runtime.min.js"></script>
+        <script type="text/javascript" src="/library/webjars/handlebars/4.4.0/handlebars.runtime.min.js"></script>
         <script type="text/javascript" src="/clog-tool/templates/templates.js"></script>
         <script type="text/javascript" src="/clog-tool/js/clog_utils.js"></script>
         <script type="text/javascript" src="/clog-tool/lib/sakai_utils.js"></script>

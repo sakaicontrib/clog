@@ -1,5 +1,3 @@
-import {loadProperties} from "/webcomponents/sakai-i18n.js";
-
 /* Stuff that we always expect to be setup */
 clog.currentUserPermissions = null;
 clog.settings = {};
