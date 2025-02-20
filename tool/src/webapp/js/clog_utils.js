@@ -25,9 +25,6 @@ clog.utils = {
             }
         });
     },
-    attachProfilePopup: function () {
-        profile.attachPopups($('.profile'));
-    },
     formatDate: function (millis) {
 
         if (millis <= 0) {
@@ -488,11 +485,6 @@ clog.utils = {
                         clog.utils.renderPost(p, 'post_' + p.id);
                     });
 
-                    $(document).ready(function () {
-
-                        clog.utils.attachProfilePopup();
-                    });
-
                     if (!clog.settings.showBody) {
                         $('.clog-body').hide();
                     }
@@ -550,7 +542,6 @@ clog.utils = {
 
                 $(document).ready(function () {
 
-                    clog.utils.attachProfilePopup();
                     loadImage.hide();
                 });
 
