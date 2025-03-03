@@ -1,9 +1,11 @@
 		{{#each authors}}
 		<tr>
-            <td><span style="background-image:url(/direct/profile/{{userId}}/image/thumb)" class="clog-photo clog-photo-bigger profile" data-user-id="{{userId}}" /><a href="javascript:;" onclick="clog.switchState('userPosts',{userId: '{{userId}}', userDisplayName: '{{escapequote userDisplayName}}'});" class="icon">{{userDisplayName}}</a></td>
+			<td class="clog-picture-cell">
+				<span style="background-image:url(/direct/profile/{{userId}}/image/{{#if siteId}}?siteId={{siteId}}{{/if}})" class="clog-photo clog-photo-bigger profile" data-user-id="{{userId}}" /><a href="javascript:;" onclick="clog.switchState('userPosts',{userId: '{{userId}}', userDisplayName: '{{escapequote userDisplayName}}'});" class="icon">{{userDisplayName}}</a>
+			</td>
 			<td>{{numberOfPosts}}</td>
 			<td>{{formattedDateOfLastPost}}</td>
 			<td>{{numberOfComments}}</td>
-			{{#unless clogOnGateway}}<td><a target="_blank" href="/direct/clog-rss/user/{{userId}}.xml?siteId={{../../siteId}}" title="{{translate 'user_rss_tooltip'}}"><span class="fa fa-rss-square"></span></a></td>{{/unless}}
+			{{#unless clogOnGateway}}<td><a target="_blank" href="/direct/clog-rss/user/{{userId}}.xml?siteId={{siteId}}" title="{{translate 'user_rss_tooltip'}}"><span class="fa fa-rss-square"></span></a></td>{{/unless}}
 		</tr>
 		{{/each}}

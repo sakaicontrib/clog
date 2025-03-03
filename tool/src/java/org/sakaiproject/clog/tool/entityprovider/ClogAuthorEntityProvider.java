@@ -111,6 +111,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
             if (start >= authorsTotal) {
                 AuthorsData data = new AuthorsData();
                 data.status = "END";
+                data.siteId = siteId;
                 return data;
             } else {
                 int end = start + pageSize;
@@ -126,6 +127,7 @@ public class ClogAuthorEntityProvider extends AbstractEntityProvider implements 
                 }
 
                 data.authors = authors.subList(start, end);
+                data.siteId = siteId;
                 return data;
             }
 
