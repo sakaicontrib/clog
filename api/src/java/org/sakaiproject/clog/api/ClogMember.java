@@ -20,6 +20,8 @@ public class ClogMember {
 
     private transient User sakaiUser = null;
 
+    private String siteId = "";
+
     public ClogMember() {
     }
 

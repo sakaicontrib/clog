@@ -535,6 +535,7 @@ clog.utils = {
 
                 authors.forEach(function (a) {
                     a.formattedDateOfLastPost = clog.utils.formatDate(a.dateOfLastPost);
+                    a.siteId = data.siteId;
                 });
 
                 var t = Handlebars.templates['authors'];
