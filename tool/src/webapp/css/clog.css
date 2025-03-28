@@ -235,3 +235,9 @@ a.clog-draft-label:hover {
 #clog-authors a {
 	line-height: 18px;
 }
+
+.navIntraTool {
+	li span.current a {
+		background: unset !important;
+	}
+}
