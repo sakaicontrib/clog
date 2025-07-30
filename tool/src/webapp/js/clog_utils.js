@@ -455,10 +455,10 @@ clog.utils = {
             success: function (data) {
 
                 if (data.status === 'END') {
-                    $(window).off('scroll.clog');
+                    $('.portal-main-container').off('scroll.clog');
                     loadImage.hide();
                 } else {
-                    $(window).off('scroll.clog').on('scroll.clog', clog.utils.getScrollFunction(args, clog.utils.renderPageOfPosts));
+                    $('.portal-main-container').off('scroll.clog').on('scroll.clog', clog.utils.getScrollFunction(args, clog.utils.renderPageOfPosts));
                 }
 
                 clog.postsTotal = data.postsTotal;
@@ -521,10 +521,10 @@ clog.utils = {
             success: function (data) {
 
                 if (data.status === 'END') {
-                    $(window).off('scroll.clog');
+                    $('.portal-main-container').off('scroll.clog');
                     loadImage.hide();
                 } else {
-                    $(window).off('scroll.clog').on('scroll.clog', clog.utils.getScrollFunction(args, clog.utils.renderPageOfMembers));
+                    $('.portal-main-container').off('scroll.clog').on('scroll.clog', clog.utils.getScrollFunction(args, clog.utils.renderPageOfMembers));
                 }
 
                 if (clog.page == 0) {
@@ -558,12 +558,14 @@ clog.utils = {
         // Check if there is no scroll rendered and there are more pages
 
         // Check if body height is lower than window height (scrollbar missed, maybe you need to get more pages automatically)
-        if ($("body").height() <= $(window).height()) {
+        const windowHeight = $(window).height()
+        const containerHeight = $('.portal-main-container').height()
+        if (windowHeight < containerHeight ) {
             setTimeout(function () {
-
                 if (clog.postsTotal > clog.postsRendered && clog.postsRendered > 0 && clog.postsRendered % 10 === 0) {
                     $("body").data("scroll-clog", true);
-                    $(window).trigger('scroll.clog');
+                    $('.portal-main-container').data("scroll-clog", true);
+                    $('.portal-main-container').trigger('scroll.clog');
                 }
             }, 100);
         }
@@ -572,11 +574,15 @@ clog.utils = {
 
         var scroller = function () {
 
-            var wintop = $(window).scrollTop(), docheight = $(document).height(), winheight = $(window).height();
-
-            if  ((wintop/(docheight-winheight)) > 0.95 || $("body").data("scroll-clog") === true) {
+            const wintop = $('.portal-main-container').scrollTop();
+            const docheight = $('.portal-main-container').height();
+            
+            const delta = wintop/(docheight)
+            
+            if  ( delta > 0.95 || $("body").data("scroll-clog") === true) {
                 $("body").data("scroll-clog", false);
-                $(window).off('scroll.clog');
+                $('.portal-main-container').data("scroll-clog", false);
+                $('.portal-main-container').off('scroll.clog');
                 callback(args);
             }
         };
