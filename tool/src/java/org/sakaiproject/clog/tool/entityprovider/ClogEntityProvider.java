@@ -136,7 +136,7 @@ public class ClogEntityProvider extends AbstractEntityProvider implements AutoRe
         try {
             post = clogManager.getPost(postId);
         } catch (Exception e) {
-            throw new EntityException("Failed to get post for post id.","",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new EntityException("Invalid identifier provided for postId '" + postId + "'","", HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
         if(clogSecurityManager.canCurrentUserReadPost(post)) {
             return post;
