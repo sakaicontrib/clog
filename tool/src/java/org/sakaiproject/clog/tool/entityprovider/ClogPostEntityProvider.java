@@ -212,7 +212,7 @@ public class ClogPostEntityProvider extends AbstractEntityProvider implements Co
                     return post.getUrl();
                 }
             } catch (Exception e) {
-                log.error("Caught exception whilst getting post.", e);
+                throw new EntityException("Invalid identifier provided for postId '" + postId + "', incomingUrl '" + incomingUrl + "'", "", HttpServletResponse.SC_NOT_ACCEPTABLE);
                 return null;
             }
         } else {
