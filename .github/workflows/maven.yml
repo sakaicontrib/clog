@@ -31,7 +31,7 @@ jobs:
         run: >
           mvn -B install -DskipTests -Dmaven.javadoc.skip=true
           -f sakai/pom.xml
-          -pl :sakai-kernel-api,:sakai-kernel-util,:sakai-component-manager,:search-api
+          -pl :sakai-kernel-api,:sakai-kernel-util,:sakai-component-manager,:search-api,:search-util,:entitybroker-api
           -am
 
       - name: Build with Maven
